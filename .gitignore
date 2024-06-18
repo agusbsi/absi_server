@@ -15,6 +15,9 @@
 /application/views/adm_gudang
 /application/views/template/login.php
 /application/views/template/main.php
+/application/controllers/Login.php
+/application/controllers/Main.php
+/application/controllers/Otomatis.php
 /assets/
 /database/
 /img/
