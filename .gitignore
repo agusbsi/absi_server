@@ -4,7 +4,7 @@
 # Setting Dasar
 /application/config
 /application/core
-/application/helpers
+/application/helpers/api_helper.php
 /application/hooks
 /application/language
 /application/libraries
@@ -13,6 +13,8 @@
 /application/third_party
 /application/vendor
 /application/views/adm_gudang
+/application/views/template/login.php
+/application/views/template/main.php
 /assets/
 /database/
 /img/
