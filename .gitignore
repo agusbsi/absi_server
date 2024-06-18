@@ -1,0 +1,20 @@
+# Log files
+*.log
+
+# Setting Dasar
+/application/config
+/application/core
+/application/helpers
+/application/hooks
+/application/language
+/application/libraries
+/application/logs
+/application/models
+/application/third_party
+/application/vendor
+/application/views/adm_gudang
+/assets/
+/database/
+/img/
+/system/
+/vendor/
