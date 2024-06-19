@@ -22,28 +22,32 @@ class Permintaan extends CI_Controller
     $data['title'] = 'Permintaan';
     $data['list_data'] = $this->db->query("SELECT tp.*, tk.nama_toko from tb_permintaan tp
         JOIN tb_toko tk on tp.id_toko = tk.id
-        where tk.id_leader = '$id_leader' order by tp.id desc")->result();
+        where tk.id_leader = '$id_leader' order by tp.status = 0 DESC,tp.id desc")->result();
     $this->template->load('template/template', 'leader/permintaan/lihat_data', $data);
   }
-  // detail permintaan
-  public function detail_p($no_permintaan)
+  public function terima($no_permintaan)
   {
 
     $data['title'] = 'Permintaan';
-    $data['permintaan'] = $this->db->query("SELECT tp.*, tk.nama_toko, tk.alamat, tk.telp, tu.nama_user as spg, tp.status from tb_permintaan tp
-        JOIN tb_toko tk on tp.id_toko = tk.id
-        JOIN tb_user tu on tp.id_user = tu.id
-        where tp.id = '$no_permintaan'")->row();
+    $data['permintaan'] = $this->db->query("SELECT * from tb_permintaan where id = '$no_permintaan'")->row();
     $data['detail_permintaan'] = $this->db->query("SELECT td.*,tpk.kode as kode_produk, tpk.nama_produk, tpk.satuan  from tb_permintaan_detail td
         JOIN tb_permintaan tp on td.id_permintaan = tp.id
         JOIN tb_produk tpk on td.id_produk = tpk.id
         where td.id_permintaan = '$no_permintaan'")->result();
-    $data['detail_approve'] = $this->db->query("SELECT td.*,tpk.kode as kode_produk, tpk.nama_produk, tpk.satuan  from tb_permintaan_detail td
+
+    $this->template->load('template/template', 'leader/permintaan/terima', $data);
+  }
+  // detail permintaan
+  public function detail($no_permintaan)
+  {
+
+    $data['title'] = 'Permintaan';
+    $data['po'] = $this->db->query("SELECT * from tb_permintaan where id = '$no_permintaan'")->row();
+    $data['detail'] = $this->db->query("SELECT td.*,tpk.kode as kode_produk, tpk.nama_produk, tpk.satuan  from tb_permintaan_detail td
         JOIN tb_permintaan tp on td.id_permintaan = tp.id
         JOIN tb_produk tpk on td.id_produk = tpk.id
-        where td.id_permintaan = '$no_permintaan' AND td.status = 1")->result();
-
-
+        where td.id_permintaan = '$no_permintaan'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_po_histori where id_po = '$no_permintaan'")->result();
     $this->template->load('template/template', 'leader/permintaan/detail', $data);
   }
 
@@ -57,48 +61,81 @@ class Permintaan extends CI_Controller
   public function approve()
   {
     $pt = $this->session->userdata('pt');
+    $id_user = $this->session->userdata('id');
+    $leader = $this->db->query("SELECT nama_user FROM tb_user WHERE id = ?", array($id_user))->row()->nama_user;
     $id = $this->input->post('id_detail');
     $id_minta = $this->input->post('id_minta');
     $catatan_leader = $this->input->post('catatan_leader');
+    $tindakan = $this->input->post('tindakan');
     $qty_acc = $this->input->post('qty_acc');
     $jumlah = count($id);
+
+    // Mulai transaksi database
     $this->db->trans_start();
-    $this->db->query("UPDATE tb_permintaan set status = '1',catatan_leader = '$catatan_leader' where id = '$id_minta'");
-    for ($i = 0; $i < $jumlah; $i++) {
-      $id_detail    = $id[$i];
-      $d_qty        = $qty_acc[$i];
 
-      $data_detail = array(
-        'qty' => $d_qty,
-        'status' => 1,
+    if ($tindakan == 1) {
+      // Update tb_permintaan
+      $setuju = array(
+        'status' => '1',
+        'updated_at' => date('Y-m-d H:i:s')
       );
-      $where = array('id' => $id_detail);
-      $this->db->update('tb_permintaan_detail', $data_detail, $where);
-      $this->db->trans_complete();
-    }
-    $this->db->trans_complete();
-    $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6 and status = 1")->result_array();
-    $message = "Anda memiliki 1 PO Barang baru ( " . $id_minta . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
-    foreach ($phones as $phone) {
-      $number = $phone['no_telp'];
-      $hp = substr($number, 0, 1);
-      if ($hp == '0') {
-        $number = '62' . substr($number, 1);
-      }
-      kirim_wa($number, $message);
-    }
-    tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil di proses!');
-    redirect(base_url('leader/Permintaan'));
-  }
 
-  public function tolak()
-  {
-    $permintaan = $this->input->post('id');
-    $where = array('id' => $permintaan);
-    $data = array(
-      'status' => '5',
-      'updated_at' => date('Y-m-d H:i:s'),
+      $this->db->update('tb_permintaan', $setuju, array('id' => $id_minta));
+
+      // Loop melalui item permintaan
+      for ($i = 0; $i < $jumlah; $i++) {
+        $id_detail = $id[$i];
+        $d_qty = $qty_acc[$i];
+
+        $data_detail = array(
+          'qty' => $d_qty,
+          'status' => 1
+        );
+
+        $this->db->update('tb_permintaan_detail', $data_detail, array('id' => $id_detail));
+        $aksi = "Disetujui TL : ";
+      }
+
+      // Kirim notifikasi WA
+      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6 AND status = 1")->result_array();
+      $message = "Anda memiliki 1 PO Barang baru ( " . $id_minta . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
+
+      foreach ($phones as $phone) {
+        $number = $phone['no_telp'];
+        $hp = substr($number, 0, 1);
+
+        if ($hp == '0') {
+          $number = '62' . substr($number, 1);
+        }
+
+        kirim_wa($number, $message);
+      }
+    } else {
+      // Tolak permintaan
+      $tolak = array(
+        'status' => '5',
+        'updated_at' => date('Y-m-d H:i:s')
+      );
+
+      $this->db->update('tb_permintaan', $tolak, array('id' => $id_minta));
+      $aksi = "Ditolak TL : ";
+    }
+
+    // Insert histori
+    $histori = array(
+      'id_po' => $id_minta,
+      'aksi' => $aksi,
+      'pembuat' => $leader,
+      'catatan' => $catatan_leader
     );
-    $this->db->update('tb_permintaan', $data, $where);
+
+    $this->db->insert('tb_po_histori', $histori);
+
+    // Selesaikan transaksi
+    $this->db->trans_complete();
+
+    // Tampilkan pesan sukses
+    tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil diproses!');
+    redirect(base_url('leader/Permintaan'));
   }
 }

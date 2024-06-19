@@ -58,11 +58,11 @@
         <hr>
         # Proses Pengajuan :
         <hr>
-        <?php $no = 0;
-        foreach ($histori as $h) :
-          $no++;
-        ?>
-          <div class="timeline">
+        <div class="timeline">
+          <?php $no = 0;
+          foreach ($histori as $h) :
+            $no++;
+          ?>
             <div>
               <i class="fas bg-blue"><?= $no ?></i>
               <div class="timeline-item">
@@ -77,8 +77,8 @@
                 </div>
               </div>
             </div>
-          </div>
-        <?php endforeach ?>
+          <?php endforeach ?>
+        </div>
         <hr>
       </div>
       <div class="card-footer">
