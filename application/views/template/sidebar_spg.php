@@ -107,14 +107,6 @@ $retur = $this->db->query("SELECT * FROM tb_retur JOIN tb_toko ON tb_retur.id_to
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('faq') ?>" class="nav-link <?= ($title == 'FAQ') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-question-circle"></i>
-          <p>
-            FAQ
-          </p>
-        </a>
-      </li>
-      <li class="nav-item">
         <a href="javascript:void(0)" class="nav-link" onclick="logout()">
           <i class="nav-icon fas fa-sign-out-alt"></i>
           <p>

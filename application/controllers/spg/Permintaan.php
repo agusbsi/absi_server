@@ -24,23 +24,18 @@ class Permintaan extends CI_Controller
   {
     $id_toko = $this->session->userdata('id_toko');
     $data['title'] = 'Permintaan Barang';
-    $data['list_permintaan'] = $this->db->query("SELECT * from tb_permintaan where id_toko = '$id_toko' order by id Desc")->result();
+    $data['list_permintaan'] = $this->db->query("SELECT * from tb_permintaan where id_toko = '$id_toko' order by id Desc limit 500")->result();
     $this->template->load('template/template', 'spg/permintaan/index', $data);
   }
 
   public function detail($id)
   {
     $data['title'] = 'Permintaan Barang';
-    $data_permintaan = $this->db->query("SELECT tp.*, tt.nama_toko, tu.username from tb_permintaan tp join tb_toko tt on tt.id = tp.id_toko join tb_user tu on tu.id = tp.id_user where tp.id = '$id'")->row();
-    $data['detail_permintaan'] = $this->db->query("SELECT * from tb_permintaan_detail tpd join tb_produk tp on tp.id = tpd.id_produk where tpd.id_permintaan = '$id'")->result();
+    $data['po'] = $this->db->query("SELECT * from tb_permintaan where id = '$id'")->row();
+    $data['detail'] = $this->db->query("SELECT tpd.*, tp.kode, tp.nama_produk as artikel from tb_permintaan_detail tpd join tb_produk tp on tp.id = tpd.id_produk where tpd.id_permintaan = '$id'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_po_histori tpo
+    join tb_permintaan tp on tpo.id_po = tp.id where tpo.id_po = '$id'")->result();
 
-    // $data['detail_pengiriman'] = $this->db->query("SELECT tb_produk.kode, tb_produk.nama_produk, tb_permintaan_detail.qty, tb_pengiriman_detail.qty_diterima FROM tb_pengiriman_detail JOIN tb_pengiriman ON tb_pengiriman.id = tb_pengiriman_detail.id_pengiriman JOIN tb_permintaan ON tb_permintaan.id = tb_pengiriman.id_permintaan JOIN tb_permintaan_detail ON tb_permintaan_detail.id_permintaan = tb_permintaan.id join tb_produk on tb_produk.id = tb_permintaan_detail.id_produk WHERE tb_permintaan.id = '$id' group by tb_permintaan_detail.id_produk")->result();    
-
-    $data['no_permintaan'] = $id;
-    $data['tanggal'] = $data_permintaan->created_at;
-    $data['status'] = $data_permintaan->status;
-    $data['nama_toko'] = $data_permintaan->nama_toko;
-    $data['nama'] = $data_permintaan->username;
     $this->template->load('template/template', 'spg/permintaan/detail', $data);
   }
 
@@ -76,7 +71,7 @@ class Permintaan extends CI_Controller
     $id_toko = $this->session->userdata('id_toko');
     $data['toko_new'] = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
     $data['data_cart'] = $this->cart->contents(); // menampilkan data cart
-    $data['list_produk'] = $this->db->query("SELECT tp.id,tp.kode from tb_stok ts
+    $data['list_produk'] = $this->db->query("SELECT tp.id,tp.kode, tp.nama_produk as artikel from tb_stok ts
     join tb_produk tp on ts.id_produk = tp.id
     where ts.id_toko = '$id_toko' and tp.status = 1")->result();
     $this->template->load('template/template', 'spg/permintaan/tambah_permintaan', $data);
@@ -126,7 +121,10 @@ class Permintaan extends CI_Controller
       'id_toko' => $id_toko,
       'id_user' => $id_user,
     );
-
+    // Ambil data SPG, toko, dan leader dari database
+    $spg_query = $this->db->query("SELECT nama_user FROM tb_user WHERE id = '$id_user'");
+    $spg_row = $spg_query->row();
+    $spg = $spg_row ? $spg_row->nama_user : 'Tanpa Nama';
     $this->db->trans_start();
     $this->db->insert('tb_permintaan', $data);
     $data_cart = $this->cart->contents();
@@ -139,13 +137,14 @@ class Permintaan extends CI_Controller
       );
       $this->db->insert('tb_permintaan_detail', $data);
     }
+    $histori = array(
+      'id_po' => $id_permintaan,
+      'aksi' => 'Dibuat oleh : ',
+      'pembuat' => $spg,
+    );
+    $this->db->insert('tb_po_histori', $histori);
     $this->db->trans_complete();
     $this->cart->destroy();
-    // Ambil data SPG, toko, dan leader dari database
-    $spg_query = $this->db->query("SELECT nama_user FROM tb_user WHERE id = '$id_user'");
-    $spg_row = $spg_query->row();
-    $spg = $spg_row ? $spg_row->nama_user : 'Tanpa Nama';
-
     $toko_query = $this->db->query("SELECT id_leader, nama_toko FROM tb_toko WHERE id = '$id_toko'");
     $toko_row = $toko_query->row();
     $leader = $toko_row ? $toko_row->id_leader : null;
@@ -159,67 +158,6 @@ class Permintaan extends CI_Controller
 
     tampil_alert('success', 'Berhasil', 'Data berhasil disimpan !');
     redirect(base_url('spg/Permintaan'));
-  }
-  // api save po
-  public function savePo()
-  {
-    $pt = $this->input->post('pt');
-    $id_user = $this->input->post('id_user');
-    $id_toko = $this->input->post('id_toko');
-    $detail = $this->input->post('detail');
-    $response = []; // Inisialisasi respons
-
-    if (empty($id_toko)) {
-      $response['success'] = false;
-      $response['message'] = 'ID toko tidak valid.';
-    } else {
-      $id_permintaan = $this->M_spg->invoice();
-      $data_permintaan = array(
-        'id' => $id_permintaan,
-        'id_toko' => $id_toko,
-        'id_user' => $id_user,
-      );
-
-      $this->db->trans_start();
-      $this->db->insert('tb_permintaan', $data_permintaan);
-      foreach ($detail as $d) {
-        $data_detail = array(
-          'id_permintaan' => $id_permintaan,
-          'id_produk' => $d['id_produk'],
-          'qty' => $d['qty'],
-        );
-        $this->db->insert('tb_permintaan_detail', $data_detail);
-      }
-      $this->db->trans_complete();
-
-      // Ambil data SPG, toko, dan leader dari database
-      $spg_query = $this->db->query("SELECT nama_user FROM tb_user WHERE id = '$id_user'");
-      $spg_row = $spg_query->row();
-      $spg = $spg_row ? $spg_row->nama_user : 'User tidak ditemukan';
-
-      $toko_query = $this->db->query("SELECT id_leader, nama_toko FROM tb_toko WHERE id = '$id_toko'");
-      $toko_row = $toko_query->row();
-      $leader = $toko_row ? $toko_row->id_leader : null;
-      $namaToko = $toko_row ? $toko_row->nama_toko : 'Toko tidak ditemukan';
-
-      if ($leader) {
-        $response['success'] = true;
-        $response['message'] = 'Berhasil';
-        $hp_query = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$leader'");
-        $hp_row = $hp_query->row();
-        $hp = $hp_row ? $hp_row->no_telp : 'Nomor HP tidak ditemukan';
-
-        $message = "$spg : Mengajukan Permintaan Barang dengan nomor ($id_permintaan) untuk toko: $namaToko - $pt yang perlu approve, silahkan kunjungi s.id/absi-app";
-        kirim_wa($hp, $message);
-      } else {
-        $response['success'] = false;
-        $response['message'] = 'ID leader toko tidak ditemukan.';
-      }
-    }
-
-    // Mengembalikan data dalam format JSON
-    header('Content-Type: application/json');
-    echo json_encode($response);
   }
 }
 ?>

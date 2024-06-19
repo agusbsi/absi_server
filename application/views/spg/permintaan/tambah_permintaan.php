@@ -29,18 +29,21 @@
         <h3>List Barang</h3>
 
         <table class="table table-bordered table-striped">
-          <tr>
-            <th>Kode #</th>
+          <tr class="text-center">
+            <th>Artikel</th>
             <th>Qty</th>
-            <th>Keterangan</th>
-            <th>Action</th>
+            <th>Menu</th>
           </tr>
           <?php foreach ($data_cart as $d) { ?>
             <tr>
-              <td><?= $d['options'] ?></td>
-              <td><?= $d['qty'] ?></td>
-              <td><?= $d['satuan'] ?></td>
-              <td><a class="btn btn-danger btn-sm" href="<?= base_url('spg/permintaan/hapus_cart/') . $d['rowid'] ?>"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
+              <td>
+                <small>
+                  <strong><?= $d['options'] ?></strong> <br>
+                  Ket : <?= $d['satuan'] ?>
+                </small>
+              </td>
+              <td class="text-center"><?= $d['qty'] ?></td>
+              <td class="text-center"><a href="<?= base_url('spg/permintaan/hapus_cart/') . $d['rowid'] ?>"><i class="fa fa-trash text-danger" aria-hidden="true"></i></a></td>
             </tr>
           <?php } ?>
           <tr>
@@ -52,10 +55,10 @@
                 <form method="POST" action="<?= base_url('spg/Permintaan/tambah_cart'); ?>">
                   <div class="form-group">
                     <label>Pilih Barang</label>
-                    <select name="id" class="form-control select2bs4" id="id_produk">
+                    <select name="id" class="form-control select2bs4" id="id_produk" style="width:300px">
                       <option value="">Pilih Barang</option>
                       <?php foreach ($list_produk as $l) { ?>
-                        <option value="<?= $l->id ?>"><?= $l->kode ?></option>
+                        <option value="<?= $l->id ?>">| <?= $l->kode ?> |<?= $l->artikel ?></option>
                       <?php } ?>
                     </select>
                   </div>
@@ -72,7 +75,6 @@
                         <small>Satuan :</small> <small id="satuan"></small> <br>
                         <small>Max Stok :</small> <small id="max_stok"></small>
                       </div>
-                      <!-- /.card-body -->
                     </div>
                   </div>
                   <div class="form-group">

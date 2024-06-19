@@ -18,19 +18,19 @@ function status_permintaan($id)
 {
 
     if ($id == 0) {
-        echo "<span class='badge badge-danger'>Menunggu di approve leader !</span>";
+        echo "<span class='badge badge-warning'>Diproses Leader..</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-warning'>Menunggu di approve MV !</span>";
+        echo "<span class='badge badge-warning'>Diproses MV..</span>";
     } elseif ($id == 2) {
-        echo "<span class='badge badge-info'>Disetujui MV!</span>";
+        echo "<span class='badge badge-info'>Disetujui</span>";
     } elseif ($id == 3) {
-        echo "<span class='badge badge-info'>Sedang Disiapkan!</span>";
+        echo "<span class='badge badge-info'>Disiapkan</span>";
     } elseif ($id == 4) {
-        echo "<span class='badge badge-info'>Sedang dalam Pengiriman !</span>";
+        echo "<span class='badge badge-info'>Dikirim</span>";
     } elseif ($id == 6) {
-        echo "<span class='badge badge-success'>mm !</span>";
+        echo "<span class='badge badge-success'>Selesai</span>";
     } else {
-        echo "<span class='badge badge-danger'>Di Tolak !</span>";
+        echo "<span class='badge badge-danger'>DiTolak</span>";
     }
 }
 
@@ -245,6 +245,10 @@ function role($id)
         echo "<span class='badge badge-warning'>Finance</span>";
     } elseif ($id == 14) {
         echo "<span class='badge badge-warning'>Manager Ops</span>";
+    } elseif ($id == 15) {
+        echo "<span class='badge badge-warning'>Accounting</span>";
+    } elseif ($id == 16) {
+        echo "<span class='badge badge-warning'>Kepala gudang</span>";
     }
 }
 

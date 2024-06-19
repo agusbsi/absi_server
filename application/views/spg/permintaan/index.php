@@ -8,19 +8,18 @@
           </div>
           <div class="card-body">
             <div class="row">
-              <a href="<?= base_url('spg/permintaan/tambah_permintaan') ?>" class="btn btn-success ml-auto">
+              <a href="<?= base_url('spg/permintaan/tambah_permintaan') ?>" class="btn btn-sm btn-success ml-auto">
                 <li class="fas fa-plus"></li> Buat PO
               </a>
             </div>
             <hr>
             <table id="example1" class="table table-bordered table-striped">
               <thead>
-                <tr>
+                <tr class="text-center">
                   <th>#</th>
                   <th>Nomor</th>
-                  <th>Tanggal</th>
                   <th>Status</th>
-                  <th>Aksi</th>
+                  <th>Menu</th>
                 </tr>
               </thead>
               <tbody>
@@ -29,11 +28,15 @@
                 foreach ($list_permintaan as $row) {
                   $no++; ?>
                   <tr>
-                    <td><?= $no ?></td>
-                    <td><?= $row->id ?></td>
-                    <td><?= format_tanggal1($row->created_at) ?></td>
-                    <td><?= status_permintaan($row->status) ?></td>
-                    <td><a class="btn btn-primary btn-sm" href="<?= base_url('spg/Permintaan/detail/') . $row->id ?>"><i class="fa fa-eye" aria-hidden="true"></i> Detail</a></td>
+                    <td class="text-center"><?= $no ?></td>
+                    <td>
+                      <small>
+                        <strong><?= $row->id ?></strong> <br>
+                        <?= date('d-M-Y', strtotime($row->created_at)) ?>
+                      </small>
+                    </td>
+                    <td class="text-center"><?= status_permintaan($row->status) ?></td>
+                    <td class="text-center"><a class="btn btn-primary btn-sm" href="<?= base_url('spg/Permintaan/detail/') . $row->id ?>"><i class="fa fa-eye" aria-hidden="true"></i> Detail</a></td>
                   </tr>
                 <?php } ?>
               </tbody>

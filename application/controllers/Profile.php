@@ -19,7 +19,7 @@ class Profile extends CI_Controller
   {
     $id = $this->session->userdata('id');
     $role = $this->session->userdata('role');
-    $data['title'] = 'Profil';
+    $data['title'] = 'Profile';
     $data['profil'] = $this->db->query("SELECT * FROM tb_user WHERE id = '$id'")->row();
     $data['lihat_role'] = $this->db->query("SELECT * FROM tb_user_role WHERE id = '$role'")->row();
     $data['foto'] = "img/profil/" . $id . ".jpg";
