@@ -16,9 +16,43 @@ class Permintaan extends CI_Controller
   public function index()
   {
     $data['title'] = 'Permintaan Barang';
-    $data['list'] = $this->db->query("SELECT tp.*, tt.nama_toko from tb_permintaan tp
+    $tanggal = $this->input->post('tanggal');
+    $kategori = $this->input->post('kategori');
+    $data['kat'] = "";
+    $data['tgl'] = "";
+    if (!empty($kategori) && !empty($tanggal)) {
+      list($awal, $akhir) = explode(' - ', $tanggal);
+      $data['list'] = $this->db->query("
+            SELECT tp.*, tt.nama_toko
+            FROM tb_permintaan tp
+            JOIN tb_toko tt ON tp.id_toko = tt.id
+            WHERE tp.created_at >= ? AND tp.created_at <= ? 
+            AND (tp.id LIKE ? OR tt.nama_toko LIKE ?)
+        ", [$awal, $akhir, "%$kategori%", "%$kategori%"])->result();
+      $data['kat'] = $kategori;
+      $data['tgl'] = $tanggal;
+    } else if (empty($kategori) && !empty($tanggal)) {
+      list($awal, $akhir) = explode(' - ', $tanggal);
+      $data['list'] = $this->db->query("
+      SELECT tp.*, tt.nama_toko
+      FROM tb_permintaan tp
+      JOIN tb_toko tt ON tp.id_toko = tt.id
+      WHERE tp.created_at >= ? AND tp.created_at <= ?
+  ", [$awal, $akhir])->result();
+      $data['tgl'] = $tanggal;
+    } else if (!empty($kategori) && empty($tanggal)) {
+      $data['list'] = $this->db->query("
+      SELECT tp.*, tt.nama_toko
+      FROM tb_permintaan tp
+      JOIN tb_toko tt ON tp.id_toko = tt.id
+      AND (tp.id LIKE ? OR tt.nama_toko LIKE ?)
+  ", ["%$kategori%", "%$kategori%"])->result();
+      $data['kat'] = $kategori;
+    } else {
+      $data['list'] = $this->db->query("SELECT tp.*, tt.nama_toko from tb_permintaan tp
     join tb_toko tt on tp.id_toko = tt.id
     where tp.status != 0 AND tp.status != 5 AND tp.status != 6 order by tp.status = 1 DESC, tp.id desc ")->result();
+    }
     $this->template->load('template/template', 'manager_mv/permintaan/index', $data);
   }
   public function terima($no_permintaan)

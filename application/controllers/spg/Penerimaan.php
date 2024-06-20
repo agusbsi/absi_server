@@ -61,6 +61,7 @@ class Penerimaan extends CI_Controller
     $id_toko = $this->input->post('id_toko');
     $qty = $this->input->post('qty');
     $qty_terima = $this->input->post('qty_terima');
+    $spg = $this->db->query("SELECT nama_user from tb_user where id ='$id_penerima'")->row()->nama_user;
     $nilai = count($id_produk);
     $selisih = 0;
     $this->db->trans_start();
@@ -113,6 +114,15 @@ class Penerimaan extends CI_Controller
       'updated_at' => date('Y-m-d H:i:s'),
     );
     $this->db->update('tb_permintaan', $data2, $where2);
+    // Insert histori
+    $histori = array(
+      'id_po' => $id_po,
+      'aksi' => 'Diterima oleh : ',
+      'pembuat' => $spg,
+      'catatan' => $catatan_spg
+    );
+
+    $this->db->insert('tb_po_histori', $histori);
     $this->db->trans_complete();
 
     if ($this->db->trans_status() === FALSE) {

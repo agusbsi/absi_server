@@ -24,111 +24,51 @@ class Pengiriman extends CI_Controller
   public function index()
   {
     $data['title'] = 'Pengiriman Barang';
-    $data['list_data'] = $this->db->query("SELECT tp.*, tt.nama_toko, tu.nama_user as leader from tb_pengiriman tp
-    join tb_toko tt on tp.id_toko = tt.id
-    left join tb_user tu on tt.id_leader = tu.id
-    order by tp.id desc")->result();
+    $tanggal = $this->input->post('tanggal');
+    $kategori = $this->input->post('kategori');
+    $data['kat'] = "";
+    $data['tgl'] = "";
+    if (!empty($kategori) && !empty($tanggal)) {
+      list($awal, $akhir) = explode(' - ', $tanggal);
+      $data['list'] = $this->db->query("
+            SELECT tp.*, tt.nama_toko,tu.nama_user as leader
+            FROM tb_pengiriman tp
+            JOIN tb_toko tt ON tp.id_toko = tt.id
+            join tb_user tu on tt.id_leader = tu.id
+            WHERE tp.created_at >= ? AND tp.created_at <= ? 
+            AND (tp.id LIKE ? OR tt.nama_toko LIKE ?)
+        ", [$awal, $akhir, "%$kategori%", "%$kategori%"])->result();
+      $data['kat'] = $kategori;
+      $data['tgl'] = $tanggal;
+    } else if (empty($kategori) && !empty($tanggal)) {
+      list($awal, $akhir) = explode(' - ', $tanggal);
+      $data['list'] = $this->db->query("
+      SELECT tp.*, tt.nama_toko,tu.nama_user as leader
+      FROM tb_pengiriman tp
+      JOIN tb_toko tt ON tp.id_toko = tt.id
+      join tb_user tu on tt.id_leader = tu.id
+      WHERE tp.created_at >= ? AND tp.created_at <= ?
+  ", [$awal, $akhir])->result();
+      $data['tgl'] = $tanggal;
+    } else if (!empty($kategori) && empty($tanggal)) {
+      $data['list'] = $this->db->query("
+      SELECT tp.*, tt.nama_toko, tu.nama_user as leader
+      FROM tb_pengiriman tp
+      JOIN tb_toko tt ON tp.id_toko = tt.id
+      join tb_user tu on tt.id_leader = tu.id
+      AND (tp.id LIKE ? OR tt.nama_toko LIKE ?)
+  ", ["%$kategori%", "%$kategori%"])->result();
+      $data['kat'] = $kategori;
+    } else {
+      $data['list'] = $this->db->query("SELECT tp.*, tt.nama_toko, tu.nama_user as leader from tb_pengiriman tp
+      join tb_toko tt on tp.id_toko = tt.id
+      join tb_user tu on tt.id_leader = tu.id
+      order by tp.id desc LIMIT 500")->result();
+    }
+
     $this->template->load('template/template', 'adm_gudang/pengiriman/lihat_data', $data);
   }
-  // pengiriman
-  public function add()
-  {
-    $data['title'] = 'Pengiriman Barang';
-    $data['list_permintaan'] = $this->M_adm_gudang->list_permintaan()->result();
-    $data['kode_kirim'] = $this->M_adm_gudang->kode_kirim();
-    $this->template->load('template/template', 'adm_gudang/pengiriman/tambah2', $data);
-  }
 
-  //   menampilkan data json
-  public function view()
-  {
-    $id = $_POST['no_permintaan'];
-    $data['data'] = $this->M_adm_gudang->info_toko($id)->row();
-    // $data['isi_detail'] = $this->isi_detail($id);
-    echo json_encode($data);
-  }
-  // menampilkan list detail json
-  function list_detail()
-  {
-    $id = $_POST['no_permintaan'];
-    $data = $this->M_adm_gudang->barang_list($id)->result();
-    echo json_encode($data);
-  }
-  // proses tambah
-  function proses_tambah2()
-  {
-    $this->form_validation->set_rules('kode', 'Kode Artikel', 'required');
-    $id_permintaan = $this->input->post('id_permintaan');
-    $id_detail_permintaan = $this->input->post('id_detail_permintaan');
-    $id_produk = $this->input->post('id_produk');
-    $id_toko = $this->input->post('id_toko');
-    $keterangan = $this->input->post('catatan');
-    $satuan = $this->input->post('satuan');
-    $qty = $this->input->post('qty');
-    $qty_dikirim = $this->input->post('qty_dikirim');
-    $qty_input = $this->input->post('qty_input');
-    $id_user = $this->session->userdata('id');
-    $id_pengiriman = $this->M_adm_gudang->kode_kirim();
-    $jumlah = count($id_produk);
-    $belum_lengkap = 0;
-
-    $this->db->trans_start();
-    $data = array(
-      'id' => $id_pengiriman,
-      'id_permintaan' => $id_permintaan,
-      'id_user' => $id_user,
-      'status' => 0,
-      'keterangan' => $keterangan,
-      'id_toko' => $id_toko,
-    );
-
-    // insert ke tabel pengiriman
-    $this->db->insert('tb_pengiriman', $data);
-    $insert_id  = $this->db->insert_id();
-
-    for ($i = 0; $i < $jumlah; $i++) {
-      $d_id_produk = $id_produk[$i];
-      $d_id_detail_permintaan = $id_detail_permintaan[$i];
-      $d_qty = $qty[$i];
-      $d_qty_dikirim = $qty_dikirim[$i];
-      $d_qty_input = $qty_input[$i];
-      $d_qty_akhir = $d_qty_dikirim + $d_qty_input;
-
-      // hitung apakah qty pengiriman sudah full atau belum
-      if ($d_qty != $d_qty_akhir) {
-        $belum_lengkap += 1;
-      }
-
-      $data_detail = array(
-        'id_pengiriman' => $id_pengiriman,
-        'id_produk' => $d_id_produk,
-        'qty' => $d_qty_input
-      );
-
-      // insert ke tabel detail pengiriman
-      $this->db->insert('tb_pengiriman_detail', $data_detail);
-
-      // update qty dikirim pada tabel permintaan
-      $data = array(
-        'qty_dikirim' => $d_qty_akhir
-      );
-      $this->db->where('id', $d_id_detail_permintaan);
-      $this->db->update('tb_permintaan_detail', $data);
-    }
-
-    // cek apabila qty dikirim sudah sesuai dengan qty permintaan maka update status permintaan menjadi 3
-    if ($belum_lengkap == 0) {
-      $status = 4;
-    } else {
-      $status = 4;
-    }
-    $data2 = array(
-      'status' => $status
-    );
-    $this->db->where('id', $id_permintaan);
-    $this->db->update('tb_permintaan', $data2);
-    $this->db->trans_complete();
-  }
   // menampilkan form surat jalan/detail
   public function detail_p($no_pengiriman)
   {

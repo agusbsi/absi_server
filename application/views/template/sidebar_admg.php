@@ -10,7 +10,6 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
   <!-- Sidebar Menu -->
   <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-      <li class="nav-header">Menu Utama</li>
       <li class="nav-item">
         <a href="<?= base_url('adm_gudang/Dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
           <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -19,7 +18,7 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
           </p>
         </a>
       </li>
-      <li class="nav-header">Transaksi</li>
+      <li class="nav-header">Menu Utama</li>
       <li class="nav-item">
         <a href="<?= base_url('adm_gudang/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-file-alt"></i>
@@ -56,6 +55,43 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
           </p>
         </a>
       </li>
+      <li class="nav-header">Laporan</li>
+      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-chart-pie"></i>
+          <p>
+            Stok
+            <i class="right fas fa-angle-left"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Stok') ?>" class="nav-link <?= ($title == 'Stok Artikel') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Per Artikel
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Stok/s_customer') ?>" class="nav-link <?= ($title == 'Stok Customer') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Per Customer
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="nav-link <?= ($title == 'Kartu Stok') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Kartu Stok
+              </p>
+            </a>
+          </li>
+
+        </ul>
+
       <li class="nav-header">Akun</li>
       <li class="nav-item">
         <a href="<?= base_url('profile') ?>" class="nav-link <?= ($title == 'Profile') ? "active" : "" ?>">
