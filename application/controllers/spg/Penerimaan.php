@@ -32,7 +32,7 @@ class Penerimaan extends CI_Controller
     $data['terima'] = $this->db->query("SELECT * from tb_pengiriman where id = '$no_penerimaan'")->row();
     $data['detail'] = $this->db->query("SELECT tpd.*, tp.kode, tp.nama_produk, tp.satuan from tb_pengiriman_detail tpd
     join tb_produk tp on tpd.id_produk = tp.id
-    where tpd.id_pengiriman = '$no_penerimaan' order by tp.kode ASC")->result();
+    where tpd.id_pengiriman = '$no_penerimaan' AND tpd.qty != 0 order by tp.kode ASC")->result();
     $this->template->load('template/template', 'spg/penerimaan/terima', $data);
   }
   public function detail($no_penerimaan)

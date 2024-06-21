@@ -104,7 +104,7 @@
               <th>Status</th>
               <th style="width: 30%;">Nama Toko</th>
               <th>Tanggal</th>
-              <th style="width: 13%;">Menu</th>
+              <th style="width: 14%;">Menu</th>
             </tr>
           </thead>
           <tbody>
@@ -169,7 +169,7 @@
           </div>
           <div class="form-group">
             <label for="file">Tanggal</label>
-            <input type="date" name="tanggal" class="form-control form-control-sm" required>
+            <input type="date" name="tanggal_exp" class="form-control form-control-sm" required>
           </div>
           <div class="form-group">
             <label for="file">Toko</label>
@@ -210,7 +210,7 @@
   document.getElementById('export-button').addEventListener('click', function(event) {
     event.preventDefault(); // Menghentikan eksekusi default (submit) dari tombol
     var noTransfer = $('[name="no_transfer"]').val();
-    var tanggal = $('[name="tanggal"]').val();
+    var tanggal = $('[name="tanggal_exp"]').val();
     if (noTransfer == "" || tanggal == "") { // Menggunakan operator || (atau) agar salah satu dari kedua input tidak boleh kosong
       alert('No Transfer & Tanggal tidak boleh kosong');
     } else {

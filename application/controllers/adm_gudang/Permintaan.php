@@ -33,7 +33,7 @@ class Permintaan extends CI_Controller
     join tb_permintaan tp on tpd.id_permintaan = tp.id
     join tb_toko tt on tp.id_toko = tt.id
     join tb_produk tpk on tpd.id_produk = tpk.id
-    where tpd.id_permintaan = '$no_permintaan'")->result();
+    where tpd.id_permintaan = '$no_permintaan' AND tpd.qty != 0 ")->result();
 
     $this->template->load('template/template', 'adm_gudang/permintaan/detail', $data);
   }
@@ -62,17 +62,18 @@ class Permintaan extends CI_Controller
     );
     // insert ke tabel pengiriman
     $this->db->insert('tb_pengiriman', $kirim);
-    //  detail
+    // Insert detail pengiriman
     for ($i = 0; $i < $jumlah; $i++) {
       $d_id_produk = $id_produk[$i];
       $d_qty = $qty[$i];
-      $detail = array(
-        'id_pengiriman' => $id_kirim,
-        'id_produk' => $d_id_produk,
-        'qty' => $d_qty
-      );
-      // insert ke tabel detail pengiriman
-      $this->db->insert('tb_pengiriman_detail', $detail);
+      if ($d_qty > 0) {
+        $detail = array(
+          'id_pengiriman' => $id_kirim,
+          'id_produk' => $d_id_produk,
+          'qty' => $d_qty,
+        );
+        $this->db->insert('tb_pengiriman_detail', $detail);
+      }
     }
     // Update permintaan
     $this->db->query("UPDATE tb_permintaan SET status = 3, updated_at = '$update_at' WHERE id = '$id_po'");

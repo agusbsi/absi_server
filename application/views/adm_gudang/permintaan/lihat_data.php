@@ -16,7 +16,7 @@
                      <th style="width: 13%;">Nomor PO</th>
                      <th style="width: 27%;">Nama Toko</th>
                      <th>Catatan MV</th>
-                     <th style="width: 21%;">Menu</th>
+                     <th style="width: 22%;">Menu</th>
                    </tr>
                  </thead>
                  <tbody>
