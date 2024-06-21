@@ -117,8 +117,8 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '11'")->nu
       </li>
 
       <li class="nav-header">Laporan</li>
-      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer') ? "menu-open" : "" ?>">
-        <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
             Stok
@@ -139,6 +139,14 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '11'")->nu
               <i class="far fa-circle nav-icon"></i>
               <p>
                 Per Customer
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="nav-link <?= ($title == 'Kartu Stok') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Kartu Stok
               </p>
             </a>
           </li>
@@ -199,7 +207,7 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '11'")->nu
       </li>
       <li class="nav-header">Akun</li>
       <li class="nav-item">
-        <a href="<?= base_url('Profile') ?>" class="nav-link <?= ($title == 'Profil') ? "active" : "" ?>">
+        <a href="<?= base_url('Profile') ?>" class="nav-link <?= ($title == 'Profile') ? "active" : "" ?>">
           <i class="nav-icon fas fa-user"></i>
           <p>
             Profil

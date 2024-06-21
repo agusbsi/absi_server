@@ -1,15 +1,17 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Retur extends CI_Controller {
+class Retur extends CI_Controller
+{
 
-  public function __construct(){
+  public function __construct()
+  {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if($role != "6" && $role != 1){
-      tampil_alert('error','DI TOLAK !','Anda tidak punya akses untuk halaman ini.!');
+    if ($role != "6" && $role != 1 && $role != "8") {
+      tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
-    }    
+    }
     $this->load->model('M_admin');
     $this->load->model('M_support');
   }
@@ -17,7 +19,7 @@ class Retur extends CI_Controller {
   {
     $data['title'] = 'Retur Barang';
     $data['list_data'] = $this->M_support->lihat_data_retur()->result();
-    $data['avatar'] = $this->M_admin->get_data_gambar('tb_upload_gambar_user',$this->session->userdata('username'));
+    $data['avatar'] = $this->M_admin->get_data_gambar('tb_upload_gambar_user', $this->session->userdata('username'));
     $this->template->load('template/template', 'manager_mv/retur/index', $data);
   }
   public function detail($no_retur)
@@ -70,4 +72,3 @@ class Retur extends CI_Controller {
     echo $response;
   }
 }
-?>

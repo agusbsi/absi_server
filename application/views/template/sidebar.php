@@ -252,7 +252,7 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '12'")->nu
       </li>
       <li class="nav-header">Akun</li>
       <li class="nav-item">
-        <a href="<?= base_url('profile') ?>" class="nav-link">
+        <a href="<?= base_url('profile') ?>" class="nav-link <?= ($title == 'Profile') ? "active" : "" ?>">
           <i class="nav-icon fas fa-user"></i>
           <p>
             Profil

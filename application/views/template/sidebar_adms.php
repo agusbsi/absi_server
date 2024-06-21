@@ -147,8 +147,8 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </a>
       </li>
       <li class="nav-header">Laporan</li>
-      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer') ? "menu-open" : "" ?>">
-        <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
             Stok
@@ -169,6 +169,14 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
               <i class="far fa-circle nav-icon"></i>
               <p>
                 Per Customer
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="nav-link <?= ($title == 'Kartu Stok') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Kartu Stok
               </p>
             </a>
           </li>
@@ -230,7 +238,7 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
       </li>
       <li class="nav-header">Akun</li>
       <li class="nav-item">
-        <a href="<?= base_url('profile') ?>" class="nav-link">
+        <a href="<?= base_url('profile') ?>" class="nav-link <?= ($title == 'Profile') ? "active" : "" ?>">
           <i class="nav-icon fas fa-user"></i>
           <p>
             Profil
