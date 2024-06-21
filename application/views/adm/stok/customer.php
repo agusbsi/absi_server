@@ -24,7 +24,16 @@
                     <span class="info-box-icon bg-white"><i class="fas fa-scroll text-info"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">Stok Rasio</span>
-                        <span class="info-box-number"><?= ($stok->stok_akhir / $jual->total) ? ROUND($stok->stok_akhir / $jual->total, 2) : "Kosong" ?></span>
+                        <span class="info-box-number">
+                            <?php
+                            if ($jual->total != 0) {
+                                echo round($stok->stok_akhir / $jual->total, 2);
+                            } else {
+                                echo "Kosong";
+                            }
+                            ?>
+
+                        </span>
                     </div>
                 </div>
             </div>
