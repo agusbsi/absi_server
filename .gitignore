@@ -15,7 +15,6 @@
 /application/views/adm_gudang/pengiriman/detail_print.php
 /application/views/adm_gudang/retur/sppr_toko.php
 /application/views/adm_gudang/retur/sppr.php
-/application/views/leader/mutasi/mutasi_print.php
 /application/views/template/login.php
 /application/views/template/main.php
 /application/controllers/Login.php
