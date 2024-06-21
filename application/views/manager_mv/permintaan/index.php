@@ -121,7 +121,7 @@
                     <td class="text-center"><?= date('d-M-Y H:m:s', strtotime($data->created_at)) ?></td>
                     <td class="text-center">
                       <?php
-                      if ($data->status == 1) {
+                      if ($data->status == 1 || $data->status == 7) {
                       ?>
                         <a class="btn btn-success btn-sm" href="<?= base_url('sup/permintaan/terima/' . $data->id) ?>"><i class="fas fa-paper-plane"></i> Proses</a>
                       <?php

@@ -29,8 +29,10 @@ function status_permintaan($id)
         echo "<span class='badge badge-info'>Dikirim</span>";
     } elseif ($id == 6) {
         echo "<span class='badge badge-success'>Selesai</span>";
+    } elseif ($id == 7) {
+        echo "<span class='badge badge-secondary'>Ditunda</span>";
     } else {
-        echo "<span class='badge badge-danger'>DiTolak</span>";
+        echo "<span class='badge badge-danger'>Ditolak</span>";
     }
 }
 

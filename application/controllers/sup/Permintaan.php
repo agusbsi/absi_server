@@ -51,7 +51,7 @@ class Permintaan extends CI_Controller
     } else {
       $data['list'] = $this->db->query("SELECT tp.*, tt.nama_toko from tb_permintaan tp
     join tb_toko tt on tp.id_toko = tt.id
-    where tp.status != 0 AND tp.status != 5 AND tp.status != 6 order by tp.status = 1 DESC, tp.id desc ")->result();
+    where tp.status != 0 AND tp.status != 5 AND tp.status != 6 order by tp.status = 7 DESC,tp.status = 1 DESC, tp.id desc ")->result();
     }
     $this->template->load('template/template', 'manager_mv/permintaan/index', $data);
   }
@@ -98,7 +98,7 @@ class Permintaan extends CI_Controller
     $pt  = $this->session->userdata('pt');
     $id           = $this->input->post('id_permintaan');
     date_default_timezone_set('Asia/Jakarta');
-    $update_at    = date('Y-m-d H:i:s');
+    $update_at = date('Y-m-d H:i:s');
     $id_produk    = $this->input->post('id_produk');
     $id_detail    = $this->input->post('id_detail');
     $qty_acc      = $this->input->post('qty_acc');
@@ -137,6 +137,14 @@ class Permintaan extends CI_Controller
         }
         kirim_wa($number, $message);
       }
+    } else if ($tindakan == 2) {
+      $tunda = array(
+        'status' => '7',
+        'updated_at' => $update_at
+      );
+
+      $this->db->update('tb_permintaan', $tunda, array('id' => $id));
+      $aksi = "Ditunda MV : ";
     } else {
       $tolak = array(
         'status' => '5',

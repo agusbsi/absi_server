@@ -168,7 +168,8 @@
                 <select name="tindakan" class="form-control form-control-sm" required>
                   <option value="">- Pilih Tindakan -</option>
                   <option value="1"> Setujui </option>
-                  <option value="2"> Tolak </option>
+                  <option value="2"> Tunda </option>
+                  <option value="3"> Tolak </option>
                 </select>
               </div>
               <hr>

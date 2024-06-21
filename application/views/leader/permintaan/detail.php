@@ -73,7 +73,7 @@
                       <p class="timeline-header"><small><?= $h->aksi ?> <strong><?= $h->pembuat ?></strong></small></p>
                       <div class="timeline-body">
                         <small>
-                          <?= date('d-M-Y  H:m:s', strtotime($h->tanggal)) ?> <br>
+                          <?= date('d-M-Y  H:i:s', strtotime($h->tanggal)) ?> <br>
                           Catatan :<br>
                           <?= $h->catatan ?>
                         </small>
