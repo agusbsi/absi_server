@@ -220,11 +220,11 @@ function jenis_toko($id)
 function role($id)
 {
     if ($id == 1) {
-        echo "<span class='badge badge-warning'>Admin Utama</span>";
+        echo "<span class='badge badge-warning'>Administrator</span>";
     } elseif ($id == 2) {
         echo "<span class='badge badge-warning'>Supervisor</span>";
     } elseif ($id == 3) {
-        echo "<span class='badge badge-warning'>Team Leader</span>";
+        echo "<span class='badge badge-warning'>Leader</span>";
     } elseif ($id == 4) {
         echo "<span class='badge badge-warning'>SPG</span>";
     } elseif ($id == 5) {
@@ -232,7 +232,7 @@ function role($id)
     } elseif ($id == 6) {
         echo "<span class='badge badge-warning'>Manager MV</span>";
     } elseif ($id == 7) {
-        echo "<span class='badge badge-warning'>Manager HR/GA</span>";
+        echo "<span class='badge badge-warning'>HRD</span>";
     } elseif ($id == 8) {
         echo "<span class='badge badge-warning'>Admin MV</span>";
     } elseif ($id == 9) {
@@ -246,7 +246,7 @@ function role($id)
     } elseif ($id == 13) {
         echo "<span class='badge badge-warning'>Finance</span>";
     } elseif ($id == 14) {
-        echo "<span class='badge badge-warning'>Manager Ops</span>";
+        echo "<span class='badge badge-warning'>Operasional</span>";
     } elseif ($id == 15) {
         echo "<span class='badge badge-warning'>Accounting</span>";
     } elseif ($id == 16) {
