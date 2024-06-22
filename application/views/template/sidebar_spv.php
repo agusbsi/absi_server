@@ -3,7 +3,6 @@
    <!-- Sidebar Menu -->
    <nav class="mt-2">
      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-       <li class="nav-header">Menu Utama</li>
        <li class="nav-item">
          <a href="<?= base_url('spv/Dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
            <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -12,7 +11,7 @@
            </p>
          </a>
        </li>
-       <li class="nav-header">Master</li>
+       <li class="nav-header">Master Data</li>
        <li class="nav-item <?= ($title == 'Kelola Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "menu-open" : "" ?>">
          <a href="#" class="nav-link <?= ($title == 'Kelola Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "active" : "" ?>">
            <i class="nav-icon fas fa-store"></i>
@@ -69,13 +68,93 @@
            </p>
          </a>
        </li>
-       <li class="nav-item">
-         <a href="<?= base_url('mng_mkt/Penjualan') ?>" class="nav-link <?= ($title == 'Penjualan') ? "active" : "" ?>">
+       <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
+           <i class="nav-icon fas fa-chart-pie"></i>
+           <p>
+             Stok
+             <i class="right fas fa-angle-left"></i>
+           </p>
+         </a>
+         <ul class="nav nav-treeview">
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Stok') ?>" class="nav-link <?= ($title == 'Stok Artikel') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Artikel
+               </p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Stok/s_customer') ?>" class="nav-link <?= ($title == 'Stok Customer') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Customer
+               </p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="nav-link <?= ($title == 'Kartu Stok') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Kartu Stok
+               </p>
+             </a>
+           </li>
+
+         </ul>
+       </li>
+       <li class="nav-item <?= ($title == 'Penjualan Artikel' || $title == 'Penjualan Toko' || $title == 'Penjualan Customer' || $title == 'Penjualan Periode' || $title == 'Penjualan Area') ? "menu-open" : "" ?>">
+         <a href="#" class="nav-link <?= ($title == 'Penjualan Artikel' || $title == 'Penjualan Toko' || $title == 'Penjualan Customer' || $title == 'Penjualan Periode' || $title == 'Penjualan Area') ? "active" : "" ?>">
            <i class="nav-icon fas fa-cart-plus"></i>
            <p>
              Penjualan
+             <i class="right fas fa-angle-left"></i>
            </p>
          </a>
+         <ul class="nav nav-treeview">
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Penjualan/lap_artikel') ?>" class="nav-link <?= ($title == 'Penjualan Artikel') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Artikel
+               </p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Penjualan/lap_toko') ?>" class="nav-link <?= ($title == 'Penjualan Toko') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Toko
+               </p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Penjualan/lap_cust') ?>" class="nav-link <?= ($title == 'Penjualan Customer') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Customer
+               </p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Penjualan/lap_area') ?>" class="nav-link <?= ($title == 'Penjualan Area') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Area
+               </p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a href="<?= base_url('adm/Penjualan/lap_periode') ?>" class="nav-link <?= ($title == 'Penjualan Periode') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Periode
+               </p>
+             </a>
+           </li>
+
+         </ul>
        </li>
        <li class="nav-item">
          <a href="<?= base_url('spv/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan') ? "active" : "" ?>">
@@ -95,7 +174,7 @@
        </li>
        <li class="nav-header">Akun</li>
        <li class="nav-item">
-         <a href="<?= base_url('Profile') ?>" class="nav-link <?= ($title == 'Profil') ? "active" : "" ?>">
+         <a href="<?= base_url('Profile') ?>" class="nav-link <?= ($title == 'Profile') ? "active" : "" ?>">
            <i class="nav-icon fas fa-user"></i>
            <p>
              Profil
