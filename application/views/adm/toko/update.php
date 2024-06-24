@@ -1,215 +1,204 @@
 <!-- Main content -->
 <section class="content">
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-9">
-        <form action="<?= base_url('adm/Toko/proses_update') ?>" method="post">
-          <div class="card card-warning">
+    <div class="card card-info card-outline">
+      <div class="card-header">
+        <h3 class="card-title">Foto Toko</h3>
+      </div>
+      <form action="<?= base_url('adm/Toko/update_foto') ?>" method="post" enctype="multipart/form-data">
+        <div class="card-body box-profile">
+          <?php if (!empty($detail->foto_toko)) { ?>
+            <img class="img-rounded" style="width: 200px;" src="<?= base_url('assets/img/toko/' . $detail->foto_toko) ?>" alt="Foto Toko">
+          <?php } else { ?>
+            <img class="img-rounded" style="width: 200px;" src="<?= base_url('assets/img/toko/hicoop.png') ?>" alt="Foto Toko">
+          <?php } ?>
+          <div class="form-group">
+            <label for="foto">Ganti Foto :</label>
+            <input type="hidden" name="id_toko_foto" value="<?= $detail->id ?>">
+            <input type="file" class="form-control form-control-sm" name="foto" multiple accept="image/png, image/jpeg, image/jpg" required></input>
+            <small>noted: Jenis foto yang diperbolehkan : JPG|JPEG|PNG & size maksimal : 2 mb</small>
+          </div>
+        </div>
+        <div class="card-footer text-right">
+          <button type="submit" class="btn btn-outline-primary btn-sm btn-foto"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </form>
+    </div>
+    <form action="<?= base_url('adm/Toko/proses_update') ?>" method="post">
+      <div class="card card-warning">
 
-            <div class="card-header">
-              <h3 class="card-title">
-                <li class="fas fa-store"></li> Update Toko
-              </h3>
+        <div class="card-header">
+          <h3 class="card-title">
+            <li class="fas fa-store"></li> Detail Toko
+          </h3>
+        </div>
+        <div class="card-body">
+          <strong># Detail</strong>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <strong>Nama Toko</strong>
+                <input type="hidden" name="id_toko" class="form-control " value="<?= $detail->id ?>" readonly>
+                <input type="text" name="nama_toko" class="form-control form-control-sm nama_toko" value="<?= $detail->nama_toko ?>" required>
+              </div>
+              <div class="form-group">
+                <strong>Customer</strong>
+                <select class="form-control form-control-sm provinsi select2" name="customer" required>
+                  <option value=''>- Pilih Customer -</option>
+                  <?php foreach ($customer as $p) : ?>
+                    <option value="<?= $p->id ?>" <?= ($detail->id_customer) == $p->id ? 'selected' : '' ?>><?= $p->nama_cust ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <strong>Jenis Toko</strong>
+                <select class="form-control form-control-sm select2" name="jenis_toko">
+                  <option value="1" <?= ($detail->jenis_toko) == 1 ? 'selected' : '' ?>>Dept Store</option>
+                  <option value="2" <?= ($detail->jenis_toko) == 2 ? 'selected' : '' ?>>Supermarket</option>
+                  <option value="3" <?= ($detail->jenis_toko) == 3 ? 'selected' : '' ?>>Grosir</option>
+                  <option value="4" <?= ($detail->jenis_toko) == 4 ? 'selected' : '' ?>>Minimarket</option>
+                  <option value="5" <?= ($detail->jenis_toko) == 5 ? 'selected' : '' ?>>Lain-lain.</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <strong>Nama PIC Toko</strong>
+                <input type="text" class="form-control form-control-sm pic" name="pic" value="<?= $detail->nama_pic ?>" required=""></input>
+              </div>
+              <div class="form-group">
+                <strong>No. Telp</strong>
+                <input type="number" class="form-control form-control-sm telp" name="no_telp" value="<?= $detail->telp ?>" required=""></input>
+              </div>
             </div>
-            <div class="card-body">
-              <div class="tab-content" id="custom-tabs-two-tabContent">
-                <div class="tab-pane fade show active" id="supervisor" role="tabpanel">
-                  <div class="row">
-                    <div class="col-md-5">
-                      <div class="form-group">
-                        <label>Nama Toko</label>
-                        <input type="hidden" name="id_toko" class="form-control " value="<?= $detail->id ?>" readonly>
-                        <input type="text" name="nama_toko" class="form-control nama_toko" value="<?= $detail->nama_toko ?>" required>
-                      </div>
-                      <div class="form-group">
-                        <label>Customer</label>
-                        <select class="form-control provinsi select2bs4" name="customer" required>
-                          <option value=''>- Select Customer -</option>
-                          <?php foreach ($customer as $p) : ?>
-                            <option value="<?= $p->id ?>" <?= ($detail->id_customer) == $p->id ? 'selected' : '' ?>><?= $p->nama_cust ?></option>
-                          <?php endforeach ?>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Jenis Toko</label>
-                        <select class="form-control select2bs4" name="jenis_toko">
-                          <option value="1" <?= ($detail->jenis_toko) == 1 ? 'selected' : '' ?>>Dept Store</option>
-                          <option value="2" <?= ($detail->jenis_toko) == 2 ? 'selected' : '' ?>>Supermarket</option>
-                          <option value="3" <?= ($detail->jenis_toko) == 3 ? 'selected' : '' ?>>Grosir</option>
-                          <option value="4" <?= ($detail->jenis_toko) == 4 ? 'selected' : '' ?>>Minimarket</option>
-                          <option value="5" <?= ($detail->jenis_toko) == 5 ? 'selected' : '' ?>>Lain-lain.</option>
-                        </select>
-                      </div>
-
-                      <div class="form-group">
-                        <label>Tanggal SO</label>
-                        <select class="form-control tgl_so select2bs4" name="tgl_so" required>
-                          <option value="">- Pilih tgl SO -</option>
-                          <option value="1" <?= ($detail->tgl_so) == 1 ? 'selected' : '' ?>>1</option>
-                          <option value="2" <?= ($detail->tgl_so) == 2 ? 'selected' : '' ?>>2</option>
-                          <option value="3" <?= ($detail->tgl_so) == 3 ? 'selected' : '' ?>>3</option>
-                          <option value="4" <?= ($detail->tgl_so) == 4 ? 'selected' : '' ?>>4</option>
-                          <option value="5" <?= ($detail->tgl_so) == 5 ? 'selected' : '' ?>>5</option>
-                          <option value="6" <?= ($detail->tgl_so) == 6 ? 'selected' : '' ?>>6</option>
-                          <option value="7" <?= ($detail->tgl_so) == 7 ? 'selected' : '' ?>>7</option>
-                          <option value="8" <?= ($detail->tgl_so) == 8 ? 'selected' : '' ?>>8</option>
-                          <option value="9" <?= ($detail->tgl_so) == 9 ? 'selected' : '' ?>>9</option>
-                          <option value="10" <?= ($detail->tgl_so) == 10 ? 'selected' : '' ?>>10</option>
-                          <option value="11" <?= ($detail->tgl_so) == 11 ? 'selected' : '' ?>>11</option>
-                          <option value="12" <?= ($detail->tgl_so) == 12 ? 'selected' : '' ?>>12</option>
-                          <option value="13" <?= ($detail->tgl_so) == 13 ? 'selected' : '' ?>>13</option>
-                          <option value="14" <?= ($detail->tgl_so) == 14 ? 'selected' : '' ?>>14</option>
-                          <option value="15" <?= ($detail->tgl_so) == 15 ? 'selected' : '' ?>>15</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Tipe Harga</label>
-                        <select class="form-control select2bs4" name="het" required>
-                          <option value="">- Pilih Tipe Harga -</option>
-                          <option value="1" <?= ($detail->het) == 1 ? 'selected' : '' ?>>HET JAWA</option>
-                          <option value="2" <?= ($detail->het) == 2 ? 'selected' : '' ?>>HET INDOBARAT</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Diskon Toko</label>
-                        <div class="input-group my-colorpicker2">
-                          <input type="number" class="form-control" name="diskon" value="<?= $detail->diskon ?>" required>
-                          <div class="input-group-append">
-                            <span class="input-group-text">%</span>
-                          </div>
-                        </div>
-                        <small>input hanya Angka, tanpa titik / koma</small>
-                      </div>
-                      <div class="form-group">
-                        <label>Batas PO</label>
-                        <select class="form-control select2bs4" name="batas_po" required>
-                          <option value="">- Pilih fungsi -</option>
-                          <option value="1" <?= ($detail->status_ssr) == 1 ? 'selected' : '' ?>>AKTIF</option>
-                          <option value="0" <?= ($detail->status_ssr) == 0 ? 'selected' : '' ?>>TIDAK AKTIF</option>
-                        </select>
-                        <small>Fungsi ini digunakan untuk membatasi maksimal jumlah PO Barang spg.</small>
-                      </div>
-                      <div class="form-group">
-                        <label>SSR (Sales Stok rasio)</label>
-                        <div class="input-group my-colorpicker2">
-                          <input type="number" class="form-control" name="ssr" value="<?= $detail->ssr ?>" required>
-                        </div>
-                        <small>input hanya Angka, tanpa titik / koma</small>
-                      </div>
-
-
+            <div class="col-md-6">
+              <div class="form-group">
+                <strong>Provinsi</strong>
+                <select class="form-control form-control-sm provinsi select2" name="provinsi" id="provinsi" required>
+                  <option value=''>- Pilih Provinsi -</option>
+                  <?php foreach ($provinsi as $p) : ?>
+                    <option value="<?= $p->id ?>" <?= ($detail->provinsi) == $p->id ? 'selected' : '' ?>><?= $p->nama ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <strong>Kabupaten</strong>
+                <select class="form-control form-control-sm kabupaten select2" name="kabupaten" id="kabupaten" required>
+                  <?php foreach ($kabupaten as $p) : ?>
+                    <option value="<?= $p->id ?>" <?= ($detail->kabupaten) == $p->id ? 'selected' : '' ?>><?= $p->nama ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <strong>Kecamatan</strong>
+                <select class="form-control form-control-sm kecamatan select2" name="kecamatan" id="kecamatan" required>
+                  <?php foreach ($kecamatan as $p) : ?>
+                    <option value="<?= $p->id ?>" <?= ($detail->kecamatan) == $p->id ? 'selected' : '' ?>><?= $p->nama ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <strong>Alamat</strong>
+                <textarea class="form-control form-control-sm alamat" name="alamat" required> <?= $detail->alamat ?></textarea>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <strong># Pengaturan</strong>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <strong>Tanggal SO</strong>
+                <select class="form-control form-control-sm tgl_so select2" name="tgl_so" required>
+                  <option value="">- Pilih tgl SO -</option>
+                  <option value="1" <?= ($detail->tgl_so) == 1 ? 'selected' : '' ?>>1</option>
+                  <option value="2" <?= ($detail->tgl_so) == 2 ? 'selected' : '' ?>>2</option>
+                  <option value="3" <?= ($detail->tgl_so) == 3 ? 'selected' : '' ?>>3</option>
+                  <option value="4" <?= ($detail->tgl_so) == 4 ? 'selected' : '' ?>>4</option>
+                  <option value="5" <?= ($detail->tgl_so) == 5 ? 'selected' : '' ?>>5</option>
+                  <option value="6" <?= ($detail->tgl_so) == 6 ? 'selected' : '' ?>>6</option>
+                  <option value="7" <?= ($detail->tgl_so) == 7 ? 'selected' : '' ?>>7</option>
+                  <option value="8" <?= ($detail->tgl_so) == 8 ? 'selected' : '' ?>>8</option>
+                  <option value="9" <?= ($detail->tgl_so) == 9 ? 'selected' : '' ?>>9</option>
+                  <option value="10" <?= ($detail->tgl_so) == 10 ? 'selected' : '' ?>>10</option>
+                  <option value="11" <?= ($detail->tgl_so) == 11 ? 'selected' : '' ?>>11</option>
+                  <option value="12" <?= ($detail->tgl_so) == 12 ? 'selected' : '' ?>>12</option>
+                  <option value="13" <?= ($detail->tgl_so) == 13 ? 'selected' : '' ?>>13</option>
+                  <option value="14" <?= ($detail->tgl_so) == 14 ? 'selected' : '' ?>>14</option>
+                  <option value="15" <?= ($detail->tgl_so) == 15 ? 'selected' : '' ?>>15</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <strong>Tipe Harga</strong>
+                <select class="form-control form-control-sm select2" name="het" required>
+                  <option value="">- Pilih Tipe Harga -</option>
+                  <option value="1" <?= ($detail->het) == 1 ? 'selected' : '' ?>>HET JAWA</option>
+                  <option value="2" <?= ($detail->het) == 2 ? 'selected' : '' ?>>HET INDOBARAT</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <strong>Margin Toko</strong>
+                <div class="input-group my-colorpicker2">
+                  <input type="number" class="form-control form-control-sm" name="diskon" value="<?= $detail->diskon ?>" required>
+                  <div class="input-group-append ">
+                    <span class="input-group-text form-control-sm">%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <strong>Limit Toko</strong>
+                <input type="text" class="form-control form-control-sm rupiah-input" name="limit" value="<?= $detail->limit_toko ?>" required></input>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <strong>Target Sales Toko</strong>
+                <input type="text" class="form-control form-control-sm rupiah-input" name="target" value="<?= $detail->target ?>" required></input>
+              </div>
+              <div class="form-group">
+                <strong>Batas PO</strong>
+                <select class="form-control form-control-sm select2" name="batas_po" required>
+                  <option value="">- Pilih fungsi -</option>
+                  <option value="1" <?= ($detail->status_ssr) == 1 ? 'selected' : '' ?>>AKTIF</option>
+                  <option value="0" <?= ($detail->status_ssr) == 0 ? 'selected' : '' ?>>TIDAK AKTIF</option>
+                </select>
+                <small>Fungsi ini digunakan untuk membatasi maksimal jumlah PO Barang spg.</small>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <strong>SSR Toko</strong>
+                    <div class="input-group my-colorpicker2">
+                      <input type="number" class="form-control form-control-sm" name="ssr" value="<?= $detail->ssr ?>" required>
                     </div>
-                    <div class="col-md-2"></div>
-                    <div class="col-md-5">
-
-                      <div class="form-group">
-                        <label>Limit Toko</label>
-                        <div class="input-group my-colorpicker2">
-                          <div class="input-group-append">
-                            <span class="input-group-text">Rp</span>
-                          </div>
-                          <input type="number" class="form-control " name="limit" value="<?= $detail->limit_toko ?>" required></input>
-                        </div>
-                        <small>input hanya Angka, tanpa titik / koma</small>
-                      </div>
-                      <div class="form-group">
-                        <label>Target Sales Toko</label>
-                        <div class="input-group my-colorpicker2">
-                          <div class="input-group-append">
-                            <span class="input-group-text">Rp</span>
-                          </div>
-                          <input type="number" class="form-control " name="target" value="<?= $detail->target ?>" required></input>
-                        </div>
-                        <small>input hanya Angka, tanpa titik / koma</small>
-                      </div>
-                      <div class="form-group">
-                        <label>Nama PIC Toko</label>
-                        <input type="text" class="form-control pic" name="pic" value="<?= $detail->nama_pic ?>" required=""></input>
-                      </div>
-                      <div class="form-group">
-                        <label>No. Telp / Wa</label>
-                        <input type="number" class="form-control telp" name="no_telp" value="<?= $detail->telp ?>" required=""></input>
-                      </div>
-                      <div class="form-group">
-                        <label>Provinsi</label>
-                        <select class="form-control provinsi select2bs4" name="provinsi" id="provinsi" required>
-                          <option value=''>- Select Provinsi -</option>
-                          <?php foreach ($provinsi as $p) : ?>
-                            <option value="<?= $p->id ?>" <?= ($detail->provinsi) == $p->id ? 'selected' : '' ?>><?= $p->nama ?></option>
-                          <?php endforeach ?>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Kabupaten</label>
-                        <select class="form-control kabupaten select2bs4" name="kabupaten" id="kabupaten" required>
-                          <?php foreach ($kabupaten as $p) : ?>
-                            <option value="<?= $p->id ?>" <?= ($detail->kabupaten) == $p->id ? 'selected' : '' ?>><?= $p->nama ?></option>
-                          <?php endforeach ?>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Kecamatan</label>
-                        <select class="form-control kecamatan select2bs4" name="kecamatan" id="kecamatan" required>
-                          <?php foreach ($kecamatan as $p) : ?>
-                            <option value="<?= $p->id ?>" <?= ($detail->kecamatan) == $p->id ? 'selected' : '' ?>><?= $p->nama ?></option>
-                          <?php endforeach ?>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Alamat</label> </br>
-                        <textarea class="form-control alamat" name="alamat" required> <?= $detail->alamat ?></textarea>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <strong>Max PO</strong>
+                    <div class="input-group my-colorpicker2">
+                      <input type="number" class="form-control form-control-sm" name="max_po" value="<?= $detail->max_po ?>" required>
+                      <div class="input-group-append ">
+                        <span class="input-group-text form-control-sm">%</span>
                       </div>
                     </div>
                   </div>
-                  <!-- end row -->
                 </div>
               </div>
             </div>
-            <div class="card-footer">
-              <button type="submit" class="btn btn-primary float-right btn-sm"><i class="fas fa-save"></i> Simpan</button>
-              <a href="<?= base_url('adm/toko/') ?>" class="btn btn-danger float-right mr-3 btn-sm"><i class="fas fa-times-circle"></i> Close</a>
-            </div>
-        </form>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card card-info card-outline">
-        <div class="card-header">
-          <h3 class="card-title">Foto Toko</h3>
+          </div>
         </div>
-        <form id="updateFotoForm" method="post" enctype="multipart/form-data">
-          <div class="card-body box-profile">
-            <img class="img-rounded " id="foto_toko" style="width: 200px;" src="" alt="Foto Toko">
-            <div class="form-group">
-              <label for="foto">Ganti Foto :</label>
-              <input type="hidden" name="id_toko_foto" value="<?= $detail->id ?>">
-              <input type="hidden" id="nama_foto" name="nama_foto" value="<?= $detail->foto_toko ?>">
-              <input type="file" class="form-control" id="foto" name="foto" multiple accept="image/png, image/jpeg, image/jpg" required></input>
-              <small>noted: Jenis foto yang diperbolehkan : JPG|JPEG|PNG & size maksimal : 2 mb</small>
-            </div>
-          </div>
-          <div class="card-footer text-center">
-            <button class="btn btn-outline-primary btn-sm btn-foto">Update Foto</button>
-          </div>
-        </form>
-      </div>
-      <hr>
-      <div class="text-center">
-        <a href="<?= base_url('adm/Toko/unduh_pdf/' . $detail->id) ?>" target="_blank" class="btn btn-outline-danger "><i class="fas fa-file-pdf"></i> Unduh Berkas </a>
-      </div>
-    </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary float-right btn-sm"><i class="fas fa-save"></i> Simpan</button>
+          <a href="<?= base_url('adm/toko/') ?>" class="btn btn-danger float-right mr-3 btn-sm"><i class="fas fa-times-circle"></i> Close</a>
+        </div>
+    </form>
+
   </div>
   </div>
 </section>
-<!-- jQuery -->
-<script src="<?= base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
-<script src="<?php echo base_url() ?>assets/app/js/alert.js"></script>
 <script>
   $(document).ready(function() {
-    var image = document.getElementById('foto_toko');
-    var ftoko = $('#nama_foto').val();
-    image.src = '<?= base_url('assets/img/toko/') ?>' + ftoko;
-
     $("#provinsi").change(function() {
       var selectedProvinsi = $(this).val();
 
@@ -248,38 +237,31 @@
         }
       });
     });
+  })
+</script>
+<script>
+  function formatRupiah(angka, prefix) {
+    var number_string = angka.replace(/[^,\d]/g, '').toString(),
+      split = number_string.split(','),
+      sisa = split[0].length % 3,
+      rupiah = split[0].substr(0, sisa),
+      ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
-    // update foto
-    $('#updateFotoForm').submit(function(e) {
-      e.preventDefault();
-      $.ajax({
-        url: '<?php echo base_url("adm/Toko/update_foto"); ?>',
-        type: 'post',
-        data: new FormData(this),
-        processData: false,
-        contentType: false,
-        dataType: 'json',
-        success: function(data) {
-          // Tampilkan pesan sukses
-          Swal.fire(
-            'Berhasil Update Foto',
-            'Foto Toko berhasil di perbaharui!',
-            'success'
-          )
-          $('#foto_toko').attr({
-            src: "<?= base_url('assets/img/toko/') ?>" + data.toko.foto_toko
-          });
-        },
-        error: function(data) {
-          // menampilkan pesan eror
-          Swal.fire(
-            'Gagal Update Foto',
-            'Silahkan cek kembali jenis & ukuran foto !',
-            'error'
-          )
-        }
+    if (ribuan) {
+      separator = sisa ? '.' : '';
+      rupiah += separator + ribuan.join('.');
+    }
+
+    rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+    return prefix === undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var inputs = document.querySelectorAll('.rupiah-input');
+    inputs.forEach(function(input) {
+      input.addEventListener('keyup', function(e) {
+        this.value = formatRupiah(this.value, 'Rp. ');
       });
     });
-
-  })
+  });
 </script>

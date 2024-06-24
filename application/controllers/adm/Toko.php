@@ -22,9 +22,10 @@ class Toko extends CI_Controller
     $data['title'] = 'Toko';
     $data['customer'] = $this->db->query("SELECT * FROM tb_customer WHERE deleted_at is NULL")->result();
     $data['provinsi'] = $this->db->query("SELECT * from wilayah_provinsi")->result();
-    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user
+    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user as spg, tl.nama_user as leader
     from tb_toko tt
     left join tb_user tu on tt.id_spg = tu.id
+    left join tb_user tl on tt.id_leader = tl.id
     where tt.status = 1
     ORDER BY  tt.id desc")->result();
     $this->template->load('template/template', 'adm/toko/lihat_data', $data);
@@ -255,6 +256,7 @@ class Toko extends CI_Controller
     $het = $this->input->post('het');
     $diskon = $this->input->post('diskon');
     $ssr = $this->input->post('ssr');
+    $max_po = $this->input->post('max_po');
     $batas_po = $this->input->post('batas_po');
     $limit = $this->input->post('limit');
     $provinsi = $this->input->post('provinsi');
@@ -275,13 +277,14 @@ class Toko extends CI_Controller
       'het' => $het,
       'diskon' => $diskon,
       'ssr' => $ssr,
-      'limit_toko' => $limit,
+      'max_po' => $max_po,
+      'limit_toko' => str_replace(['Rp. ', '.'], '', $limit),
       'provinsi' => $provinsi,
       'kabupaten' => $kabupaten,
       'kecamatan' => $kecamatan,
       'alamat' => $alamat,
       'status_ssr' => $batas_po,
-      'target' => $target,
+      'target' => str_replace(['Rp. ', '.'], '', $target),
       'updated_at' => $updated
     );
     $where = array(
@@ -289,7 +292,7 @@ class Toko extends CI_Controller
     );
     $this->db->update('tb_toko', $data, $where);
     tampil_alert('success', 'Berhasil', 'Data Toko berhasil di Perbaharui!');
-    redirect(base_url('adm/Toko/update/' . $id_toko));
+    redirect(base_url('adm/Toko/profil/' . $id_toko));
   }
   // update foto toko
   public function update_foto()
@@ -297,23 +300,32 @@ class Toko extends CI_Controller
     $id_toko = $this->input->post('id_toko_foto');
     $config['upload_path'] = 'assets/img/toko/';
     $config['allowed_types'] = 'jpg|jpeg|png';
-    $config['max_size'] = '2048';
-    $config['file_name'] = $id_toko;
+    $config['max_size'] = '5048';
+    $config['file_name'] = "toko_" . $id_toko;
     $config['overwrite'] = TRUE;
     $config['remove_spaces'] = TRUE;
     $this->load->library('upload', $config);
     $this->upload->initialize($config);
-
     if (!$this->upload->do_upload('foto')) {
+      // Tampilkan error upload jika ada
+      $error = $this->upload->display_errors();
+      tampil_alert('error', 'Gagal', $error);
+      redirect(base_url('adm/Toko/update/' . $id_toko));
     } else {
-      // Jika upload berhasil, simpan data foto ke database
+      // Ambil nama file foto lama dari database
+      $query = $this->db->query("SELECT foto_toko FROM tb_toko WHERE id = ?", array($id_toko));
+      $old_foto = $query->row()->foto_toko;
+
+      // Hapus foto lama dari server jika ada
+      if (!empty($old_foto) && file_exists('assets/img/toko/' . $old_foto)) {
+        unlink('assets/img/toko/' . $old_foto);
+      }
+
+      // Simpan foto baru
       $foto = $this->upload->data('file_name');
-      $id_toko = $this->input->post('id_toko_foto');
-      // simpan data foto ke database sesuai dengan id data yang ingin diupdate
-      $this->db->query("UPDATE tb_toko set foto_toko ='$foto' where id='$id_toko'");
-      $data['toko'] = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
-      $data['pesan'] = "berhasil di update";
-      echo json_encode($data);
+      $this->db->query("UPDATE tb_toko SET foto_toko = ? WHERE id = ?", array($foto, $id_toko));
+      tampil_alert('success', 'Berhasil', 'Foto Toko berhasil di Perbaharui!');
+      redirect(base_url('adm/Toko/update/' . $id_toko));
     }
   }
 

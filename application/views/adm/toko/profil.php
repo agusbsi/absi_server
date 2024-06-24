@@ -51,163 +51,187 @@
         </div>
       </div>
     <?php } ?>
-    <div class="row">
-      <div class="col-md-5">
-        <!-- Profile Image -->
-        <div class="card card-info">
-          <div class="card-header">
-            Toko
-          </div>
-          <div class="card-body">
-            <div class="text-center">
-              <?php if ($toko->foto_toko == "") {
-              ?>
-                <img style="width: 150px;" class="img-responsive img-rounded" src="<?php echo base_url() ?>assets/img/toko/hicoop.png" alt="User profile picture">
-              <?php
-              } else { ?>
-                <img style="width: 150px;" class=" img-responsive img-rounded" src="<?php echo base_url('assets/img/toko/' . $toko->foto_toko) ?>" alt="User profile picture">
-              <?php } ?>
+    <div class="card card-info">
+      <div class="card-header">
+        Detail Toko
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-7">
+            <!-- Profile Image -->
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                Foto
+              </div>
+              <div class="card-body">
+                <div class="text-center">
+                  <?php if ($toko->foto_toko == "") {
+                  ?>
+                    <img style="width: 150px;" class="img-responsive img-rounded" src="<?php echo base_url() ?>assets/img/toko/hicoop.png" alt="User profile picture">
+                  <?php
+                  } else { ?>
+                    <img style="width: 150px;" class=" img-responsive img-rounded" src="<?php echo base_url('assets/img/toko/' . $toko->foto_toko) ?>" alt="User profile picture">
+                  <?php } ?>
+                </div>
+                <h3 class="profile-username text-center"><strong><?= $toko->nama_toko ?></strong></h3>
+                <p class="text-muted text-center">[ ID : <?= $toko->id ?> ]</p>
+
+              </div>
+              <!-- /.card-body -->
             </div>
-            <h3 class="profile-username text-center"><strong><?= $toko->nama_toko ?></strong></h3>
-            <p class="text-muted text-center">[ ID : <?= $toko->id ?> ]</p>
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                Detail
+              </div>
+              <div class="card-body">
+                <table class="table table-sm">
+                  <tbody>
+                    <tr>
+                      <td><b>Customer</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_cust ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Jenis Toko</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= jenis_toko($toko->jenis_toko) ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>PIC & Telp</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_pic ?> | <?= $toko->telp ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Provinsi</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->provinsi ?> " readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Kabupaten</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->kabupaten ?> " readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Kecamatan</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->kecamatan ?> " readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Alamat</b></td>
+                      <td>
+                        <textarea class="form-control form-control-sm" readonly><?= $toko->alamat ?></textarea>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Di buat</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->created_at ?> " readonly>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- /.card -->
 
           </div>
-          <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
-        <div class="card card-info">
-          <div class="card-header">
-            Pengguna Sistem
-          </div>
-          <div class="card-body">
-            <table class="table table-sm">
-              <tbody>
-                <tr>
-                  <td><b>Supervisor</b></td>
-                  <td>
-                    : <?= $spv->id_spv == "0" ? "Belum di kaitkan " : $spv->nama_user ?>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Team Leader</b></td>
-                  <td>
-                    : <?= $leader_toko->id_leader == "0" ? "Belum di kaitkan " : $leader_toko->nama_user ?>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Spg</b></td>
-                  <td>
-                    : <?= $spg->id_spg == "0" ? "Belum di kaitkan " : $spg->nama_user ?>
-                  </td>
-                </tr>
+          <div class="col-md-5">
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                Pengaturan
+              </div>
+              <div class="card-body">
+                <table class="table table-sm">
+                  <tbody>
+                    <tr>
+                      <td><b>Max Tgl SO</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->tgl_so ?> / Bulan" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Margin</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->diskon ?> % " readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Target Toko</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->target) ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Jenis Harga</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->het == 1 ? 'HEJ JAWA' : 'HET INDOBARAT' ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Batas PO</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->status_ssr == 1 ? 'AKTIF' : 'NON-AKTIF' ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>SSR Toko</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->ssr ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Max PO</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->max_po ?> %" readonly>
+                        <small>( Dari Total Penjualan bulan kemarin )</small>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                Pengguna Sistem
+              </div>
+              <div class="card-body">
+                <table class="table table-sm">
+                  <tbody>
+                    <tr>
+                      <td><b>Supervisor</b></td>
+                      <td>
+                        : <?= $spv->id_spv == "0" ? "Belum di kaitkan " : $spv->nama_user ?>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Team Leader</b></td>
+                      <td>
+                        : <?= $leader_toko->id_leader == "0" ? "Belum di kaitkan " : $leader_toko->nama_user ?>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b>Spg</b></td>
+                      <td>
+                        : <?= $spg->id_spg == "0" ? "Belum di kaitkan " : $spg->nama_user ?>
+                      </td>
+                    </tr>
 
-              </tbody>
-            </table>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
           </div>
-          <!-- /.card-body -->
         </div>
       </div>
-      <div class="col-md-7">
-        <!-- Profile Image -->
-        <div class="card card-info">
-          <div class="card-header">
-            Detail
-          </div>
-          <div class="card-body">
-            <table class="table table-sm">
-              <tbody>
-                <tr>
-                  <td><b>Customer</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_cust ?>" readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Jenis Toko</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= jenis_toko($toko->jenis_toko) ?>" readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>PIC & Telp</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_pic ?> | <?= $toko->telp ?>" readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Margin</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->diskon ?> % " readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Target Toko</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->target) ?>" readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>SSR</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->ssr ?> x rata-rata penjualan 3 bulan terakhir." readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Batas PO</b></td>
-                  <td>
-                    : <?= $toko->status_ssr == 1 ? '<span class = "badge badge-success"> Aktif </span>  <small> ( PO barang di batasi dengan SSR ) </small>' : '<span class = "badge badge-danger"> Tidak Aktif </span> <small> ( PO barang Tidak di batasi ) </samll>' ?>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Jenis Harga</b></td>
-                  <td>
-                    : <?= status_het($toko->het) ?>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Max Tgl SO</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->tgl_so ?> / Bulan" readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Di buat</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->created_at ?> " readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Provinsi</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->provinsi ?> " readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Kabupaten</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->kabupaten ?> " readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Kecamatan</b></td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" value="<?= $toko->kecamatan ?> " readonly>
-                  </td>
-                </tr>
-                <tr>
-                  <td><b>Alamat</b></td>
-                  <td>
-                    <textarea class="form-control form-control-sm" readonly><?= $toko->alamat ?></textarea>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="card-footer">
-            <a href="<?= base_url('adm/Toko/update/' . $toko->id) ?>" class="btn btn-warning btn-sm float-right"><i class="fas fa-edit"></i> Update</a>
-          </div>
-        </div>
-
+      <div class="card-footer">
+        <a href="<?= base_url('adm/Toko/update/' . $toko->id) ?>" class="btn btn-warning btn-sm float-right"><i class="fas fa-edit"></i> Update</a>
       </div>
     </div>
     <!-- Stok-->
@@ -226,16 +250,16 @@
             </div>
           </div>
         </div>
-        <button type="button" class="btn btn-success btn-sm btn_tambah <?= ($cek_status->status == 2) ? 'd-none' : '' ?>" data-id_toko="<?= $toko->id ?>" data-toggle="modal" data-target="#modal-tambah-produk"><i class="fa fa-plus"></i> Tambah Produk</button>
-        <a href="<?= base_url('adm/Toko/templateStok/' . $toko->id) ?>" class="btn btn-warning btn-sm <?= ($cek_status->status == 2) ? 'd-none' : '' ?>"><i class="fa fa-download"></i> Unduh Template</a>
-        <button type="button" class="btn btn-primary btn-sm btn_tambah <?= ($cek_status->status == 2) ? 'd-none' : '' ?>" data-id_toko="<?= $toko->id ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-upload"></i> Import Stok</button>
+        <button type="button" class="btn btn-success btn-sm btn_tambah <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-id_toko="<?= $toko->id ?>" data-toggle="modal" data-target="#modal-tambah-produk"><i class="fa fa-plus"></i> Tambah Produk</button>
+        <a href="<?= base_url('adm/Toko/templateStok/' . $toko->id) ?>" class="btn btn-warning btn-sm <?= ($cek_status->status != 1) ? 'd-none' : '' ?>"><i class="fa fa-download"></i> Unduh Template</a>
+        <button type="button" class="btn btn-primary btn-sm btn_tambah <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-id_toko="<?= $toko->id ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-upload"></i> Import Stok</button>
         <div class="tab-content">
           <?php
-          if ($cek_status->status == 2) { ?>
+          if ($cek_status->status != 1) { ?>
             <div class="overlay-wrapper">
               <div class="overlay">
                 <i class="fas fa-3x fa-sync-alt fa-spin"></i>
-                <div class="text-bold pt-2">Menunggu Approve ...</div>
+                <div class="text-bold pt-2"> Belum Aktif ...</div>
               </div>
             </div>
           <?php } ?>
@@ -453,23 +477,6 @@
     </div>
   </div>
 </div>
-<script src="<?= base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
-<script src="<?php echo base_url() ?>assets/app/js/alert.js"></script>
-<script>
-  $(document).ready(function() {
-
-    $('#table_stok').DataTable({
-      order: [
-        [3, 'Desc']
-      ],
-      responsive: true,
-      lengthChange: false,
-      autoWidth: false,
-    });
-
-
-  })
-</script>
 <script>
   $('.btn_kartu').click(function() {
     var id_produk = $(this).data('id');

@@ -20,9 +20,9 @@
                   <th style="width:4%">No</th>
                   <th>Nama Toko</th>
                   <th style="width:30%">Alamat</th>
-                  <th>PIC</th>
+                  <th>Pengguna</th>
                   <th>Status</th>
-                  <th style="width:13%">Menu</th>
+                  <th style="width:10%">Menu</th>
                 </tr>
               </thead>
               <tbody>
@@ -44,10 +44,10 @@
                         <address><?= $t->alamat ?></address>
                       </small>
                     </td>
-                    <td class="text-center">
+                    <td>
                       <small>
-                        <strong> <i class="fas fa-user"></i> <?= $t->nama_pic ?></strong> <br>
-                        <i class="fas fa-phone"></i> <?= $t->telp ?>
+                        <strong>Leader : </strong> <?= $t->leader ?><br>
+                        <strong>Spg : </strong> <?= $t->spg ?>
                       </small>
                     </td>
                     <td class="text-center">
@@ -56,7 +56,6 @@
                     <td>
                       <a href="<?= base_url('adm/Toko/profil/' . $t->id) ?>" class="btn btn-<?= ($t->status == "4" || $t->status == "5") ? 'warning' : 'info'; ?> btn-sm"> <i class="fas <?= ($t->status == "4" || $t->status == "5") ? 'fa-cog' : 'fa-eye'; ?>"></i></a>
                       <a href="<?= base_url('adm/Toko/update/' . $t->id) ?>" class="btn btn-warning btn-sm "><i class="fas fa-edit"></i> </a>
-                      <a href="<?= base_url('adm/Toko/unduh_pdf/' . $t->id) ?>" target="_blank" class="btn btn-outline-danger  btn-sm"><i class="fas fa-file-pdf"></i></a>
                     </td>
                   </tr>
                 <?php endforeach ?>
