@@ -59,7 +59,7 @@
                 </tr>
                 <tr class="text-center">
                   <th>Kirim</th>
-                  <th>Terima</th>
+                  <th style="width: 110px">Terima</th>
                 </tr>
               </thead>
               <tbody>
