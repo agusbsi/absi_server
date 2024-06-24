@@ -116,9 +116,10 @@ class Dashboard extends CI_Controller
   public function toko()
   {
     $data['title'] = 'Toko';
-    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user
+    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user as spg, tl.nama_user as leader
     from tb_toko tt
     left join tb_user tu on tt.id_spg = tu.id
+    left join tb_user tl on tt.id_leader = tl.id
     where tt.status = 1
     order by tt.id desc")->result();
     $this->template->load('template/template', 'manager_ops/toko/index.php', $data);
@@ -178,14 +179,14 @@ class Dashboard extends CI_Controller
   // Pengiriman
   public function pengiriman()
   {
-     $data['title'] = 'pengiriman';
+    $data['title'] = 'pengiriman';
     $data['pengiriman'] = $this->db->query("SELECT tp.*, tt.nama_toko from tb_pengiriman tp
      join tb_toko tt on tp.id_toko = tt.id
      order by tp.id desc")->result();
     $this->template->load('template/template', 'manager_ops/pengiriman/index', $data);
   }
   // detail Pengiriman
-    public function detail_kirim($id)
+  public function detail_kirim($id)
   {
     $data['title'] = 'pengiriman';
     $data['kirim'] = $this->db->query("SELECT tp.*, tt.nama_toko, tu.nama_user as spg from tb_pengiriman tp 

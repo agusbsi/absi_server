@@ -10,12 +10,12 @@
             <table id="table_toko" class="table table-bordered table-striped">
               <thead>
                 <tr class="text-center">
-                  <th style="width:4%">No</th>
+                  <th style="width:2%">No</th>
                   <th style="width:22%">Nama Toko</th>
-                  <th>Alamat</th>
-                  <th style="width:15%">spg</th>
-                  <th style="width:10%">Tgl dibuat</th>
-                  <th style="width:10%">Menu</th>
+                  <th style="width:30%">Alamat</th>
+                  <th>Pengguna</th>
+                  <th>Tgl dibuat</th>
+                  <th>Menu</th>
                 </tr>
               </thead>
               <tbody>
@@ -25,25 +25,24 @@
                   $no++
                 ?>
                   <tr>
-                    <td><?= $no ?></td>
+                    <td class="text-center"><?= $no ?></td>
                     <td>
-                      <?= $t->nama_toko ?>
+                      <small><strong><?= $t->nama_toko ?></strong></small>
                     </td>
                     <td>
-                      <address><?= $t->alamat ?></address>
+                      <small><?= $t->alamat ?></small>
+                    </td>
+                    <td>
+                      <small>
+                        <strong>Leader : </strong> <?= $t->leader ? $t->leader : 'Belum ada' ?> <br>
+                        <strong>Spg : </strong> <?= $t->spg ? $t->spg : 'Belum ada' ?>
+                      </small>
                     </td>
                     <td class="text-center">
-                      <?php
-                      if ($t->nama_user == "") {
-                        echo "<span class='badge badge-warning'> Belum dikaitkan</span>";
-                      } else {
-                        echo $t->nama_user;
-                      }
-                      ?>
+                      <small><?= date('d-M-Y H:i:s', strtotime($t->created_at)) ?></small>
                     </td>
-                    <td class="text-center"><?= $t->created_at ?></td>
-                    <td>
-                      <a href="<?= base_url('mng_ops/Dashboard/toko_detail/' . $t->id) ?>" class="btn btn-info btn-sm"> <i class="fas fa-eye"></i> Detail</a>
+                    <td class="text-center">
+                      <a href="<?= base_url('mng_ops/Dashboard/toko_detail/' . $t->id) ?>" class="btn btn-info btn-sm"> <i class="fas fa-eye"></i></a>
                     </td>
                   </tr>
                 <?php endforeach ?>
