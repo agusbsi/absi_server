@@ -3,9 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Produk extends CI_Controller
@@ -14,8 +12,10 @@ class Produk extends CI_Controller
   function __construct()
   {
     parent::__construct();
-    if ($this->session->userdata('status') != 'login' && $this->session->userdata('role') != 1) {
-      redirect(base_url());
+    $role = $this->session->userdata('role');
+    if ($role != "1" && $role != "6") {
+      tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
+      redirect(base_url(''));
     }
     $this->load->model('M_admin');
   }
@@ -145,6 +145,55 @@ class Produk extends CI_Controller
     $this->M_admin->update('tb_produk', $data, $where);
     tampil_alert('info', 'Information', 'Artikel dinonaktifkan!');
     redirect(base_url('adm/produk'));
+  }
+  // export file template stok
+  public function template_artikel()
+  {
+    $query = $this->db->query("SELECT * from tb_produk");
+    $detail = $query->result();
+    if (empty($detail)) {
+      redirect(base_url('/assets/excel/Template_artikel.xlsx'));
+    } else {
+      // Create a new Spreadsheet instance
+      $spreadsheet = new Spreadsheet();
+      $worksheet = $spreadsheet->getActiveSheet();
+      $worksheet->setTitle('Template_Artikel');
+      $worksheet->getStyle('A1:G1')->getFont()->setBold(true);
+      $worksheet->getStyle('A1')
+        ->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()
+        ->setARGB('FFFF00');
+      $worksheet->setCellValue('A1', 'KODE ARTIKEL');
+      $worksheet->setCellValue('B1', 'DESKRIPSI');
+      $worksheet->setCellValue('C1', 'SATUAN');
+      $worksheet->setCellValue('D1', 'HET JAWA');
+      $worksheet->setCellValue('E1', 'HET INDOBARAT');
+      $worksheet->setCellValue('F1', 'SP');
+      $worksheet->setCellValue('G1', 'MIN PACKING');
+      $row = 2;
+      $no = 1;
+      foreach ($detail as $data) {
+        $worksheet->setCellValue('A' . $row, $data->kode);
+        $worksheet->setCellValue('B' . $row, $data->nama_produk);
+        $worksheet->setCellValue('C' . $row, $data->satuan);
+        $worksheet->setCellValue('D' . $row, $data->harga_jawa);
+        $worksheet->setCellValue('E' . $row, $data->harga_indobarat);
+        $worksheet->setCellValue('F' . $row, $data->sp);
+        $worksheet->setCellValue('G' . $row, $data->packing);
+        $row++;
+        $no++;
+      }
+      $range = 'A1:G' . ($row - 1);
+      $tableStyle = $worksheet->getStyle($range);
+      $tableStyle->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+      $writer = new Xlsx($spreadsheet);
+      header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      header('Content-Disposition: attachment; filename="template_artikel.xlsx"');
+      ob_end_clean();
+      $writer->save('php://output');
+      exit();
+    }
   }
   // import artikel
   public function import_artikel()

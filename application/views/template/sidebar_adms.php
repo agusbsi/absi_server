@@ -61,10 +61,10 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </ul>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('sup/barang') ?>" class="nav-link <?= ($title == 'Master Barang') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-boxes"></i>
+        <a href="<?= base_url('adm/Produk') ?>" class="nav-link <?= ($title == 'Produk') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-box"></i>
           <p>
-            Data Artikel
+            Artikel
           </p>
         </a>
       </li>

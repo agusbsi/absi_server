@@ -26,7 +26,7 @@
             <div class="row">
               <div class="col-md-6"></div>
               <div class="col-md-6 text-right">
-                <a href="<?= base_url('') ?>/assets/excel/Template_artikel.xlsx" class="btn btn-warning btn-sm"><i class="fas fa-download"></i>
+                <a href="<?= base_url('adm/Produk/template_artikel') ?>" class="btn btn-warning btn-sm"><i class="fas fa-download"></i>
                   Download template
                 </a>
                 <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-import"><i class="fas fa-upload"></i>
