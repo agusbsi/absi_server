@@ -118,7 +118,9 @@
                       ?>
                     </td>
                     <td><?= $data->nama_toko ?></td>
-                    <td class="text-center"><?= date('d-M-Y H:m:s', strtotime($data->created_at)) ?></td>
+                    <td class="text-center">
+                      <?= $data->updated_at != NULL ? date('d-M-Y H:m:s', strtotime($data->updated_at)) : 'Belum update' ?>
+                    </td>
                     <td class="text-center">
                       <?php
                       if ($data->status == 1 || $data->status == 7) {

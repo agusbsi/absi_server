@@ -24,7 +24,7 @@ class Dashboard extends CI_Controller
     $thn = date('Y');
     // total permintaan
     $data['t_minta'] = $this->db->query("SELECT count(id) as total FROM tb_permintaan
-    where status = 2  AND MONTH(created_at) = $bln AND YEAR(created_at) = $thn")->row();
+    where status = 2  AND MONTH(updated_at) = $bln AND YEAR(updated_at) = $thn")->row();
     // total permintaan
     $data['t_retur'] = $this->db->query("SELECT count(id) as total FROM tb_retur
     where (status = '3' OR status = '6' OR status = '13' OR status = '14')  AND MONTH(created_at) = $bln AND YEAR(created_at) = $thn")->row();

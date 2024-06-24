@@ -50,7 +50,7 @@
               </div>
             </div>
             <hr>
-            <table id="example1" class="table table-striped">
+            <table class="table table-bordered table-striped table responsive">
               <thead>
                 <tr class="text-center">
                   <th rowspan="2">No</th>
