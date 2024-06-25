@@ -13,7 +13,7 @@ class Produk extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != "1" && $role != "6") {
+    if ($role != "1" && $role != "6" && $role != "15") {
       tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }

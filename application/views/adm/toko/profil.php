@@ -170,7 +170,7 @@
                     <tr>
                       <td><b>Jenis Harga</b></td>
                       <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->het == 1 ? 'HEJ JAWA' : 'HET INDOBARAT' ?>" readonly>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->het == 1 ? 'HET JAWA' : 'HET INDOBARAT' ?>" readonly>
                       </td>
                     </tr>
                     <tr>

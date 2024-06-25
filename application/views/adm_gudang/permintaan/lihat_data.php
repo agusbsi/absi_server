@@ -16,7 +16,8 @@
                      <th style="width: 13%;">Nomor PO</th>
                      <th style="width: 27%;">Nama Toko</th>
                      <th>Catatan MV</th>
-                     <th style="width: 22%;">Menu</th>
+                     <th>Tanggal</th>
+                     <th style="width: 10%;">Menu</th>
                    </tr>
                  </thead>
                  <tbody>
@@ -31,10 +32,13 @@
                          <small><?= $dd->keterangan ?></small>
                        </td>
                        <td class="text-center">
+                         <small><?= date('d-M-Y', strtotime($dd->updated_at)) ?></small>
+                       </td>
+                       <td class="text-center">
                          <?php if (($dd->status == 2)) { ?>
-                           <a type="button" class="btn btn-success btn-sm" href="<?= base_url('adm_gudang/permintaan/detail/' . $dd->id) ?>" name="btn_proses"><i class="fas fa-paper-plane"></i> proses</a>
-                           <a type="button" href="<?= base_url('adm_gudang/permintaan/packing_list/' . $dd->id) ?>" target="_blank" class="btn btn-warning float-right btn-sm" style="margin-right: 2px;">
-                             <i class="fas fa-print"></i> Packing List </a>
+                           <a type="button" class="btn btn-success btn-sm" href="<?= base_url('adm_gudang/permintaan/detail/' . $dd->id) ?>" name="btn_proses" title="proses"><i class="fas fa-paper-plane"></i></a>
+                           <a type="button" href="<?= base_url('adm_gudang/permintaan/packing_list/' . $dd->id) ?>" target="_blank" class="btn btn-warning float-right btn-sm" style="margin-right: 2px;" title="Packing List ">
+                             <i class="fas fa-print"></i></a>
                          <?php } else { ?>
                            <a type="button" class="btn btn-primary" href="<?= base_url('adm_gudang/permintaan/detail_p/' . $dd->id) ?>" name="btn_detail"><i class="fa fa-eye" aria-hidden="true"></i> Detail</a>
                          <?php } ?>

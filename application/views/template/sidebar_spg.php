@@ -1,9 +1,9 @@
 <?php
 $id = $this->session->userdata('id');
 $id_toko = $this->session->userdata('id_toko');
-$Penerimaan = $this->db->query("SELECT * FROM tb_pengiriman JOIN tb_toko ON tb_pengiriman.id_toko = tb_toko.id JOIN tb_user ON tb_user.id = tb_toko.id_spg WHERE tb_pengiriman.status = '1' AND tb_toko.id ='$id_toko'")->num_rows();
-$Mutasi = $this->db->query("SELECT * FROM tb_mutasi JOIN tb_toko ON tb_mutasi.id_toko_tujuan = tb_toko.id JOIN tb_user ON tb_user.id = tb_toko.id_spg WHERE tb_mutasi.status = '1' AND tb_toko.id_spg ='$id'")->num_rows();
-$retur = $this->db->query("SELECT * FROM tb_retur JOIN tb_toko ON tb_retur.id_toko = tb_toko.id JOIN tb_user ON tb_user.id = tb_toko.id_spg WHERE tb_retur.status = '2' AND tb_toko.id_spg ='$id'")->num_rows();
+$Penerimaan = $this->db->query("SELECT * FROM tb_pengiriman WHERE status = '1' AND id_toko ='$id_toko'")->num_rows();
+$Mutasi = $this->db->query("SELECT * FROM tb_mutasi WHERE status = '1' AND id_toko_tujuan ='$id_toko'")->num_rows();
+$retur = $this->db->query("SELECT * FROM tb_retur WHERE status = '2' AND id_toko ='$id_toko'")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">

@@ -69,11 +69,33 @@ class Permintaan extends CI_Controller
     $data['title'] = 'Permintaan Barang';
     $data['no_permintaan'] = $this->M_spg->invoice(); // generate no permintaan
     $id_toko = $this->session->userdata('id_toko');
-    $data['toko_new'] = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
+    $data['toko_new'] = $this->db->query("SELECT tt.*, SUM(qty_awal) as stok_akhir from tb_toko tt
+    join tb_stok ts on tt.id = ts.id_toko
+    where tt.id = '$id_toko'")->row();
     $data['data_cart'] = $this->cart->contents(); // menampilkan data cart
     $data['list_produk'] = $this->db->query("SELECT tp.id,tp.kode, tp.nama_produk as artikel from tb_stok ts
     join tb_produk tp on ts.id_produk = tp.id
     where ts.id_toko = '$id_toko' and tp.status = 1")->result();
+    $data['max_po'] = $this->db->query("SELECT SUM(qty) as total 
+    FROM tb_penjualan_detail tpd
+    JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+    WHERE tp.id_toko = '$id_toko' 
+    AND tp.tanggal_penjualan BETWEEN DATE_FORMAT(CURDATE() - INTERVAL 1 MONTH, '%Y-%m-01') 
+    AND LAST_DAY(CURDATE() - INTERVAL 1 MONTH)")->row();
+    $data['po'] = $this->db->query("SELECT SUM(qty) as total 
+    FROM tb_permintaan_detail tpd
+    JOIN tb_permintaan tp ON tpd.id_permintaan = tp.id
+    WHERE tp.id_toko = '$id_toko' 
+    AND tp.status != 5
+    AND tp.created_at BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') 
+    AND LAST_DAY(CURDATE())")->row();
+    $data['jual'] = $this->db->query("SELECT SUM(qty) as total 
+     FROM tb_penjualan_detail tpd
+     JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+     WHERE tp.id_toko = '$id_toko' 
+     AND tp.tanggal_penjualan BETWEEN DATE_FORMAT(CURDATE() - INTERVAL 2 MONTH, '%Y-%m-01') 
+     AND LAST_DAY(CURDATE() - INTERVAL 2 MONTH)")->row();
+
     $this->template->load('template/template', 'spg/permintaan/tambah_permintaan', $data);
   }
 

@@ -85,7 +85,7 @@
                                             <td class="text-center"><?= number_format($dd->t_jual) ?></td>
                                             <td class="text-center"><?= number_format($dd->t_akhir) ?></td>
                                             <td class="text-center"><?= number_format($dd->t_stok) ?></td>
-                                            <td class="text-center"> <?= (!empty($dd->t_jual) && $dd->t_jual != 0) ? ROUND($dd->t_akhir / $dd->t_jual, 2) : 0 ?></td>
+                                            <td class="text-center"> <?= (!empty($dd->t_jual) && $dd->t_jual != 0) ? ROUND($dd->t_akhir / $dd->t_jual, 2) : ROUND($dd->t_akhir / 1, 2) ?></td>
                                             <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-info btn-sm"> Lihat</button>
