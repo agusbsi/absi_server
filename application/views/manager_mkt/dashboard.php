@@ -1,4 +1,10 @@
-<!-- Small boxes (Stat box) -->
+<style>
+  .nomor {
+    position: absolute;
+    transform: translate(-250%, 10%);
+    font-weight: bold;
+  }
+</style>
 <section class="content">
   <div class="row">
     <div class="col-md-8">
@@ -170,6 +176,159 @@
       </div>
     </div>
     <!-- /.card-body -->
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card card-success">
+        <div class="card-header text-center">
+          <strong> TOP 5 TOKO - PENJUALAN TERBANYAK</strong>
+        </div>
+        <div class="card-body">
+          <ul class="products-list product-list-in-card">
+            <?php if (is_array($top_toko)) { ?>
+              <?php
+              $no = 0;
+              foreach ($top_toko as $dd) :
+                $no++;
+              ?>
+                <li class="item">
+                  <div class="product-img">
+                    <i class="fas fa-certificate text-success fa-2x"></i>
+                    <span class="nomor text-white"><?= $no ?></span>
+                  </div>
+                  <div class="product-info">
+                    <a href="javascript:void(0)" class="product-title"><?= $dd->nama_toko ?>
+                      <span class="badge badge-warning float-right"><?= number_format($dd->total) ?> Artikel</span></a>
+                    <span class="product-description">
+                      <small><?= $dd->spg ?></small>
+                    </span>
+                  </div>
+                </li>
+                <!-- /.item -->
+              <?php endforeach; ?>
+            <?php  } else { ?>
+              <span> Data Kosong</span>
+            <?php } ?>
+          </ul>
+        </div>
+        <div class="card-footer">
+          <small>* Periode Penjualan : <?= date('M-Y', strtotime('last month')) ?></small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card card-success">
+        <div class="card-header text-center">
+          <strong> TOP 5 ARTIKEL - TERJUAL TERBANYAK</strong>
+        </div>
+        <div class="card-body">
+          <ul class="products-list product-list-in-card">
+            <?php if (is_array($top_artikel)) { ?>
+              <?php
+              $no = 0;
+              foreach ($top_artikel as $dd) :
+                $no++;
+              ?>
+                <li class="item">
+                  <div class="product-img">
+                    <i class="fas fa-certificate text-success fa-2x"></i>
+                    <span class="nomor text-white"><?= $no ?></span>
+                  </div>
+                  <div class="product-info">
+                    <a href="javascript:void(0)" class="product-title"><?= $dd->kode ?>
+                      <span class="badge badge-warning float-right"><?= number_format($dd->total) ?> Terjual</span></a>
+                    <span class="product-description">
+                      <small><?= $dd->nama_produk ?></small>
+                    </span>
+                  </div>
+                </li>
+                <!-- /.item -->
+              <?php endforeach; ?>
+            <?php  } else { ?>
+              <span> Data Kosong</span>
+            <?php } ?>
+          </ul>
+        </div>
+        <div class="card-footer">
+          <small>* Periode Penjualan : <?= date('M-Y', strtotime('last month')) ?></small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <!-- toko teratas -->
+      <div class="card card-danger">
+        <div class="card-header">
+          TOP 5 TOKO - STOK TERBANYAK
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <ul class="products-list product-list-in-card">
+            <?php if (is_array($top_stok)) { ?>
+              <?php
+              foreach ($top_stok as $dd) :
+              ?>
+                <li class="item">
+                  <div class="product-img">
+                    <i class="fas fa-store"></i>
+                  </div>
+                  <div class="product-info">
+                    <a href="javascript:void(0)" class="product-title"><?= $dd->nama_toko ?>
+                      <span class="badge badge-warning float-right"><?= number_format($dd->total) ?> Artikel</span></a>
+                    <span class="product-description">
+                      <small><?= $dd->spg ?></small>
+                    </span>
+                  </div>
+                </li>
+                <!-- /.item -->
+              <?php endforeach; ?>
+            <?php  } else { ?>
+              <span> Data Kosong</span>
+            <?php } ?>
+          </ul>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+          <small> * Data update : <?= date('d-M-Y H:i:s') ?></small>
+        </div>
+        <!-- /.card-footer -->
+      </div>
+      <!-- /.card -->
+      <!-- end toko -->
+
+    </div>
+    <div class="col-md-4">
+      <!-- isi Calender -->
+      <!-- Calendar -->
+      <div class="card bg-gradient-success">
+        <div class="card-header border-0">
+
+          <h3 class="card-title">
+            <i class="far fa-calendar-alt"></i>
+            Calendar
+          </h3>
+          <!-- tools card -->
+          <div class="card-tools">
+            <!-- button with a dropdown -->
+            <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <!-- /. tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body pt-0">
+          <!--The calendar -->
+          <div id="calendar" style="width: 100%"></div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
   </div>
 </section>
 <script src="<?php echo base_url() ?>/assets/plugins/chart.js/Chart.min.js"></script>

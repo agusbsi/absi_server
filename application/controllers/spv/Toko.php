@@ -570,10 +570,16 @@ class Toko extends CI_Controller
     } else {
       // Jika transaksi berhasil
       $pt = $this->session->userdata('pt');
-      $hp = $this->db->query("SELECT no_telp FROM tb_user WHERE id = 129")->row();
-      $phone = $hp->no_telp;
+      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 9 and status = 1")->result_array();
       $message = $get_spv . " : Mengajukan " . $counter_artikel . " Artikel untuk toko ( " . $get_toko . " - " . $pt . " ) yang perlu di approve, silahkan kunjungi s.id/absi-app";
-      kirim_wa($phone, $message);
+      foreach ($phones as $phone) {
+        $number = $phone['no_telp'];
+        $hp = substr($number, 0, 1);
+        if ($hp == '0') {
+          $number = '62' . substr($number, 1);
+        }
+        kirim_wa($number, $message);
+      }
       tampil_alert('success', 'Berhasil', 'Artikel Berhasil didaftarkan, menunggu approve Manager! Jumlah Artikel: ' . $counter_artikel); // Tampilkan jumlah artikel
     }
     redirect(base_url('spv/toko/profil/' . $id_toko));

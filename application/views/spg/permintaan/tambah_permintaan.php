@@ -32,7 +32,7 @@ $sisa_po = $maks_po - $po->total;
             <?php } ?>
           </div>
           <div class="col">
-            : <small><?= $toko_new->nama_toko ?></small><br>
+            : <small><?= $toko_new->nama_toko ? $toko_new->nama_toko : '' ?></small><br>
             : <small><?= $toko_new->status_ssr == 1 ? '<span class="badge badge-success">AKTIF</span>' : '<span class="badge badge-danger">NON-AKTIF</span>' ?></small> <br>
             : <small><?= $rasio ?> <?= $rasio > $ssr ? '<span class="text-danger"> - Stok Tinggi -</span>' : '<span class="text-success"> - Stok Normal -</span>' ?> </small><br>
             <?php if ($toko_new->status_ssr == 1) { ?>
@@ -210,13 +210,19 @@ $sisa_po = $maks_po - $po->total;
       var id = $(this).val();
       var sisa = $('#sisa_po').val();
       var status_toko = $('#status_toko').val();
-      var total = $('.total strong').text();
+      var totalText = $('.total strong').text();
       var ssr = $('#ssr').val();
       var rasio = $('#rasio').val();
-      var idInt = parseInt(id);
-      var sisaInt = parseInt(sisa);
-      var totalInt = parseInt(total);
-      if ((idInt > (sisaInt - totalInt)) && status_toko == 1 && (parseInt(rasio) > parseInt(ssr))) {
+
+      // Bersihkan nilai total dari kemungkinan format non-angka
+      var total = totalText.replace(/[^0-9]/g, '');
+
+      var idInt = parseInt(id, 10);
+      var sisaInt = parseInt(sisa, 10);
+      var totalInt = parseInt(total, 10);
+      var ssrInt = parseFloat(ssr);
+      var rasioInt = parseFloat(rasio);
+      if ((idInt > (sisaInt - totalInt)) && status_toko == "1" && (rasioInt > ssrInt)) {
         Swal.fire(
           'Melebihi Kuota',
           'Pastikan input jumlah yang sesuai dan tidak melebihi sisa kuota PO',
@@ -225,6 +231,7 @@ $sisa_po = $maks_po - $po->total;
         $(this).val(sisaInt - totalInt);
       }
     });
+
 
   });
 </script>

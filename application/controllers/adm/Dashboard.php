@@ -37,14 +37,34 @@ class Dashboard extends CI_Controller
     $data['t_retur'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_retur_detail tpd
       join tb_retur tr on tpd.id_retur = tr.id
       where tr.status >= 2 AND tr.status <= 4  AND MONTH(tr.created_at) = $bln AND YEAR(tr.created_at) = $thn")->row();
-    // 5 top toko
+
     $data['t_stok'] = $this->db->query("SELECT sum(qty) as total FROM tb_stok where status = 1")->row();
     // 5 top toko
-    $data['toko_aktif'] = $this->db->query("SELECT  tk.*,tu.nama_user, count(tp.id_toko) as total from tb_toko tk
-      join tb_penjualan tp on tk.id = tp.id_toko
-      left join tb_user_toko tut on tk.id = tut.id_toko
-      left join tb_user tu on tut.id_user = tu.id
-      GROUP BY tp.id_toko order by total DESC limit 5")->result();
+    $data['top_toko'] = $this->db->query("SELECT tt.*, SUM(tpd.qty) as total, tu.nama_user as spg 
+    FROM tb_toko tt
+    JOIN tb_user tu on tt.id_spg = tu.id
+    JOIN tb_penjualan tp ON tt.id = tp.id_toko
+    JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_penjualan
+    WHERE DATE_FORMAT(tp.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')
+    GROUP BY tp.id_toko 
+    ORDER BY total DESC 
+    LIMIT 5")->result();
+    $data['top_artikel'] = $this->db->query("SELECT tp.*, SUM(tpd.qty) as total
+    FROM tb_produk tp
+    JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_produk
+    JOIN tb_penjualan tpk ON tpk.id = tpd.id_penjualan
+    WHERE DATE_FORMAT(tpk.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')
+    GROUP BY tpd.id_produk 
+    ORDER BY total DESC 
+    LIMIT 5")->result();
+    $data['top_stok'] = $this->db->query("SELECT tt.*, SUM(ts.qty) as total, tu.nama_user as spg 
+     FROM tb_toko tt
+     JOIN tb_user tu on tt.id_spg = tu.id
+     JOIN tb_stok ts on tt.id = ts.id_toko
+     GROUP BY ts.id_toko 
+     ORDER BY total DESC 
+     LIMIT 5")->result();
+
     $this->template->load('template/template', 'adm/dashboard', $data);
   }
 
