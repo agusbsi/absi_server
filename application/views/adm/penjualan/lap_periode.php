@@ -40,6 +40,46 @@
     width: 100%;
 
   }
+
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+
+    /* Hide everything except the printable area */
+    body * {
+      visibility: hidden;
+    }
+
+    #printableArea,
+    #printableArea * {
+      visibility: visible;
+    }
+
+    #printableArea {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+  }
 </style>
 <section class="content">
   <div class="container-fluid">
@@ -339,13 +379,30 @@
     tableBody.appendChild(grandTotalRow);
   }
 
-
-
   function printDiv(divName) {
     var printContents = document.getElementById(divName).innerHTML;
     var originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
+
+    var printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Print Page</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { font-family: Arial, sans-serif; }');
+    printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+    printWindow.document.write('th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }');
+    printWindow.document.write('th { background-color: #f4f4f4; }');
+    printWindow.document.write('@media print { body * { visibility: hidden; } #printableArea, #printableArea * { visibility: visible; } #printableArea { position: absolute; left: 0; top: 0; width: 100%; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<div id="printableArea">');
+    printWindow.document.write(printContents);
+    printWindow.document.write('</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+
+    // Menambahkan jeda sebelum memulai pencetakan
+    setTimeout(function() {
+      printWindow.print();
+      printWindow.close();
+    }, 500); // Penundaan 500ms untuk memastikan konten sudah terload
   }
 </script>

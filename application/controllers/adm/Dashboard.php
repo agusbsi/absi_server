@@ -64,6 +64,23 @@ class Dashboard extends CI_Controller
      GROUP BY ts.id_toko 
      ORDER BY total DESC 
      LIMIT 5")->result();
+    $data['low_toko'] = $this->db->query("SELECT tt.*, SUM(tpd.qty) as total, tu.nama_user as spg 
+      FROM tb_toko tt
+      JOIN tb_user tu on tt.id_spg = tu.id
+      JOIN tb_penjualan tp ON tt.id = tp.id_toko
+      JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_penjualan
+      WHERE DATE_FORMAT(tp.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')
+      GROUP BY tp.id_toko 
+      ORDER BY total ASC 
+      LIMIT 5")->result();
+    $data['low_artikel'] = $this->db->query("SELECT tp.*, SUM(tpd.qty) as total
+       FROM tb_produk tp
+       JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_produk
+       JOIN tb_penjualan tpk ON tpk.id = tpd.id_penjualan
+       WHERE DATE_FORMAT(tpk.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')
+       GROUP BY tpd.id_produk 
+       ORDER BY total ASC 
+       LIMIT 5")->result();
 
     $this->template->load('template/template', 'adm/dashboard', $data);
   }

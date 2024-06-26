@@ -40,6 +40,46 @@
     width: 100%;
 
   }
+
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+
+    /* Hide everything except the printable area */
+    body * {
+      visibility: hidden;
+    }
+
+    #printableArea,
+    #printableArea * {
+      visibility: visible;
+    }
+
+    #printableArea {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+  }
 </style>
 <section class="content">
   <div class="container-fluid">
@@ -112,6 +152,10 @@
                 <th>Kode</th>
                 <th>Artikel</th>
                 <th>Terjual</th>
+                <th>
+                  Stok Akhir <br>
+                  <small>( <?= date('M-Y', strtotime('last month')) ?> )</small>
+                </th>
               </tr>
             </thead>
             <tbody id="dataTableBody">
@@ -153,7 +197,7 @@
 
   function downloadExcel() {
     var wb = XLSX.utils.book_new();
-    var header = ["No", "Kode", "Artikel", "Qty"];
+    var header = ["No", "Kode", "Artikel", "Terjual", "Stok Akhir"];
     var sheetData = [];
     sheetData.push(header);
     var table = document.getElementById('dataTableBody');
@@ -161,7 +205,7 @@
       var row = [];
       for (var j = 0; j < table.rows[i].cells.length; j++) {
         var cellValue = table.rows[i].cells[j].textContent.trim();
-        if (header[j] === "Qty") {
+        if (header[j] === "Terjual" || header[j] === "Stok Akhir") {
           var numericValue = parseFloat(cellValue.replace(/[^0-9.-]+/g, ''));
           row.push(isNaN(numericValue) ? cellValue : numericValue);
         } else {
@@ -277,26 +321,33 @@
     // Update the table
     var tableBody = document.getElementById('dataTableBody');
     var totalQty = 0;
+    var totalstok = 0;
     tableBody.innerHTML = '';
     data.tabel_data.forEach((item, index) => {
       var row = document.createElement('tr');
       row.innerHTML = `
-            <td class="text-center">${index + 1}</td>
-            <td>${item.kode}</td>
-            <td>${item.nama_produk}</td>
-            <td class="text-center">${item.total}</td>
+            <td class="text-center"><small>${index + 1}</small></td>
+            <td><small class="${item.total == 0 ? 'text-danger' : ''}">${item.kode}</small></td>
+            <td><small class="${item.total == 0 ? 'text-danger' : ''}">${item.nama_produk}</small></td>
+            <td class="text-center ${item.total == 0 ? 'text-danger' : ''}">${item.total}</td>
+            <td class="text-center ">${item.stok}</td>
         `;
       tableBody.appendChild(row);
       var qty = parseInt(item.total, 10);
       if (!isNaN(qty)) {
         totalQty += qty;
       }
+      var stok = parseInt(item.stok, 10);
+      if (!isNaN(qty)) {
+        totalstok += stok;
+      }
     });
 
     var totalRow = document.createElement('tr');
     totalRow.innerHTML = `
-    <td colspan="3" class="text-right"><strong>Total Qty:</strong></td>
+    <td colspan="3" class="text-right"><strong>Total : </strong></td>
     <td class="text-center">${totalQty}</td>
+    <td class="text-center">${totalstok}</td>
 `;
     tableBody.appendChild(totalRow);
   }
@@ -304,8 +355,27 @@
   function printDiv(divName) {
     var printContents = document.getElementById(divName).innerHTML;
     var originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
+
+    var printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Print Page</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { font-family: Arial, sans-serif; }');
+    printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+    printWindow.document.write('th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }');
+    printWindow.document.write('th { background-color: #f4f4f4; }');
+    printWindow.document.write('@media print { body * { visibility: hidden; } #printableArea, #printableArea * { visibility: visible; } #printableArea { position: absolute; left: 0; top: 0; width: 100%; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<div id="printableArea">');
+    printWindow.document.write(printContents);
+    printWindow.document.write('</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+
+    // Menambahkan jeda sebelum memulai pencetakan
+    setTimeout(function() {
+      printWindow.print();
+      printWindow.close();
+    }, 500); // Penundaan 500ms untuk memastikan konten sudah terload
   }
 </script>

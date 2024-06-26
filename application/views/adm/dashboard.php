@@ -217,6 +217,84 @@
       </div>
     </div>
     <div class="row">
+      <div class="col-md-6">
+        <div class="card card-danger">
+          <div class="card-header text-center">
+            <strong> TOP 5 TOKO - PENJUALAN TERKECIL</strong>
+          </div>
+          <div class="card-body">
+            <ul class="products-list product-list-in-card">
+              <?php if (is_array($low_toko)) { ?>
+                <?php
+                $no = 0;
+                foreach ($low_toko as $dd) :
+                  $no++;
+                ?>
+                  <li class="item">
+                    <div class="product-img">
+                      <i class="fas fa-certificate text-danger fa-2x"></i>
+                      <span class="nomor text-white"><?= $no ?></span>
+                    </div>
+                    <div class="product-info">
+                      <a href="javascript:void(0)" class="product-title"><?= $dd->nama_toko ?>
+                        <span class="badge badge-warning float-right"><?= number_format($dd->total) ?> Artikel</span></a>
+                      <span class="product-description">
+                        <small><?= $dd->spg ?></small>
+                      </span>
+                    </div>
+                  </li>
+                  <!-- /.item -->
+                <?php endforeach; ?>
+              <?php  } else { ?>
+                <span> Data Kosong</span>
+              <?php } ?>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <small>* Periode Penjualan : <?= date('M-Y', strtotime('last month')) ?></small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card card-danger">
+          <div class="card-header text-center">
+            <strong> TOP 5 ARTIKEL - TERJUAL TERKECIL</strong>
+          </div>
+          <div class="card-body">
+            <ul class="products-list product-list-in-card">
+              <?php if (is_array($low_artikel)) { ?>
+                <?php
+                $no = 0;
+                foreach ($low_artikel as $dd) :
+                  $no++;
+                ?>
+                  <li class="item">
+                    <div class="product-img">
+                      <i class="fas fa-certificate text-danger fa-2x"></i>
+                      <span class="nomor text-white"><?= $no ?></span>
+                    </div>
+                    <div class="product-info">
+                      <a href="javascript:void(0)" class="product-title"><?= $dd->kode ?>
+                        <span class="badge badge-warning float-right"><?= number_format($dd->total) ?> Terjual</span></a>
+                      <span class="product-description">
+                        <small><?= $dd->nama_produk ?></small>
+                      </span>
+                    </div>
+                  </li>
+                  <!-- /.item -->
+                <?php endforeach; ?>
+              <?php  } else { ?>
+                <span> Data Kosong</span>
+              <?php } ?>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <small>* Periode Penjualan : <?= date('M-Y', strtotime('last month')) ?></small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-md-8">
         <!-- toko teratas -->
         <div class="card card-danger">
