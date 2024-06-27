@@ -25,8 +25,8 @@ $sisa_po = $maks_po - $po->total;
           <div class="col">
             <small><b>Toko</b></small><br>
             <small><b>Batas PO</b></small><br>
-            <small><b>Stok Rasio</b></small><br>
             <?php if ($toko_new->status_ssr == 1) { ?>
+              <small><b>Stok Rasio</b></small><br>
               <small><b>Max kuota PO Bulan ini</b></small><br>
               <small><b>Sisa kuota</b></small><br>
             <?php } ?>
@@ -34,8 +34,8 @@ $sisa_po = $maks_po - $po->total;
           <div class="col">
             : <small><?= $toko_new->nama_toko ? $toko_new->nama_toko : '' ?></small><br>
             : <small><?= $toko_new->status_ssr == 1 ? '<span class="badge badge-success">AKTIF</span>' : '<span class="badge badge-danger">NON-AKTIF</span>' ?></small> <br>
-            : <small><?= $rasio ?> <?= $rasio > $ssr ? '<span class="text-danger"> - Stok Tinggi -</span>' : '<span class="text-success"> - Stok Normal -</span>' ?> </small><br>
             <?php if ($toko_new->status_ssr == 1) { ?>
+              : <small><?= $rasio ?> <?= $rasio > $ssr ? '<span class="text-danger"> - Stok Tinggi -</span>' : '<span class="text-success"> - Stok Normal -</span>' ?> </small><br>
               : <small><?= ($rasio > $ssr) ? $maks_po . ' Pcs ( Semua Artikel )' : '-' ?></small><br>
               : <small><?= ($rasio > $ssr) ? $sisa_po . ' Pcs' : '-' ?></small><br>
             <?php } ?>
