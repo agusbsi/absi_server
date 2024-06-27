@@ -42,7 +42,7 @@
             <div class="col-12">
                 <div class="card card-info">
                     <div class="card-header">
-                        <h3 class="card-title"> <i class="fas fa-chart-pie"></i> Data Stok Per Customer</h3>
+                        <h3 class="card-title"> <i class="fas fa-chart-pie"></i> Data Stok Per Customer yang anda kelola</h3>
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped">
@@ -93,8 +93,8 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <div class="dropdown-menu" role="menu" style="">
-                                                        <a class="dropdown-item" href="<?= base_url('adm/Stok/detail_toko/' . $dd->id) ?>">Per Toko</a>
-                                                        <a class="dropdown-item" href="<?= base_url('adm/Stok/detail_artikel/' . $dd->id) ?>">Per Artikel</a>
+                                                        <a class="dropdown-item" href="<?= base_url('spv/Stok/detail_toko/' . $dd->id) ?>">Per Toko</a>
+                                                        <a class="dropdown-item" href="<?= base_url('spv/Stok/detail_artikel/' . $dd->id) ?>">Per Artikel</a>
                                                     </div>
                                                 </div>
                                             </td>

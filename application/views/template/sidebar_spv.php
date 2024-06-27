@@ -86,22 +86,13 @@
              </a>
            </li>
            <li class="nav-item">
-             <a href="<?= base_url('adm/Stok/s_customer') ?>" class="nav-link <?= ($title == 'Stok Customer') ? "active" : "" ?>">
+             <a href="<?= base_url('spv/Stok/s_customer') ?>" class="nav-link <?= ($title == 'Stok Customer') ? "active" : "" ?>">
                <i class="far fa-circle nav-icon"></i>
                <p>
                  Per Customer
                </p>
              </a>
            </li>
-           <li class="nav-item">
-             <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="nav-link <?= ($title == 'Kartu Stok') ? "active" : "" ?>">
-               <i class="far fa-circle nav-icon"></i>
-               <p>
-                 Kartu Stok
-               </p>
-             </a>
-           </li>
-
          </ul>
        </li>
        <li class="nav-item <?= ($title == 'Penjualan Artikel' || $title == 'Penjualan Toko' || $title == 'Penjualan Customer' || $title == 'Penjualan Periode' || $title == 'Penjualan Area') ? "menu-open" : "" ?>">
@@ -114,7 +105,7 @@
          </a>
          <ul class="nav nav-treeview">
            <li class="nav-item">
-             <a href="<?= base_url('adm/Penjualan/lap_artikel') ?>" class="nav-link <?= ($title == 'Penjualan Artikel') ? "active" : "" ?>">
+             <a href="<?= base_url('spv/Penjualan/lap_artikel') ?>" class="nav-link <?= ($title == 'Penjualan Artikel') ? "active" : "" ?>">
                <i class="far fa-circle nav-icon"></i>
                <p>
                  Per Artikel
@@ -122,38 +113,13 @@
              </a>
            </li>
            <li class="nav-item">
-             <a href="<?= base_url('adm/Penjualan/lap_toko') ?>" class="nav-link <?= ($title == 'Penjualan Toko') ? "active" : "" ?>">
+             <a href="<?= base_url('spv/Penjualan/lap_toko') ?>" class="nav-link <?= ($title == 'Penjualan Toko') ? "active" : "" ?>">
                <i class="far fa-circle nav-icon"></i>
                <p>
                  Per Toko
                </p>
              </a>
            </li>
-           <li class="nav-item">
-             <a href="<?= base_url('adm/Penjualan/lap_cust') ?>" class="nav-link <?= ($title == 'Penjualan Customer') ? "active" : "" ?>">
-               <i class="far fa-circle nav-icon"></i>
-               <p>
-                 Per Customer
-               </p>
-             </a>
-           </li>
-           <li class="nav-item">
-             <a href="<?= base_url('adm/Penjualan/lap_area') ?>" class="nav-link <?= ($title == 'Penjualan Area') ? "active" : "" ?>">
-               <i class="far fa-circle nav-icon"></i>
-               <p>
-                 Per Area
-               </p>
-             </a>
-           </li>
-           <li class="nav-item">
-             <a href="<?= base_url('adm/Penjualan/lap_periode') ?>" class="nav-link <?= ($title == 'Penjualan Periode') ? "active" : "" ?>">
-               <i class="far fa-circle nav-icon"></i>
-               <p>
-                 Per Periode
-               </p>
-             </a>
-           </li>
-
          </ul>
        </li>
        <li class="nav-item">
@@ -164,14 +130,7 @@
            </p>
          </a>
        </li>
-       <li class="nav-item">
-         <a href="<?= base_url('spv/Retur') ?>" class="nav-link <?= ($title == 'Retur') ? "active" : "" ?>">
-           <i class="nav-icon fas fa-exchange-alt"></i>
-           <p>
-             Retur
-           </p>
-         </a>
-       </li>
+
        <li class="nav-header">Akun</li>
        <li class="nav-item">
          <a href="<?= base_url('Profile') ?>" class="nav-link <?= ($title == 'Profile') ? "active" : "" ?>">

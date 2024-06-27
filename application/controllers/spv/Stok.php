@@ -50,33 +50,43 @@ class Stok extends CI_Controller
   public function s_customer()
   {
     $data['title'] = 'Stok Customer';
+    $id_spv = $this->session->userdata('id');
     $thn = date('Y');
     $bln = (new DateTime('first day of -2 month'))->format('m');
     $query = "SELECT 
         tc.id,
         tc.nama_cust,
         tc.alamat_cust,
-        (SELECT COUNT(id) FROM tb_toko tt WHERE tt.id_customer = tc.id AND tt.status = 1) AS t_toko,
-        (SELECT COALESCE(SUM(ts.qty), 0) FROM tb_stok ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1) AS t_stok,
-        (SELECT COALESCE(SUM(ts.qty_awal), 0) FROM tb_stok ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1) AS t_akhir,
-        (SELECT COALESCE(SUM(ts.jml_jual), 0) FROM vw_penjualan ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1 AND ts.tahun = '$thn' AND ts.bulan = '$bln' ) AS t_jual
+        (SELECT COUNT(id) FROM tb_toko tt WHERE tt.id_customer = tc.id AND tt.status = 1 AND tt.id_spv = '$id_spv') AS t_toko,
+        (SELECT COALESCE(SUM(ts.qty), 0) FROM tb_stok ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1 AND tt.id_spv = '$id_spv') AS t_stok,
+        (SELECT COALESCE(SUM(ts.qty_awal), 0) FROM tb_stok ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1 AND tt.id_spv = '$id_spv') AS t_akhir,
+        (SELECT COALESCE(SUM(ts.jml_jual), 0) FROM vw_penjualan ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1 AND tt.id_spv = '$id_spv' AND ts.tahun = '$thn' AND ts.bulan = '$bln' ) AS t_jual
 
     FROM 
         tb_customer tc
+    JOIN tb_toko tt on tc.id = tt.id_customer
+    WHERE tt.id_spv = '$id_spv' AND tt.status = 1
+    GROUP BY tc.id
     ORDER BY 
         tc.nama_cust ASC";
     $data['list_data'] = $this->db->query($query)->result();
-    $data['cust'] = $this->db->query("SELECT count(id) as total from tb_customer")->row();
-    $data['stok'] = $this->db->query("SELECT SUM(qty) as total, SUM(qty_awal) as stok_akhir from tb_stok where status = 1 ")->row();
-    $data['jual'] = $this->db->query("SELECT SUM(jml_jual) as total from vw_penjualan where tahun = '$thn' AND bulan = '$bln' ")->row();
-    $this->template->load('template/template', 'adm/stok/customer', $data);
+    $data['cust'] = $this->db->query("SELECT count(DISTINCT tc.id) as total from tb_customer tc
+    JOIN tb_toko tt on tc.id = tt.id_customer
+    WHERE tt.id_spv = '$id_spv' AND tt.status = 1 ")->row();
+    $data['stok'] = $this->db->query("SELECT SUM(ts.qty) as total, SUM(ts.qty_awal) as stok_akhir from tb_stok ts
+    JOIN tb_toko tt on ts.id_toko = tt.id 
+    where tt.status = 1 AND tt.id_spv = '$id_spv' ")->row();
+    $data['jual'] = $this->db->query("SELECT SUM(jml_jual) as total from vw_penjualan tv
+    JOIN tb_toko tt on tv.id_toko = tt.id 
+    where tv.tahun = '$thn' AND tv.bulan = '$bln' AND tt.id_spv = '$id_spv' ")->row();
+    $this->template->load('template/template', 'spv/stok/customer', $data);
   }
   public function detail_toko($id)
   {
     $data['title'] = 'Stok Customer';
     $thn = date('Y');
     $bln = (new DateTime('first day of -2 month'))->format('m');
-
+    $id_spv = $this->session->userdata('id');
     $query = "
       SELECT 
           tc.nama_cust, 
@@ -91,7 +101,7 @@ class Stok extends CI_Controller
       LEFT JOIN 
           tb_stok ts ON tt.id = ts.id_toko
       WHERE 
-          tc.id = '$id' AND tt.status = 1 
+          tc.id = '$id' AND tt.status = 1 AND tt.id_spv = '$id_spv'
       GROUP BY 
           tt.id 
       ORDER BY 
@@ -100,21 +110,22 @@ class Stok extends CI_Controller
 
     $data['data'] = $this->db->query($query)->row();
     $data['list_data'] = $this->db->query($query)->result();
-    $this->template->load('template/template', 'adm/stok/detail_toko', $data);
+    $this->template->load('template/template', 'spv/stok/detail_toko', $data);
   }
 
   public function detail_artikel($id)
   {
     $data['title'] = 'Stok Customer';
+    $id_spv = $this->session->userdata('id');
     $query = "SELECT tc.nama_cust, tp.kode,tp.nama_produk as artikel, COALESCE(SUM(ts.qty), 0) AS t_stok FROM tb_customer tc
     JOIN tb_toko tt on tc.id = tt.id_customer
     LEFT JOIN tb_stok ts on tt.id = ts.id_toko
     JOIN tb_produk tp on ts.id_produk = tp.id
-    WHERE tc.id = '$id' AND tt.status = 1 GROUP BY tp.id ORDER BY SUM(ts.qty) DESC";
+    WHERE tc.id = '$id' AND tt.status = 1 AND tt.id_spv = '$id_spv' GROUP BY tp.id ORDER BY SUM(ts.qty) DESC";
 
     $data['data'] = $this->db->query($query)->row();
     $data['list_data'] = $this->db->query($query)->result();
-    $this->template->load('template/template', 'adm/stok/detail_artikel', $data);
+    $this->template->load('template/template', 'spv/stok/detail_artikel', $data);
   }
 
   // Kartu Stok
@@ -123,7 +134,7 @@ class Stok extends CI_Controller
     $data['title'] = 'Kartu Stok';
     $data['toko'] = $this->db->query("SELECT * from tb_toko where status = 1")->result();
     $data['artikel'] = $this->db->query("SELECT * from tb_produk where status = 1")->result();
-    $this->template->load('template/template', 'adm/stok/kartu_stok', $data);
+    $this->template->load('template/template', 'spv/stok/kartu_stok', $data);
   }
   public function cari_kartu()
   {

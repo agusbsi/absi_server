@@ -6,7 +6,7 @@
                     <div class="card-header">
                         <h3 class="card-title"> <i class="fas fa-chartpie"></i> Detail Per Customer</h3>
                         <div class="card-tools">
-                            <a href="<?= base_url('adm/Stok/s_customer') ?>" type="button" class="btn btn-tool remove">
+                            <a href="<?= base_url('spv/Stok/s_customer') ?>" type="button" class="btn btn-tool remove">
                                 <i class="fas fa-times"></i>
                             </a>
                         </div>
@@ -82,7 +82,7 @@
                                 <i class="fas fa-print"></i> Print
                             </a>
                             <button class="btn btn-warning btn-sm float-right mr-1" onclick="downloadExcel()"><i class="fas fa-file-excel"></i> Unduh</button>
-                            <a href="<?= base_url('adm/Stok/s_customer') ?>" class="btn btn-danger btn-sm float-right mr-1 "> <i class="fa fa-times-circle"></i> Close</a>
+                            <a href="<?= base_url('spv/Stok/s_customer') ?>" class="btn btn-danger btn-sm float-right mr-1 "> <i class="fa fa-times-circle"></i> Close</a>
 
                         </div>
                     </div>
