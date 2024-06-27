@@ -37,8 +37,8 @@ class Toko extends CI_Controller
     $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user
     from tb_toko tt
     left join tb_user tu on tt.id_spg = tu.id
-    where tt.status != 1 AND tt.status != 0
-    ORDER BY FIELD(tt.status, 4) DESC, tt.id DESC")->result();
+    where tt.status = 4 OR tt.status = 5
+    ORDER BY tt.status = 4 DESC, tt.id DESC")->result();
     $this->template->load('template/template', 'adm/toko/pengajuanToko', $data);
   }
   public function detail($id)
@@ -50,27 +50,42 @@ class Toko extends CI_Controller
     left join tb_user ts on tt.id_spg = ts.id
     join tb_user tp on tt.id_spv = tp.id
     where tt.id = '$id'")->row();
+    $data['histori'] = $this->db->query("SELECT * from tb_toko_histori tpo
+    join tb_toko tt on tpo.id_toko = tt.id where tpo.id_toko = '$id'")->result();
     $this->template->load('template/template', 'adm/toko/detail', $data);
   }
   public function approve()
   {
     $pt = $this->session->userdata('pt');
     $id_toko = $this->input->post('id_toko');
+    $id = $this->session->userdata('id');
+    $direksi = $this->db->query("SELECT nama_user from tb_user where id = '$id'")->row()->nama_user;
     $toko = $this->input->post('toko');
     $catatan = $this->input->post('catatan');
     $keputusan = $this->input->post('keputusan');
+    $this->db->trans_start();
     $this->db->query("UPDATE tb_toko set status = $keputusan, catatan_direksi = '$catatan' where id = '$id_toko'");
     if ($keputusan == 1) {
       $pesan = "Toko Berhasil di Aktifkan !";
+      $aksi = "Di Setujui Oleh DIREKSI : ";
       $spv = $this->db->query("SELECT id_spv FROM tb_toko WHERE id = '$id_toko'")->row()->id_spv;
       $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$spv'")->result_array();
       $message = "Pengajuan Toko ( " . $toko . " - " . $pt . " ) anda telah di setujui & Sudah AKTIF, silahkan kunjungi s.id/absi-app";
     } else {
       $pesan = "Data Toko DI Tolak";
+      $aksi = "Di Tolak Oleh DIREKSI : ";
       $spv = $this->db->query("SELECT id_spv FROM tb_toko WHERE id = '$id_toko'")->row()->id_spv;
       $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$spv'")->result_array();
       $message = "Pengajuan Toko ( " . $toko . " - " . $pt . " ) anda DI TOLAK, Silahkan ajukan kembali dengan data yang benar,  s.id/absi-app";
     }
+    $histori = array(
+      'id_toko' => $id_toko,
+      'aksi' => $aksi,
+      'pembuat' => $direksi,
+      'catatan' => $catatan
+    );
+    $this->db->insert('tb_toko_histori', $histori);
+    $this->db->trans_complete();
     foreach ($phones as $phone) {
       $number = $phone['no_telp'];
       $hp = substr($number, 0, 1);

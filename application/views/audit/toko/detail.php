@@ -261,58 +261,35 @@
               # Proses Pengajuan :
               <hr>
               <div class="timeline">
-                <div>
-                  <i class="fas bg-green">1</i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fas fa-clock"></i> <?= $toko->created_at ?></span>
-                    <h3 class="timeline-header no-border">Diajukan Oleh : <a href="#"><?= $toko->spv ?></a></h3>
-                  </div>
-                </div>
-                <div>
-                  <i class="fas bg-blue">2</i>
-                  <div class="timeline-item">
-                    <span class="time"></span>
-                    <h3 class="timeline-header"><a href="#"> Manager Marketing</a></h3>
-                    <div class="timeline-body">
-                      Catatan :
-                      <?= $toko->catatan_mm ?  $toko->catatan_mm : "Belum di Proses Manager Marketing" ?>
+                <?php $no = 0;
+                foreach ($histori as $h) :
+                  $no++;
+                ?>
+                  <div>
+                    <i class="fas bg-blue"><?= $no ?></i>
+                    <div class="timeline-item">
+                      <span class="time"></span>
+                      <p class="timeline-header"><small><?= $h->aksi ?> <strong><?= $h->pembuat ?></strong></small></p>
+                      <div class="timeline-body">
+                        <small>
+                          <?= date('d-M-Y  H:i:s', strtotime($h->tanggal)) ?> <br>
+                          Catatan :<br>
+                          <?= $h->catatan ?>
+                        </small>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div>
-                  <i class="fas bg-blue">3</i>
-                  <div class="timeline-item">
-                    <span class="time"></span>
-                    <h3 class="timeline-header"><a href="#"> Audit</a></h3>
-
-                    <div class="timeline-body">
-                      Catatan :
-                      <?= $toko->catatan_audit ?  $toko->catatan_audit : "Belum di Proses Audit" ?>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <i class="fas bg-blue">4</i>
-                  <div class="timeline-item">
-                    <span class="time"></span>
-                    <h3 class="timeline-header"><a href="#"> Direksi</a></h3>
-
-                    <div class="timeline-body">
-                      Catatan :
-                      <?= $toko->catatan_direksi ?  $toko->catatan_direksi : "Belum di Proses Direksi" ?>
-                    </div>
-                  </div>
-                </div>
+                <?php endforeach ?>
               </div>
               <hr>
               <?php if ($toko->status == 3) { ?>
                 <div class="form-group">
-                  <label for=""> Catatan anda</label>
+                  <label for=""> Catatan anda *</label>
                   <input type="hidden" name="id_toko" value="<?= $toko->id ?>">
-                  <textarea name="catatan" cols="3" class="form-control form-control-sm" required></textarea>
+                  <textarea name="catatan" cols="3" class="form-control form-control-sm" placeholder="..." required></textarea>
                 </div>
                 <div class="form-group">
-                  <label for=""> Keputusan anda</label>
+                  <label for=""> Keputusan anda *</label>
                   <select name="keputusan" class="form-control form-control-sm" required>
                     <option value="">- Pilih -</option>
                     <option value="4"> Setujui </option>

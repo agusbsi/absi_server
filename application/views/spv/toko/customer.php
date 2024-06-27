@@ -23,7 +23,7 @@
                     <tr>
                       <td>Nama Customer *</td>
                       <td>
-                        <input type="text" class="form-control form-control-sm" name="customer" placeholder="...." required>
+                        <input type="text" class="form-control form-control-sm" id="customer" name="customer" placeholder="...." required>
                       </td>
                     </tr>
                     <tr>
@@ -91,7 +91,7 @@
                     <tr>
                       <td>Nama Toko *</td>
                       <td>
-                        <input type="text" class="form-control form-control-sm" name="nama_toko" placeholder="...." required>
+                        <input type="text" class="form-control form-control-sm" id="toko" name="nama_toko" placeholder="...." required>
                       </td>
                     </tr>
                     <tr>
@@ -306,6 +306,10 @@
                   </div>
                 </div>
               </div>
+              <div class="form-group">
+                <strong> Catatan : *</strong>
+                <textarea name="catatan_spv" class="form-control form-control-sm" placeholder="...." required></textarea>
+              </div>
               <hr>
               <small>*) Harus Di lengkapi.</small>
             </div>
@@ -409,6 +413,41 @@
       var url = "<?php echo base_url('spv/Toko/add_ajax_kec'); ?>/" + $(this).val();
       $('#kecamatan_toko').load(url);
       return false;
+    })
+    $('#customer').change(function() {
+      var customer = $(this).val()
+      // Kirim data ke controller MyTable dengan AJAX
+      $.ajax({
+        url: "<?php echo base_url('spv/Toko/cek_cust') ?>",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          customer: customer
+        },
+        success: function(data) {
+          if (data == true) {
+            Swal.fire('CUSTOMER SUDAH ADA', 'silahkan input dengan customer yang lain!', 'info');
+            $('#customer').val('');
+          }
+        }
+      });
+    })
+    $('#toko').change(function() {
+      var toko = $(this).val()
+      $.ajax({
+        url: "<?php echo base_url('spv/Toko/cek_toko') ?>",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          toko: toko
+        },
+        success: function(data) {
+          if (data == true) {
+            Swal.fire('TOKO SUDAH ADA', 'silahkan input dengan toko yang lain!', 'info');
+            $('#toko').val('');
+          }
+        }
+      });
     })
   });
 </script>

@@ -63,6 +63,8 @@ class Toko extends CI_Controller
     left join tb_user ts on tt.id_spg = tu.id
     join tb_user tp on tt.id_spv = tp.id
      WHERE tt.id = '$toko'")->row();
+    $data['histori'] = $this->db->query("SELECT * from tb_toko_histori tpo
+    join tb_toko tt on tpo.id_toko = tt.id where tpo.id_toko = '$toko'")->result();
     $this->template->load('template/template', 'spv/toko/detail', $data);
   }
   // list toko tutup
@@ -264,6 +266,27 @@ class Toko extends CI_Controller
     $this->template->load('template/template', 'spv/toko/profil', $data);
   }
 
+  // cek customer
+  public function cek_cust()
+  {
+    $customer = $this->input->post('customer');
+    $result = $this->db->get_where('tb_customer', array('nama_cust' => $customer))->result();
+    if (count($result) > 0) {
+      echo json_encode(TRUE);
+      return;
+    }
+    echo json_encode(FALSE);
+  }
+  public function cek_toko()
+  {
+    $toko = $this->input->post('toko');
+    $result = $this->db->get_where('tb_toko', array('nama_toko' => $toko))->result();
+    if (count($result) > 0) {
+      echo json_encode(TRUE);
+      return;
+    }
+    echo json_encode(FALSE);
+  }
   // proses tambah terbaru 2 foto
   public function add_customer()
   {
@@ -272,6 +295,7 @@ class Toko extends CI_Controller
     $telp_cust          = $this->input->post('telp_cust');
     $top                = $this->input->post('top');
     $alamat_cust        = $this->input->post('alamat_cust');
+    $catatan_spv        = $this->input->post('catatan_spv');
 
     $this->db->trans_start();
     $database = $this->db->database;
@@ -375,7 +399,7 @@ class Toko extends CI_Controller
       's_gtman'        => str_replace(['Rp. ', '.'], '', $s_gtman),
       's_crocodile'    => str_replace(['Rp. ', '.'], '', $s_crocodile),
       'target'         => str_replace(['Rp. ', '.'], '', $target_toko),
-      'limit_toko'         => str_replace(['Rp. ', '.'], '', $limit_toko),
+      'limit_toko'     => str_replace(['Rp. ', '.'], '', $limit_toko),
       'provinsi'       => $provinsi,
       'kabupaten'      => $kabupaten,
       'kecamatan'      => $kecamatan,
@@ -385,21 +409,21 @@ class Toko extends CI_Controller
       'status'         => '2',
       'foto_toko'      => $foto_toko,
       'foto_pic'       => $foto_pic,
-      'het'               => $het,
-      'diskon'            => $diskon,
-      'tgl_so'            => $tgl_so,
+      'het'            => $het,
+      'diskon'         => $diskon,
+      'tgl_so'         => $tgl_so,
     );
-
-    $cek = $this->db->query("SELECT * FROM tb_toko WHERE nama_toko = '$nama_toko' AND status != '0'")->num_rows();
-    if ($cek > 0) {
-      tampil_alert('info', 'Information', 'Toko sudah ada, gunakan nama yang lain!');
-      redirect(base_url('spv/Toko/customer'));
-    } else {
-      $this->db->insert('tb_toko', $data_toko);
-    }
+    $this->db->insert('tb_toko', $data_toko);
+    $get_spv = $this->db->query("SELECT nama_user from tb_user where id ='$id_spv'")->row()->nama_user;
+    $histori = array(
+      'id_toko' => $id_auto_toko,
+      'aksi' => 'Dibuat oleh SPV: ',
+      'pembuat' => $get_spv,
+      'catatan' => $catatan_spv
+    );
+    $this->db->insert('tb_toko_histori', $histori);
     $this->db->trans_complete();
     $pt = $this->session->userdata('pt');
-    $get_spv = $this->db->query("SELECT nama_user from tb_user where id ='$id_spv'")->row()->nama_user;
     $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 9 and status = 1")->result_array();
     $message = $get_spv . " Mengajukan Customer & toko baru ( " . $nama_toko . " - " . $pt . " ) yang perlu di approve, silahkan kunjungi s.id/absi-app";
     foreach ($phones as $phone) {
@@ -437,6 +461,7 @@ class Toko extends CI_Controller
     $het                = $this->input->post('het');
     $diskon             = $this->input->post('diskon');
     $tgl_so             = $this->input->post('tgl_so');
+    $catatan_spv        = $this->input->post('catatan_spv');
 
     $database = $this->db->database;
     $id_auto_toko = $this->db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = 'tb_toko' ")->row()->AUTO_INCREMENT;
@@ -497,16 +522,18 @@ class Toko extends CI_Controller
       'tgl_so'            => $tgl_so,
     );
     $this->db->trans_start();
-    $cek = $this->db->query("SELECT * FROM tb_toko WHERE nama_toko = '$nama_toko' AND status != '0'")->num_rows();
-    if ($cek > 0) {
-      tampil_alert('info', 'Information', 'Toko sudah ada, gunakan nama yang lain!');
-      redirect(base_url('spv/toko/toko'));
-    } else {
-      $this->M_spv->insert('tb_toko', $data_toko);
-    }
+    $this->db->insert('tb_toko', $data_toko);
+    $get_spv = $this->db->query("SELECT nama_user from tb_user where id ='$id_spv'")->row()->nama_user;
+    $histori = array(
+      'id_toko' => $id_auto_toko,
+      'aksi' => 'Dibuat oleh SPV: ',
+      'pembuat' => $get_spv,
+      'catatan' => $catatan_spv
+    );
+    $this->db->insert('tb_toko_histori', $histori);
     $this->db->trans_complete();
     $pt = $this->session->userdata('pt');
-    $get_spv = $this->db->query("SELECT nama_user from tb_user where id ='$id_spv'")->row()->nama_user;
+
     $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 9 and status = 1")->result_array();
     $message = $get_spv . " Mengajukan Toko baru ( " . $nama_toko . " - " . $pt . " ) yang perlu di approve, silahkan kunjungi s.id/absi-app";
     foreach ($phones as $phone) {

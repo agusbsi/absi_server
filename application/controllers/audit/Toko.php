@@ -45,6 +45,8 @@ class Toko extends CI_Controller
     left join tb_user ts on tt.id_spg = ts.id
     join tb_user tp on tt.id_spv = tp.id
     where tt.id = '$id'")->row();
+    $data['histori'] = $this->db->query("SELECT * from tb_toko_histori tpo
+    join tb_toko tt on tpo.id_toko = tt.id where tpo.id_toko = '$id'")->result();
     $this->template->load('template/template', 'audit/toko/detail', $data);
   }
 
@@ -91,21 +93,34 @@ class Toko extends CI_Controller
   public function approve()
   {
     $pt = $this->session->userdata('pt');
+    $id = $this->session->userdata('id');
+    $audit = $this->db->query("SELECT nama_user from tb_user where id = '$id'")->row()->nama_user;
     $id_toko = $this->input->post('id_toko');
     $toko = $this->input->post('toko');
     $catatan = $this->input->post('catatan');
     $keputusan = $this->input->post('keputusan');
+    $this->db->trans_start();
     $this->db->query("UPDATE tb_toko set status = $keputusan, catatan_audit = '$catatan' where id = '$id_toko'");
     if ($keputusan == 4) {
       $pesan = "Data Toko di teruskan ke Direksi!";
+      $aksi = "Di Setujui Oleh AUDIT : ";
       $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 1 and status = 1")->result_array();
       $message = "Anda memiliki 1 Pengajuan Toko Baru ( " . $toko . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
     } else {
       $pesan = "Data Toko DI Tolak";
+      $aksi = "Di Tolak Oleh AUDIT : ";
       $spv = $this->db->query("SELECT id_spv FROM tb_toko WHERE id = '$id_toko'")->row()->id_spv;
       $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$spv'")->result_array();
       $message = "Pengajuan Toko ( " . $toko . " - " . $pt . " ) anda DI TOLAK, Silahkan ajukan kembali dengan data yang benar,  s.id/absi-app";
     }
+    $histori = array(
+      'id_toko' => $id_toko,
+      'aksi' => $aksi,
+      'pembuat' => $audit,
+      'catatan' => $catatan
+    );
+    $this->db->insert('tb_toko_histori', $histori);
+    $this->db->trans_complete();
     foreach ($phones as $phone) {
       $number = $phone['no_telp'];
       $hp = substr($number, 0, 1);
