@@ -10,7 +10,7 @@
             <div class="row">
               <div class="col-md-6"></div>
               <div class="col-md-6">
-                <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-store"></i> Tambah Toko</button>
+                <button type="button" class="btn btn-success btn-sm float-right <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-store"></i> Tambah Toko</button>
               </div>
             </div>
             <hr>
