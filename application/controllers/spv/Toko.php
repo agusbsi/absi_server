@@ -475,7 +475,12 @@ class Toko extends CI_Controller
     $catatan_spv        = $this->input->post('catatan_spv');
 
     $database = $this->db->database;
-    $id_auto_toko = $this->db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = 'tb_toko' ")->row()->AUTO_INCREMENT;
+    $cek_toko = $this->db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = 'tb_toko' ")->row();
+    if ($cek_toko && isset($cek_toko->AUTO_INCREMENT)) {
+      $id_auto_toko = $cek_toko->AUTO_INCREMENT;
+    } else {
+      $id_auto_toko = 1;
+    }
     // Proses upload foto Toko
     $config['upload_path'] = 'assets/img/toko/';
     $config['allowed_types'] = 'jpg|jpeg|png';
@@ -534,9 +539,10 @@ class Toko extends CI_Controller
     );
     $this->db->trans_start();
     $this->db->insert('tb_toko', $data_toko);
+    $id_toko  = $this->db->insert_id();
     $get_spv = $this->db->query("SELECT nama_user from tb_user where id ='$id_spv'")->row()->nama_user;
     $histori = array(
-      'id_toko' => $id_auto_toko,
+      'id_toko' => $id_toko,
       'aksi' => 'Dibuat oleh SPV: ',
       'pembuat' => $get_spv,
       'catatan' => $catatan_spv
