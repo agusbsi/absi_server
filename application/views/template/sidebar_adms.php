@@ -32,8 +32,8 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
           </p>
         </a>
       </li>
-      <li class="nav-item <?= ($title == 'Master Toko' || $title == 'List Toko Tutup') ? "menu-open" : "" ?>">
-        <a href="#" class="nav-link <?= ($title == 'Master Toko' || $title == 'List Toko Tutup') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Toko' || $title == 'List Toko Tutup') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Toko' || $title == 'List Toko Tutup') ? "active" : "" ?>">
           <i class="nav-icon fas fa-store"></i>
           <p>
             Toko
@@ -42,7 +42,7 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="<?= base_url('sup/toko') ?>" class="nav-link <?= ($title == 'Master Toko') ? "active" : "" ?>">
+            <a href="<?= base_url('adm/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
               <p>Toko Aktif</p>
             </a>

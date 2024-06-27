@@ -78,7 +78,7 @@
          </a>
          <ul class="nav nav-treeview">
            <li class="nav-item">
-             <a href="<?= base_url('adm/Stok') ?>" class="nav-link <?= ($title == 'Stok Artikel') ? "active" : "" ?>">
+             <a href="<?= base_url('spv/Stok') ?>" class="nav-link <?= ($title == 'Stok Artikel') ? "active" : "" ?>">
                <i class="far fa-circle nav-icon"></i>
                <p>
                  Per Artikel
