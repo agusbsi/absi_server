@@ -113,9 +113,9 @@
                 </td>
               </tr>
               <tr>
-                <td><b>SSR</b></td>
+                <td><b>Jenis Harga</b></td>
                 <td>
-                  : <?= $toko->ssr ?> x rata-rata penjualan 3 bulan terakhir.
+                  : <?= status_het($toko->het) ?>
                 </td>
               </tr>
               <tr>
@@ -125,9 +125,15 @@
                 </td>
               </tr>
               <tr>
-                <td><b>Jenis Harga</b></td>
+                <td><b>SSR</b></td>
                 <td>
-                  : <?= status_het($toko->het) ?>
+                  : <?= $toko->ssr ?>
+                </td>
+              </tr>
+              <tr>
+                <td><b>Max Po</b></td>
+                <td>
+                  : <?= $toko->max_po ?> %
                 </td>
               </tr>
               <tr>

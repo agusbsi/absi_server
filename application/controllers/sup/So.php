@@ -13,10 +13,13 @@ class So extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != 6 && $role != 1 && $role != 2 && $role != 9 && $role != 10 && $role != 14 && $role != 11 && $role != 8 && $role != 15) {
-      tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
+    $allowed_roles = [1, 2, 3, 6, 8, 9, 10, 11, 14, 15];
+
+    if (!in_array($role, $allowed_roles)) {
+      tampil_alert('error', 'DI TOLAK!', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }
+
     $this->load->model('M_admin');
     $this->load->model('M_support');
   }

@@ -17,8 +17,8 @@
                  <table id="example1" class="table table-bordered table-striped">
                    <thead>
                      <tr class="text-center">
-                       <th>No</th>
-                       <th style="width: 15%;">ID PO</th>
+                       <th>#</th>
+                       <th style="width: 15%;">Nomor PO</th>
                        <th>Status</th>
                        <th>Nama Toko</th>
                        <th>Tanggal</th>
@@ -29,16 +29,15 @@
                      <?php $no = 0;
                       foreach ($list_data as $dd) :
                         $no++ ?>
-                       <tr class="text-center">
-                         <td><?= $no ?></td>
-                         <td><?= $dd->id ?></td>
-                         <td>
+                       <tr>
+                         <td class="text-center"><?= $no ?></td>
+                         <td class="text-center"><small><?= $dd->id ?></small></td>
+                         <td class="text-center">
                            <?= status_permintaan($dd->status); ?>
                          </td>
-                         <td><?= $dd->nama_toko ?></td>
-
-                         <td><?= date('d-M-Y H:m:s', strtotime($dd->created_at)) ?></td>
-                         <td>
+                         <td><small><?= $dd->nama_toko ?></small></td>
+                         <td class="text-center"><small><?= date('d-M-Y H:m:s', strtotime($dd->created_at)) ?></small></td>
+                         <td class="text-center">
                            <?php
                             if ($dd->status == 0) { ?>
                              <a type="button" class="btn btn-success btn-sm" href="<?= base_url('leader/permintaan/terima/' . $dd->id) ?>" name="btn_detail"><i class="fa fa-paper-plane" aria-hidden="true"></i> Proses</a>
