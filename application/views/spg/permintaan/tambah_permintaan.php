@@ -85,7 +85,7 @@ $sisa_po = $maks_po - $po->total;
                 <form method="POST" action="<?= base_url('spg/Permintaan/tambah_cart'); ?>">
                   <div class="form-group">
                     <label>Pilih Artikel</label>
-                    <select name="id" class="form-control form-control-sm select2" id="id_produk" style="width:300px">
+                    <select name="id" class="form-control form-control-sm select2" id="id_produk" style="width:300px" required>
                       <option value="">Pilih Artikel</option>
                       <?php foreach ($list_produk as $l) { ?>
                         <option value="<?= $l->id ?>">| <?= $l->kode ?> | <?= $l->artikel ?></option>
@@ -108,7 +108,9 @@ $sisa_po = $maks_po - $po->total;
                   </div>
                   <div class="form-group">
                     <label>Qty</label>
-                    <input class="form-control form-control-sm" id="qty_po" type="number" min="0" name="qty" required>
+                    <select name="qty" id="qty_po" class="form-control form-control-sm" required>
+                      <option value="">Pilih Qty</option>
+                    </select>
                   </div>
                   <div class="form-group">
                     <label>Keterangan</label>
@@ -203,10 +205,16 @@ $sisa_po = $maks_po - $po->total;
           $('#stok_tersedia').text(data.qty);
           $('#satuan').text(data.satuan);
           $('#detail_produk').removeClass('d-none');
+          var options = '<option value="">Pilih Qty</option>';
+          for (var i = 1; i <= 10; i++) {
+            var qty = data.packing * i;
+            options += '<option value="' + qty + '">' + qty + '</option>';
+          }
+          $('#qty_po').html(options);
         }
       });
     });
-    $("#qty_po").on("input", function() {
+    $("#qty_po").on("change", function() {
       var id = $(this).val();
       var sisa = $('#sisa_po').val();
       var status_toko = $('#status_toko').val();
@@ -225,10 +233,10 @@ $sisa_po = $maks_po - $po->total;
       if ((idInt > (sisaInt - totalInt)) && status_toko == "1" && (rasioInt > ssrInt)) {
         Swal.fire(
           'Melebihi Kuota',
-          'Pastikan input jumlah yang sesuai dan tidak melebihi sisa kuota PO',
+          'Pastikan jumlah yang di pilih tidak melebihi sisa kuota PO',
           'info'
         );
-        $(this).val(sisaInt - totalInt);
+        $(this).val('');
       }
     });
 

@@ -43,22 +43,11 @@ class Permintaan extends CI_Controller
   {
     $id = $this->input->post('id');
     $toko = $this->input->post('toko');
-    $ssr = $this->db->query("SELECT ssr from tb_toko where id = '$toko'")->row()->ssr;
-    $data_produk = $this->db->query("
-        SELECT tb_produk.*, tb_stok.qty, COALESCE(ROUND(AVG(penjualan_3_bulan.qty), 0), 0) * '$ssr' as ssr
+    $data_produk = $this->db->query("SELECT tb_produk.*, tb_stok.qty
         FROM tb_produk
         LEFT JOIN tb_stok ON tb_produk.id = tb_stok.id_produk AND tb_stok.id_toko = '$toko'
-        LEFT JOIN (
-            SELECT tb_penjualan_detail.id_produk, AVG(tb_penjualan_detail.qty) as qty
-            FROM tb_penjualan_detail
-            JOIN tb_penjualan ON tb_penjualan_detail.id_penjualan = tb_penjualan.id
-            WHERE tb_penjualan.id_toko = '$toko'
-                AND tb_penjualan.tanggal_penjualan >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
-            GROUP BY tb_penjualan_detail.id_produk
-        ) as penjualan_3_bulan ON tb_produk.id = penjualan_3_bulan.id_produk
         WHERE tb_stok.id_toko = '$toko' AND tb_stok.id_produk = '$id'
-        GROUP BY tb_produk.id
-    ")->row();
+        GROUP BY tb_produk.id")->row();
     echo json_encode($data_produk);
   }
   public function tambah_permintaan()
