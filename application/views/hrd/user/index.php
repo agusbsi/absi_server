@@ -67,7 +67,7 @@
                       $no++;
                       date_default_timezone_set('Asia/Jakarta');
                       $login = strtotime($dd->last_online);
-                      $waktu = strtotime(date("Y-m-d h:i:sa"));
+                      $waktu = strtotime(date("Y-m-d h:i:s"));
                       $hasil = $waktu - $login;
                       $menit = floor($hasil / 60); ?>
                       <td class="text-center"><?= $no ?></td>
@@ -97,7 +97,7 @@
                       </td>
                       <td class="text-center"><?= status_user($dd->status) ?></td>
                       <td class="text-center"><?= role($dd->role) ?></td>
-                      <td class="text-center"> <small><?= $dd->last_login ? login(strtotime($dd->last_online)) : 'Belum Login' ?></small> </td>
+                      <td class="text-center"> <small><?= $dd->last_login ? login(strtotime($dd->last_login)) : 'Belum Login' ?></small> </td>
                       <td class="text-center">
                         <a href="<?= base_url('hrd/User/detail/' . $dd->id) ?>" class="btn btn-info btn-sm" title="Lihat User"><i class="fas fa-eye"></i></a>
                         <a href="<?= base_url('hrd/User/update/' . $dd->id) ?>" class="btn btn-warning btn-sm" title="Update User"><i class="fas fa-edit"></i></a>

@@ -145,7 +145,13 @@
           <p class="text-center"> Periode :</p>
           <div class="text-center"><label id="lap_awal" class="mr-2 text-center"></label> s/d <label class="text-center ml-2" id="lap_akhir"></label>
           </div>
-          <table class="table table-bordered mt-4">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" class="form-control form-control-sm " id="searchInput" placeholder="Cari berdasarkan kode atau nama artikel...">
+          </div>
+          <table id="myTable" class="table table-bordered mt-4">
             <thead>
               <tr class="text-center">
                 <th>No</th>
@@ -378,4 +384,25 @@
       printWindow.close();
     }, 500); // Penundaan 500ms untuk memastikan konten sudah terload
   }
+  // Fungsi untuk melakukan pencarian
+  function searchTable() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("myTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td");
+      for (var j = 0; j < td.length; j++) {
+        txtValue = td[j].textContent || td[j].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+          break; // keluar dari loop jika sudah ada satu td yang cocok
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+  document.getElementById("searchInput").addEventListener("input", searchTable);
 </script>
