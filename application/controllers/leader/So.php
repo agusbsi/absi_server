@@ -19,10 +19,13 @@ class So extends CI_Controller
   {
     $id_leader = $this->session->userdata('id');
     $data['title'] = 'Management Stock Opname';
-    $data['list_data'] = $this->db->query("SELECT tt.*,  tu.nama_user as spg, Max(ts.id) as id_so, Max(ts.created_at) as date_so FROM tb_toko tt
-    left JOIN tb_user tu ON tt.id_spg = tu.id 
-    left join tb_so ts on tt.id = ts.id_toko
-    WHERE tt.status = '1' and tt.id_leader = '$id_leader' ")->result();
+    $data['list_data'] = $this->db->query("SELECT tt.*, tu.nama_user as spg, Max(ts.id) as id_so, Max(ts.created_at) as date_so 
+    FROM tb_toko tt
+    LEFT JOIN tb_user tu ON tt.id_spg = tu.id 
+    LEFT JOIN tb_so ts ON tt.id = ts.id_toko
+    WHERE tt.status = '1' and tt.id_leader = '$id_leader' 
+    GROUP BY tt.id")->result();
+
     $data['list_spv'] = $this->db->query("SELECT * FROM tb_user WHERE role = 2")->result();
     $data['id_toko'] = $this->M_support->kode_toko();
 
