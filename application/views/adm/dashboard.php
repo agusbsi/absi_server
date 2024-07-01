@@ -406,6 +406,9 @@
           </div>
         </div>
       </div>
+      <div class="card-footer">
+        <small>* Data ini di ambil dari Toko yang sudah di kaitkan ke Supervisor.</small>
+      </div>
       <!-- /.card-body -->
     </div>
   </div>
