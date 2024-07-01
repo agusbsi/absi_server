@@ -38,7 +38,8 @@ class Dashboard extends CI_Controller
       join tb_retur tr on tpd.id_retur = tr.id
       where tr.status >= 2 AND tr.status <= 4  AND MONTH(tr.created_at) = $bln AND YEAR(tr.created_at) = $thn")->row();
 
-    $data['t_stok'] = $this->db->query("SELECT sum(qty) as total FROM tb_stok where status = 1")->row();
+    $data['t_stok'] = $this->db->query("SELECT sum(ts.qty) as total FROM tb_stok ts
+    JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1 ")->row();
     // 5 top toko
     $data['top_toko'] = $this->db->query("SELECT tt.*, SUM(tpd.qty) as total, tu.nama_user as spg 
     FROM tb_toko tt
@@ -92,7 +93,7 @@ class Dashboard extends CI_Controller
 
       [
         'box'         => 'bg-info',
-        'total'       => $this->db->query("SELECT count(id) as total from tb_toko where  status != 0")->row()->total,
+        'total'       => $this->db->query("SELECT count(id) as total from tb_toko where  status = 1")->row()->total,
         'title'       => 'Toko',
         'link'        => 'adm/Toko/',
         'icon'        => 'fas fa-store'
@@ -174,6 +175,20 @@ class Dashboard extends CI_Controller
       'jual' => $data_jual,
     );
 
+    echo json_encode($data);
+  }
+  // grafik Stok SPV
+  public function stok_spv()
+  {
+    $this->db->select('tb_user.nama_user as nama, COUNT(DISTINCT tb_toko.id) as total_toko, SUM(tb_stok.qty) as total_stok');
+    $this->db->from('tb_stok');
+    $this->db->join('tb_toko', 'tb_toko.id = tb_stok.id_toko');
+    $this->db->join('tb_user', 'tb_user.id = tb_toko.id_spv');
+    $this->db->where('tb_toko.status', 1);
+    $this->db->group_by('tb_user.nama_user');
+    $this->db->order_by('total_stok', 'DESC');
+    $query = $this->db->get();
+    $data = $query->result_array();
     echo json_encode($data);
   }
 }

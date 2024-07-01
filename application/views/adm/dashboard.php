@@ -369,7 +369,45 @@
         <!-- /.card -->
       </div>
     </div>
-
+    <div class="card card-danger">
+      <div class="card-header">
+        <h3 class="card-title">Stok Artikel Berdasarkan Supervisor</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-5">
+            <table class="table" id="data-table">
+              <thead>
+                <tr class="text-center">
+                  <th rowspan="2">Supervisor</th>
+                  <th colspan="2">Total</th>
+                  <th rowspan="2">(%)</th>
+                </tr>
+                <tr class="text-center">
+                  <th>Toko</th>
+                  <th>Stok</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot>
+                <tr>
+                  <th class="text-right">Grand Total : </th>
+                  <th id="grand-total-toko"></th>
+                  <th id="grand-total-stok"></th>
+                  <th id="persen"></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="col-md-7">
+            <div class="chart mt-5 pt-3">
+              <canvas id="grafikStokSPV" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.card-body -->
+    </div>
   </div>
 </section>
 <!-- jQuery -->
@@ -443,6 +481,61 @@
           data: barChartData,
           options: barChartOptions
         })
+      }
+    });
+  });
+</script>
+<script>
+  $(document).ready(function() {
+    $.ajax({
+      url: '<?= base_url('adm/Dashboard/stok_spv'); ?>',
+      method: 'GET',
+      dataType: 'json',
+      success: function(data) {
+        var labels = [];
+        var dataValues = [];
+        var tableContent = '';
+        var grandTotalToko = 0;
+        var grandTotalStok = 0;
+
+        data.forEach(function(item) {
+          labels.push(item.nama);
+          dataValues.push(item.total_stok);
+          grandTotalToko += parseInt(item.total_toko);
+          grandTotalStok += parseInt(item.total_stok);
+        });
+
+        data.forEach(function(item) {
+          var totalStokNumeric = parseInt(item.total_stok);
+          var percentage = ((item.total_stok / grandTotalStok) * 100).toFixed(2);
+          tableContent += '<tr><td><small>' + item.nama + '</small></td><td><small>' + item.total_toko + '</small></td><td><small>' + totalStokNumeric.toLocaleString() + '</small></td><td><small>' + percentage + '%</small></td></tr>';
+        });
+
+        $('#data-table tbody').html(tableContent);
+        $('#grand-total-toko').text(grandTotalToko);
+        $('#grand-total-stok').text(grandTotalStok.toLocaleString());
+        $('#persen').text('100 %');
+
+        var donutChartCanvas = $('#grafikStokSPV').get(0).getContext('2d');
+        var donutData = {
+          labels: labels,
+          datasets: [{
+            data: dataValues,
+            backgroundColor: [
+              '#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'
+            ],
+          }]
+        };
+        var donutOptions = {
+          maintainAspectRatio: false,
+          responsive: true,
+        };
+
+        new Chart(donutChartCanvas, {
+          type: 'doughnut',
+          data: donutData,
+          options: donutOptions
+        });
       }
     });
   });
