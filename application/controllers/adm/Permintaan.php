@@ -72,14 +72,9 @@ class Permintaan extends CI_Controller
   public function detail($id)
   {
     $data['title'] = 'Permintaan Barang';
-    $data_permintaan = $this->db->query("SELECT tp.*, tt.nama_toko, tu.username from tb_permintaan tp join tb_toko tt on tt.id = tp.id_toko join tb_user tu on tu.id = tp.id_user where tp.id = '$id'")->row();
-    $data['detail_permintaan'] = $this->db->query("SELECT * from tb_permintaan_detail tpd join tb_produk tp on tp.id = tpd.id_produk where tpd.id_permintaan = '$id'")->result();
-
-    $data['no_permintaan'] = $id;
-    $data['tanggal'] = $data_permintaan->created_at;
-    $data['status'] = $data_permintaan->status;
-    $data['nama_toko'] = $data_permintaan->nama_toko;
-    $data['nama'] = $data_permintaan->username;
+    $data['permintaan'] = $this->db->query("SELECT tp.*, tt.nama_toko,tt.alamat, tu.username as spg from tb_permintaan tp join tb_toko tt on tt.id = tp.id_toko join tb_user tu on tu.id = tp.id_user where tp.id = '$id'")->row();
+    $data['detail'] = $this->db->query("SELECT * from tb_permintaan_detail tpd join tb_produk tp on tp.id = tpd.id_produk where tpd.id_permintaan = '$id'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_po_histori where id_po = '$id'")->result();
     $this->template->load('template/template', 'adm/transaksi/permintaan_detail', $data);
   }
 }

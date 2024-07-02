@@ -130,11 +130,11 @@
                   <b style="font-size:small"><?= $dd->nama_toko ?> </b><br>
                   <small><b>Leader :</b> <?= $dd->leader ? $dd->leader : 'Tidak ada' ?> </small>
                 </td>
-                <td>
+                <td class="text-center">
                   <small><?= date("d F Y, H:i:s", strtotime($dd->created_at)) ?></small>
                 </td>
 
-                <td>
+                <td class="text-center">
 
                   <a type="button" class="btn btn-primary btn-sm" href="<?= base_url('adm_gudang/pengiriman/detail_p/' . $dd->id) ?>" name="btn_detail" title="Detail"><i class="fa fa-eye" aria-hidden="true"></i> </a>
                   <button type="button" data-id="<?= $dd->id ?>" data-id_po="<?= $dd->id_permintaan ?>" data-toko="<?= $dd->nama_toko ?>" data-toggle="modal" data-target="#modal-export" class="btn btn-warning btn-sm btn_export" title="Export ke Easy"><i class="fa fa-file-export"></i> </button>
@@ -271,7 +271,7 @@
         <form id="formExport" method="post" action="<?= base_url('adm_gudang/Pengiriman/export_ea'); ?>">
           <div class="form-group">
             <label for="file">No. Transfer</label>
-            <input type="text" name="no_transfer" class="form-control form-control-sm" placeholder="Gunakan no urut dr Easy Accounting..." required>
+            <input type="text" name="no_transfer" id="no_transfer" class="form-control form-control-sm" required>
             <input type="hidden" name="id_kirim" id="id_kirim">
             <input type="hidden" name="id_po" id="id_po">
           </div>
@@ -374,6 +374,7 @@
     const id_po = $(this).data('id_po');
     const toko = $(this).data('toko');
     // Set data to Form Edit
+    $('#no_transfer').val(id);
     $('#id_kirim').val(id);
     $('#id_po').val(id_po);
     $('.nama_toko').val(toko);

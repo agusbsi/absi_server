@@ -98,7 +98,7 @@
                   <th>Nomor</th>
                   <th>Nama Toko</th>
                   <th>Status</th>
-                  <th>Tanggal</th>
+                  <th>Tgl Dibuat</th>
                   <th>Menu</th>
                 </tr>
               </thead>

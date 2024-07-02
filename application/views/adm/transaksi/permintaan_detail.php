@@ -5,39 +5,117 @@
         <h3 class="card-title"><i class="nav-icon fas fa-box"></i> <?= $title ?></h3>
       </div>
       <div class="card-body">
-      <h3>Detail Permintaan Barang</h3>
         <div class="row">
-          <div class="col">
-            <b>No. Permintaan</b><br>
-            <b>Toko</b><br>
-            <b>Tanggal Permintaan</b><br>
-            <b>Status</b><br>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>No PO :</label>
+              <input type="text" class="form-control form-control-sm" name="permintaan" value="<?= $permintaan->id ?>" readonly>
+            </div>
           </div>
-          <div class="col">
-            : <?= $no_permintaan ?><br>
-            : <?= $nama_toko." ($nama)" ?><br>
-            : <?= format_tanggal1($tanggal) ?><br>
-            : <?= status_permintaan($status) ?><br>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nama Toko :</label>
+              <input type="text" class="form-control form-control-sm" name="toko" value="<?= $permintaan->nama_toko ?>" readonly>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Status :</label> <br>
+              <?= status_permintaan($permintaan->status); ?>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nama SPG :</label>
+              <input type="text" class="form-control form-control-sm" name="spg" value="<?= $permintaan->spg ?>" readonly>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>Alamat Toko :</label> <br>
+              <address>
+                <small><?= $permintaan->alamat ?></small>
+              </address>
+            </div>
           </div>
         </div>
         <hr>
-        
+
         <table class="table table-bordered table-striped">
-          <tr>
-            <th>Kode Artikel</th>
-            <th>Nama Artikel</th>
-            <th>Qty</th>
-          </tr>
-          <?php foreach ($detail_permintaan as $d) { ?>
-          <tr>
-            <td><?= $d->kode ?></td>
-            <td><?= $d->nama_produk ?></td>
-            <td><?= $d->qty ?></td>
-          </tr>
-          <?php } ?>
+          <thead>
+            <tr class="text-center">
+              <th rowspan="2">No</th>
+              <th rowspan="2">Artikel</th>
+              <th colspan="2">Jumlah</th>
+              <th rowspan="2">Keterangan</th>
+            </tr>
+            <tr class="text-center">
+              <th>Minta</th>
+              <th>ACC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            $no = 0;
+            $t_minta = 0;
+            $t_acc = 0;
+            foreach ($detail as $d) {
+              $no++; ?>
+              <tr>
+                <td class="text-center"><?= $no ?></td>
+                <td>
+                  <small>
+                    <strong><?= $d->kode ?></strong> <br>
+                    <?= $d->nama_produk ?>
+                  </small>
+                </td>
+                <td class="text-center"><?= $d->qty ?></td>
+                <td class="text-center"><?= $d->qty_acc ?></td>
+                <td><?= $d->keterangan ?></td>
+              </tr>
+            <?php
+              $t_minta += $d->qty;
+              $t_acc += $d->qty_acc;
+            }
+            ?>
+            <tr>
+              <td colspan="2" class="text-right">Total :</td>
+              <td class="text-center"><?= $t_minta ?></td>
+              <td class="text-center"><?= $t_acc ?></td>
+              <td></td>
+            </tr>
+          </tbody>
         </table>
+        <hr>
+        # Proses Pengajuan :
+        <hr>
+        <div class="timeline">
+          <?php
+          $no = 0;
+          foreach ($histori as $h) :
+            $no++;
+          ?>
+            <div>
+              <i class="fas bg-blue"><?= $no ?></i>
+              <div class="timeline-item">
+                <span class="time"></span>
+                <p class="timeline-header"><small><?= $h->aksi ?> <strong><?= $h->pembuat ?></strong></small></p>
+                <div class="timeline-body">
+                  <small>
+                    <?= date('d-M-Y  H:i:s', strtotime($h->tanggal)) ?> <br>
+                    Catatan :<br>
+                    <?= $h->catatan ?>
+                  </small>
+                </div>
+              </div>
+            </div>
+          <?php endforeach ?>
+        </div>
+        <hr>
+      </div>
     </div>
+    <a href="<?= base_url('adm/Permintaan') ?>" class="btn btn-link"><i class="fa fa-arrow-left"></i> Kembali ke halaman depan</a>
   </div>
-  <a href="<?= base_url('adm/Permintaan') ?>" class="btn btn-link"><i class="fa fa-arrow-left"></i> Kembali ke halaman depan</a>
-</div>
 </section>

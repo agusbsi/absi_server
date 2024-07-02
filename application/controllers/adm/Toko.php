@@ -690,4 +690,26 @@ class Toko extends CI_Controller
 
     echo json_encode($data);
   }
+  // Controller: Ambil histori berdasarkan id
+  public function histori($id)
+  {
+    $histori = $this->db->query("SELECT * from tb_toko_histori where id_toko ='$id'")->result();
+
+    // Format data untuk dikirim kembali sebagai JSON
+    if ($histori) {
+      $response = [
+        'status' => 'success',
+        'data' => $histori
+      ];
+    } else {
+      $response = [
+        'status' => 'error',
+        'message' => 'Histori tidak ditemukan'
+      ];
+    }
+
+    // Kirimkan sebagai JSON
+    header('Content-Type: application/json');
+    echo json_encode($response);
+  }
 }

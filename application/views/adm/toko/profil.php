@@ -138,8 +138,6 @@
                 </table>
               </div>
             </div>
-            <!-- /.card -->
-
           </div>
           <div class="col-md-5">
             <div class="card card-outline card-info">
@@ -227,6 +225,7 @@
               </div>
               <!-- /.card-body -->
             </div>
+            <button type="button" class="btn btn-outline-info btn-block btn-sm" id="btnHistori" data-id="<?= $toko->id ?>"><i class="fas fa-feather"></i> Histori Pengajuan </button>
           </div>
         </div>
       </div>
@@ -477,6 +476,28 @@
     </div>
   </div>
 </div>
+<!-- Modal Histori Pengajuan -->
+<div class="modal fade" id="modalHistori" tabindex="-1" role="dialog" aria-labelledby="modalHistoriTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalHistoriTitle">Histori Pengajuan</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="timeline">
+          <!-- Tempat untuk menampilkan histori pengajuan -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   $('.btn_kartu').click(function() {
     var id_produk = $(this).data('id');
@@ -599,4 +620,53 @@
       $('#s_akhir').html('0'); // You can set default values here
     }
   }
+</script>
+<script>
+  $(document).ready(function() {
+    $('#btnHistori').click(function() {
+      var id = $(this).data('id');
+      $.ajax({
+        url: '<?= base_url('adm/Toko/histori/') ?>' + id, // Ganti url dengan endpoint Anda
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 'success') {
+            // Bersihkan konten timeline sebelum menambahkan data baru
+            $('.timeline').empty();
+
+            // Iterasi data histori dan tambahkan ke dalam timeline
+            $.each(response.data, function(index, item) {
+              var timelineItem = `
+                <div>
+                  <i class="fas bg-blue">${index + 1}</i>
+                  <div class="timeline-item">
+                    <span class="time"></span>
+                    <p class="timeline-header"><small>${item.aksi} <strong>${item.pembuat}</strong></small></p>
+                    <div class="timeline-body">
+                      <small>
+                        ${item.tanggal} <br>
+                        Catatan :<br>
+                        ${item.catatan}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              `;
+              $('.timeline').append(timelineItem);
+            });
+
+            // Tampilkan modal
+            $('#modalHistori').modal('show');
+          } else {
+            // Tampilkan pesan error jika terjadi kesalahan
+            alert('Histori Toko Tidak Ditemukan.');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error(xhr.responseText);
+          alert('Terjadi kesalahan saat mengambil data histori.');
+        }
+      });
+    });
+  });
 </script>

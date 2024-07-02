@@ -45,7 +45,7 @@
 
       <li class="nav-header">Modul Utama</li>
       <li class="nav-item">
-        <a href="<?= base_url('mng_ops/Dashboard/permintaan') ?>" class="nav-link <?= ($title == 'Permintaan') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-file-alt"></i>
           <p>
             Permintaan
