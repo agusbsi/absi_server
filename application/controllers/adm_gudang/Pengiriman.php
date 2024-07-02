@@ -65,7 +65,10 @@ class Pengiriman extends CI_Controller
       join tb_user tu on tt.id_leader = tu.id
       order by tp.id desc LIMIT 500")->result();
     }
-
+    $data['list_po'] = $this->db->query("SELECT tp.*, tt.nama_toko from tb_pengiriman tp
+    join tb_toko tt on tp.id_toko = tt.id
+    where tp.status = 1
+    order by tp.id desc ")->result();
     $this->template->load('template/template', 'adm_gudang/pengiriman/lihat_data', $data);
   }
 
@@ -97,6 +100,79 @@ class Pengiriman extends CI_Controller
     where tpd.id_pengiriman = '$no_pengiriman' and tpd.qty != '0'")->result();
     $this->load->view('adm_gudang/pengiriman/detail_print', $data);
   }
+  // export ke Easy Accounting all
+  public function export_ea_all()
+  {
+    $name_user = $this->session->userdata('nama_user');
+    $id_kirim_all = $this->input->post('id_kirim_all');
+    $gudang = $this->input->post('gudang');
+    $tanggal = $this->input->post('tanggal_all');
+
+    // Create a new Spreadsheet instance
+    $spreadsheet = new Spreadsheet();
+    $worksheet = $spreadsheet->getActiveSheet();
+    $worksheet->setTitle('Export MultiData PO');
+    $worksheet->getStyle('A1:J1')->getFont()->setBold(true);
+    $worksheet->setCellValue('A1', 'No. Transfer');
+    $worksheet->setCellValue('B1', 'Tanggal');
+    $worksheet->setCellValue('C1', 'Deskripsi');
+    $worksheet->setCellValue('D1', 'Gudang Asal');
+    $worksheet->setCellValue('E1', 'Gudang Tujuan');
+    $worksheet->setCellValue('F1', 'Template');
+    $worksheet->setCellValue('G1', 'No. Barang');
+    $worksheet->setCellValue('H1', 'Kuantitas');
+    $worksheet->setCellValue('I1', 'Unit');
+    $worksheet->setCellValue('J1', 'User');
+
+    $row = 2; // Start from the second row
+
+    foreach ($id_kirim_all as $id_kirim) {
+      $query = $this->db->query("SELECT tpd.*, tp.kode,tp.satuan from tb_pengiriman_detail tpd
+          join tb_produk tp on tpd.id_produk = tp.id
+          WHERE tpd.id_pengiriman = '$id_kirim'");
+      $kirim = $this->db->query("SELECT tp.*, tt.nama_toko from tb_pengiriman tp
+      join tb_toko tt on tp.id_toko = tt.id 
+      where tp.id = '$id_kirim'")->row();
+      if ($gudang == "PASIFIK") {
+        $gudangTujuan = "51.4 GUD. KONSI PASIFIK";
+      } else if ($gudang == "TOKO") {
+        $gudangTujuan = $kirim->nama_toko;
+      } else {
+        $gudangTujuan = "51.1 GUD. KONSINYASI";
+      }
+
+      if ($query->num_rows() > 0) {
+        $detail = $query->result();
+        $tanggalkirim = new DateTime($tanggal);
+        $tanggalkirimFormat = $tanggalkirim->format('d/m/Y');
+
+        foreach ($detail as $data) {
+          // Set values for each row
+          $worksheet->setCellValue('A' . $row, $id_kirim);
+          $worksheet->setCellValue('B' . $row, $tanggalkirimFormat);
+          $worksheet->setCellValue('C' . $row, $kirim->nama_toko . " (" . $kirim->id_permintaan . ") ");
+          $worksheet->setCellValue('D' . $row, "91 GUD. PREPEDAN");
+          $worksheet->setCellValue('E' . $row, $gudangTujuan);
+          $worksheet->setCellValue('F' . $row, "SJ Konsinyasi");
+          $worksheet->setCellValue('G' . $row, $data->kode);
+          $worksheet->setCellValue('H' . $row, $data->qty);
+          $worksheet->setCellValue('I' . $row, $data->satuan);
+          $worksheet->setCellValue('J' . $row, $name_user);
+          $row++;
+        }
+      }
+    }
+
+    // Create Excel writer
+    $writer = new Xlsx($spreadsheet);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="Export_Multiple_PO.xlsx"');
+
+    ob_end_clean();
+    $writer->save('php://output');
+    exit();
+  }
+
   // export ke Easy Accounting
   public function export_ea()
   {
@@ -104,7 +180,7 @@ class Pengiriman extends CI_Controller
     $id_kirim  = $this->input->post('id_kirim');
     $id_po  = $this->input->post('id_po');
     $toko  = $this->input->post('toko');
-    $tanggal  = $this->input->post('tanggal');
+    $tanggal  = $this->input->post('tanggal_exp');
     $no_transfer  = $this->input->post('no_transfer');
     // Get invoice data from the model
     $query = $this->db->query("SELECT tpd.*, tp.kode,tp.satuan from tb_pengiriman_detail tpd
