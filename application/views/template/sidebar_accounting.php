@@ -21,7 +21,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('mng_ops/Dashboard/customer') ?>" class="nav-link <?= ($title == 'Kelola Customer') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Customer') ?>" class="nav-link <?= ($title == 'Kelola Customer') ? "active" : "" ?>">
           <i class="nav-icon fas fa-hotel"></i>
           <p>
             Customer
@@ -29,17 +29,9 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('mng_ops/Dashboard/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
           <i class="nav-icon fas fa-store"></i>
           <p>Toko </p>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="<?= base_url('mng_ops/Dashboard/user') ?>" class="nav-link <?= ($title == 'user') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-users"></i>
-          <p>
-            Leader & SPG
-          </p>
         </a>
       </li>
       <li class="nav-item">
