@@ -53,7 +53,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('mng_ops/Dashboard/pengiriman') ?>" class="nav-link <?= ($title == 'pengiriman') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Pengiriman') ?>" class="nav-link <?= ($title == 'Pengiriman Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-truck"></i>
           <p>
             Pengiriman

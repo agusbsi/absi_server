@@ -63,7 +63,7 @@
                   <div class="form-group">
                     <label>Kategori</label>
                     <?php if (empty($kat)) { ?>
-                      <input type="text" name="kategori" value="<?= !empty($kat) ? $kat : '' ?>" class="form-control form-control-sm" placeholder="Cari berdasarkan Nomor atau Nama Toko">
+                      <input type="text" name="kategori" value="<?= !empty($kat) ? $kat : '' ?>" class="form-control form-control-sm" placeholder="Cari berdasarkan Nomor Kirim atau Nama Toko">
                     <?php } else { ?>
                       <input type="text" class="form-control form-control-sm" value="<?= $kat ?>" readonly>
                     <?php } ?>
@@ -96,6 +96,7 @@
                 <tr class="text-center">
                   <th>#</th>
                   <th>Nomor</th>
+                  <th>Nomor PO</th>
                   <th>Nama Toko</th>
                   <th>Status</th>
                   <th>Tanggal</th>
@@ -110,6 +111,7 @@
                   <tr>
                     <td><?= $no ?></td>
                     <td class="text-center"><small><strong><?= $row->id ?></strong></small></td>
+                    <td class="text-center"><small><a href="<?= base_url('adm/Permintaan/detail/' . $row->id_permintaan) ?>"><strong><?= $row->id_permintaan ?></strong></a></small></td>
                     <td><small><?= $row->nama_toko ?></small></td>
                     <td class="text-center"><?= status_pengiriman($row->status) ?></td>
                     <td class="text-center"><small><?= date('d-M-Y : H:m:s', strtotime($row->created_at)) ?></small></td>
