@@ -63,7 +63,7 @@ class Permintaan extends CI_Controller
     $data['permintaan'] = $this->db->query("SELECT tp.*, tt.alamat,tt.id as id_toko,tt.nama_toko,tt.telp,tu.nama_user as spg from tb_permintaan tp
     join tb_toko tt on tp.id_toko = tt.id
     join tb_user tu on tp.id_user = tu.id where tp.id = '$no_permintaan'")->row();
-    $data['detail_permintaan'] = $this->db->query("SELECT tpd.*,tpk.kode, tpk.nama_produk, tt.het, tpk.harga_indobarat as het_indobarat, tpk.harga_jawa as het_jawa, COALESCE(ts.qty, 0) as stok  from tb_permintaan_detail tpd
+    $data['detail_permintaan'] = $this->db->query("SELECT tpd.*,tpk.kode, tpk.nama_produk,tpk.packing, tt.het, tpk.harga_indobarat as het_indobarat, tpk.harga_jawa as het_jawa, COALESCE(ts.qty, 0) as stok  from tb_permintaan_detail tpd
     join tb_permintaan tp on tpd.id_permintaan = tp.id
     join tb_toko tt on tp.id_toko = tt.id
     join tb_produk tpk on tpd.id_produk = tpk.id

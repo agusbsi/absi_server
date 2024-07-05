@@ -64,7 +64,7 @@
                   </tr>
                   <tr>
                     <th class="text-center">Minta</th>
-                    <th class="text-center">ACC</th>
+                    <th class="text-center" style="width: 12%;">ACC</th>
                   </tr>
                 </thead>
 
@@ -102,7 +102,14 @@
                         <?= $d->qty ?>
                       </td>
                       <td class="text-center">
-                        <input type="number" name="qty_acc[]" class="form-control form-control-sm" min="0" id="qty_acc" value="<?= $d->qty ?>" style="width: 85px;" required>
+                        <select name="qty_acc[]" class="form-control form-control-sm" required>
+                          <option value="">Pilih</option>
+                          <option value="0">0</option>
+                          <?php for ($i = 1; $i <= 10; $i++) {
+                            $qty = $d->packing * $i; ?>
+                            <option value="<?= $qty ?>" <?= $qty == $d->qty ? 'selected' : '' ?>><?= $qty ?></option>
+                          <?php } ?>
+                        </select>
                       </td>
                       <td class="text-center">
                         <input type="text" name="hrg_produk[]" class="form-control form-control-sm" readonly="" value="<?= $hrg_produk; ?>" style="width: 85px;">
@@ -253,7 +260,7 @@
     }
 
     // Ambil semua elemen input qty_acc dan terapkan event listener
-    var qtyAccInputs = document.querySelectorAll('input[name="qty_acc[]"]');
+    var qtyAccInputs = document.querySelectorAll('select[name="qty_acc[]"]');
     qtyAccInputs.forEach(function(input) {
       input.addEventListener("input", function() {
         var parentRow = input.closest("tr");
