@@ -73,8 +73,8 @@ class So extends CI_Controller
   public function riwayat_so_toko($id_toko, $id_so)
   {
     // tahap perbaika
-    tampil_alert('info', 'MAINTENANCE', 'Fitur ini sedang dalam perbaikan, coba kembali nanti.');
-    redirect($_SERVER['HTTP_REFERER']);
+    // tampil_alert('info', 'MAINTENANCE', 'Fitur ini sedang dalam perbaikan, coba kembali nanti.');
+    // redirect($_SERVER['HTTP_REFERER']);
     $data['title'] = 'Management Stock Opname';
     $data['SO']  = $this->db->query("SELECT ts.*, tt.nama_toko from tb_so ts 
     join tb_toko tt on ts.id_toko = tt.id
