@@ -47,8 +47,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Main content -->
           <div class="invoice p-3 mb-3">
             <!-- title row -->
             <div class="row">
@@ -99,10 +97,11 @@
                     $nextJual = 0;
                     foreach ($detail_so as $d) {
                       $no++;
+                      $stok_akhir = $d->qty_awal - $d->jml_jual_buat;
                       $akhir = $d->qty_awal + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
-                      $awal = $d->qty_awal - $d->jml_terima - $d->mutasi_masuk  + $d->jml_retur + $d->jml_jual + $d->mutasi_keluar;
+                      $awal = $stok_akhir - $d->jml_terima - $d->mutasi_masuk  + $d->jml_retur + $d->jml_jual + $d->mutasi_keluar;
                       $selisih = ($d->hasil_so + $d->qty_jual) - $akhir;
-                      $selisih_update = ($d->hasil_so + $d->qty_jual) - $d->qty_awal;
+                      $selisih_update = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
                     ?>
                       <tr>
                         <td class="text-center"><?= $no ?></td>
@@ -117,7 +116,7 @@
                         <td class="text-center"><?= $d->jml_retur ?></td>
                         <td class="text-center"><?= $d->jml_jual ?></td>
                         <td class="text-center"><?= $d->mutasi_keluar ?></td>
-                        <td class="text-center"><strong><?= DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $akhir : $d->qty_awal ?></strong></td>
+                        <td class="text-center"><strong><?= DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $akhir : $stok_akhir ?></strong></td>
                         <td class="text-center"><strong><?= $d->hasil_so ?></strong></td>
                         <td class="text-center"><small><?= $d->qty_jual ?></small></td>
                         <?php if (DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05') { ?>
@@ -136,7 +135,7 @@
                       $t_awal += $d->qty_awal;
                       $t_awal_update += $awal;
                       $hasil_akhir += $akhir;
-                      $hasil_akhir_update += $d->qty_awal;
+                      $hasil_akhir_update += $stok_akhir;
                       $t_selisih += $selisih;
                       $t_selisih_update += $selisih_update;
                       $nextJual += $d->qty_jual;
@@ -194,13 +193,10 @@
             </div>
           </div>
         </div>
-        <!-- end print area -->
+      </div>
 
-        <!-- /.invoice -->
-      </div><!-- /.col -->
-
-    </div><!-- /.row -->
-  </div><!-- /.container-fluid -->
+    </div>
+  </div>
 </section>
 
 

@@ -112,13 +112,30 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '12'")->nu
           </p>
         </a>
       </li>
-      <li class="nav-item">
-        <a href="<?= base_url('sup/So') ?>" class="nav-link <?= ($title == 'Management Stock Opname') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-file-alt"></i>
+      <li class="nav-item <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-file"></i>
           <p>
             Management SO Toko
+            <i class="right fas fa-angle-left"></i>
           </p>
         </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('sup/So') ?>" class="nav-link <?= ($title == 'Management Stock Opname') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Bulan ini
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('sup/So/Riwayat_so') ?>" class="nav-link <?= ($title == 'Histori SO') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Histori</p>
+            </a>
+          </li>
+        </ul>
       </li>
       <li class="nav-item">
         <a href="<?= base_url('sup/Penjualan') ?>" class="nav-link <?= ($title == 'Transaksi Penjualan') ? "active" : "" ?>">

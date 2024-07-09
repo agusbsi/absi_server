@@ -29,7 +29,11 @@ class So extends CI_Controller
     $data['t_toko'] = $this->db->query("SELECT * from tb_toko where status = '1'")->num_rows();
     $data['t_so'] = $this->db->query("SELECT * from tb_toko where status_so = '1' and status = '1'")->num_rows();
     $data['t_bso'] = $this->db->query("SELECT * from tb_toko where status_so = '0' and status = '1'")->num_rows();
-
+    $data['list_data'] = $this->db->query("SELECT tt.*, tb_user.nama_user,
+    Max(ts.id) as id_so, Max(ts.created_at) as tgl_buat, max(ts.tgl_so) as tanggal_so FROM tb_toko tt
+    left join tb_so ts on tt.id = ts.id_toko
+    left JOIN tb_user ON tt.id_spg = tb_user.id 
+    WHERE tt.status = '1' group by tt.id order by tt.id asc")->result();
     $this->template->load('template/template', 'manager_mv/stokopname/index', $data);
   }
 
@@ -51,13 +55,12 @@ class So extends CI_Controller
   // riwayat so
   public function riwayat_so()
   {
-    $data['title'] = 'Management Stock Opname';
-    $lastMonth = date('Y-m-d', strtotime('first day of last month'));
+    $data['title'] = 'Histori SO';
     $thisMonth = date('Y-m-d', strtotime('first day of this month'));
-    $data['list_so'] = $this->db->query(" SELECT *, DATE_FORMAT(created_at, '%M %Y') AS period from tb_so
-    WHERE created_at < '$thisMonth'
-    group by YEAR(created_at), MONTH(created_at)
-    ORDER BY created_at ASC")->result();
+    $data['list_so'] = $this->db->query(" SELECT ts.*, DATE_FORMAT(DATE_SUB(ts.created_at, INTERVAL 1 MONTH), '%M %Y') AS periode, tt.nama_toko, ts.created_at as dibuat from tb_so ts
+    join tb_toko tt on ts.id_toko = tt.id
+    WHERE ts.created_at < '$thisMonth'
+    ORDER BY ts.created_at DESC")->result();
     $this->template->load('template/template', 'manager_mv/stokopname/riwayat_so', $data);
   }
   // menampilkan list detail json
@@ -72,15 +75,12 @@ class So extends CI_Controller
 
   public function riwayat_so_toko($id_toko, $id_so)
   {
-    // tahap perbaika
-    // tampil_alert('info', 'MAINTENANCE', 'Fitur ini sedang dalam perbaikan, coba kembali nanti.');
-    // redirect($_SERVER['HTTP_REFERER']);
-    $data['title'] = 'Management Stock Opname';
+    $data['title'] = 'Detail SO';
     $data['SO']  = $this->db->query("SELECT ts.*, tt.nama_toko from tb_so ts 
     join tb_toko tt on ts.id_toko = tt.id
     where ts.id_toko = '$id_toko' and ts.id = '$id_so'")->row();
     $tgl_so = $this->db->query("SELECT tgl_so FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_so;
-    $query = "SELECT COALESCE(nj.qty, 0) as qty_jual,tp.kode,tsd.hasil_so,tsd.qty_awal, COALESCE(vt.jml_terima, 0) AS jml_terima,COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,COALESCE(vp.jml_jual, 0) AS jml_jual,COALESCE(vr.jml_retur, 0) AS jml_retur,COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar FROM tb_stok ts
+    $query = "SELECT COALESCE(nj.qty, 0) as qty_jual,tp.kode,tsd.hasil_so,tsd.qty_awal, COALESCE(vt.jml_terima, 0) AS jml_terima,COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,COALESCE(vp.jml_jual, 0) AS jml_jual,COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,COALESCE(vr.jml_retur, 0) AS jml_retur,COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar FROM tb_stok ts
     LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -96,6 +96,11 @@ class So extends CI_Controller
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
         GROUP BY 
             id_produk ) vp ON vp.id_produk = ts.id_produk
+    LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 0 MONTH))
+        GROUP BY 
+            id_produk ) vpb ON vpb.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_retur FROM vw_retur WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -118,7 +123,7 @@ class So extends CI_Controller
 
     GROUP BY ts.id_produk ORDER BY tp.kode ASC";
 
-    $data['detail_so'] = $this->db->query($query, array($id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $id_so))->result();
+    $data['detail_so'] = $this->db->query($query, array($id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $id_so))->result();
     $this->template->load('template/template', 'manager_mv/stokopname/detail_so_toko', $data);
   }
   public function unduh_so($id_so)
@@ -129,7 +134,7 @@ class So extends CI_Controller
 
     $tgl_so = $this->db->query("SELECT created_at FROM tb_so WHERE id = ?", array($id_so))->row()->created_at;
 
-    $query = "SELECT COALESCE(nj.qty, 0) as qty_jual,tp.kode,tsd.hasil_so,tsd.qty_awal, COALESCE(vt.jml_terima, 0) AS jml_terima,COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,COALESCE(vp.jml_jual, 0) AS jml_jual,COALESCE(vr.jml_retur, 0) AS jml_retur,COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar FROM tb_stok ts
+    $query = "SELECT COALESCE(nj.qty, 0) as qty_jual,tp.kode,tsd.hasil_so,tsd.qty_awal, COALESCE(vt.jml_terima, 0) AS jml_terima,COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,COALESCE(vp.jml_jual, 0) AS jml_jual,COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,COALESCE(vr.jml_retur, 0) AS jml_retur,COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar FROM tb_stok ts
        LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
                AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
                AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -145,6 +150,11 @@ class So extends CI_Controller
                AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
            GROUP BY 
                id_produk ) vp ON vp.id_produk = ts.id_produk
+      LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 0 MONTH))
+        GROUP BY 
+            id_produk ) vpb ON vpb.id_produk = ts.id_produk
        LEFT JOIN (SELECT  id_produk, jml_retur FROM vw_retur WHERE id_toko = ?
                AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
                AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -167,7 +177,7 @@ WHERE ts.id_toko = ? AND tsd.id_so = ?
 
 GROUP BY ts.id_produk ORDER BY tp.kode ASC";
 
-    $detail = $this->db->query($query, array($toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $id_so))->result();
+    $detail = $this->db->query($query, array($toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $tgl_so, $tgl_so, $toko->id_toko, $id_so))->result();
 
     if (empty($toko) || empty($detail)) {
       tampil_alert('error', 'DATA KOSONG', 'tidak ada data yang bisa di tampilkan');
@@ -226,10 +236,11 @@ GROUP BY ts.id_produk ORDER BY tp.kode ASC";
       $row = 4;
       $no = 1;
       foreach ($detail as $d) {
+        $stok_akhir = $d->qty_awal - $d->jml_jual_buat;
         $akhir = $d->qty_awal + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
-        $awal = $d->qty_awal - $d->jml_terima - $d->mutasi_masuk  + $d->jml_retur + $d->jml_jual + $d->mutasi_keluar;
+        $awal = $stok_akhir - $d->jml_terima - $d->mutasi_masuk  + $d->jml_retur + $d->jml_jual + $d->mutasi_keluar;
         $selisih = ($d->hasil_so + $d->qty_jual) - $akhir;
-        $selisih_update = ($d->hasil_so + $d->qty_jual) - $d->qty_awal;
+        $selisih_update = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
 
         $worksheet->setCellValue('A' . $row, $no);
         $worksheet->setCellValue('B' . $row, $d->kode);
@@ -239,7 +250,7 @@ GROUP BY ts.id_produk ORDER BY tp.kode ASC";
         $worksheet->setCellValue('F' . $row, $d->jml_retur);
         $worksheet->setCellValue('G' . $row, $d->jml_jual);
         $worksheet->setCellValue('H' . $row, $d->mutasi_keluar);
-        $worksheet->setCellValue('I' . $row, DATE_FORMAT(new DateTime($toko->created_at), 'Y-m') <= '2024-05' ? $akhir : $d->qty_awal);
+        $worksheet->setCellValue('I' . $row, DATE_FORMAT(new DateTime($toko->created_at), 'Y-m') <= '2024-05' ? $akhir : $stok_akhir);
         $worksheet->setCellValue('J' . $row, $d->hasil_so);
         $worksheet->setCellValue('K' . $row, $d->qty_jual);
         $worksheet->setCellValue('L' . $row, DATE_FORMAT(new DateTime($toko->created_at), 'Y-m') <= '2024-05' ? $selisih : $selisih_update);
