@@ -66,11 +66,11 @@
                            <td class="text-center">
                              <?php
                               date_default_timezone_set('Asia/Jakarta');
-                              $login = strtotime($dd->last_online);
+                              $login = strtotime($dd->last_login);
                               $waktu = strtotime(date("Y-m-d h:i:sa"));
                               $hasil = $waktu - $login;
                               $menit = floor($hasil / 60);
-                              if (($menit > 5) or ($dd->last_online == null)) {
+                              if (($menit > 5) or ($dd->last_login == null)) {
                                 echo "<i class='fas fa-circle text-secondary text-sm'></i> Offline";
                               } else {
                                 echo "<i class='fas fa-circle text-success text-sm'></i> Online";
@@ -80,7 +80,7 @@
 
                            </td>
                            <td class="text-center">
-                             <small><?= $dd->last_login ? login(strtotime($dd->last_online)) : 'Belum Login' ?></small>
+                             <small><?= $dd->last_login ? login(strtotime($dd->last_login)) : 'Belum Login' ?></small>
                            </td>
 
                      </tr>

@@ -66,7 +66,7 @@
                     foreach ($list_users as $dd) :
                       $no++;
                       date_default_timezone_set('Asia/Jakarta');
-                      $login = strtotime($dd->last_online);
+                      $login = strtotime($dd->last_login);
                       $waktu = strtotime(date("Y-m-d h:i:s"));
                       $hasil = $waktu - $login;
                       $menit = floor($hasil / 60); ?>
@@ -74,9 +74,9 @@
                       <td>
                         <div class="user-block">
                           <?php if ($dd->foto_diri == null) { ?>
-                            <img class="img-circle  <?= (($menit > 5) or ($dd->last_online == null)) ? '' : 'online' ?>" src="<?= base_url('assets/img/user.png') ?>">
+                            <img class="img-circle  <?= (($menit > 5) or ($dd->last_login == null)) ? '' : 'online' ?>" src="<?= base_url('assets/img/user.png') ?>">
                           <?php } else { ?>
-                            <img class="img-circle  <?= (($menit > 5) or ($dd->last_online == null)) ? '' : 'online' ?>" src="<?= base_url('assets/img/user/') . $dd->foto_diri ?>">
+                            <img class="img-circle  <?= (($menit > 5) or ($dd->last_login == null)) ? '' : 'online' ?>" src="<?= base_url('assets/img/user/') . $dd->foto_diri ?>">
                           <?php } ?>
                           <span class="username">
                             <?= $dd->nama_user ?>
@@ -85,7 +85,7 @@
                           <span class="description">Telp : <?= $dd->no_telp; ?></span>
                           <span class="description">
                             <?php
-                            if (($menit > 5) or ($dd->last_online == null)) {
+                            if (($menit > 5) or ($dd->last_login == null)) {
                               echo "<i class='fas fa-circle status-icon' style='color: grey;'></i> Offline";
                             } else {
                               echo "<i class='fas fa-circle status-icon' style='color: green;'></i> Online";
