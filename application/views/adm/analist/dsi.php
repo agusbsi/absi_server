@@ -367,7 +367,7 @@
       if (!isNaN(qty)) {
         totalQty += qty;
       }
-      var stok = parseInt(item.stok, 10);
+      var stok = parseInt((item.stok - item.jml_jual), 10);
       if (!isNaN(qty)) {
         totalstok += stok;
       }
