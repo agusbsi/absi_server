@@ -55,12 +55,37 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
 
       <li class="nav-header">Transaksi</li>
       <li class="nav-item">
-        <a href="<?= base_url('leader/So') ?>" class="nav-link <?= ($title == 'Management Stock Opname') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-file-alt"></i>
+        <a href="<?= base_url('adm/Analist') ?>" class="nav-link <?= ($title == 'Marketing Analist') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-flask"></i>
           <p>
-            Management SO Toko
+            Marketing Analist
           </p>
         </a>
+      </li>
+      <li class="nav-item <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-file"></i>
+          <p>
+            Management SO Toko
+            <i class="right fas fa-angle-left"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('sup/So') ?>" class="nav-link <?= ($title == 'Management Stock Opname') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Bulan ini
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('sup/So/Riwayat_so') ?>" class="nav-link <?= ($title == 'Histori SO') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Histori</p>
+            </a>
+          </li>
+        </ul>
       </li>
       <li class="nav-item">
         <a href="<?= base_url('leader/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan') ? "active" : "" ?>">
@@ -107,14 +132,6 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </a>
       </li>
       <li class="nav-header">Laporan</li>
-      <li class="nav-item">
-        <a href="<?= base_url('adm/Analist') ?>" class="nav-link <?= ($title == 'Marketing Analist') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-flask"></i>
-          <p>
-            Marketing Analist
-          </p>
-        </a>
-      </li>
       <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>

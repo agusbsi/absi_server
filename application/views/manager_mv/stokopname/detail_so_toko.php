@@ -186,7 +186,6 @@
             <hr>
             <div class="row no-print">
               <div class="col-12">
-                <a href="<?= base_url('sup/So/detail/' . $SO->id_toko) ?>" class="btn btn-warning btn-sm <?= $this->session->userdata('role') != 1 ? "d-none" : "" ?> float-right" style="margin-right: 5px;"><i class="fas fa-edit"></i> Edit </a>
                 <a href="<?= base_url('sup/So/unduh_so/' . $SO->id) ?>" class="btn btn-success btn-sm float-right mr-2 "><i class="fa fa-download"></i> Unduh Excel</a>
                 <button onclick="goBack()" class="btn btn-danger btn-sm float-right mr-2"> <i class="fas fa-times-circle"></i> Kembali</button>
               </div>
