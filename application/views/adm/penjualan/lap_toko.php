@@ -158,10 +158,6 @@
                 <th>Kode</th>
                 <th>Artikel</th>
                 <th>Terjual</th>
-                <th>
-                  Stok Akhir <br>
-                  <small>( <?= date('M-Y', strtotime('last month')) ?> )</small>
-                </th>
               </tr>
             </thead>
             <tbody id="dataTableBody">
@@ -203,15 +199,28 @@
 
   function downloadExcel() {
     var wb = XLSX.utils.book_new();
-    var header = ["No", "Kode", "Artikel", "Terjual", "Stok Akhir"];
+    var header = ["No", "Kode", "Artikel", "Terjual"];
     var sheetData = [];
+
+    // Ambil nilai toko dan periode dari HTML
+    var toko = document.getElementById('toko').textContent.trim();
+    var lap_awal = document.getElementById('lap_awal').textContent.trim();
+    var lap_akhir = document.getElementById('lap_akhir').textContent.trim();
+
+    // Tambahkan baris pertama untuk nama toko dan periode
+    sheetData.push(["", "", toko, "", "", ""]);
+    sheetData.push(["", "", "Periode :", lap_awal + " s/d " + lap_akhir, "", "", ""]);
+
+    // Tambahkan header kolom
     sheetData.push(header);
+
+    // Ambil data dari tabel
     var table = document.getElementById('dataTableBody');
     for (var i = 0; i < table.rows.length; i++) {
       var row = [];
       for (var j = 0; j < table.rows[i].cells.length; j++) {
         var cellValue = table.rows[i].cells[j].textContent.trim();
-        if (header[j] === "Terjual" || header[j] === "Stok Akhir") {
+        if (header[j] === "Terjual") {
           var numericValue = parseFloat(cellValue.replace(/[^0-9.-]+/g, ''));
           row.push(isNaN(numericValue) ? cellValue : numericValue);
         } else {
@@ -220,11 +229,16 @@
       }
       sheetData.push(row);
     }
+
+    // Buat worksheet dan tambahkan ke workbook
     var ws = XLSX.utils.aoa_to_sheet(sheetData);
-    XLSX.utils.book_append_sheet(wb, ws, 'Data Penjualan per Toko');
-    var filename = 'Laporan_jual_Toko.xlsx';
+    XLSX.utils.book_append_sheet(wb, ws, 'PENJUALAN PER TOKO');
+
+    // Simpan file Excel dengan nama sesuai toko
+    var filename = toko + '.xlsx';
     XLSX.writeFile(wb, filename);
   }
+
 
   document.getElementById('searchBtn').addEventListener('click', function() {
     var idToko = document.getElementById('id_toko').value;
@@ -336,16 +350,11 @@
             <td><small class="${item.total == 0 ? 'text-danger' : ''}">${item.kode}</small></td>
             <td><small class="${item.total == 0 ? 'text-danger' : ''}">${item.nama_produk}</small></td>
             <td class="text-center ${item.total == 0 ? 'text-danger' : ''}">${item.total}</td>
-            <td class="text-center ">${item.stok}</td>
         `;
       tableBody.appendChild(row);
       var qty = parseInt(item.total, 10);
       if (!isNaN(qty)) {
         totalQty += qty;
-      }
-      var stok = parseInt(item.stok, 10);
-      if (!isNaN(qty)) {
-        totalstok += stok;
       }
     });
 
@@ -353,7 +362,6 @@
     totalRow.innerHTML = `
     <td colspan="3" class="text-right"><strong>Total : </strong></td>
     <td class="text-center">${totalQty}</td>
-    <td class="text-center">${totalstok}</td>
 `;
     tableBody.appendChild(totalRow);
   }

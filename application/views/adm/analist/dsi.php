@@ -357,9 +357,9 @@
             <td><small class="${item.total == 0 ? 'text-danger' : ''}">${item.kode}</small></td>
             <td><small class="${item.total == 0 ? 'text-danger' : ''}">${item.nama_produk}</small></td>
             <td class="text-center ${item.total == 0 ? 'text-danger' : ''}">${item.total}</td>
-            <td class="text-center ">${item.stok}</td>
+            <td class="text-center ">${(item.stok - item.jml_jual)}</td>
            <td class="text-center " style="color: ${item.total != 0 ? (item.stok / (item.total / data.bln) > 4 ? 'red' : 'inherit') : 'inherit'}">
-            <strong>${item.total != 0 ? (item.stok / (item.total / data.bln)).toFixed(1) : ''}</strong>
+            <strong>${item.total != 0 ? ((item.stok - item.jml_jual) / (item.total / data.bln)).toFixed(1) : ''}</strong>
            </td>
         `;
       tableBody.appendChild(row);

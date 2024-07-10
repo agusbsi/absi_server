@@ -34,7 +34,7 @@ class Analist extends CI_Controller
     $diff = $awal->diff($akhir);
     $jumlah_bulan = $diff->y * 12 + $diff->m + 1;
     $summary = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
-    $tabel_data = $this->db->query("SELECT tpk.kode, tpk.nama_produk, COALESCE(SUM(tpd.qty), 0) as total, COALESCE(ts.qty_awal, 0) as stok
+    $tabel_data = $this->db->query("SELECT tpk.kode, tpk.nama_produk, COALESCE(SUM(tpd.qty), 0) as total, COALESCE(ts.qty_awal, 0) as stok, COALESCE(vpb.jml_jual, 0) AS jml_jual
     FROM tb_stok ts
     LEFT JOIN tb_produk tpk ON ts.id_produk = tpk.id
     LEFT JOIN (
@@ -44,6 +44,11 @@ class Analist extends CI_Controller
         WHERE tp.id_toko = '$id_toko' AND DATE(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir'
         GROUP BY tpd.id_produk
     ) tpd ON tpk.id = tpd.id_produk
+    LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = '$id_toko'
+            AND tahun = YEAR(DATE_SUB(NOW(), INTERVAL 0 MONTH))
+            AND bulan = MONTH(DATE_SUB(NOW(), INTERVAL 0 MONTH))
+        GROUP BY 
+            id_produk ) vpb ON vpb.id_produk = ts.id_produk
     WHERE ts.id_toko = '$id_toko'
     GROUP BY tpk.id
     ORDER BY COALESCE(SUM(tpd.qty), 0) DESC")->result();
