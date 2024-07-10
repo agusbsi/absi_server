@@ -60,6 +60,14 @@
        </li>
 
        <li class="nav-header">Laporan</li>
+       <li class="nav-item">
+         <a href="<?= base_url('adm/Analist') ?>" class="nav-link <?= ($title == 'Marketing Analist') ? "active" : "" ?>">
+           <i class="nav-icon fas fa-flask"></i>
+           <p>
+             Marketing Analist
+           </p>
+         </a>
+       </li>
        <li class="nav-item <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "menu-open" : "" ?>">
          <a href="#" class="nav-link <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "active" : "" ?>">
            <i class="nav-icon fas fa-file"></i>

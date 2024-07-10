@@ -21,7 +21,16 @@ class Analist extends CI_Controller
   public function dsi()
   {
     $data['title'] = 'Marketing Analist';
-    $data['toko'] = $this->db->query("SELECT * from tb_toko where status ='1'")->result();
+    $id = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
+    if ($role == 2) {
+      $dsi = $this->db->query("SELECT * from tb_toko where status ='1' AND id_spv = '$id'");
+    } else if ($role == 3) {
+      $dsi = $this->db->query("SELECT * from tb_toko where status ='1' AND id_leader = '$id'");
+    } else {
+      $dsi = $this->db->query("SELECT * from tb_toko where status ='1'");
+    }
+    $data['toko'] = $dsi->result();
     $this->template->load('template/template', 'adm/analist/dsi', $data);
   }
   public function cari_dsi()
