@@ -145,6 +145,14 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '12'")->nu
           </p>
         </a>
       </li>
+      <li class="nav-item">
+        <a href="<?= base_url('adm/Analist') ?>" class="nav-link <?= ($title == 'Marketing Analist') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-flask"></i>
+          <p>
+            Marketing Analist
+          </p>
+        </a>
+      </li>
 
       <li class="nav-header">Laporan</li>
       <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
