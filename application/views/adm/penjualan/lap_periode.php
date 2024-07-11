@@ -140,7 +140,14 @@
           <p class="text-center"> Periode :</p>
           <div class="text-center"><label id="lap_awal" class="mr-2 text-center"></label> s/d <label class="text-center ml-2" id="lap_akhir"></label>
           </div>
-          <table class="table table-bordered mt-4">
+          <table id="myTable" class="table table-bordered mt-4">
+            <thead>
+              <tr class="text-center">
+                <th>No</th>
+                <th>Nama Toko</th>
+                <th>Terjual</th>
+              </tr>
+            </thead>
             <tbody id="dataTableBody">
             </tbody>
           </table>
@@ -180,44 +187,45 @@
 
   function downloadExcel() {
     var wb = XLSX.utils.book_new();
-    var header = ["No", "Kode", "Artikel", "Qty"];
+    var header = ["No", "Nama Toko","Terjual"];
     var sheetData = [];
 
-    var table = document.getElementById('dataTableBody');
-    var rowIndex = 1; // For numbering the items
+    // Ambil nilai toko dan periode dari HTML
+    var toko = "Semua Toko";
+    var lap_awal = document.getElementById('lap_awal').textContent.trim();
+    var lap_akhir = document.getElementById('lap_akhir').textContent.trim();
 
+    // Tambahkan baris pertama untuk nama toko dan periode
+    sheetData.push(["", "", toko, "", "", ""]);
+    sheetData.push(["", "", "Periode :", lap_awal + " s/d " + lap_akhir, "", "", ""]);
+
+    // Tambahkan header kolom
+    sheetData.push(header);
+
+    // Ambil data dari tabel
+    var table = document.getElementById('dataTableBody');
     for (var i = 0; i < table.rows.length; i++) {
       var row = [];
-      var cells = table.rows[i].cells;
-
-      if (cells.length === 4) { // Product or total rows
-        if (cells[0].classList.contains('text-center')) { // Product row
-          row.push(rowIndex);
-          rowIndex++;
-          for (var j = 1; j < cells.length; j++) {
-            row.push(cells[j].textContent.trim());
-          }
-        } else { // Total row
-          row.push("", "", cells[0].textContent.trim(), cells[3].textContent.trim());
-          rowIndex = 1; // Reset numbering for new store
+      for (var j = 0; j < table.rows[i].cells.length; j++) {
+        var cellValue = table.rows[i].cells[j].textContent.trim();
+        if (header[j] === "Terjual") {
+          var numericValue = parseFloat(cellValue.replace(/[^0-9.-]+/g, ''));
+          row.push(isNaN(numericValue) ? cellValue : numericValue);
+        } else {
+          row.push(cellValue);
         }
-      } else if (cells.length === 2) { // Store name row
-        row.push(cells[0].textContent.trim() + " " + cells[1].textContent.trim());
-        rowIndex = 1; // Reset numbering for new store
-      } else if (cells.length === 1) { // Header row
-        row.push(cells[0].textContent.trim());
-        rowIndex = 1; // Reset numbering for new store
       }
-
       sheetData.push(row);
     }
 
+    // Buat worksheet dan tambahkan ke workbook
     var ws = XLSX.utils.aoa_to_sheet(sheetData);
-    XLSX.utils.book_append_sheet(wb, ws, 'Data Penjualan per Periode');
-    var filename = 'Laporan_jual_Periode.xlsx';
+    XLSX.utils.book_append_sheet(wb, ws, 'PENJUALAN PER PERIODE');
+
+    // Simpan file Excel dengan nama sesuai toko
+    var filename = toko + '.xlsx';
     XLSX.writeFile(wb, filename);
   }
-
 
   document.getElementById('searchBtn').addEventListener('click', function() {
     var tglAwal = document.getElementById('tgl_awal').value;
@@ -252,7 +260,7 @@
         .then(response => response.json())
         .then(data => {
           // Additional duration after data is fetched
-          var additionalDuration = 1000; // 3 seconds
+          var additionalDuration = 0; // 3 seconds
           var additionalIntervalTime = intervalTime; // same interval time
           var additionalIntervals = additionalDuration / additionalIntervalTime;
           var remainingIntervals = 0;
@@ -310,73 +318,37 @@
   });
 
   function updateUI(data) {
+    $('#toko').html(data.toko);
     $('#lap_awal').html(data.awal);
     $('#lap_akhir').html(data.akhir);
     $('.cari').addClass('d-none');
     $('.no-data').addClass('d-none');
     $('.hasil').removeClass('d-none');
-
     // Update the table
     var tableBody = document.getElementById('dataTableBody');
-    var grandTotalQty = 0;
+    var totalQty = 0;
+    var totalstok = 0;
     tableBody.innerHTML = '';
-
-    for (var toko in data.tabel_data) {
-      if (data.tabel_data.hasOwnProperty(toko)) {
-        // Add the store name row
-        var tokoHeader = document.createElement('tr');
-        tokoHeader.innerHTML = `
-                <td class="text-right"><strong>Nama Toko : </strong></td>
-                <td colspan="3" class="text-left"><strong>${toko}</strong></td>
-            `;
-        tableBody.appendChild(tokoHeader);
-
-        // Add the column headers row
-        var columnHeader = document.createElement('tr');
-        columnHeader.className = 'text-center';
-        columnHeader.innerHTML = `
-                <th>No</th>
-                <th>Kode</th>
-                <th>Artikel</th>
-                <th>Terjual</th>
-            `;
-        tableBody.appendChild(columnHeader);
-
-        // Add the product rows
-        var tokoTotalQty = 0;
-        data.tabel_data[toko].forEach((item, index) => {
-          var row = document.createElement('tr');
-          row.innerHTML = `
-                    <td class="text-center">${index + 1}</td>
-                    <td>${item.kode}</td>
-                    <td>${item.nama_produk}</td>
-                    <td class="text-center">${item.total}</td>
-                `;
-          tableBody.appendChild(row);
-          var qty = parseInt(item.total, 10);
-          if (!isNaN(qty)) {
-            tokoTotalQty += qty;
-          }
-        });
-
-        // Add the total quantity row for the store
-        var tokoTotalRow = document.createElement('tr');
-        tokoTotalRow.innerHTML = `
-                <td colspan="3" class="text-right"><strong>Total:</strong></td>
-                <td class="text-center"><strong>${tokoTotalQty}</strong></td>
-            `;
-        tableBody.appendChild(tokoTotalRow);
-        grandTotalQty += tokoTotalQty;
+    data.tabel_data.forEach((item, index) => {
+      var row = document.createElement('tr');
+      row.innerHTML = `
+            <td class="text-center"><small>${index + 1}</small></td>
+            <td><small class="${item.total == 0 ? 'text-danger' : ''}">${item.nama_toko}</small></td>
+            <td class="text-center ${item.total == 0 ? 'text-danger' : ''}">${item.total}</td>
+        `;
+      tableBody.appendChild(row);
+      var qty = parseInt(item.total, 10);
+      if (!isNaN(qty)) {
+        totalQty += qty;
       }
-    }
+    });
 
-    // Add the grand total quantity row
-    var grandTotalRow = document.createElement('tr');
-    grandTotalRow.innerHTML = `
-        <td colspan="3" class="text-right"><strong>Grand Total :</strong></td>
-        <td class="text-center"><strong>${grandTotalQty}</strong></td>
-    `;
-    tableBody.appendChild(grandTotalRow);
+    var totalRow = document.createElement('tr');
+    totalRow.innerHTML = `
+    <td colspan="2" class="text-right"><strong>Total : </strong></td>
+    <td class="text-center">${totalQty}</td>
+`;
+    tableBody.appendChild(totalRow);
   }
 
   function printDiv(divName) {

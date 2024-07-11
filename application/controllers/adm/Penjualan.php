@@ -165,34 +165,28 @@ class Penjualan extends CI_Controller
   }
   public function cari_periode()
   {
-    $tgl_awal = $this->input->get('tgl_awal');
-    $tgl_akhir = $this->input->get('tgl_akhir');
-    $query = "
-          SELECT tt.nama_toko, tpk.kode, tpk.nama_produk, SUM(tpd.qty) as total
-          FROM tb_penjualan_detail tpd 
-          JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
-          JOIN tb_produk tpk ON tpd.id_produk = tpk.id 
-          JOIN tb_toko tt ON tp.id_toko = tt.id
-          WHERE date(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir'
-          GROUP BY tt.nama_toko, tpd.id_produk 
-          ORDER BY tt.nama_toko, SUM(tpd.qty) DESC
-      ";
-    $result = $this->db->query($query)->result();
+      $tgl_awal = $this->input->get('tgl_awal');
+      $tgl_akhir = $this->input->get('tgl_akhir');
+      $query = "SELECT tt.nama_toko, COALESCE(SUM(penjualan.qty), 0) as total
+          FROM tb_toko tt
+          LEFT JOIN (
+              SELECT tp.id_toko, tpd.qty
+              FROM tb_penjualan tp
+              JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_penjualan
+              WHERE date(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir'
+          ) AS penjualan ON tt.id = penjualan.id_toko
+          WHERE tt.status = 1
+          GROUP BY tt.nama_toko
+          ORDER BY COALESCE(SUM(penjualan.qty), 0) DESC";
+      $tabel_data = $this->db->query($query)->result();
 
-    $tabel_data = [];
-    foreach ($result as $row) {
-      $tabel_data[$row->nama_toko][] = [
-        'kode' => $row->kode,
-        'nama_produk' => $row->nama_produk,
-        'total' => $row->total,
+      $data = [
+          'awal' => date('d-M-Y', strtotime($tgl_awal)),
+          'akhir' => date('d-M-Y', strtotime($tgl_akhir)),
+          'tabel_data' => $tabel_data
       ];
-    }
-
-    $data = [
-      'awal' => date('d-M-Y', strtotime($tgl_awal)),
-      'akhir' => date('d-M-Y', strtotime($tgl_akhir)),
-      'tabel_data' => $tabel_data
-    ];
-    echo json_encode($data);
+      echo json_encode($data);
   }
+
+  
 }
