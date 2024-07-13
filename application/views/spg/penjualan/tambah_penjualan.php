@@ -19,7 +19,7 @@
           <div class="col">
             : <?= $no_penjualan ?><br>
             : <?= $toko_new->nama_toko . " ($nama)" ?><br>
-            : <input id="tanggal_penjualan" type="date" value="<?= ($this->session->userdata('tanggal_penjualan')) ? $this->session->userdata('tanggal_penjualan') : date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d', strtotime('-90 days')) ?>"></input><br>
+            : <input id="tanggal_penjualan" type="date" value="<?= ($this->session->userdata('tanggal_penjualan')) ? $this->session->userdata('tanggal_penjualan') : date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d', strtotime('-200 days')) ?>"></input><br>
           </div>
         </div>
         <hr>

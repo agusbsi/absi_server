@@ -145,6 +145,14 @@
                </p>
              </a>
            </li>
+           <li class="nav-item">
+              <a href="<?= base_url('adm/Penjualan/lap_periode') ?>" class="nav-link <?= ($title == 'Penjualan Periode') ? "active" : "" ?>">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                  Per Periode
+                </p>
+              </a>
+            </li>
          </ul>
        </li>
        <li class="nav-item">

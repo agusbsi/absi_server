@@ -165,6 +165,15 @@ class Penjualan extends CI_Controller
   }
   public function cari_periode()
   {
+    $id = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
+    if ($role == 2) {
+      $queri = "AND tt.id_spv = '$id'";
+    } else if ($role == 3) {
+      $queri = "AND tt.id_leader = '$id'";
+    } else {
+      $queri = "";
+    }
       $tgl_awal = $this->input->get('tgl_awal');
       $tgl_akhir = $this->input->get('tgl_akhir');
       $query = "SELECT tt.nama_toko, COALESCE(SUM(penjualan.qty), 0) as total
@@ -175,7 +184,7 @@ class Penjualan extends CI_Controller
               JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_penjualan
               WHERE date(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir'
           ) AS penjualan ON tt.id = penjualan.id_toko
-          WHERE tt.status = 1
+          WHERE tt.status = 1 $queri
           GROUP BY tt.nama_toko
           ORDER BY COALESCE(SUM(penjualan.qty), 0) DESC";
       $tabel_data = $this->db->query($query)->result();
