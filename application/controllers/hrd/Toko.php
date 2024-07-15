@@ -24,9 +24,9 @@ class Toko extends CI_Controller
     left join tb_user tl on tt.id_leader = tl.id
     left join tb_user ts on tt.id_spv = ts.id
     where tt.status = 1 order by tt.id desc")->result();
-    $data['spv'] = $this->db->query("SELECT * from tb_user where role = 2 ")->result();
-    $data['leader'] = $this->db->query("SELECT * from tb_user where role = 3 ")->result();
-    $data['spg'] = $this->db->query("SELECT * from tb_user where role = 4 ")->result();
+    $data['spv'] = $this->db->query("SELECT * from tb_user where role = 2 AND status = 1 ")->result();
+    $data['leader'] = $this->db->query("SELECT * from tb_user where role = 3 AND status = 1 ")->result();
+    $data['spg'] = $this->db->query("SELECT * from tb_user where role = 4 AND status = 1 ")->result();
     $this->template->load('template/template', 'hrd/toko/index', $data);
   }
   // ganti akses

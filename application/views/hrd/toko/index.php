@@ -3,61 +3,65 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-
-        <!-- /.card -->
-
         <div class="card card-info">
           <div class="card-header">
             <h3 class="card-title">
-              <li class="fas fa-chart-pie"></li> Data Akses Toko
+              <li class="fas fa-store"></li> Data Akses Toko
             </h3>
           </div>
-          <!-- /.card-header -->
           <div class="card-body">
-
-
             <table id="example1" class="table table-bordered table-striped">
               <thead>
-                <tr class="text-center">
-                  <th style="width: 1%">No</th>
-                  <th style="width:25%">Toko</th>
-                  <th>SUPERVISOR</th>
-                  <th>LEADER</th>
+                <tr>
+                  <th class="text-center">No</th>
+                  <th>Toko</th>
+                  <th>Supervisor</th>
+                  <th>Leader</th>
                   <th>SPG</th>
-                  <th>Action</th>
+                  <th class="text-center">Menu</th>
                 </tr>
               </thead>
               <tbody>
+              <?php 
+                    $no = 0;
+                    foreach ($list_toko as $data):
+                    $no++; ?>
                 <tr>
-                  <?php if (is_array($list_toko)) { ?>
-                    <?php $no = 0; ?>
-                    <?php foreach ($list_toko as $data):
-                      $no++; ?>
-
                       <td>
                         <?= $no ?>
                       </td>
                       <td>
-                        <?= $data->nama_toko ?>
+                        <small><strong><?= $data->nama_toko ?></strong></small>
                       </td>
-                      <td class="text-center">
-                        <?= $data->spv ?>
+                      <td>
+                        <small>
+                        <?php if (empty($data->spv)) {
+                          echo "<span class='badge badge-danger badge-sm'>- kosong - </span>";
+                        } else {
+                          echo $data->spv;
+                        }
+                        ?>
+                        </small>
                       </td>
-                      <td class="text-center">
-                        <?php if (empty($data->leader)) {
+                      <td>
+                       <small>
+                       <?php if (empty($data->leader)) {
                           echo "<span class='badge badge-danger badge-sm'>- kosong - </span>";
                         } else {
                           echo $data->leader;
                         }
                         ?>
+                       </small>
                       </td>
-                      <td class="text-center">
-                        <?php if (empty($data->spg)) {
+                      <td>
+                       <small>
+                       <?php if (empty($data->spg)) {
                           echo "<span class='badge badge-danger badge-sm'>- kosong - </span>";
                         } else {
                           echo $data->spg;
                         }
                         ?>
+                       </small>
                       </td>
                       <td class="text-center">
                         <a class="btn btn-warning btn-sm btn-edit" data-id="<?= $data->id; ?>"
@@ -68,12 +72,6 @@
                       </td>
                     </tr>
                   <?php endforeach; ?>
-
-                <?php } else { ?>
-                  <td colspan="6" align="center"><strong>Data Kosong</strong></td>
-                <?php } ?>
-                </tr>
-
               </tbody>
 
             </table>
@@ -94,7 +92,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">
-          <li class="fas fa-plus-circle"></li> Ganti Akses di Toko
+          <li class="fas fa-store"></li> Ganti Akses di Toko
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -108,15 +106,15 @@
             <label for="nama">
               <li class="fas fa-store"></li> Nama Toko
             </label> </br>
-            <input type="text" name="toko" class="form-control " id="toko" readonly>
+            <input type="text" name="toko" class="form-control form-control-sm" id="toko" readonly>
             <input type="hidden" name="id_toko" class="form-control " id="id_toko" readonly>
           </div>
           <div class="form-group">
             <label for="nama">
               <li class="fas fa-user"></li> Supervisor
             </label> </br>
-            <select name="spv" class="form-control select2bs4" id="spv" required>
-              <option value="">- Pilih SPV -</option>
+            <select name="spv" class="form-control form-control-sm select2" id="spv">
+              <option value="">- Kosong -</option>
               <?php foreach ($spv as $spv): ?>
                 <option value="<?= $spv->id ?>"><?= $spv->nama_user ?></option>
               <?php endforeach ?>
@@ -126,8 +124,8 @@
             <label for="nama">
               <li class="fas fa-user"></li> Leader
             </label> </br>
-            <select name="leader" class="form-control select2bs4" id="leader" required>
-              <option value="">- Pilih Leader -</option>
+            <select name="leader" class="form-control form-control-sm select2" id="leader">
+              <option value="">- Kosong -</option>
               <?php foreach ($leader as $leader): ?>
                 <option value="<?= $leader->id ?>"><?= $leader->nama_user ?></option>
               <?php endforeach ?>
@@ -137,19 +135,19 @@
             <label for="nama">
               <li class="fas fa-user"></li> SPG
             </label> </br>
-            <select name="spg" class="form-control select2bs4" id="spg" required>
-              <option value="">- Pilih SPG -</option>
+            <select name="spg" class="form-control form-control-sm select2" id="spg">
+              <option value="">- kosong -</option>
               <?php foreach ($spg as $spg): ?>
                 <option value="<?= $spg->id ?>"><?= $spg->nama_user ?></option>
               <?php endforeach ?>
             </select>
           </div>
       </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
           <li class="fas fa-times-circle"></li> Cancel
         </button>
-        <button type="submit" class="btn btn-success">
+        <button type="submit" class="btn btn-success btn-sm">
           <li class="fas fa-save"></li> Simpan
         </button>
       </div>

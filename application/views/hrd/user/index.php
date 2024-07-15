@@ -81,6 +81,7 @@
                           <span class="username">
                             <?= $dd->nama_user ?>
                           </span>
+                          <span class="description">Username : <?= $dd->username; ?></span>
                           <span class="description">KTP : <?= $dd->nik_ktp; ?></span>
                           <span class="description">Telp : <?= $dd->no_telp; ?></span>
                           <span class="description">
@@ -106,9 +107,9 @@
                         </a>
 
                         <?php if (($dd->status) == 1) { ?>
-                          <a data-id="<?= $dd->id; ?>" class="btn btn-danger btn-nonaktif  btn-sm <?= ($this->session->userdata('role') == 11) ? "d-none" : "" ?>" title="Non-aktifkan"><i class="fa fa-minus-circle"></i> </a>
+                          <a data-id="<?= $dd->id; ?>" class="btn btn-danger btn-nonaktif  btn-sm " title="Non-aktifkan"><i class="fa fa-minus-circle"></i> </a>
                         <?php } else { ?>
-                          <a data-id="<?= $dd->id; ?>" class="btn btn-info btn-aktif  btn-sm <?= ($this->session->userdata('role') == 11) ? "d-none" : "" ?>" title="Aktifkan"><i class="fa fa-plus-circle"></i> </a>
+                          <a data-id="<?= $dd->id; ?>" class="btn btn-info btn-aktif  btn-sm " title="Aktifkan"><i class="fa fa-plus-circle"></i> </a>
                         <?php } ?>
                         <a data-id="<?= $dd->id; ?>" class="btn btn-danger btn-sm btn_hapus" title="Hapus User"><i class="fas fa-trash"></i></a>
                       </td>
@@ -117,11 +118,7 @@
             <?php } ?>
 
               </tbody>
-              <tfoot>
-                <tr>
-                  <th colspan="6"></th>
-                </tr>
-              </tfoot>
+              
             </table>
           </div>
           <!-- /.card-body -->
@@ -319,7 +316,7 @@
       e.preventDefault();
       Swal.fire({
         title: 'Apakah anda yakin?',
-        text: "User ini akan di NONAKTIFKAN",
+        text: "User yang di non-aktifkan maka tidak bisa login ke aplikasi.",
         icon: 'info',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

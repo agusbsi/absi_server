@@ -75,7 +75,7 @@ class Analist extends CI_Controller
     $data['title'] = 'Marketing Analist';
     $query = "SELECT DATE_FORMAT(created_at, '%Y-%m') AS periode
           FROM tb_so 
-          WHERE created_at >= '2024-06-01'
+          WHERE created_at >= '2024-06-01' AND created_at < DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 0 MONTH), '%Y-%m-01')
           GROUP BY YEAR(created_at), MONTH(created_at)
           ORDER BY created_at DESC";
     $data['periode'] = $this->db->query($query)->result();
