@@ -108,15 +108,15 @@
              </a>
            </div>
            <div class="col-md-3">
-             <a href="#" title="Fitur">
+             <a href="<?= base_url('adm/Analist/pl') ?>" title="PL">
                <div class="e-card playing">
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="infotop">
-                   <img src="<?= base_url() ?>assets/img/marketing/tanya.svg" class="img" title="tanya"> <br>
-                   Kosong
-                   <div class="name">......</div>
+                   <img src="<?= base_url() ?>assets/img/marketing/pl.svg" class="img" title="PL"> <br>
+                   PL
+                   <div class="name">Potential Lost</div>
                  </div>
                </div>
              </a>

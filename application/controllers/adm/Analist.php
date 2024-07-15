@@ -70,4 +70,62 @@ class Analist extends CI_Controller
     ];
     echo json_encode($data);
   }
+  public function pl()
+  {
+    $data['title'] = 'Marketing Analist';
+    $query = "SELECT DATE_FORMAT(created_at, '%Y-%m') AS periode
+          FROM tb_so 
+          WHERE created_at >= '2024-06-01'
+          GROUP BY YEAR(created_at), MONTH(created_at)
+          ORDER BY created_at DESC";
+    $data['periode'] = $this->db->query($query)->result();
+    $this->template->load('template/template', 'adm/analist/pl', $data);
+  }
+  public function cari_pl()
+  {
+    $id = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
+    if ($role == 2) {
+      $queri = "AND tt.id_spv = '$id'";
+    } else if ($role == 3) {
+      $queri = "AND tt.id_leader = '$id'";
+    } else {
+      $queri = "";
+    }
+    $periode = $this->input->get('periode');
+    list($tahun, $bulan) = explode('-', $periode);
+    $tabel_data = $this->db->query("SELECT 
+        tt.nama_toko, 
+        COALESCE(SUM(ts.qty_awal), 0) as stok_awal, 
+        COALESCE(SUM(ts.hasil_so), 0) as so_spg,
+        jual,
+        COALESCE((SUM(ts.qty_awal)) - jual, 0) as akhir
+    FROM tb_toko tt
+    LEFT JOIN (
+        SELECT 
+            tsd.qty_awal,
+            tsd.hasil_so,
+            ts.id_toko
+        FROM tb_so ts
+        JOIN tb_so_detail tsd ON tsd.id_so = ts.id
+        WHERE DATE_FORMAT(ts.created_at, '%Y-%m') = '$periode'
+    ) ts ON tt.id = ts.id_toko
+    LEFT JOIN (
+        SELECT 
+             COALESCE(SUM(jml_jual), 0) as jual,
+            id_toko
+        FROM vw_penjualan_buat 
+        WHERE tahun = $tahun AND bulan = $bulan
+        GROUP BY id_toko
+    ) vpb ON tt.id = vpb.id_toko
+    WHERE tt.status = 1 $queri
+    GROUP BY tt.id
+    ORDER BY tt.id ASC")->result();
+
+    $data = [
+      'periode' => date('M Y', strtotime('-1 month', strtotime($periode))),
+      'tabel_data' => $tabel_data
+    ];
+    echo json_encode($data);
+  }
 }
