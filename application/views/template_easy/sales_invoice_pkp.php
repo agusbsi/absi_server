@@ -440,6 +440,7 @@
                   'Data tidak ditemukan, silahkan cari kembali',
                   'info'
                 );
+                $(".custom-loader").hide();
               }
             },
             error: function(xhr, status, error) {
