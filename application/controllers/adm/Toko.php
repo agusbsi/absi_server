@@ -278,6 +278,7 @@ class Toko extends CI_Controller
     $kabupaten = $this->input->post('kabupaten');
     $kecamatan = $this->input->post('kecamatan');
     $alamat = $this->input->post('alamat');
+    $gudang = $this->input->post('gudang');
 
     $target = $this->input->post('target');
     $updated = date('Y-m-d H:i:s');
@@ -298,6 +299,7 @@ class Toko extends CI_Controller
       'kabupaten' => $kabupaten,
       'kecamatan' => $kecamatan,
       'alamat' => $alamat,
+      'gudang' => $gudang,
       'status_ssr' => $batas_po,
       'target' => str_replace(['Rp. ', '.'], '', $target),
       'updated_at' => $updated

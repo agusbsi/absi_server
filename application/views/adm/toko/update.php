@@ -108,6 +108,10 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
+                <strong>Nama Gudang Easy</strong>
+                <input type="text" class="form-control form-control-sm" name="gudang" value="<?= $detail->gudang ?>" required></input>
+              </div>
+              <div class="form-group">
                 <strong>Tanggal SO</strong>
                 <select class="form-control form-control-sm tgl_so select2" name="tgl_so" required>
                   <option value="">- Pilih tgl SO -</option>
@@ -145,12 +149,13 @@
                   </div>
                 </div>
               </div>
+
+            </div>
+            <div class="col-md-6">
               <div class="form-group">
                 <strong>Limit Toko</strong>
                 <input type="text" class="form-control form-control-sm rupiah-input" name="limit" value="<?= $detail->limit_toko ?>" required></input>
               </div>
-            </div>
-            <div class="col-md-6">
               <div class="form-group">
                 <strong>Target Sales Toko</strong>
                 <input type="text" class="form-control form-control-sm rupiah-input" name="target" value="<?= $detail->target ?>" required></input>

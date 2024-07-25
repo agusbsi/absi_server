@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Content-Language" content="en">
   <title><?= $title ?></title>
   <link href="<?= base_url() ?>/assets/img/app/icon_absi.png" rel="icon">
   <!-- Google Font: Source Sans Pro -->

@@ -148,6 +148,12 @@
                 <table class="table table-sm">
                   <tbody>
                     <tr>
+                      <td><b>Gudang Easy</b></td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" value="<?= $toko->gudang ?>" readonly>
+                      </td>
+                    </tr>
+                    <tr>
                       <td><b>Max Tgl SO</b></td>
                       <td>
                         <input type="text" class="form-control form-control-sm" value="<?= $toko->tgl_so ?> / Bulan" readonly>

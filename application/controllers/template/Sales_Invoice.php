@@ -16,29 +16,20 @@ class Sales_Invoice extends CI_Controller
       redirect(base_url());
     }
   }
-
-
   public function index()
   {
     $data['title'] = 'Sales Invoice';
     $data['cust'] = $this->db->query("SELECT * from tb_customer ")->result();
     $data['list_toko'] = $this->db->query("SELECT * from tb_toko where status = 1")->result();
-    $this->template->load('template/template', 'template_easy/sales_invoice', $data);
+    $pt = $this->session->userdata('pt');
+    if ($pt == 'VISTA MANDIRI GEMILANG') {
+      $halaman = 'sales_invoice';
+    } else {
+      $halaman = 'sales_invoice_pkp';
+    }
+    $this->template->load('template/template', 'template_easy/' . $halaman, $data);
   }
-  public function list_jual_cust()
-  {
-    $id_cust   = $this->input->get('id_cust');
-    $tgl_awal  = $this->input->GET('tgl_awal');
-    $tgl_akhir = $this->input->GET('tgl_akhir');
-    $data = $this->db->query("SELECT tpd.*,tpd.id as id_detail, tpk.kode, tpk.nama_produk, tpk.satuan,SUM(tpd.qty) as total_qty, round((tpd.harga - (tpd.harga * tpd.diskon_toko / 100)),0) as harga_satuan, tc.kode_customer, tc.nama_cust from tb_penjualan_detail tpd
-    join tb_penjualan tp on tpd.id_penjualan = tp.id
-    join tb_produk tpk on tpd.id_produk = tpk.id
-    join tb_toko tt on tp.id_toko = tt.id
-    join tb_customer tc on tt.id_customer = tc.id
-    where tt.id_customer = '$id_cust' and date(tp.tanggal_penjualan) between '$tgl_awal' and '$tgl_akhir'
-    GROUP BY tpk.kode ORDER BY tpk.kode ASC")->result();
-    echo json_encode($data);
-  }
+
   public function list_jual()
   {
     $id_toko = $this->input->get('id_toko');
@@ -148,5 +139,43 @@ class Sales_Invoice extends CI_Controller
     ob_end_clean();
     $writer->save('php://output');
     exit();
+  }
+
+  // format selain vista
+  public function cari_group()
+  {
+    $id_cust   = $this->input->get('id_cust');
+    $tgl_awal  = $this->input->GET('tgl_awal');
+    $tgl_akhir = $this->input->GET('tgl_akhir');
+    $cust = $this->db->query("SELECT * from tb_customer where id = '$id_cust'")->row();
+    $query = "SELECT tt.nama_toko, tt.gudang, tpk.kode, tpk.nama_produk, SUM(tpd.qty) as total,tpk.satuan, round((tpd.harga - (tpd.harga * tpd.diskon_toko / 100)),0) as harga_satuan
+          FROM tb_penjualan_detail tpd 
+          JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+          JOIN tb_produk tpk ON tpd.id_produk = tpk.id 
+          JOIN tb_toko tt ON tp.id_toko = tt.id
+          JOIN tb_customer tc ON tt.id_customer = tc.id
+          WHERE date(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir' AND tt.id_customer = '$id_cust'
+          GROUP BY tt.nama_toko, tpd.id_produk 
+          ORDER BY tt.nama_toko ASC, tpk.kode ASC";
+    $result = $this->db->query($query)->result();
+
+    $tabel_data = [];
+    foreach ($result as $row) {
+      $tabel_data[$row->nama_toko][] = [
+        'kode' => $row->kode,
+        'nama_produk' => $row->nama_produk,
+        'total' => $row->total,
+        'harga' => $row->harga_satuan,
+        'satuan' => $row->satuan,
+        'gudang'  => $row->gudang
+      ];
+    }
+
+    $data = [
+      'nama_cust' => $cust->nama_cust,
+      'kode_cust' => $cust->kode_customer,
+      'tabel_data' => $tabel_data
+    ];
+    echo json_encode($data);
   }
 }
