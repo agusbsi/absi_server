@@ -12,12 +12,12 @@
               <div class="col-md-4"></div>
               <div class="col-md-4 text-right">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModalCenter"> <i class="fas fa-plus"></i> Toko Tutup</button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#exampleModalCenter"> <i class="fas fa-plus"></i> Tutup Toko</button>
                 </div>
               </div>
             </div>
             <hr>
-            <table id="table_toko" class="table table-bordered table-striped">
+            <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr class="text-center">
                   <th>No Pengajuan</th>

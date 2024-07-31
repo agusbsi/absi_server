@@ -1,17 +1,3 @@
-<style>
-  .img-artikel {
-    width: auto;
-    height: 50px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .img-artikel:hover {
-    transform: scale(5.5);
-    border: 1px solid rgb(0, 123, 255);
-  }
-</style>
 <section class="content">
   <div class="container-fluid">
     <div class="card card-info">
@@ -29,6 +15,9 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body">
+        <hr>
+        <h5 class="text-center">RETUR TUTUP TOKO</h5>
+        <hr>
         <div class="row">
           <div class="col-md-2">
             <div class="form-group">
@@ -68,7 +57,6 @@
               <th rowspan="2" style="width:5%">#</th>
               <th rowspan="2">Artikel</th>
               <th rowspan="2" style="width:5%">Satuan</th>
-              <th rowspan="2">foto</th>
               <th colspan="2">Jumlah</th>
             </tr>
             <tr class="text-center">
@@ -95,9 +83,6 @@
                   </small>
                 </td>
                 <td><small><?= $d->satuan ?></small></td>
-                <td>
-                  <img class="img-artikel" src="<?= base_url('assets/img/retur/' . $d->foto) ?>" alt="retur">
-                </td>
                 <td class="text-center"><?= $d->qty ?></td>
                 <td class="text-center"><?= $d->qty_terima ?></td>
 
@@ -111,7 +96,7 @@
           </tbody>
           <tfoot>
             <tr>
-              <td colspan="4" class="text-right">Total :</td>
+              <td colspan="3" class="text-right">Total :</td>
               <td class="text-center"> <strong><?= $total_qty ?></strong> </td>
               <td class="text-center"> <strong><?= $total_terima ?></strong> </td>
             </tr>

@@ -3,6 +3,7 @@ $id = $this->session->userdata('id');
 $Artikel = $this->db->query("SELECT id FROM tb_stok WHERE status = '2'")->num_rows();
 $Toko = $this->db->query("SELECT id FROM tb_toko WHERE status = '2'")->num_rows();
 $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '11'")->num_rows();
+$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">
@@ -103,6 +104,18 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '11'")->nu
             <?php if ($Artikel == 0) { ?>
             <?php } else { ?>
               <span class="right badge badge-danger"><?= $Artikel ?></span>
+            <?php } ?>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('mng_mkt/Retur/retur') ?>" class="nav-link <?= ($title == 'Retur Barang') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-exchange-alt"></i>
+          <p>
+            Retur
+            <?php if ($Retur == 0) { ?>
+            <?php } else { ?>
+              <span class="right badge badge-danger"><?= $Retur ?></span>
             <?php } ?>
           </p>
         </a>

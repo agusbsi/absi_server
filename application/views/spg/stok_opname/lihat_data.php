@@ -12,7 +12,7 @@
               <h3><i class="fas fa-file-alt text-success"></i> STOK OPNAME BERHASIL !</h3>
 
               <p>
-                Terimaksih, Anda telah melakukan Stok Opname di bulan ini ! Data sedang di proses oleh Admin Support Hicoop.
+                Terima kasih, Anda telah melakukan Stok Opname di bulan ini ! Data sedang di proses oleh Admin Support Hicoop.
               </p>
 
               <form class="search-form">

@@ -2,7 +2,7 @@
 $Permintaan = $this->db->query("SELECT id FROM tb_permintaan WHERE status = '2'")->num_rows();
 $Selisih = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '3'")->num_rows();
 $Pengiriman = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '1'")->num_rows();
-$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '3' OR status = '6' OR status = '13' OR status = '14'")->num_rows();
+$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '3'  OR status = '13' ")->num_rows();
 $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_rows();
 ?>
 <!-- Sidebar -->

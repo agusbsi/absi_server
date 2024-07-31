@@ -32,18 +32,15 @@ class Retur extends CI_Controller
   {
 
     $data['title'] = 'Retur Barang';
-    $data_retur = $this->db->query("SELECT tp.id, tp.created_at, tp.status, tt.nama_toko, tu.nama_user  from tb_retur tp 
+    $data['retur'] = $this->db->query("SELECT tp.*, tt.nama_toko, tu.nama_user  from tb_retur tp 
     join tb_toko tt on tt.id = tp.id_toko 
     join tb_user tu on tu.id = tp.id_user 
     where  tp.id = '$id'")->row();
-    $data['detail_retur'] = $this->db->query("SELECT td.*, tp.nama_produk, tp.kode FROM tb_retur_detail td
+    $data['detail_retur'] = $this->db->query("SELECT td.*, tp.nama_produk as artikel, tp.kode FROM tb_retur_detail td
     join tb_produk tp on td.id_produk = tp.id
     WHERE id_retur = '$id'")->result();
-    $data['no_retur'] = $id;
-    $data['tanggal'] = $data_retur->created_at;
-    $data['status'] = $data_retur->status;
-    $data['nama_toko'] = $data_retur->nama_toko;
-    $data['nama'] = $data_retur->nama_user;
+    $data['histori'] = $this->db->query("SELECT * from tb_retur_histori tro
+    join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$id'")->result();
     $this->template->load('template/template', 'spg/retur/detail', $data);
   }
   // tambah retur
@@ -60,10 +57,20 @@ class Retur extends CI_Controller
     $id_toko = $this->session->userdata('id_toko');
     $data['toko_new'] = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
     $data['kode_retur'] = $this->M_spg->kode_retur(); // generate no permintaan
-
-    $data['list_produk'] = $this->db->query("SELECT tp.kode, ts.id_produk from tb_stok ts
-    join tb_produk tp on ts.id_produk = tp.id
-    where id_toko = '$id_toko'")->result();
+    // Ambil ID produk dari cart
+    $produk_di_cart = array();
+    foreach ($this->cart->contents() as $item) {
+      $produk_di_cart[] = $item['name'];
+    }
+    $produk_di_cart_str = implode(',', array_map('intval', $produk_di_cart));
+    $sql = "SELECT tp.kode, ts.id_produk 
+             FROM tb_stok ts
+             JOIN tb_produk tp ON ts.id_produk = tp.id
+             WHERE id_toko = ?";
+    if (!empty($produk_di_cart)) {
+      $sql .= " AND tp.id NOT IN ($produk_di_cart_str)";
+    }
+    $data['list_produk'] = $this->db->query($sql, array($id_toko))->result();
     $data['data_cart'] = $this->cart->contents(); // menampilkan data cart
 
     $this->template->load('template/template', 'spg/retur/tambah_retur', $data);
@@ -95,7 +102,7 @@ class Retur extends CI_Controller
       $gbr = $this->upload->data();
       $foto_retur = $gbr['file_name'];
     } else {
-      $foto_retur = ''; // Jika tidak ada unggahan foto
+      $foto_retur = '';
     }
     $data = array(
       'id'      => $id,
@@ -106,7 +113,8 @@ class Retur extends CI_Controller
       'sj'      => $kirim,
       'keterangan' => array(
         'status' => $keterangan,
-        'catatan' => $catatan
+        'catatan' => $catatan,
+        'artikel' => $produk->nama_produk
       ),
       'foto_retur' => $foto_retur,
     );
@@ -118,11 +126,26 @@ class Retur extends CI_Controller
 
   public function hapus_cart($id)
   {
+    $item = null;
+    foreach ($this->cart->contents() as $cart_item) {
+      if ($cart_item['rowid'] === $id) {
+        $item = $cart_item;
+        break;
+      }
+    }
+
+    if ($item) {
+      $foto_retur = $item['foto_retur'];
+      $foto_path = FCPATH . 'assets/img/retur/' . $foto_retur;
+      if (file_exists($foto_path)) {
+        unlink($foto_path);
+      }
+    }
 
     $this->cart->remove($id);
-
     redirect(base_url('spg/retur/tambah_retur'));
   }
+
   public function reset_cart()
   {
     $this->cart->destroy();
@@ -162,11 +185,10 @@ class Retur extends CI_Controller
     $config['upload_path'] = './assets/img/retur/lampiran/';
     $config['allowed_types'] = 'pdf|doc|docx|jpg|jpeg|png';
     $config['max_size'] = 10048;
-    $config['overwrite'] = true; // Izinkan mode overwrite
+    $config['overwrite'] = true;
     $this->load->library('upload', $config);
     $upload_data_lampiran = null;
     $upload_data_foto_packing = null;
-    // Initialize variables
     $lampiran = "";
     $packing = "";
     // Upload 'lampiran' file
@@ -187,12 +209,14 @@ class Retur extends CI_Controller
     } else {
       $error = $this->upload->display_errors();
     }
+    $tgl_jemput = $this->input->post('tgl_jemput');
     $data_retur = array(
       'id' => $no_retur,
       'id_toko' => $id_toko,
       'id_user' => $id_user,
       'lampiran' => $lampiran,
       'foto_packing' => $packing,
+      'tgl_jemput'  => $tgl_jemput
     );
     $this->db->trans_start();
     $this->db->insert('tb_retur', $data_retur);
@@ -204,18 +228,28 @@ class Retur extends CI_Controller
         'keterangan' => $d['keterangan']['status'],
         'catatan' => $d['keterangan']['catatan'],
         'qty' => $d['qty'],
-        'id_pengiriman' => $d['sj'],
         'foto' => $d['foto_retur'],
       );
       $this->db->insert('tb_retur_detail', $data);
     }
+    $spg_query = $this->db->query("SELECT nama_user FROM tb_user WHERE id = '$id_user'");
+    $spg_row = $spg_query->row();
+    $spg = $spg_row ? $spg_row->nama_user : 'Tanpa Nama';
+    $histori = array(
+      'id_retur' => $no_retur,
+      'aksi' => 'Dibuat oleh : ',
+      'pembuat' => $spg,
+    );
+    $this->db->insert('tb_retur_histori', $histori);
     $this->db->trans_complete();
     $this->cart->destroy();
+
     $got_lead = $this->db->query("SELECT id_leader FROM tb_toko WHERE id = '$id_toko' AND id_spg = '$id_user'")->row();
     $id_lead = $got_lead->id_leader;
     $hp = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$id_lead'")->row();
     $phone = $hp->no_telp;
-    $message = "Anda memiliki 1 Pengajuan Retur baru dengan nomor ( " . $no_retur . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
+    $pt = $this->session->userdata('pt');
+    $message = "$spg : Mengajukan Retur Barang ($no_retur) di $pt yang perlu approve, silahkan kunjungi s.id/absi-app";
     kirim_wa($phone, $message);
     tampil_alert('success', 'Berhasil', 'Data berhasil disimpan !');
     redirect(base_url('spg/Retur'));

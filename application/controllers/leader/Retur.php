@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Retur extends CI_Controller
 {
@@ -8,8 +8,8 @@ class Retur extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if($role != "3"){
-      tampil_alert('error','DI TOLAK !','Anda tidak punya akses untuk halaman ini.!');
+    if ($role != "3") {
+      tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }
     $this->load->model('M_admin');
@@ -38,38 +38,44 @@ class Retur extends CI_Controller
         JOIN tb_retur tp on td.id_retur = tp.id
         JOIN tb_produk tpk on td.id_produk = tpk.id
         where td.id_retur = '$Retur'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_retur_histori tro
+    join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$Retur'")->result();
     $this->template->load('template/template', 'leader/retur/detail', $data);
   }
   public function tindakan()
   {
-    $catatan = $this->input->post('catatan');
-    $action = $this->input->post('action');
+    $catatan = $this->input->post('catatan_leader');
+    $action = $this->input->post('tindakan');
     $id_retur = $this->input->post('id_retur');
-    $id_leader = $this->session->userdata('id');
-    if ($action == "approve") {
-      $data = array(
-        'status' => "1",
-        'id_leader' => $id_leader,
-        'catatan_leader' => $catatan,
-      );
-      $response = 'setuju';
-    } else {
-      $data = array(
-        'status' => "5",
-        'id_leader' => $id_leader,
-        'catatan_leader' => $catatan,
-      );
-      $response = 'tolak';
-    }
+    $leader = $this->session->userdata('nama_user');
+    $pt = $this->session->userdata('pt');
+    $status = $action == "1" ? "1" : "5";
+    $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
+
+    // Update status retur
+    $data = array('status' => $status);
     $where = array('id' => $id_retur);
     $this->db->update('tb_retur', $data, $where);
-    $hp = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6")->row();
-    $phone = $hp->no_telp;
-    $message = "Anda memiliki 1 Permintaan Retur baru dengan nomor ( $id_retur ) yang perlu approve silahkan kunjungi s.id/absi-app";
-    kirim_wa($phone, $message);
 
-    echo $response;
+    // Insert history retur
+    $histori = array(
+      'id_retur' => $id_retur,
+      'aksi' => $aksi . ' oleh : ',
+      'pembuat' => $leader,
+      'catatan_h' => $catatan
+    );
+    $this->db->insert('tb_retur_histori', $histori);
+    if ($action == "1") {
+      $hp = $this->db->select('no_telp')
+        ->from('tb_user')
+        ->where('role', 9)
+        ->get()
+        ->row();
+      $phone = $hp->no_telp;
+      $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu dicek, silahkan kunjungi s.id/absi-app";
+      kirim_wa($phone, $message);
+    }
+    tampil_alert('success', 'BERHASIL', 'Pengajuan Retur berhasil di' . $aksi);
+    redirect(base_url('leader/Retur'));
   }
-
 }
-?>

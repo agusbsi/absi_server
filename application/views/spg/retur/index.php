@@ -31,12 +31,9 @@
                   <tr>
                     <td><?= $no ?></td>
                     <td><?= $row->id ?></td>
-                    <td><?= format_tanggal1($row->created_at) ?></td>
+                    <td><?= date('d-M-Y', strtotime($row->created_at)) ?></td>
                     <td><?= status_retur($row->status) ?></td>
                     <td>
-                      <?php if ($row->status == 2) { ?>
-                        <a type="button" class="btn btn-success btn-sm" href="<?= base_url('spg/retur/detail/' . $row->id) ?>" name="btn_proses"><i class="fas fa-link" aria-hidden="true"></i> Proses kirim</a>
-                      <?php } ?>
                       <a type="button" class="btn btn-primary btn-sm" href="<?= base_url('spg/retur/detail/' . $row->id) ?>"><i class="fas fa-eye" aria-hidden="true"></i> Detail</a>
                     </td>
                   </tr>
@@ -50,22 +47,3 @@
   </div>
   </div>
 </section>
-<!-- jQuery -->
-<script src="<?php echo base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
-<script>
-  $(document).ready(function() {
-
-    $('#table_retur').DataTable({
-      order: [
-        [0, 'asc']
-      ],
-      responsive: true,
-      lengthChange: false,
-      autoWidth: false,
-    });
-
-
-  })
-</script>
-
-

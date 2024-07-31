@@ -12,14 +12,14 @@ class Retur extends CI_Controller
       tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }
-    $this->load->model('M_admin');
-    $this->load->model('M_support');
   }
   public function index()
   {
     $data['title'] = 'Retur Barang';
-    $data['list_data'] = $this->M_support->lihat_data_retur()->result();
-    $data['avatar'] = $this->M_admin->get_data_gambar('tb_upload_gambar_user', $this->session->userdata('username'));
+    $data['list_data'] = $this->db->query("SELECT tr.*, tk.nama_toko, tu.nama_user as spg from tb_retur tr
+    JOIN tb_toko tk on tr.id_toko = tk.id
+    JOIN tb_user tu on tr.id_user = tu.id
+    WHERE tr.status > 1 AND tr.status < 7 ORDER BY tr.status = 2 desc, tr.id desc")->result();
     $this->template->load('template/template', 'manager_mv/retur/index', $data);
   }
   public function detail($no_retur)
@@ -33,42 +33,61 @@ class Retur extends CI_Controller
      JOIN tb_retur tp on td.id_retur = tp.id
      JOIN tb_produk tpk on td.id_produk = tpk.id
      where td.id_retur = '$no_retur'")->result();
-    $data['avatar'] = $this->M_admin->get_data_gambar('tb_upload_gambar_user', $this->session->userdata('username'));
+    $data['histori'] = $this->db->query("SELECT * from tb_retur_histori tro
+    join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$no_retur'")->result();
     $this->template->load('template/template', 'manager_mv/retur/detail', $data);
   }
 
   public function tindakan()
   {
-    $catatan = $this->input->post('catatan');
-    $action = $this->input->post('action');
+    $tgl_jemput = $this->input->post('tgl_jemput');
+    $catatan = $this->input->post('catatan_mv');
+    $action = $this->input->post('tindakan');
     $id_retur = $this->input->post('id_retur');
-    $id_mv = $this->session->userdata('id');
-    if ($action == "approve") {
-      $data = array(
-        'status' => "2",
-        'id_mv' => $id_mv,
-        'catatan_mv' => $catatan,
-      );
-      $response = 'setuju';
-    } else {
-      $data = array(
-        'status' => "5",
-        'id_mv' => $id_mv,
-        'catatan_mv' => $catatan,
-      );
-      $response = 'tolak';
-    }
+    $mv = $this->session->userdata('nama_user');
+    $pt = $this->session->userdata('pt');
+    $status = $action == "1" ? "3" : "5";
+    $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
+
+    // Update status retur
+    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput);
     $where = array('id' => $id_retur);
     $this->db->update('tb_retur', $data, $where);
-    $got_id = $this->db->query("SELECT id_toko,id_user FROM tb_retur where id = '$id_retur'")->row();
-    $id_toko = $got_id->id_toko;
-    $got_name = $this->db->query("SELECT nama_toko FROM tb_toko WHERE id = '$id_toko'")->row();
-    $nama_toko = $got_name->nama_toko;
-    $id_user = $got_id->id_user;
-    $hp = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$id_user'")->row();
-    $phone = $hp->no_telp;
-    $message = "Pengajuan Retur yang anda ajukan ( $nama_toko ) sudah diapprove, silahkan kunjungi s.id/absi-app";
-    kirim_wa($phone, $message);
-    echo $response;
+
+    // Insert history retur
+    $histori = array(
+      'id_retur' => $id_retur,
+      'aksi' => $aksi . ' oleh : ',
+      'pembuat' => $mv,
+      'catatan_h' => $catatan
+    );
+    $this->db->insert('tb_retur_histori', $histori);
+    if ($action == "1") {
+      $hp = $this->db->select('no_telp')
+        ->from('tb_user')
+        ->where('role', 5)
+        ->get()
+        ->result();
+      foreach ($hp as $h) {
+        $phone = $h->no_telp;
+        $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu di jemput, silahkan kunjungi s.id/absi-app";
+        kirim_wa($phone, $message);
+      }
+    }
+    tampil_alert('success', 'BERHASIL', 'Pengajuan Retur berhasil di' . $aksi);
+    redirect(base_url('sup/Retur/detail/' . $id_retur));
+  }
+  // print SPPR
+  public function sppr($no_retur)
+  {
+    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tu.no_telp from tb_retur tr
+      JOIN tb_toko tt on tr.id_toko = tt.id
+      JOIN tb_user tu on tt.id_spg = tu.id
+      JOIN tb_user tl on tt.id_leader = tl.id
+      where tr.id = '$no_retur'")->row();
+    $data['detail'] = $this->db->query("SELECT trd.*, tpk.nama_produk, tpk.kode, tpk.satuan from tb_retur_detail trd
+      join tb_produk tpk on trd.id_produk = tpk.id
+      where trd.id_retur = '$no_retur' order by tpk.nama_produk desc")->result();
+    $this->load->view('adm_gudang/retur/sppr', $data);
   }
 }

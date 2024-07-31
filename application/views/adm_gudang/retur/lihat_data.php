@@ -12,11 +12,11 @@
         <thead>
           <tr class="text-center">
             <th>#</th>
-            <th style="width: 12%;">Nomor</th>
-            <th>Nama Toko</th>
-            <th>Catatan MV</th>
+            <th>Nomor</th>
+            <th style="width: 26%;">Nama Toko</th>
+            <th>Status</th>
             <th>Tanggal</th>
-            <th style="width: 12%;">Menu</th>
+            <th>Menu</th>
           </tr>
         </thead>
         <tbody>
@@ -31,35 +31,44 @@
               <td>
                 <small>
                   <strong><?= $dd->nama_toko ?></strong> <br>
-                  <?= status_retur($dd->status) ?>
+                  <address><?= $dd->alamat ?></address>
                 </small>
               </td>
-              <td><small><?= $dd->catatan_mv ?></small></td>
-              <td class="text-center"><small><?= date('d-M-Y', strtotime($dd->created_at)) ?></small></td>
+              <td><?= status_retur($dd->status) ?></td>
+              <td>
+                <small>
+                  Dibuat : <?= date('d M Y', strtotime($dd->created_at)) ?> <br>
+                  Penjemputan : <?= date('d M Y', strtotime($dd->tgl_jemput)) ?>
+                </small>
+              </td>
               <td class="text-center">
+
                 <?php
-                if ($dd->status == 13 or $dd->status == 14) {
+                if ($dd->status == 4 or $dd->status == 15) {
                 ?>
+                  <a href="<?= base_url('adm_gudang/Retur/detail/' . $dd->id) ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a>
+                <?php } else { ?>
                   <div class="btn-group">
-                    <button type="button" class="btn btn-outline-success btn-sm"> <i class="fas fa-edit"></i> Proses</button>
+                    <button type="button" class="btn btn-outline-success btn-sm"> Proses</button>
                     <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-hover dropdown-icon" data-toggle="dropdown" aria-expanded="false">
                       <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <div class="dropdown-menu" role="menu">
-                      <a class="dropdown-item" href="#" onclick="getjadwal('<?php echo $dd->id; ?>')" data-toggle="modal" data-target="#jadwal">Jadwal Ambil</a>
+                      <a class="dropdown-item" href="#" onclick="getCatatan('<?php echo $dd->id; ?>')">Lihat Catatan</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" target="_blank" href="<?= base_url('adm_gudang/Retur/sppr_toko/' . $dd->id) ?>">Cetak SPPR</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#" onclick="getterima('<?php echo $dd->id; ?>','<?php echo $dd->nama_toko; ?>')" data-toggle="modal" data-target="#terima">Terima Barang</a>
-
+                      <?php
+                      if ($dd->status == 13 or $dd->status == 14) {
+                      ?>
+                        <a class="dropdown-item" target="_blank" href="<?= base_url('adm_gudang/Retur/sppr_toko/' . $dd->id) ?>">Cetak SPPR</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="<?= base_url('adm_gudang/Retur/terima_toko/' . $dd->id) ?>">Terima Barang</a>
+                      <?php } else { ?>
+                        <a class="dropdown-item" target="_blank" href="<?= base_url('adm_gudang/Retur/sppr/' . $dd->id) ?>">Cetak SPPR</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="<?= base_url('adm_gudang/Retur/terima/' . $dd->id) ?>">Terima Barang</a>
+                      <?php } ?>
                     </div>
                   </div>
-                <?php } else if ($dd->status == 15) { ?>
-                  <button data-toggle="modal" data-target="#terima" onclick="getterima('<?php echo $dd->id; ?>','<?php echo $dd->nama_toko; ?>')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button>
-                <?php } else { ?>
-                  <a type="button" class="btn btn-success btnHide btn-sm <?= ($dd->status) != 4 ? '' : 'd-none'; ?>" href="<?= base_url('adm_gudang/Retur/detail/' . $dd->id) ?>" title="Proses"><i class="fa fa-arrow-right" aria-hidden="true"></i> </a>
-                  <a type="button" class="btn btn-default btnHide btn-sm <?= ($dd->status) != 4 ? '' : 'd-none'; ?> <?= ($dd->status) == 3 ? 'd-none' : ''; ?>" target="_blank" href="<?= base_url('adm_gudang/Retur/sppr/' . $dd->id) ?>" title="Print"><i class="fa fa-print" aria-hidden="true"></i> </a>
-                  <button data-toggle="modal" data-target="#modalDetail" onclick="getdetail('<?php echo $dd->id; ?>','<?php echo $dd->nama_toko; ?>')" class="btn btn-info btn-sm <?= ($dd->status) != 4 ? 'd-none' : ''; ?>"><i class="fas fa-eye"></i> Detail</button>
                 <?php } ?>
               </td>
 
@@ -75,42 +84,23 @@
   </div>
 </section>
 
-<!-- Modal -->
-<div class="modal fade" id="jadwal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <form action="<?= base_url('adm_gudang/Retur/confirm') ?>" method="post">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Jadwal Penarikan Barang</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for=""> No Retur </label>
-            <input type="text" class="form-control form-control-sm" id="id_retur" name="id_retur" readonly>
-          </div>
-          <div class="form-group">
-            <label for=""> Tgl Penarikan </label>
-            <input type="text" class="form-control form-control-sm" id="tgl" name="tgl" readonly>
-          </div>
-          <div class="form-group">
-            <label for=""> Update Tgl Penarikan </label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-              </div>
-              <input type="text" id="tgl_tarik" name="tgl_tarik" class="form-control form-control-sm" data-inputmask-alias="datetime" data-inputmask-inputformat="yyyy-mm-dd" data-mask="" inputmode="numeric" required>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary" id="btn_confirm"><i class="fas fa-save"></i> Confirm</button>
+<div class="modal fade" id="modalHistori" tabindex="-1" role="dialog" aria-labelledby="modalHistoriTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalHistoriTitle">Histori Pengajuan</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="timeline">
         </div>
       </div>
-    </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
   </div>
 </div>
 <!-- modal terima -->
@@ -254,33 +244,49 @@
 <!-- jQuery -->
 <script src="<?php echo base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
 <script>
-  function getjadwal(id) {
-    $("#id_retur").val(id);
-    // Menggunakan Ajax untuk mengambil data artikel dari server
+  function getCatatan(id) {
     $.ajax({
-      url: '<?= base_url('adm_gudang/Retur/getdatajadwal') ?>', // Ganti dengan URL ke fungsi controller yang mengambil data artikel
-      type: 'GET',
-      data: {
-        id_retur: id
-      },
-      success: function(data) {
-        // Mengupdate nilai-nlai pada modal
-        $("#tgl").val(data.tgl_tarik);
-        $("#tgl_tarik").val(data.tgl_tarik);
-        if (data.status == 13) {
-          $("#btn_confirm").removeClass('d-none');
-        } else {
-          $("#btn_confirm").addClass('d-none');
-        }
+      url: '<?= base_url('adm_gudang/Retur/getCatatan/') ?>' + id, // Ganti url dengan endpoint Anda
+      method: 'GET',
+      dataType: 'json',
+      success: function(response) {
+        if (response.status === 'success') {
+          // Bersihkan konten timeline sebelum menambahkan data baru
+          $('.timeline').empty();
 
+          // Iterasi data histori dan tambahkan ke dalam timeline
+          $.each(response.data, function(index, item) {
+            var timelineItem = `
+                <div>
+                  <i class="fas bg-blue">${index + 1}</i>
+                  <div class="timeline-item">
+                    <span class="time"></span>
+                    <p class="timeline-header"><small>${item.aksi} <strong>${item.pembuat}</strong></small></p>
+                    <div class="timeline-body">
+                      <small>
+                        ${item.tanggal} <br>
+                        Catatan :<br>
+                        ${item.catatan_h}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              `;
+            $('.timeline').append(timelineItem);
+          });
+
+          // Tampilkan modal
+          $('#modalHistori').modal('show');
+        } else {
+          // Tampilkan pesan error jika terjadi kesalahan
+          alert('Catatan Tidak Ditemukan.');
+        }
       },
       error: function(xhr, status, error) {
-        console.log(error);
+        console.error(xhr.responseText);
+        alert('Terjadi kesalahan saat mengambil data histori.');
       }
     });
-    //Datemask dd/mm/yyyy
-    $('#datemask').inputmask('yyyy-mm-dd', {});
-    $('[data-mask]').inputmask();
   }
 
   function getterima(id, toko) {

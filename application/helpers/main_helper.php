@@ -106,15 +106,15 @@ function status_het($id)
 function status_retur($id)
 {
     if ($id == 0) {
-        echo "<span class='badge badge-danger'>Menunggu approve Leader !</span>";
+        echo "<span class='badge badge-danger'>Menunggu approve Leader</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-warning'>Menunggu approve MV !</span>";
+        echo "<span class='badge badge-warning'>Menunggu approve MM</span>";
     } elseif ($id == 2) {
-        echo "<span class='badge badge-info'>Disetujui! tunggu proses kirim dari spg</span>";
+        echo "<span class='badge badge-info'>Menunggu approve MV</span>";
     } elseif ($id == 3) {
-        echo "<span class='badge badge-warning'>Di kirim dg Ekspedisi lain!</span>";
+        echo "<span class='badge badge-warning'>Proses Penjemputan Gudang</span>";
     } elseif ($id == 4) {
-        echo "<span class='badge badge-success'>Selesai di terima !</span>";
+        echo "<span class='badge badge-success'>Selesai</span>";
     } elseif ($id == 5) {
         echo "<span class='badge badge-danger'>Ditolak !</span>";
     } elseif ($id == 6) {
@@ -126,7 +126,7 @@ function status_retur($id)
     } elseif ($id == 12) {
         echo "<span class='badge badge-info'>Menunggu Approve Direksi!</span>";
     } elseif ($id == 13) {
-        echo "<span class='badge badge-success'>Disetujui!</span>";
+        echo "<span class='badge badge-warning'>Proses Penjemputan Gudang</span>";
     } elseif ($id == 14) {
         echo "<span class='badge badge-primary'>Proses Pengambilan</span>";
     } elseif ($id == 15) {

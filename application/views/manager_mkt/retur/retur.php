@@ -47,13 +47,12 @@
                 </td>
                 <td>
                   <?php
-                  if ($data->status == 2) {
+                  if ($data->status == 1) {
                   ?>
-                    <a type="button" class="btn btn-success btn-sm" href="<?= base_url('sup/Retur/detail/' . $data->id) ?>" name="btn_proses">Proses <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-                    <a class="btn btn-default btn-sm <?= $data->status == 2 || $data->status == 3 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('sup/retur/sppr/' . $data->id) ?>"><i class="fas fa-print"></i> Sppr</a>
+                    <a type="button" class="btn btn-success btn-sm" href="<?= base_url('mng_mkt/retur/detail_retur/' . $data->id) ?>" name="btn_proses">Proses <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                   <?php } else { ?>
-                    <a type="button" class="btn btn-primary btn-sm" href="<?= base_url('sup/Retur/detail/' . $data->id) ?>" name="btn_detail"><i class="fas fa-eye" aria-hidden="true"></i> Detail</a>
-                    <a class="btn btn-default btn-sm <?= $data->status == 2 || $data->status == 3 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('sup/retur/sppr/' . $data->id) ?>"><i class="fas fa-print"></i> Sppr</a>
+                    <a type="button" class="btn btn-primary btn-sm" href="<?= base_url('mng_mkt/retur/detail_retur/' . $data->id) ?>" name="btn_detail"><i class="fas fa-eye" aria-hidden="true"></i> Detail</a>
+                    <a class="btn btn-default btn-sm <?= $data->status == 2 || $data->status == 3 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('mng_mkt/retur/sppr/' . $data->id) ?>"><i class="fas fa-print"></i> Sppr</a>
                   <?php } ?>
                 </td>
               </tr>

@@ -3,7 +3,6 @@ $id = $this->session->userdata('id');
 $id_toko = $this->session->userdata('id_toko');
 $Penerimaan = $this->db->query("SELECT * FROM tb_pengiriman WHERE status = '1' AND id_toko ='$id_toko'")->num_rows();
 $Mutasi = $this->db->query("SELECT * FROM tb_mutasi WHERE status = '1' AND id_toko_tujuan ='$id_toko'")->num_rows();
-$retur = $this->db->query("SELECT * FROM tb_retur WHERE status = '2' AND id_toko ='$id_toko'")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">
@@ -61,10 +60,6 @@ $retur = $this->db->query("SELECT * FROM tb_retur WHERE status = '2' AND id_toko
           <i class="nav-icon fas fa-exchange-alt"></i>
           <p>
             Retur
-            <?php if ($retur == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $retur ?></span>
-            <?php } ?>
           </p>
         </a>
       </li>
