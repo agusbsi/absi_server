@@ -120,7 +120,12 @@
                 </tr>
               </tfoot>
             </table>
-
+            <hr>
+            <div class="form-group">
+              <label for="">Catatan : *</label>
+              <textarea name="catatan" class="form-control form-control-sm" placeholder="Berikan catatan disini..." required></textarea>
+              <small>* Wajib di isi.</small>
+            </div>
             <hr>
             <li class="fas fa-info"></li> Reminder : Proses retur ini akan mempengaruhi jumlah stok di toko : <strong><?= $retur->nama_toko ?></strong> !
 

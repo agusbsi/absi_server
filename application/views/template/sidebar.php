@@ -4,6 +4,7 @@ $Artikel = $this->db->query("SELECT id FROM tb_produk WHERE status = '2'")->num_
 $Toko = $this->db->query("SELECT id FROM tb_toko WHERE status = '4'")->num_rows();
 $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
 $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '12'")->num_rows();
+$allToko = $Toko + $TokoTutup;
 ?>
 <!-- Sidebar -->
 <div class="sidebar">
@@ -33,9 +34,8 @@ $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '12'")->nu
           <p>
             Toko
             <i class="right fas fa-angle-left"></i>
-            <?php if ($Toko == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Toko ?></span>
+            <?php if ($allToko != 0) { ?>
+              <span class="right badge badge-danger"><?= $allToko ?></span>
             <?php } ?>
           </p>
         </a>

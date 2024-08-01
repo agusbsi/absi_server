@@ -38,6 +38,11 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
           <p>
             Toko
             <i class="right fas fa-angle-left"></i>
+            <?php if ($TokoTutup == 0) { ?>
+            <?php } else { ?>
+              <span class="right badge badge-danger"><?= $TokoTutup ?></span>
+            <?php } ?>
+
           </p>
         </a>
         <ul class="nav nav-treeview">

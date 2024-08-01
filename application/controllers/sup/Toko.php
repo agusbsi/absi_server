@@ -31,49 +31,77 @@ class Toko extends CI_Controller
   // list toko tutup
   public function toko_tutup()
   {
-    $id_spv = $this->session->userdata('id');
     $data['title'] = 'List Toko Tutup';
-    $data['toko_tutup'] = $this->db->query("SELECT tr.id as id_retur, tr.created_at, tr.status, tt.nama_toko from tb_retur tr
+    $data['toko_tutup'] = $this->db->query("SELECT tr.*, tt.nama_toko, tt.alamat from tb_retur tr
     join tb_toko tt on tr.id_toko = tt.id
-    where tr.status >= 10 order by tr.id desc")->result();
+    where tr.status >= 10 order by tr.status = 10 desc, tr.id desc")->result();
     $this->template->load('template/template', 'manager_mv/toko/toko_tutup', $data);
   }
-  public function getdataRetur()
+  public function toko_tutup_d($id)
   {
-    // Mengambil parameter id_toko dari permintaan Ajax
-    $id_retur = $this->input->get('id_retur');
-    $artikel = $this->db->query("SELECT trd.qty,tp.kode, tp.nama_produk from tb_retur_detail trd
-      join tb_produk tp on trd.id_produk = tp.id
-      where trd.id_retur = ?  order by tp.nama_produk desc ", array($id_retur));
-    $aset = $this->db->query("SELECT tra.*, ta.nama_aset from tb_retur_aset tra
-      join tb_aset ta on tra.id_aset = ta.id
-      where tra.id_retur = ?  order by ta.nama_aset desc ", array($id_retur));
-    $retur = $this->db->query("SELECT * from tb_retur where id = ?", array($id_retur))->row();
-
-    $result = array();
-
-    if ($artikel->num_rows() > 0) {
-      $result['artikel'] = $artikel->result_array();
-    } else {
-      $result['artikel'] = array();
-    }
-
-    if ($aset->num_rows() > 0) {
-      $result['aset'] = $aset->result_array();
-    } else {
-      $result['aset'] = array();
-    }
-    // Menambahkan data nama toko ke dalam hasil
-    $result['catatan'] = $retur->catatan;
-    $result['catatan_mv'] = $retur->catatan_mv;
-    $result['tgl_tarik'] = $retur->tgl_jemput;
-    $result['status'] = $retur->status;
-    $result['id_toko'] = $retur->id_toko;
-
-    header('Content-Type: application/json');
-    echo json_encode($result);
-    exit();
+    $data['title'] = 'List Toko Tutup';
+    $data['retur'] = $this->db->query("SELECT tr.*, tt.nama_toko, tt.alamat from tb_retur tr
+    JOIN tb_toko tt on tr.id_toko = tt.id
+    WHERE tr.id = '$id'")->row();
+    $data['artikel'] = $this->db->query("SELECT trd.*,tp.kode, tp.nama_produk from tb_retur_detail trd
+    join tb_produk tp on trd.id_produk = tp.id
+    where trd.id_retur = ?  order by tp.nama_produk desc ", array($id))->result();
+    $data['aset'] = $this->db->query("SELECT tra.*, ta.aset, ta.kode from tb_retur_aset tra
+    join tb_aset_master ta on tra.id_aset = ta.id
+    where tra.id_retur = ?  order by ta.aset desc ", array($id))->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_retur_histori tro
+    join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$id'")->result();
+    $this->template->load('template/template', 'manager_mv/toko/toko_tutup_d', $data);
   }
+  // tindakan tutup toko
+  public function tindakan()
+  {
+    $tgl_jemput = $this->input->post('tgl_jemput');
+    $catatan = $this->input->post('catatan_mv');
+    $action = $this->input->post('tindakan');
+    $id_retur = $this->input->post('id_retur');
+    $id_toko = $this->input->post('id_toko');
+    $pembuat = $this->input->post('pembuat');
+    $mv = $this->session->userdata('nama_user');
+    $pt = $this->session->userdata('pt');
+    $status = $action == "1" ? "11" : "16";
+    $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
+
+    // Update status retur
+    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput);
+    $where = array('id' => $id_retur);
+    $this->db->update('tb_retur', $data, $where);
+
+    // Insert history retur
+    $histori = array(
+      'id_retur' => $id_retur,
+      'aksi' => $aksi . ' oleh : ',
+      'pembuat' => $mv,
+      'catatan_h' => $catatan
+    );
+    $this->db->insert('tb_retur_histori', $histori);
+    $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
+    if ($action == "1") {
+      $hp = $this->db->select('no_telp')
+        ->from('tb_user')
+        ->where('role', 9)
+        ->get()
+        ->result();
+      foreach ($hp as $h) {
+        $phone = $h->no_telp;
+        $message = "Anda memiliki 1 Pengajuan Tutup Toko ($get_toko - $pt) yang perlu di cek, silahkan kunjungi s.id/absi-app";
+        kirim_wa($phone, $message);
+      }
+    } else {
+      // pesan ke pembuat
+      $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$pembuat'")->row()->no_telp;
+      $message = "Pengajuan Tutup Toko ( " . $get_toko . " - " . $pt . " ) anda Di Tolak, silahkan kunjungi s.id/absi-app";
+      kirim_wa($phones, $message);
+    }
+    tampil_alert('success', 'BERHASIL', 'Pengajuan Tutup Toko berhasil di' . $aksi);
+    redirect(base_url('sup/Toko/toko_tutup_d/' . $id_retur));
+  }
+
   // halaman detail toko
   public function profil($id)
   {

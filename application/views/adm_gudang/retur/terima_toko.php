@@ -73,9 +73,9 @@
               <thead>
                 <tr>
                   <th class="text-center">No</th>
+                  <th>Kode</th>
                   <th>Aset</th>
-                  <th>Qty Retur</th>
-                  <th>Kondisi</th>
+                  <th>Jumlah</th>
                   <th>Keterangan</th>
                 </tr>
               </thead>
@@ -89,11 +89,11 @@
                     <td class="text-center"><?= $no ?></td>
                     <td>
                       <small>
-                        <?= $aa->nama_aset ?>
+                        <?= $aa->kode ?>
                       </small>
                     </td>
+                    <td><?= $aa->aset ?></td>
                     <td><?= $aa->qty ?></td>
-                    <td><?= $aa->kondisi ?></td>
                     <td><?= $aa->keterangan ?></td>
                   </tr>
                 <?php endforeach ?>
@@ -152,7 +152,12 @@
                 </tr>
               </tfoot>
             </table>
-
+            <hr>
+            <div class="form-group">
+              <label for="">Catatan : *</label>
+              <textarea name="catatan" class="form-control form-control-sm" placeholder="Berikan catatan disini..." required></textarea>
+              <small>* Wajib di isi.</small>
+            </div>
             <hr>
             <li class="fas fa-info"></li> Reminder : Proses retur ini akan mempengaruhi jumlah stok di toko : <strong><?= $retur->nama_toko ?></strong> !
 

@@ -20,9 +20,10 @@
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr class="text-center">
+                  <th>#</th>
                   <th>No Pengajuan</th>
-                  <th style="width:20%">Nama Toko</th>
-                  <th style="width:25%">Tgl Pengajuan</th>
+                  <th style="width:30%">Nama Toko</th>
+                  <th>Tgl Pengajuan</th>
                   <th>Status</th>
                   <th style="width:13%">Menu</th>
                 </tr>
@@ -34,9 +35,10 @@
                   $no++
                 ?>
                   <tr>
+                    <td class="text-center"><?= $no ?></td>
                     <td><?= $t->id_retur ?></td>
                     <td><?= $t->nama_toko ?></td>
-                    <td><?= $t->created_at ?></td>
+                    <td class="text-center"><?= date('d M Y', strtotime($t->created_at)) ?></td>
                     <td class="text-center">
                       <?= status_retur($t->status) ?>
                     </td>
@@ -72,16 +74,16 @@
         <span class="badge badge-info"><i class="fas fa-info"></i> Noted:</span>
         <br>
         Dalam pengajuan tutup toko ada beberapa point yang harus di diperhatikan, sebagai berikut :
-        <br>
-        1. Pastikan SPG sudah update data penjualan terbaru di toko tersebut hingga tgl : <?= date('d-m-Y') ?>. <br>
-        2. Anda di haruskan Update ASET Toko (* jika ada aset di toko tersebut). <br>
-        3. Anda di haruskan mengisi jumlah semua artikel yang akan di Retur. <br>
-        4. Proses pengajuan ini akan diverifikasi oleh : Marketing Verifikasi, Manager Marketing, Direksi. <br>
-        5. Proses Selesai apabila tim gudang telah menerima barang retur dan input data ke absi.
+        <hr>
+        <li><small>Pastikan SPG sudah input data penjualan terbaru hingga tgl : <strong><?= date('d M Y') ?></strong>.</small></li>
+        <li><small>Anda di haruskan Update ASET Toko (* jika ada aset di toko tersebut).</small></li>
+        <li><small>Anda di haruskan mengisi jumlah semua artikel yang akan di Retur.</small></li>
+        <li><small>Proses pengajuan ini akan diverifikasi oleh : Marketing Verifikasi, Manager Marketing, Direksi.</small></li>
+        <li><small>Proses Selesai apabila tim gudang telah menerima barang retur dan input data ke absi.</small></li>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        <a href="<?= base_url('spv/Toko/form_tutup'); ?>" class="btn btn-success">Ya, Lanjutkan</a>
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
+        <a href="<?= base_url('spv/Toko/form_tutup'); ?>" class="btn btn-success btn-sm">Ya, Lanjutkan</a>
       </div>
     </div>
   </div>

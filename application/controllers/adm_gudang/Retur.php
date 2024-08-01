@@ -69,9 +69,9 @@ class Retur extends CI_Controller
       join tb_retur tr on trd.id_retur = tr.id
       join tb_produk tp on trd.id_produk = tp.id
       where trd.id_retur = '$no_retur' order by tp.nama_produk desc")->result();
-    $data['aset'] =  $this->db->query("SELECT tra.*, ta.nama_aset from tb_retur_aset tra
-      join tb_aset ta on tra.id_aset = ta.id
-      where tra.id_retur = ?  order by ta.nama_aset desc ", array($no_retur))->result();
+    $data['aset'] = $this->db->query("SELECT tra.*, ta.aset, ta.kode from tb_retur_aset tra
+    join tb_aset_master ta on tra.id_aset = ta.id
+    where tra.id_retur = ?  order by ta.aset desc ", array($no_retur))->result();
     $this->template->load('template/template', 'adm_gudang/retur/terima_toko', $data);
   }
   public function detail($no_retur)
@@ -111,14 +111,14 @@ class Retur extends CI_Controller
   // print SPPR TUTUP TOKO
   public function sppr_toko($no_retur)
   {
-    $data['retur'] = $this->db->query(" SELECT tr.*, tt.nama_toko, tspg.nama_user as spg, tl.nama_user as leader from tb_retur tr
+    $data['r'] = $this->db->query(" SELECT tr.*, tt.nama_toko, tspg.nama_user as spg, tl.nama_user as leader, tl.no_telp from tb_retur tr
     join tb_toko tt on tr.id_toko = tt.id
     join tb_user tspg on tt.id_spg = tspg.id
     join tb_user tl on tt.id_leader = tl.id
     where tr.id = '$no_retur'")->row();
-    $data['aset'] = $this->db->query("SELECT tra.*, ta.nama_aset from tb_retur_aset tra
-    join tb_aset ta on tra.id_aset = ta.id
-    where tra.id_retur = '$no_retur'")->result();
+    $data['aset'] = $this->db->query("SELECT tra.*, ta.aset, ta.kode from tb_retur_aset tra
+    join tb_aset_master ta on tra.id_aset = ta.id
+    where tra.id_retur = ?  order by ta.aset desc ", array($no_retur))->result();
     $data['artikel'] = $this->db->query("SELECT trd.*, tpk.nama_produk, tpk.kode, tpk.satuan from tb_retur_detail trd
     join tb_produk tpk on trd.id_produk = tpk.id
     where trd.id_retur = '$no_retur'")->result();
@@ -164,8 +164,10 @@ class Retur extends CI_Controller
   // fungsi terima barang dr toko tutup
   public function terimBarang()
   {
+    $gudang = $this->session->userdata('nama_user');
     $id_retur = $this->input->post('id_retur');
     $id_toko = $this->input->post('id_toko');
+    $catatan = $this->input->post('catatan');
     $qty_terima = $this->input->post('qty_input');
     $id_produk = $this->input->post('id_produk');
     $this->db->trans_start();
@@ -196,6 +198,14 @@ class Retur extends CI_Controller
 
     // Lakukan update pada tabel tb_retur
     $this->db->update('tb_retur', $data_retur, $where_retur);
+    // Insert history retur
+    $histori = array(
+      'id_retur' => $id_retur,
+      'aksi' => 'Diterima oleh : ',
+      'pembuat' => $gudang,
+      'catatan_h' => $catatan
+    );
+    $this->db->insert('tb_retur_histori', $histori);
     $this->db->trans_complete();
     // Tampilkan alert dan redirect
     tampil_alert('success', 'Berhasil', 'Data retur berhasil diterima');
@@ -210,7 +220,7 @@ class Retur extends CI_Controller
     $id_toko = $this->input->post('id_toko');
     $catatan = $this->input->post('catatan');
     $id_retur = $this->input->post('id_retur');
-
+    $gudang = $this->session->userdata('nama_user');
     date_default_timezone_set('Asia/Jakarta');
     $data_retur = [
       'id_toko' => $id_toko,
@@ -267,6 +277,14 @@ class Retur extends CI_Controller
 
     // Update status in tb_retur
     $this->db->update('tb_retur', $data_retur, $where_retur);
+    // Insert history retur
+    $histori = array(
+      'id_retur' => $id_retur,
+      'aksi' => 'Diterima oleh : ',
+      'pembuat' => $gudang,
+      'catatan_h' => $catatan
+    );
+    $this->db->insert('tb_retur_histori', $histori);
 
     // Complete transaction
     $this->db->trans_complete();

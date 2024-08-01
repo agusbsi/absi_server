@@ -3,6 +3,7 @@ $id = $this->session->userdata('id');
 $Artikel = $this->db->query("SELECT id FROM tb_stok WHERE status = '2'")->num_rows();
 $Toko = $this->db->query("SELECT id FROM tb_toko WHERE status = '2'")->num_rows();
 $TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '11'")->num_rows();
+$allToko = $Toko + $TokoTutup;
 $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
 ?>
 <!-- Sidebar -->
@@ -33,9 +34,8 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
           <p>
             Toko
             <i class="right fas fa-angle-left"></i>
-            <?php if ($Toko == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Toko ?></span>
+            <?php if ($allToko != 0) { ?>
+              <span class="right badge badge-danger"><?= $allToko ?></span>
             <?php } ?>
           </p>
         </a>
@@ -45,8 +45,7 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
               <i class="far fa-circle nav-icon"></i>
               <p>
                 Pengajuan Toko
-                <?php if ($Toko == 0) { ?>
-                <?php } else { ?>
+                <?php if ($Toko != 0) { ?>
                   <span class="right badge badge-danger"><?= $Toko ?></span>
                 <?php } ?>
               </p>
@@ -62,8 +61,7 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
             <a href="<?= base_url('mng_mkt/Toko/toko_tutup') ?>" class="nav-link <?= ($title == 'List Toko Tutup') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
               <p>Toko Tutup
-                <?php if ($TokoTutup == 0) { ?>
-                <?php } else { ?>
+                <?php if ($TokoTutup != 0) { ?>
                   <span class="right badge badge-danger"><?= $TokoTutup ?></span>
                 <?php } ?>
               </p>

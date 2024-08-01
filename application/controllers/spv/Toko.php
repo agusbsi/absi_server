@@ -70,11 +70,17 @@ class Toko extends CI_Controller
   // list toko tutup
   public function toko_tutup()
   {
-    $id_spv = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
+    if ($role == 3) {
+      $where = 'tt.id_leader';
+    } else {
+      $where = 'tt.id_spv';
+    }
+    $id = $this->session->userdata('id');
     $data['title'] = 'List Toko Tutup';
     $data['toko_tutup'] = $this->db->query("SELECT tr.id as id_retur, tr.created_at, tr.status, tt.nama_toko from tb_retur tr
     join tb_toko tt on tr.id_toko = tt.id
-    where tr.status >= 10 order by tr.id desc")->result();
+    where tr.status >= 10 AND $where = '$id' order by tr.id desc")->result();
     $this->template->load('template/template', 'spv/toko/toko_tutup', $data);
   }
   public function getdataRetur()
@@ -114,22 +120,40 @@ class Toko extends CI_Controller
   //  form tutup
   public function form_tutup()
   {
-    $id_spv = $this->session->userdata('id');
+    $id = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
+    if ($role == 3) {
+      $where = 'id_leader';
+    } else {
+      $where = 'id_spv';
+    }
     $data['title'] = 'List Toko Tutup';
-    $data['list_toko']  = $this->db->query("SELECT * from tb_toko where id_spv = '$id_spv' OR id_leader = '$id_spv' AND status = 1")->result();
-    $data['kode_retur'] = $this->M_spg->kode_retur(); // generate no permintaan
+    $data['list_toko']  = $this->db->query("SELECT * from tb_toko where $where = '$id' AND status = 1")->result();
+    $data['kode_retur'] = $this->M_spg->kode_retur();
     $data['list_aset']  = $this->db->query("SELECT * from tb_aset where status = 1 order by nama_aset asc")->result();
     $this->template->load('template/template', 'spv/toko/form_tutup_toko', $data);
   }
   // cek list artikel
   public function artikelToko()
   {
-    $id_toko   = $this->input->get('id_toko');
-    $data = $this->db->query("SELECT ts.qty,ts.id_produk, tp.kode, tp.nama_produk from tb_stok ts
-    join tb_produk tp on ts.id_produk = tp.id
-    where id_toko = '$id_toko'")->result();
+    $id_toko = $this->input->get('id_toko');
+
+    $artikel = $this->db->query("SELECT ts.qty, ts.id_produk, tp.kode, tp.nama_produk FROM tb_stok ts
+      JOIN tb_produk tp ON ts.id_produk = tp.id
+      WHERE ts.id_toko = ?", array($id_toko))->result();
+
+    $aset = $this->db->query("SELECT tat.*, tam.aset FROM tb_aset_toko tat
+      JOIN tb_aset_master tam ON tat.id_aset = tam.id
+      WHERE tat.id_toko = ?", array($id_toko))->result();
+
+    $data = [
+      'aset' => $aset,
+      'artikel' => $artikel
+    ];
+
     echo json_encode($data);
   }
+
 
   // simpan simpanRetur
   public function saveTutup()
@@ -138,10 +162,11 @@ class Toko extends CI_Controller
     $tgl_tarik      = $this->input->post('tgl_tarik');
     $catatan        = $this->input->post('catatan');
     $id_spv         = $this->session->userdata('id');
-    $no_retur       = $this->M_spg->kode_retur(); // generate no permintaan
+    $nama           = $this->session->userdata('nama_user');
+    $pt             = $this->session->userdata('pt');
+    $no_retur       = $this->M_spg->kode_retur();
     $id_aset        = $this->input->post('id_aset');
-    $qty_input      = $this->input->post('qty_input');
-    $kondisi        = $this->input->post('kondisi');
+    $qty_aset       = $this->input->post('qty_aset');
     $keterangan     = $this->input->post('keterangan');
     $id_produk      = $this->input->post('id_produk');
     $qty_retur      = $this->input->post('qty_retur');
@@ -150,27 +175,30 @@ class Toko extends CI_Controller
     // ambil nama toko
     $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
     $this->db->trans_start();
-    // cek jumlah aset
+    $asetData = [];
     for ($i = 0; $i < $jml; $i++) {
-      if ($qty_input[$i] > 0 || !empty($qty_input[$i])) {
-        $data = array(
-          'id_aset' => $id_aset[$i],
-          'id_retur' => $no_retur,
-          'qty' => $qty_input[$i],
-          'kondisi' => $kondisi[$i],
-          'keterangan' => $keterangan[$i],
-        );
-        $this->db->insert('tb_retur_aset', $data);
-      }
+      $asetData[] = array(
+        'id_aset' => $id_aset[$i],
+        'id_retur' => $no_retur,
+        'qty' => $qty_aset[$i],
+        'keterangan' => $keterangan[$i],
+      );
+    }
+
+    if (!empty($asetData)) {
+      $this->db->insert_batch('tb_retur_aset', $asetData);
     }
     //  cek jumlah id_produk
+    $artikelData = [];
     for ($a = 0; $a < $jml_produk; $a++) {
-      $dataArtikel = array(
+      $artikelData[] = array(
         'id_produk'   => $id_produk[$a],
         'id_retur'    => $no_retur,
         'qty'         => $qty_retur[$a]
       );
-      $this->db->insert('tb_retur_detail', $dataArtikel);
+    }
+    if (!empty($artikelData)) {
+      $this->db->insert_batch('tb_retur_detail', $artikelData);
     }
     // simpan ke tabel retur
     $dataRetur = array(
@@ -182,12 +210,26 @@ class Toko extends CI_Controller
       'catatan'     => $catatan,
     );
     $this->db->insert('tb_retur', $dataRetur);
+    // Insert history retur
+    $histori = array(
+      'id_retur' => $no_retur,
+      'aksi' => 'Diajukan oleh : ',
+      'pembuat' => $nama,
+      'catatan_h' => $catatan
+    );
+    $this->db->insert('tb_retur_histori', $histori);
     $this->db->trans_complete();
-    $hp = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6")->row();
-    $phone = $hp->no_telp;
-    $message = "Anda memiliki pengajuan Tutup Toko untuk ( " . $get_toko . " ) silahkan kunjungi s.id/absi-app";
-    kirim_wa($phone, $message);
-    tampil_alert('success', 'Berhasil', 'Pengajuan Tutup Toko berhasil di buat');
+    $hp = $this->db->select('no_telp')
+      ->from('tb_user')
+      ->where_in('role', array(6, 8))
+      ->get()
+      ->result();
+    foreach ($hp as $h) {
+      $phone = $h->no_telp;
+      $message = "$nama Mengajukan Tutup Toko ($get_toko - $pt) yang perlu di cek, silahkan kunjungi s.id/absi-app";
+      kirim_wa($phone, $message);
+    }
+    tampil_alert('success', 'Berhasil', 'Pengajuan Tutup Toko berhasil di ajukan.');
     redirect(base_url('spv/Toko/toko_tutup'));
   }
   // ambil data ajax untuk wilayah
