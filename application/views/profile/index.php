@@ -93,7 +93,7 @@
                 </div>
                 <div id="area-img" class="text-center <?= (empty($profil->ttd)) ? 'd-none' : '' ?>">
                   TTD Saat ini :
-                  <img src="<?= base_url('assets/img/ttd/' . $profil->ttd) ?>" class="ttd_img mb-1">
+                  <img src="<?= base_url('assets/img/ttd/' . $profil->ttd) . '?t=' . time(); ?>" class="ttd_img mb-1">
                   <button type="button" id="btn_edit_ttd" class="btn btn-sm btn-outline-primary "><i class="fas fa-edit"></i> Ganti</button>
                   <a href="<?= base_url('Profile/reset_ttd') ?>" class="btn btn-sm btn-outline-danger "><i class="fas fa-trash"></i> Kosongkan</a>
                 </div>
