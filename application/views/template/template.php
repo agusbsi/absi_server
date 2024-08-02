@@ -41,11 +41,79 @@
       outline-offset: 1px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
+    /* Style for the overlay */
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* Style for the popup card */
+    .popup-card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .popup-card h3 {
+      font-weight: bold;
+      font-size: large;
+    }
+
+    /* Style for the image */
+    .popup-card img {
+      width: 80%;
+      border-radius: 10px;
+      margin-bottom: 5px;
+    }
+
+    /* Style for the buttons */
+    .popup-card button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .popup-card .btn-lanjut {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .popup-card .btn-close {
+      background-color: #f44336;
+      color: white;
+    }
   </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
-
+  <?php if ($this->session->flashdata('judul')) : ?>
+    <div class="popup" id="popupOverlay">
+      <div class="popup-card">
+        <h3><?= $this->session->flashdata('judul'); ?></h3>
+        <img src="<?= base_url('assets/img/popup.svg') ?>" alt="Gambar">
+        <div class="konten">
+          <?= $this->session->flashdata('pesan'); ?>
+        </div>
+        <hr>
+        <a class="btn btn-sm btn-default" onclick="closePopup()">Nanti Saja</a>
+        <a href="<?= base_url($this->session->flashdata('link')); ?>" class="btn btn-sm btn-success">Coba Sekarang <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  <?php endif; ?>
   <?php
   if ($this->session->flashdata('type')) { ?>
     <script>
@@ -197,6 +265,10 @@
         "buttons": ["pdf", "print", "excel"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
+
+    function closePopup() {
+      document.getElementById('popupOverlay').style.visibility = 'hidden';
+    }
   </script>
   <script>
     $(function() {
@@ -265,6 +337,7 @@
         }
       })
     }
+  </script>
   </script>
 
 
