@@ -46,11 +46,12 @@ class Retur extends CI_Controller
     $id_retur = $this->input->post('id_retur');
     $mv = $this->session->userdata('nama_user');
     $pt = $this->session->userdata('pt');
+    $id_mv = $this->session->userdata('id');
     $status = $action == "1" ? "3" : "5";
     $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
 
     // Update status retur
-    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput);
+    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput, 'id_mv' => $id_mv);
     $where = array('id' => $id_retur);
     $this->db->update('tb_retur', $data, $where);
 

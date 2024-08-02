@@ -119,4 +119,57 @@ class Profile extends CI_Controller
     $this->session->sess_destroy();
     redirect(base_url());
   }
+  public function signature()
+  {
+    $id_user = $this->session->userdata('id');
+    if (!$id_user) {
+      $this->output
+        ->set_content_type('application/json')
+        ->set_output(json_encode(['status' => 'error', 'message' => 'Session telah habis, silahkan login kembali.']));
+      return;
+    }
+
+    // Ambil data dari request body
+    $input = json_decode(file_get_contents('php://input'), true);
+    $imageData = $input['image'];
+
+    // Menghapus "data:image/png;base64," dari data URI
+    $imageData = str_replace('data:image/png;base64,', '', $imageData);
+    $imageData = str_replace(' ', '+', $imageData);
+
+    // Dekode base64 menjadi binary
+    $data = base64_decode($imageData);
+
+    // Tentukan nama file dan path
+    $fileName = 'ttd_' . $id_user . '.png';
+    $filePath = './assets/img/ttd/' . $fileName;
+
+    // Simpan file ke server
+    if (!is_dir('./assets/img/ttd')) {
+      mkdir('./assets/img/ttd', 0777, true);
+    }
+    file_put_contents($filePath, $data);
+
+    // Simpan informasi tanda tangan ke database
+    $this->db->set('ttd', $fileName);
+    $this->db->where('id', $id_user);
+    $this->db->update('tb_user');
+
+    // Kirim respon sukses
+    $this->output
+      ->set_content_type('application/json')
+      ->set_output(json_encode(['status' => 'success', 'file' => $fileName]));
+  }
+  public function reset_ttd()
+  {
+    $id_user = $this->session->userdata('id');
+    $query = $this->db->query("SELECT ttd FROM tb_user WHERE id = ?", array($id_user));
+    $old_foto = $query->row()->ttd;
+    if (!empty($old_foto) && file_exists('assets/img/ttd/' . $old_foto)) {
+      unlink('assets/img/ttd/' . $old_foto);
+    }
+    $this->db->query("UPDATE tb_user set ttd = '' where id = '$id_user'");
+    tampil_alert('success', 'BERHASIL', 'Pola Tanda tangan berhasil di kosongkan.');
+    redirect(base_url('profile'));
+  }
 }
