@@ -120,6 +120,18 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </a>
       </li>
       <li class="nav-item">
+        <a href="<?= base_url('sup/Selisih') ?>" class="nav-link <?= ($title == 'Selisih Penerimaan') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-exclamation-triangle"></i>
+          <p>
+            Selisih
+            <?php if ($Selisih == 0) { ?>
+            <?php } else { ?>
+              <span class="right badge badge-danger"><?= $Selisih ?></span>
+            <?php } ?>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="<?= base_url('sup/Bap') ?>" class="nav-link <?= ($title == 'Bap') ? "active" : "" ?>">
           <i class="nav-icon fas fa-envelope"></i>
           <p>
