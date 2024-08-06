@@ -44,6 +44,20 @@ class Sales_Invoice extends CI_Controller
     GROUP BY tpk.kode ORDER BY tpk.kode ASC")->result();
     echo json_encode($data);
   }
+  public function list_jual_cust()
+  {
+    $id_cust = $this->input->get('id_cust');
+    $tgl_awal  = $this->input->GET('tgl_awal');
+    $tgl_akhir = $this->input->GET('tgl_akhir');
+    $data = $this->db->query("SELECT tpd.*, tpd.id as id_detail, tpk.kode,tpk.nama_produk, tpk.satuan,SUM(tpd.qty) as total_qty, round((tpd.harga - (tpd.harga * tpd.diskon_toko / 100)),0) as harga_satuan, tc.kode_customer, tc.nama_cust from tb_penjualan_detail tpd
+    join tb_penjualan tp on tpd.id_penjualan = tp.id
+    join tb_produk tpk on tpd.id_produk = tpk.id
+    join tb_toko tt on tp.id_toko = tt.id
+    join tb_customer tc on tt.id_customer = tc.id
+    where tt.id_customer = '$id_cust' and  date(tp.tanggal_penjualan) between '$tgl_awal' and '$tgl_akhir'
+    GROUP BY tpk.kode ORDER BY tpk.kode ASC")->result();
+    echo json_encode($data);
+  }
   public function export_ea()
   {
     $pengguna = $this->session->userdata('nama_user');

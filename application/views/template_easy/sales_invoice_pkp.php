@@ -468,46 +468,47 @@
               tgl_akhir: tgl_akhir
             },
             success: function(data) {
-              $(".custom-loader").hide();
-              var html = '';
-              var totalQty = 0;
-              var totalSubTotal = 0;
-              var number = 1;
-              $(".pelanggan").val(data[0].nama_cust);
-              $(".kode_pelanggan").val(data[0].kode_customer);
-              $.each(data, function(i, item) {
-                var subtotal = parseInt(item.harga * item.total_qty);
-                html += '<tr>';
-                html += '<td class="text-center">' + number++ + '</td>';
-                html += '<td> <small><strong><input type="hidden" name="kode[]" value="' + item.kode + '">' + item.kode + '</strong></small></td>';
-                html += '<td> <small>' + item.nama_produk + '</small></td>';
-                html += '<td class="text-center"><input type="hidden" class="qty" name="qty[]" value="' + item.total_qty + '">' + item.total_qty + '</td>';
-                html += '<td class="text-right"><input type="text" name="harga[]" value="' + formatRupiah(item.harga_satuan) + '" class ="form-control form-control-sm harga"></td>';
-                html += '<td class="text-center"><input type="hidden" name="satuan[]" value="' + item.satuan + '">' + item.satuan + '</td>';
-                html += '</tr>';
-                totalQty += parseInt(item.total_qty);
-                totalSubTotal += subtotal;
-              });
-              html += '<tr>';
-              html += '<td colspan="3" class="text-right">Sub Total :</td>';
-              html += '<td class="text-center">' + formatRupiah(totalQty) + '</td>';
-              html += '<td class="text-right sub_total">' + formatRupiah(totalSubTotal) + '</td>';
-              html += '<td class="text-center"></td>';
-              html += '</tr>';
-              $("#body_hasil").html(html);
-              $(".subTotal").val(formatRupiah(totalSubTotal));
-              $(".diskon").val('0');
-              $(".jumlah").val(formatRupiah(totalSubTotal));
-              $(".pajak").val(formatRupiah(totalSubTotal * 11 / 100));
-
-              if (data.length === 0) {
+              if (data != "") {
                 $(".custom-loader").hide();
+                var html = '';
+                var totalQty = 0;
+                var totalSubTotal = 0;
+                var number = 1;
+                $(".pelanggan").val(data[0].nama_cust);
+                $(".kode_pelanggan").val(data[0].kode_customer);
+                $.each(data, function(i, item) {
+                  var subtotal = parseInt(item.harga_satuan * item.total_qty);
+                  html += '<tr>';
+                  html += '<td class="text-center">' + number++ + '</td>';
+                  html += '<td> <small><strong><input type="hidden" name="kode[]" value="' + item.kode + '">' + item.kode + '</strong></small></td>';
+                  html += '<td> <small>' + item.nama_produk + '</small></td>';
+                  html += '<td class="text-center"><input type="hidden" class="qty" name="qty[]" value="' + item.total_qty + '">' + item.total_qty + '</td>';
+                  html += '<td class="text-right"><input type="text" name="harga[]" value="' + formatRupiah(item.harga_satuan) + '" class ="form-control form-control-sm harga"></td>';
+                  html += '<td class="text-center"><input type="hidden" name="satuan[]" value="' + item.satuan + '">' + item.satuan + '</td>';
+                  html += '</tr>';
+                  totalQty += parseInt(item.total_qty);
+                  totalSubTotal += subtotal;
+                });
+                html += '<tr>';
+                html += '<td colspan="3" class="text-right">Sub Total :</td>';
+                html += '<td class="text-center">' + formatRupiah(totalQty) + '</td>';
+                html += '<td class="text-right sub_total">' + formatRupiah(totalSubTotal) + '</td>';
+                html += '<td class="text-center"></td>';
+                html += '</tr>';
+                $("#body_hasil").html(html);
+                $(".subTotal").val(formatRupiah(totalSubTotal));
+                $(".diskon").val('0');
+                $(".jumlah").val(formatRupiah(totalSubTotal));
+                $(".pajak").val(formatRupiah(totalSubTotal * 11 / 100));
+              } else {
                 Swal.fire(
-                  'TIDAK ADA TRANSAKSI',
-                  'Data tidak ditemukan',
+                  'TIDAK ADA DATA',
+                  'Data tidak ditemukan, silahkan cari kembali',
                   'info'
                 );
+                $(".custom-loader").hide();
               }
+
             },
             error: function(xhr, status, error) {
               $(".custom-loader").hide();

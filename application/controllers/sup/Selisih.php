@@ -19,7 +19,7 @@ class Selisih extends CI_Controller
     $data['selisih'] = $this->db->query("SELECT tp.*, tt.nama_toko, tu.nama_user from tb_pengiriman tp
     JOIN tb_toko tt on tp.id_toko = tt.id
     JOIN tb_user tu on tt.id_spg = tu.id
-    WHERE tp.status = 3")->result();
+    WHERE tp.status = 3 ORDER BY tp.id desc")->result();
     $this->template->load('template/template', 'manager_mv/selisih/index', $data);
   }
   public function detail($id)

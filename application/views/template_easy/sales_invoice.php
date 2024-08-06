@@ -214,7 +214,7 @@
               $(".pelanggan").val(data[0].nama_cust);
               $(".kode_pelanggan").val(data[0].kode_customer);
               $.each(data, function(i, item) {
-                var subtotal = parseInt(item.harga * item.total_qty);
+                var subtotal = parseInt(item.harga_satuan * item.total_qty);
                 html += '<tr>';
                 html += '<td class="text-center">' + number++ + '</td>';
                 html += '<td> <small><strong><input type="hidden" name="kode[]" value="' + item.kode + '">' + item.kode + '</strong></small></td>';
@@ -280,7 +280,7 @@
               $(".pelanggan").val(data[0].nama_cust);
               $(".kode_pelanggan").val(data[0].kode_customer);
               $.each(data, function(i, item) {
-                var subtotal = parseInt(item.harga * item.total_qty);
+                var subtotal = parseInt(item.harga_satuan * item.total_qty);
                 html += '<tr>';
                 html += '<td class="text-center">' + number++ + '</td>';
                 html += '<td> <small><strong><input type="hidden" name="kode[]" value="' + item.kode + '">' + item.kode + '</strong></small></td>';

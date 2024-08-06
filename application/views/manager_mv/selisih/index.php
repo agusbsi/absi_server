@@ -14,7 +14,7 @@
                <th style="width:15%">Nomor Kirim</th>
                <th style="width:15%">Nomor PO</th>
                <th>Toko</th>
-               <th>Tgl</th>
+               <th>Tanggal</th>
                <th>Menu</th>
              </tr>
            </thead>
@@ -24,7 +24,7 @@
               foreach ($selisih as $data) :
                 $no++; ?>
                <tr>
-                 <td><?= $no ?></td>
+                 <td class="text-center"><?= $no ?></td>
                  <td class="text-center">
                    <small><strong><?= $data->id ?></strong></small>
                  </td>
@@ -37,7 +37,7 @@
                      <?= $data->nama_user ?>
                    </small>
                  </td>
-                 <td><?= date('d M Y', strtotime($data->created_at)) ?></td>
+                 <td class="text-center"><?= date('d M Y', strtotime($data->created_at)) ?></td>
                  <td class="text-center">
                    <a href="<?= base_url('sup/selisih/detail/' . $data->id) ?>" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>
                  </td>

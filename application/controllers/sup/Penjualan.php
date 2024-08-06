@@ -59,8 +59,8 @@ class Penjualan extends CI_Controller
             SELECT tp.*, tt.nama_toko
             FROM tb_penjualan tp
             JOIN tb_toko tt ON tp.id_toko = tt.id
-            WHERE tp.tanggal_penjualan >= ? AND tp.tanggal_penjualan <= ? ORDER BY tp.id DESC LIMIT 1000
-        ", [$awal, $akhir])->result();
+             ORDER BY tp.id DESC LIMIT 1000
+        ")->result();
     }
     $this->template->load('template/template', 'manager_mv/penjualan/index', $data);
   }
