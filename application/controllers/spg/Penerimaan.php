@@ -61,9 +61,16 @@ class Penerimaan extends CI_Controller
     $id_toko = $this->input->post('id_toko');
     $qty = $this->input->post('qty');
     $qty_terima = $this->input->post('qty_terima');
+    $unique_id = $this->input->post('unique_id');
     $spg = $this->db->query("SELECT nama_user from tb_user where id ='$id_penerima'")->row()->nama_user;
     $nilai = count($id_produk);
     $selisih = 0;
+
+    if ($this->db->get_where('tb_pengiriman', array('id_unik' => $unique_id))->num_rows() > 0) {
+      tampil_alert('info', 'INTERNET ANDA LEMOT', 'Data penerimaan Artikel sedang di proses dan tetap akan disimpan.');
+      redirect(base_url('spg/Penerimaan'));
+      return;
+    }
     $this->db->trans_start();
     for ($i = 0; $i < $nilai; $i++) {
       $d_id_produk = $id_produk[$i];
@@ -106,6 +113,7 @@ class Penerimaan extends CI_Controller
       'updated_at' => date('Y-m-d H:i:s'),
       'id_penerima' => $id_penerima,
       'catatan_spg' => $catatan_spg,
+      'id_unik' => $unique_id
     );
     $this->db->update('tb_pengiriman', $data, $where);
     $where2 = array('id' => $id_po);

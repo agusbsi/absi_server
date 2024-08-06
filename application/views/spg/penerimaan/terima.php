@@ -10,6 +10,7 @@
               </h3>
               <input type="hidden" name="id_kirim" value="<?= $terima->id ?>">
               <input type="hidden" name="id_toko" value="<?= $terima->id_toko ?>">
+              <input type="hidden" name="unique_id" value="<?= uniqid() ?>">
               <div class="card-tools">
                 <a href="<?= base_url('spg/Penerimaan') ?>" type="button" class="btn btn-tool">
                   <i class="fas fa-times"></i>
