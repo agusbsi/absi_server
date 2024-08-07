@@ -1,24 +1,19 @@
 <style>
-  #signature-pad {
-    border: 2px solid blue;
-    border-radius: 5px;
-    width: 250px;
-    height: 200px;
-    cursor: pointer;
-    padding: 5px;
-    margin: 5px;
-  }
-
-  .signature-pad canvas {
-    width: 100%;
-    height: 100%;
+  #signature {
+    width: 300px;
+    height: 250px;
+    border: 1px solid #e8e8e8;
+    background-color: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.08) inset;
+    border-radius: 4px;
   }
 
   .ttd_img {
-    width: 100%;
+    width: 300px;
     height: auto;
     border: 2px solid blue;
     border-radius: 5px;
+    padding: 10px;
   }
 </style>
 <section class="content">
@@ -86,11 +81,8 @@
           </div>
           <div class="card-body ">
             <div class="row">
-              <div class="col-md-5">
-
-                <div id="signature-pad" class="signature-pad <?= (empty($profil->ttd)) ? '' : 'd-none' ?>">
-                  <canvas></canvas>
-                </div>
+              <div class="col-md-6">
+                <div id="signature" class="<?= (empty($profil->ttd)) ? '' : 'd-none' ?>"></div>
                 <div id="area-img" class="text-center <?= (empty($profil->ttd)) ? 'd-none' : '' ?>">
                   TTD Saat ini :
                   <img src="<?= base_url('assets/img/ttd/' . $profil->ttd) . '?t=' . time(); ?>" class="ttd_img mb-1">
@@ -98,7 +90,6 @@
                   <a href="<?= base_url('Profile/reset_ttd') ?>" class="btn btn-sm btn-outline-danger "><i class="fas fa-trash"></i> Kosongkan</a>
                 </div>
               </div>
-              <div class="col-md-1"></div>
               <div class="col-md-6">
                 <strong># Cara Menggunakan :</strong>
                 <li>Tekan & Tahan Kursor, Lalu gerakan sesuai Pola TTD Anda.</li>
@@ -152,25 +143,39 @@
     </div>
   </div>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lemonadejs/dist/lemonade.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@lemonadejs/signature/dist/index.min.js"></script>
+
 <script>
-  var canvas = document.querySelector("canvas");
-  var signaturePad = new SignaturePad(canvas);
+  const root = document.getElementById("signature");
+  const component = Signature(root, {
+    width: 300,
+    height: 250,
+  });
 
   document.getElementById('clear').addEventListener('click', function() {
-    signaturePad.clear();
+    component.value = [];
   });
+
   document.getElementById('btn_edit_ttd').addEventListener('click', function() {
-    $('#area-img').addClass('d-none');
-    $('#signature-pad').removeClass('d-none');
-    $('#menu_footer').removeClass('d-none');
+    document.getElementById('area-img').classList.add('d-none');
+    document.getElementById('signature').classList.remove('d-none');
+    document.getElementById('menu_footer').classList.remove('d-none');
   });
 
   document.getElementById('save_ttd').addEventListener('click', function() {
-    if (!signaturePad.isEmpty()) {
+    if (component.value.length === 0) {
+      Swal.fire({
+        title: 'KOSONG',
+        text: 'Pola Tanda Tangan masih kosong.',
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
+    } else {
       Swal.fire({
         title: 'Apakah anda yakin?',
-        text: "Pola tanda tangan anda akan di simpan.",
+        text: "Pola tanda tangan anda akan disimpan.",
         icon: 'info',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -179,7 +184,7 @@
         confirmButtonText: 'Yakin'
       }).then((result) => {
         if (result.isConfirmed) {
-          var dataURL = signaturePad.toDataURL();
+          var dataURL = component.getImage();
           fetch('<?= base_url('Profile/signature') ?>', {
               method: 'POST',
               headers: {
@@ -194,7 +199,7 @@
               if (data.status === 'success') {
                 Swal.fire({
                   title: 'BERHASIL',
-                  text: 'Pola Tanda Tangan berhasil di simpan',
+                  text: 'Pola Tanda Tangan berhasil disimpan',
                   icon: 'success',
                   confirmButtonColor: '#3085d6',
                   confirmButtonText: 'OK'
@@ -204,7 +209,7 @@
               } else {
                 Swal.fire({
                   title: 'GAGAL',
-                  text: 'Pola Tanda Tangan Gagal di simpan',
+                  text: 'Pola Tanda Tangan gagal disimpan',
                   icon: 'error',
                   confirmButtonColor: '#3085d6',
                   confirmButtonText: 'OK'
@@ -213,16 +218,15 @@
             })
             .catch(error => {
               console.error('Error:', error);
+              Swal.fire({
+                title: 'GAGAL',
+                text: 'Terjadi kesalahan saat menyimpan.',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+              });
             });
         }
-      })
-    } else {
-      Swal.fire({
-        title: 'KOSONG',
-        text: 'Pola Tanda Tangan masih kosong.',
-        icon: 'error',
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'OK'
       });
     }
   });
