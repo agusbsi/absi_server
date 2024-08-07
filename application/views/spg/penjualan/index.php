@@ -4,12 +4,16 @@
       <div class="col-12">
         <div class="card card-info">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-money-bill"></i> <?= $title ?></h3>
+            <h3 class="card-title"><i class="fas fa-cart"></i> <?= $title ?></h3>
+            <div class="card-tools">
+              <a href="<?= base_url('spg/Dashboard') ?>" type="button" class="btn btn-tool">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
           </div>
           <div class="card-body">
-            <h3>Data Penjualan Barang</h3>
             <div class="row">
-              <a href="<?= base_url('spg/penjualan/tambah_penjualan') ?>" class="btn btn-success ml-auto">
+              <a href="<?= base_url('spg/penjualan/tambah_penjualan') ?>" class="btn btn-sm btn-success ml-auto">
                 <li class="fas fa-plus"></li> Input Penjualan
               </a>
             </div>

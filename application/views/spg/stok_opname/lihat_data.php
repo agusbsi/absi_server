@@ -99,10 +99,10 @@
                 </div>
                 <hr>
                 <div class="text-center p-3">
-                  <button type="reset" class="btn btn-danger">
+                  <button type="reset" class="btn btn-sm btn-danger">
                     <li class="fa fa-times-circle"></li> Reset
                   </button>
-                  <button type="submit" class="btn btn-success ml-3" id="btn-kirim"><i class="fa fa-paper-plane"></i> Kirim Data</button>
+                  <button type="submit" class="btn btn-sm btn-success ml-3" id="btn-kirim"><i class="fa fa-paper-plane"></i> Kirim Data</button>
                 </div>
               </div>
             </div>

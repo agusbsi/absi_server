@@ -5,6 +5,11 @@
         <div class="card card-info">
           <div class="card-header">
             <h3 class="card-title"><i class="fas fa-exchange-alt"></i> <?= $title ?></h3>
+            <div class="card-tools">
+              <a href="<?= base_url('spg/Dashboard') ?>" type="button" class="btn btn-tool">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
           </div>
           <div class="card-body">
             <div class="row">

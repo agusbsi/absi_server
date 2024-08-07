@@ -4,6 +4,11 @@
       <h3 class="card-title">
         <li class="fas fa-copy"></li> Terima Mutasi
       </h3>
+      <div class="card-tools">
+        <a href="<?= base_url('spg/Dashboard') ?>" type="button" class="btn btn-tool">
+          <i class="fas fa-times"></i>
+        </a>
+      </div>
     </div>
     <div class="card-body">
       <table id="example1" class="table table-bordered table-striped ">

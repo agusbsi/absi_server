@@ -4,7 +4,12 @@
       <div class="col-12">
         <div class="card card-info">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-file-alt"></i> <?= $title ?></h3>
+            <h3 class="card-title"><i class="fas fa-file-alt"></i> Permintaan Artikel</h3>
+            <div class="card-tools">
+              <a href="<?= base_url('spg/Dashboard') ?>" type="button" class="btn btn-tool">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
           </div>
           <div class="card-body">
             <div class="row">
