@@ -12,8 +12,6 @@ class Mutasi extends CI_Controller
       tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }
-    $this->load->model('M_admin');
-    $this->load->model('M_support');
   }
   public function index()
   {
@@ -38,42 +36,88 @@ class Mutasi extends CI_Controller
      where tmd.id_mutasi = '$id'")->result();
     $this->template->load('template/template', 'manager_mv/mutasi/bap', $data);
   }
-
-
-  // detail mutasi
-  // detail permintaan
   public function detail($mutasi)
   {
-
     $data['title'] = 'Mutasi Barang';
-    $data['mutasi'] = $this->db->query("SELECT tm.*,tu.nama_user as leader, tt.nama_toko as asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan from tb_mutasi tm
-      join tb_toko tt on tm.id_toko_asal = tt.id
-      join tb_toko tk on tm.id_toko_tujuan = tk.id
-      join tb_user tu on tm.id_user = tu.id
-      where tm.id = '$mutasi'")->row();
-    $data['detail_mutasi']  = $this->db->query("SELECT tmd.*, tp.nama_produk, tp.kode, tp.satuan from tb_mutasi_detail tmd
+    $query = $this->db->query("SELECT tm.*,tu.nama_user as leader, tt.nama_toko as asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan from tb_mutasi tm
+    join tb_toko tt on tm.id_toko_asal = tt.id
+    join tb_toko tk on tm.id_toko_tujuan = tk.id
+    join tb_user tu on tm.id_user = tu.id
+    where tm.id = '$mutasi'")->row();
+    $data['mutasi'] = $query;
+    $id_toko = $query->id_toko_asal;
+    $data['detail_mutasi']  = $this->db->query("SELECT tmd.*, tp.nama_produk, tp.kode, tp.satuan, ts.qty as stok from tb_mutasi_detail tmd
       join tb_produk tp on tmd.id_produk = tp.id
-      where tmd.id_mutasi = '$mutasi'")->result();
+      JOIN tb_stok ts on tmd.id_produk = ts.id_produk 
+      where tmd.id_mutasi = '$mutasi' AND ts.id_toko = '$id_toko'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_mutasi_histori tpo
+    join tb_mutasi tp on tpo.id_mutasi = tp.id where tpo.id_mutasi = '$mutasi'")->result();
     $this->template->load('template/template', 'manager_mv/mutasi/detail', $data);
   }
-  // proses approve
-  //  approve artikel
-  public function approve()
+  public function hapus_item()
   {
-    $id = $this->input->get('id');
-    $id_mutasi = $this->input->get('id_mutasi');
-
-    $nilai = count($id);
-
-    for ($i = 0; $i < $nilai; $i++) {
-      $list_id = $id[$i];
-      $this->db->trans_start();
-      $this->db->query("UPDATE tb_mutasi_detail set status = '1' where id = '$list_id'");
-      $this->db->query("UPDATE tb_mutasi set status = '1' where id = '$id_mutasi'");
-      $this->db->trans_complete();
-    }
+    $id = $this->input->post('id');
+    $this->db->query("DELETE from tb_mutasi_detail where id = '$id'");
   }
-
+  function proses_simpan()
+  {
+    $id_mv = $this->session->userdata('id');
+    $mv = $this->session->userdata('nama_user');
+    $pt = $this->session->userdata('pt');
+    $id_mutasi  = $this->input->post('id_mutasi');
+    $id_leader  = $this->input->post('id_leader');
+    $id_detail  = $this->input->post('id_detail');
+    $qty  = $this->input->post('qty');
+    $catatan  = $this->input->post('catatan');
+    $tindakan  = $this->input->post('tindakan');
+    $jumlah = count($id_detail);
+    $this->db->trans_start();
+    if ($tindakan == 1) {
+      $where = array('id' => $id_mutasi);
+      $data = array(
+        'status' => 1,
+        'id_mv' => $id_mv
+      );
+      $this->db->update('tb_mutasi', $data, $where);
+      $aksi = "Disetujui MV : ";
+      for ($i = 0; $i < $jumlah; $i++) {
+        $d_id_detail  = $id_detail[$i];
+        $d_qty        = $qty[$i];
+        $data_detail = array(
+          'qty' => $d_qty,
+        );
+        $this->db->where('id', $d_id_detail);
+        $this->db->update('tb_mutasi_detail', $data_detail);
+      }
+      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$id_leader'")->result_array();
+      $message = "Pengajuan Mutasi anda ( " . $id_mutasi . " - " . $pt . " ) telah disetujui, silahkan kunjungi s.id/absi-app";
+      foreach ($phones as $phone) {
+        $number = $phone['no_telp'];
+        $hp = substr($number, 0, 1);
+        if ($hp == '0') {
+          $number = '62' . substr($number, 1);
+        }
+        kirim_wa($number, $message);
+      }
+    } else {
+      $tolak = array(
+        'status' => '3'
+      );
+      $this->db->update('tb_mutasi', $tolak, array('id' => $id_mutasi));
+      $aksi = "Ditolak MV : ";
+    }
+    // Insert histori
+    $histori = array(
+      'id_mutasi' => $id_mutasi,
+      'aksi' => $aksi,
+      'pembuat' => $mv,
+      'catatan' => $catatan
+    );
+    $this->db->insert('tb_mutasi_histori', $histori);
+    $this->db->trans_complete();
+    tampil_alert('success', 'Berhasil', 'Data Mutasi artikel berhasil di proses.');
+    redirect(base_url('sup/Mutasi/detail/' . $id_mutasi));
+  }
   // setujui bap
   public function setujuiBap()
   {
@@ -126,19 +170,6 @@ class Mutasi extends CI_Controller
     $this->db->update('tb_mutasi', $list_mutasi, $where);
     $this->db->trans_complete();
     tampil_alert('success', 'BERHASIL', 'Proses BAP Mutasi Berhasil di perbarui.');
-    redirect(base_url('sup/Mutasi'));
-  }
-
-  // di tolak
-  public function reject()
-  {
-    $id = $this->input->get('id_mutasi');
-    $where = array('id' => $id);
-    $data = array(
-      'status' => '3',
-    );
-    $this->M_admin->update('tb_mutasi', $data, $where);
-    tampil_alert('error', 'DITOLAK', 'Mutasi artikel telah ditolak!!');
     redirect(base_url('sup/Mutasi'));
   }
 }

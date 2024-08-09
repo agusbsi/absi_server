@@ -1,6 +1,6 @@
 <section class="content">
   <div class="container-fluid">
-    <form action="<?= base_url('leader/Mutasi/proses_add') ?>" method="POST">
+    <form action="<?= base_url('leader/Mutasi/proses_add') ?>" method="POST" id="form_mutasi">
       <div class="card card-info">
         <div class="card-header">
           <h3 class="card-title"><i class="nav-icon fas fa-copy"></i> Buat Mutasi</h3>
@@ -15,121 +15,238 @@
           <div class="card card-default">
             <div class="card-body">
               <div class="row">
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <label>No Mutasi :</label>
-                    <input type="text" class="form-control" name="no_mutasi" value="<?= $kode_mutasi ?>" readonly>
-                  </div>
-                  <div class="form-group">
-                    <label>Tanggal :</label>
-                    <input type="text" class="form-control" name="tgl_mutasi" value="<?= date('Y-m-d') ?>" readonly>
-
-                  </div>
-                  <!-- /.form-group -->
-                </div>
-                <div class="col-md-4"></div>
-                <!-- /.col -->
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <div class="form-group">
                     <label>Toko Asal :</label>
-                    <select class="form-control select2bs4" style="width: 100%;" id="toko_asal" name="toko_asal" required>
-                      <option selected="selected" value="">- Pilih Toko Asal -</option>
+                    <select class="form-control form-control-sm select2bs4" id="toko_asal" name="toko_asal" required>
+                      <option selected="selected" value="">- Pilih -</option>
                       <?php foreach ($list_toko as $l) { ?>
                         <option value="<?= $l->id ?>"><?= $l->nama_toko ?></option>
                       <?php } ?>
                     </select>
                   </div>
+                </div>
+                <div class="col-md-6">
                   <div class="form-group">
                     <label>Toko tujuan :</label>
-                    <select class="form-control select2bs4" style="width: 100%;" id="toko_tujuan" name="toko_tujuan" required disabled>
-                      <option selected="selected" value="">- Pilih Toko Tujuan -</option>
+                    <select class="form-control form-control-sm select2bs4" id="toko_tujuan" name="toko_tujuan" required disabled>
+                      <option selected="selected" value="">- Pilih -</option>
                       <?php foreach ($toko_tujuan as $l) { ?>
                         <option value="<?= $l->id ?>"><?= $l->nama_toko ?></option>
                       <?php } ?>
                     </select>
                   </div>
-                  <!-- /.form-group -->
                 </div>
-
               </div>
-              <!-- /.row -->
-
             </div>
-            <!-- /.card-body -->
-
           </div>
           <!-- end master -->
           <div class="card card-default">
             <div class="card-body">
               <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-5">
                   <div class="form-group">
-                    <label>Pilih Barang</label>
-                    <select name="id_produk" class="form-control select2bs4" id="id_produk" disabled>
+                    <label>Pilih Artikel</label>
+                    <select name="id_produk" class="form-control form-control-sm select2" id="id_produk" disabled>
                     </select>
                   </div>
                 </div>
-                <div class="col-md-5">
-                  <label>Nama Artikel</label>
-                  <input type="text" name="nama_produk" value="" readonly class="form-control">
-                  <input type="hidden" name="kode_produk" value="" readonly class="form-control">
-                </div>
-                <div class="col-md-1 text-center">
+                <div class="col-md-2 text-center">
                   <label>Satuan</label>
-                  <input type="text" name="satuan" value="" readonly class="form-control">
+                  <input type="text" name="satuan" value="" readonly class="form-control form-control-sm">
+                  <input type="hidden" name="kode" value="" readonly class="form-control form-control-sm">
+                  <input type="hidden" name="produk" value="" readonly class="form-control form-control-sm">
                 </div>
-                <div class="col-md-1 text-center">
+                <div class="col-md-2 text-center">
                   <label>Stok</label>
-                  <input type="text" name="stok" value="" readonly class="form-control">
+                  <input type="text" name="stok" value="" readonly class="form-control form-control-sm">
                 </div>
-                <div class="col-md-1 text-center">
+                <div class="col-md-2 text-center">
                   <label>Qty</label>
-                  <input type="number" name="qty" value="" readonly class="form-control" min="0">
+                  <input type="number" name="qty" value="" readonly class="form-control form-control-sm" min="0">
                 </div>
                 <div class="col-md-1">
                   <label for="">&nbsp;</label>
-                  <button disabled type="button" class="btn btn-success btn-block" id="tambah"><i class="fa fa-plus"></i></button>
+                  <button disabled type="button" class="btn btn-sm btn-success btn-block" id="tambah"><i class="fa fa-plus"></i></button>
                 </div>
               </div>
-
+              <h3 class="card-title ml-3"><i class="fas fa-cube"></i> List Artikel</h3>
+              <hr>
+              <div class="keranjang table-responsive">
+                <table class="table table-bordered table-striped" id="keranjang">
+                  <thead>
+                    <tr class="text-center">
+                      <th>No</th>
+                      <th>Artikel</th>
+                      <th>Satuan</th>
+                      <th>Jumlah</th>
+                      <th>Menu</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <hr>
+              <div class="form-group">
+                <label for="">Catatan : *</label>
+                <textarea name="catatan" class="form-control form-control-sm" required></textarea>
+                <small>* Harus di isi.</small>
+              </div>
             </div>
-            <!-- end row -->
-            <h3 class="card-title ml-3"><i class="fas fa-cube"></i> List Barang</h3>
-            <hr>
-            <div class="keranjang table-responsive">
-              <table class="table table-bordered table-striped" id="keranjang">
-                <thead>
-                  <tr>
-                    <th>Kode #</th>
-                    <th>Nama Artikel</th>
-                    <th>Satuan</th>
-                    <th>Jumlah</th>
-                    <th>Menu</th>
-                  </tr>
-                </thead>
-                <tbody>
-
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colspan="5" align="right">
-                      <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;Proses Mutasi</button>
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
+            <div class="card-footer text-center">
+              <button type="submit" class="btn btn-sm btn-primary" id="btn_simpan"><i class="fa fa-paper-plane"></i>&nbsp;&nbsp;Ajukan Mutasi</button>
             </div>
           </div>
         </div>
     </form>
   </div>
 </section>
+<script>
+  $(document).on('click', '#tambah', function(e) {
+    var idProduk = document.querySelector('[name="id_produk"]').value;
+    var satuan = document.querySelector('[name="satuan"]').value;
+    var kode = document.querySelector('[name="kode"]').value;
+    var produk = document.querySelector('[name="produk"]').value;
+    var stok = document.querySelector('[name="stok"]').value;
+    var qty = document.querySelector('[name="qty"]').value;
+    var storedData = JSON.parse(localStorage.getItem('dataProduk')) || [];
+    var isRoleExist = storedData.some(function(data) {
+      return data.idProduk === idProduk;
+    });
+    if (isRoleExist) {
+      Swal.fire(
+        'Peringatan !',
+        'Artikel sudah masuk list keranjang, pilih artikel yang lain.',
+        'info'
+      );
+      return;
+    }
+    var data = {
+      idProduk: idProduk,
+      satuan: satuan,
+      kode: kode,
+      produk: produk,
+      stok: stok,
+      qty: qty
+    };
 
+    if (qty <= 0) {
+      Swal.fire(
+        'Peringatan!',
+        'Jumlah tidak boleh 0',
+        'info'
+      );
+    } else {
+      let storedData = JSON.parse(localStorage.getItem('dataProduk')) || [];
+      if (!Array.isArray(storedData)) {
+        storedData = [];
+      }
+      storedData.push(data);
+      localStorage.setItem('dataProduk', JSON.stringify(storedData));
+      loadDataFromLocalStorage();
+      reset();
+    }
+  });
+
+  function loadDataFromLocalStorage() {
+    let storedData = JSON.parse(localStorage.getItem('dataProduk')) || [];
+    let listPersonilTable = document.getElementById('keranjang').querySelector('tbody');
+    listPersonilTable.innerHTML = '';
+    storedData.forEach(function(data, index) {
+      let row = document.createElement('tr');
+      row.innerHTML = `
+      <td class='text-center'>${index + 1}</td>
+      <td>
+        ${data.kode} <br>
+        <small><small>${data.produk}</small></small>
+        <input type='hidden' name='id_produk[]' value='${data.idProduk}'>
+        <input type='hidden' name='qty[]' value='${data.qty}'>
+      </td>
+      <td class='text-center'>${data.satuan}</td>
+      <td class='text-center'>${data.qty}</td>         
+      <td class='text-center'><button type='button' class='btn btn-danger btn-sm btn_hapus'><i class='fas fa-trash'></i></button></td>
+    `;
+      listPersonilTable.appendChild(row);
+    });
+
+    // Tambahkan event listener untuk tombol "Hapus"
+    listPersonilTable.addEventListener('click', function(e) {
+      let btnHapus = e.target.closest('.btn_hapus');
+      if (btnHapus) {
+        let row = btnHapus.closest('tr');
+        let idProduk = row.querySelector('input[name="id_produk[]"]').value;
+        let storedData = JSON.parse(localStorage.getItem('dataProduk')) || [];
+        if (!Array.isArray(storedData)) {
+          storedData = [];
+        }
+        storedData = storedData.filter(function(data) {
+          return data.idProduk !== idProduk;
+        });
+        localStorage.setItem('dataProduk', JSON.stringify(storedData));
+        loadDataFromLocalStorage();
+      }
+    });
+  }
+  // funsi reset
+  function reset() {
+    $('#id_produk').val('');
+    $('input[name="produk"]').val('')
+    $('input[name="satuan"]').val('')
+    $('input[name="stok"]').val('')
+    $('input[name="qty"]').val('')
+    $('input[name="qty"]').prop('readonly', true)
+    $('button#tambah').prop('disabled', true)
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    loadDataFromLocalStorage();
+  });
+
+  function validateForm() {
+    let isValid = true;
+    let list_artikel = document.getElementById('keranjang').querySelector('tbody');
+    $('#form_mutasi').find('select[required],textarea[required]').each(function() {
+      if ($(this).val() === '' || list_artikel.innerHTML === '') {
+        isValid = false;
+        $(this).addClass('is-invalid');
+      } else {
+        $(this).removeClass('is-invalid');
+      }
+    });
+    return isValid;
+  }
+  $('#btn_simpan').click(function(e) {
+    e.preventDefault();
+    Swal.fire({
+      title: 'Apakah anda yakin?',
+      text: "Data Mutasi akan di ajukan.",
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Yakin'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        if (validateForm()) {
+          document.getElementById("form_mutasi").submit();
+          localStorage.removeItem('dataProduk');
+        } else {
+          Swal.fire({
+            icon: 'info',
+            title: 'Peringatan !',
+            text: 'Toko asal, Tujuan dan List artikel tidak boleh kosong.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
+        }
+      }
+    })
+  })
+</script>
 <script type="text/javascript">
   $(document).ready(function() {
     $('tfoot').hide()
-    // data array
-    var tampung_array = [];
     // pilih kota asal
     $('#toko_asal').on('change', function() {
       reset()
@@ -153,7 +270,7 @@
         })
         $(this).val("");
       }
-    })
+    });
     // pilih kota tujuan
     $('#toko_tujuan').on('change', function() {
 
@@ -166,31 +283,9 @@
         })
         $(this).val("");
       }
-    })
-
-    // funsi reset
-    function reset() {
-      $('#id_produk').val('')
-      $('input[name="nama_produk"]').val('')
-      $('input[name="satuan"]').val('')
-      $('input[name="stok"]').val('')
-      $('input[name="qty"]').val('')
-      $('input[name="qty"]').prop('readonly', true)
-      $('button#tambah').prop('disabled', true)
-    }
+    });
     // ketika plih produk
     $('#id_produk').on('change', function() {
-      for (var i = 0; i < tampung_array.length; i++) {
-        if ($(this).val() == tampung_array[i]) {
-          Swal.fire(
-            'Peringatan !',
-            'Artikel sudah ada di list Pilihan !',
-            'info'
-          )
-          reset()
-        }
-      }
-
       if ($('#toko_tujuan').val() == '') {
         Swal.fire({
           title: 'Peringatan',
@@ -216,8 +311,8 @@
           },
           dataType: 'json',
           success: function(data) {
-            $('input[name="kode_produk"]').val(data.kode);
-            $('input[name="nama_produk"]').val(data.nama_produk);
+            $('input[name="kode"]').val(data.kode);
+            $('input[name="produk"]').val(data.nama_produk);
             $('input[name="stok"]').val(data.qty);
             $('input[name="satuan"]').val(data.satuan);
             $('input[name="qty"]').prop('readonly', false)
@@ -230,7 +325,6 @@
       }
 
     });
-
     // jumlah di isi
     $('input[name="qty"]').on('keydown keyup change', function() {
       var input = $(this).val();
@@ -245,43 +339,5 @@
       }
 
     });
-
-    // ketika tombol tambah di klik
-    $(document).on('click', '#tambah', function(e) {
-      const data_keranjang = {
-        id_produk: $('select[name="id_produk"]').val(),
-        kode_produk: $('input[name="kode_produk"]').val(),
-        nama_produk: $('input[name="nama_produk"]').val(),
-        satuan: $('input[name="satuan"]').val(),
-        qty: $('input[name="qty"]').val(),
-        keranjang: $('input[name="id_produk_hidden[]"]').val(),
-      }
-      if ($('input[name="qty"]').val() <= 0) {
-        Swal.fire(
-          'Peringatan !',
-          'Jumlah tidak boleh 0',
-          'info'
-        )
-      } else {
-        $.ajax({
-          url: '<?php echo base_url() ?>leader/Mutasi/keranjang',
-          type: 'POST',
-          data: data_keranjang,
-          success: function(data) {
-            tampung_array.push(data_keranjang.id_produk);
-            reset()
-            $('table#keranjang tbody').append(data)
-            $('tfoot').show()
-          }
-        })
-      }
-    })
-
-    // fungsi hapus
-    $(document).on('click', '#tombol-hapus', function() {
-      $(this).closest('.row-keranjang').remove()
-      if ($('tbody').children().length == 0) $('tfoot').hide()
-    })
-
   });
 </script>

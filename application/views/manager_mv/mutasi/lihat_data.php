@@ -50,9 +50,8 @@
                   <td class="text-center"><?= date("d F Y, H:i:s", strtotime($data->created_at));  ?></td>
                   <td class="text-center"><?= status_mutasi($data->status) ?></td>
                   <td>
-                    <a href="<?= base_url('sup/Mutasi/detail/' . $data->id) ?>" class="btn btn-<?= $data->status == 0 ? 'success' : 'info' ?> btn-sm <?= $data->status == 4 ? 'd-none' : '' ?>" title="<?= $data->status == 0 ? 'Proses' : 'Detail' ?>"><i class="fa fa-<?= $data->status == 0 ? 'check-circle' : 'eye' ?>"></i> <?= $data->status == 0 ? 'Proses' : '' ?></a>
+                    <a href="<?= base_url('sup/Mutasi/detail/' . $data->id) ?>" class="btn btn-<?= $data->status == 0 ? 'success' : 'info' ?> btn-sm <?= $data->status == 4 ? 'd-none' : '' ?>" title="<?= $data->status == 0 ? 'Proses' : 'Detail' ?>"><i class="fa fa-<?= $data->status == 0 ? 'arrow-right' : 'eye' ?>"></i> <?= $data->status == 0 ? 'Proses' : 'Detail' ?></a>
                     <a href="<?= base_url('sup/Mutasi/bap/' . $data->id) ?>" class="btn btn-success btn-sm <?= $data->status == 4 ? '' : 'd-none' ?>" title="Proses BAP"><i class="fa fa-check-circle"></i> Proses</a>
-                    <a type="button" class="btn btn-default   btn-sm" target="_blank" href="<?= base_url('leader/Mutasi/mutasi_print/' . $data->id) ?>" title="Surat Jalan"><i class="fa fa-print"></i></a>
                   </td>
                 </tr>
               <?php

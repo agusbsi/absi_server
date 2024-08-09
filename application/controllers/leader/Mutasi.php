@@ -46,6 +46,8 @@ class Mutasi extends CI_Controller
     join tb_toko tj on tm.id_toko_tujuan = tj.id  where tm.id = '$id'")->row();
     $data['detail'] = $this->db->query("SELECT tmd.*, tp.kode,tp.nama_produk from tb_mutasi_detail tmd
     join tb_produk tp on tmd.id_produk = tp.id where tmd.id_mutasi = '$id'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_mutasi_histori tpo
+    join tb_mutasi tp on tpo.id_mutasi = tp.id where tpo.id_mutasi = '$id'")->result();
     $this->template->load('template/template', 'leader/mutasi/detail', $data);
   }
   public function edit($id)
@@ -83,12 +85,12 @@ class Mutasi extends CI_Controller
   // ambil data ajax untuk wilayah
   function list_produk($id_toko)
   {
-    $query = $this->db->query("SELECT ts.*, tp.kode, tp.id as id_p from tb_stok ts
+    $query = $this->db->query("SELECT ts.*, tp.kode,tp.nama_produk, tp.id as id_p from tb_stok ts
       join tb_produk tp on ts.id_produk = tp.id
       where ts.id_toko = '$id_toko'");
     $data = "<option value='' selected>- Pilih Artikel -</option>";
     foreach ($query->result() as $value) {
-      $data .= "<option value='" . $value->id_p . "'>" . $value->kode . "</option>";
+      $data .= "<option value='" . $value->id_p . "'>" . $value->kode . " | " . $value->nama_produk . "</option>";
     }
     echo $data;
   }
@@ -110,13 +112,16 @@ class Mutasi extends CI_Controller
   function proses_add()
   {
     $id_leader = $this->session->userdata('id');
-    $id_produk  = $this->input->post('id_produk_hidden');
-    $qty  = $this->input->post('qty_hidden');
-    $no_mutasi  = $this->input->post('no_mutasi');
-    $jumlah = count($this->input->post('id_produk_hidden'));
+    $leader = $this->session->userdata('nama_user');
+    $pt = $this->session->userdata('pt');
+    $no_mutasi = $this->M_adm_gudang->kode_mutasi();
+    $id_produk  = $this->input->post('id_produk');
+    $qty  = $this->input->post('qty');
+    $catatan  = $this->input->post('catatan');
+    $jumlah = count($id_produk);
     $this->db->trans_start();
     $mutasi = [
-      'id' => $this->input->post('no_mutasi'),
+      'id' => $no_mutasi,
       'id_toko_asal' => $this->input->post('toko_asal'),
       'id_toko_tujuan' => $this->input->post('toko_tujuan'),
       'id_user' => $id_leader,
@@ -125,17 +130,24 @@ class Mutasi extends CI_Controller
     for ($i = 0; $i < $jumlah; $i++) {
       $d_id_produk = $id_produk[$i];
       $d_qty = $qty[$i];
-      $mutasi_detail = array(
+      $mutasi_detail[] = array(
         'id_mutasi' =>  $no_mutasi,
         'id_produk' =>  $d_id_produk,
         'qty' =>  $d_qty,
       );
-      $this->db->insert('tb_mutasi_detail', $mutasi_detail);
     }
+    $this->db->insert_batch('tb_mutasi_detail', $mutasi_detail);
     $this->db->insert('tb_mutasi', $mutasi);
+    $histori = array(
+      'id_mutasi' => $no_mutasi,
+      'aksi' => 'Dibuat oleh : ',
+      'pembuat' => $leader,
+      'catatan' => $catatan
+    );
+    $this->db->insert('tb_mutasi_histori', $histori);
     $this->db->trans_complete();
     $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6 and status = 1")->result_array();
-    $message = "Anda memiliki 1 Permintaan Mutasi baru dengan nomor ( " . $no_mutasi . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
+    $message = "Ada pengajuan Mutasi baru ( " . $no_mutasi . " - " . $pt . " ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
     foreach ($phones as $phone) {
       $number = $phone['no_telp'];
       $hp = substr($number, 0, 1);
@@ -205,10 +217,13 @@ class Mutasi extends CI_Controller
   public function mutasi_print($mutasi)
   {
     $data['title'] = 'Surat Perintah Pengambilan retur Konsinyasi';
-    $data['mutasi'] = $this->db->query("SELECT tm.*,tu.nama_user as leader, tt.nama_toko as asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan from tb_mutasi tm
+    $data['mutasi'] = $this->db->query("SELECT tm.*,tu.nama_user as leader, tu.ttd as ttd_leader,
+    mv.ttd as ttd_mv, mv.nama_user as nama_mv,
+    tt.nama_toko as asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan from tb_mutasi tm
       join tb_toko tt on tm.id_toko_asal = tt.id
       join tb_toko tk on tm.id_toko_tujuan = tk.id
       join tb_user tu on tm.id_user = tu.id
+      LEFT JOIN tb_user mv on tm.id_mv = mv.id
       where tm.id = '$mutasi'")->row();
     $data['detail_mutasi']  = $this->db->query("SELECT tmd.*, tp.nama_produk, tp.kode, tp.satuan from tb_mutasi_detail tmd
       join tb_produk tp on tmd.id_produk = tp.id
