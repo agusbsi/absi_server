@@ -98,7 +98,7 @@ class Retur extends CI_Controller
   // print SPPR
   public function sppr($no_retur)
   {
-    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tu.no_telp, mv.ttd as ttd_mv,mm.ttd as ttd_mm from tb_retur tr
+    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tu.no_telp, mv.ttd as ttd_mv,mm.ttd as ttd_mm,mv.nama_user as nama_mv, mm.nama_user as nama_mm from tb_retur tr
     JOIN tb_toko tt on tr.id_toko = tt.id
     JOIN tb_user tu on tt.id_spg = tu.id
     JOIN tb_user tl on tt.id_leader = tl.id
@@ -113,7 +113,7 @@ class Retur extends CI_Controller
   // print SPPR TUTUP TOKO
   public function sppr_toko($no_retur)
   {
-    $data['r'] = $this->db->query(" SELECT tr.*, tt.nama_toko, tspg.nama_user as spg, tl.nama_user as leader, tl.no_telp,mv.ttd as ttd_mv,mm.ttd as ttd_mm from tb_retur tr
+    $data['r'] = $this->db->query(" SELECT tr.*, tt.nama_toko, tspg.nama_user as spg, tl.nama_user as leader, tl.no_telp,mv.ttd as ttd_mv,mm.ttd as ttd_mm, mv.nama_user as nama_mv, mm.nama_user as nama_mm from tb_retur tr
     join tb_toko tt on tr.id_toko = tt.id
     join tb_user tspg on tt.id_spg = tspg.id
     join tb_user tl on tt.id_leader = tl.id

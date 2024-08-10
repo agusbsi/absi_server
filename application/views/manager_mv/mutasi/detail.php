@@ -61,6 +61,7 @@
                 <th>Satuan</th>
                 <th>Stok</th>
                 <th style="width:15%" class="text-center">QTY</th>
+                <th style="width:15%" class="text-center">QTY Diterima</th>
                 <th class="text-center">Menu</th>
               </tr>
             </thead>
@@ -69,6 +70,7 @@
               $no = 0;
               $total = 0;
               $total_stok = 0;
+              $total_t = 0;
               foreach ($detail_mutasi as $d) :
                 $no++;
               ?>
@@ -90,6 +92,7 @@
                     <input type="number" class="form-control form-control-sm qty-input" name="qty[]" value="<?= $d->qty ?>" max="<?= $d->stok ?>" data-max="<?= $d->stok ?>" required <?= $mutasi->status == 0 ? '' : 'readonly' ?>>
                     <input type="hidden" class="form-control form-control-sm" name="id_detail[]" value="<?= $d->id ?>">
                   </td>
+                  <td class="text-center"><?= $mutasi->status != 2 ? '-' : $d->qty_terima ?></td>
                   <td class="text-center">
                     <a href="#" data-id="<?= $d->id ?>" class="text-danger btn-delete <?= $mutasi->status == 0 ? '' : 'd-none' ?>"><i class="fas fa-trash"></i></a>
                   </td>
@@ -97,6 +100,7 @@
               <?php
                 $total += $d->qty;
                 $total_stok += $d->stok;
+                $total_t += $d->qty_terima;
               endforeach
               ?>
             </tbody>
@@ -105,6 +109,7 @@
                 <td colspan="3" align="right"> <strong>Total</strong> </td>
                 <td><?= $total_stok; ?></td>
                 <td><span id="total-qty"><?= $total ?></span></td>
+                <td class="text-center"><?= $mutasi->status != 2 ? '-' : $total_t ?></td>
                 <td></td>
               </tr>
             </tfoot>

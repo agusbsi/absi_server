@@ -50,6 +50,7 @@
                   <th>Artikel</th>
                   <th>Satuan</th>
                   <th>QTY</th>
+                  <th>Diterima</th>
                   <th>Foto</th>
                   <th>Keterangan</th>
                 </tr>
@@ -58,6 +59,7 @@
                 <?php
                 $no = 0;
                 $total = 0;
+                $total_t = 0;
                 foreach ($detail_retur as $d) {
                   $no++;
                 ?>
@@ -71,6 +73,7 @@
                     </td>
                     <td><?= $d->satuan ?></td>
                     <td><?= $d->qty ?></td>
+                    <td><?= $retur->status != 4 ? '-' : $d->qty_terima ?></td>
                     <td>
                       <img class="img-artikel" src="<?= base_url('assets/img/retur/' . $d->foto) ?>" alt="retur">
                     </td>
@@ -83,6 +86,7 @@
                   </tr>
                 <?php
                   $total += $d->qty;
+                  $total_t += $d->qty_terima;
                 }
                 ?>
               </tbody>
@@ -90,7 +94,7 @@
                 <tr>
                   <td colspan="3" align="right"> <strong>Total</strong> </td>
                   <td><?= $total; ?></td>
-                  <td></td>
+                  <td><?= $retur->status != 4 ? '-' : $total_t; ?></td>
                   <td></td>
                   <td></td>
                 </tr>
