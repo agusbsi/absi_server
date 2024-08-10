@@ -81,6 +81,9 @@ class Penerimaan extends CI_Controller
         'qty_diterima' =>  $d_qty_diterima,
       );
       $stok = $this->db->get_where('tb_stok', array('id_produk' => $d_id_produk, 'id_toko' => $id_toko))->row()->qty;
+      if ($stok === null) {
+        $stok = 0;
+      }
       $this->db->where('id', $d_id_detail);
       $this->db->update('tb_pengiriman_detail', $data_detail);
       if ($d_qty != $d_qty_diterima) {
@@ -88,7 +91,7 @@ class Penerimaan extends CI_Controller
       }
       // Update tb_stok
       $this->db->set('updated_at', 'NOW()', FALSE);
-      $this->db->set('qty', 'qty + ' . $d_qty_diterima, FALSE);
+      $this->db->set('qty', $stok + $d_qty_diterima, FALSE);
       $this->db->where('id_produk', $d_id_produk);
       $this->db->where('id_toko', $id_toko);
       $this->db->update('tb_stok');
