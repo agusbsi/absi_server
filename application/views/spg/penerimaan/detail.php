@@ -78,7 +78,7 @@
               <hr>
               <?php if ($terima->status == 3) { ?>
                 <i class="fas fa-info text-danger"></i> : <small>Jumlah artikel yang di input tidak sesuai dengan Sistem.</small> <br> <br>
-                <small> <span class="btn btn-warning">Segera Buat BAP dan laporkan dengan jelas. !</span></small>
+                <small class="bg-warning p-2"> Segera Buat BAP dan laporkan dengan jelas. ! </small>
               <?php } else { ?>
                 Catatan :
                 <textarea class="form-control w-50" id="" cols="20" rows="3" value="<?= $terima->catatan_spg ?>" readonly></textarea>
@@ -86,7 +86,9 @@
             </div>
             <!-- /.card-body -->
             <div class="card-footer">
-              <a href="#" class="btn btn-warning btn-sm float-right <?= ($terima->status == 3) ? '' : 'd-none' ?>" data-toggle="modal" data-target=".bap"><i class="fas fa-file"></i> Buat BAP</a>
+              <?php if ($terima->status == 3) { ?>
+                <a href="<?= base_url('spg/Bap') ?>" class="btn btn-warning btn-sm float-right"><i class="fas fa-file"></i> Buat BAP</a>
+              <?php } ?>
               <a href="<?= base_url('spg/Penerimaan') ?>" type="button" class="btn btn-danger btn-sm float-right mr-2"><i class="fa fa-step-backward" aria-hidden="true"></i> Kembali</a>
             </div>
           </div>

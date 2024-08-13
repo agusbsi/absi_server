@@ -47,8 +47,7 @@
                 <th rowspan="2">No</th>
                 <th rowspan="2">Artikel</th>
                 <th colspan="2">Jumlah</th>
-                <th rowspan="2">Harga</th>
-                <th rowspan="2">Total</th>
+                <th rowspan="2">Catatan</th>
               </tr>
               <tr class="text-center">
                 <th>Kirim</th>
@@ -79,17 +78,11 @@
                   </td>
                   <td class="text-center"><?= $d->qty ?></td>
                   <td class="text-center <?= (($d->qty != $d->qty_diterima) && $pengiriman->status >= 1) ? 'bg-danger' : '' ?>"><?= $pengiriman->status <= 1 ? '<small>belum diterima</small>' : $d->qty_diterima ?></td>
-                  <td class="text-right">
-                    Rp <?= number_format($hrg_produk, 0, ',', '.') ?>
-                  </td>
-                  <td class="text-right">
-                    Rp <?= number_format($hrg_produk * $d->qty, 0, ',', '.') ?>
-                  </td>
+                  <td><?= $d->catatan ?></td>
                 </tr>
               <?php
                 $total += $d->qty;
                 $terima += $d->qty_diterima;
-                $gt += $hrg_produk * $d->qty;
               }
               ?>
             </tbody>
@@ -99,7 +92,6 @@
                 <td class="text-right"><b><?= $total; ?></b></td>
                 <td class="text-right"><b><?= $terima; ?></b></td>
                 <td></td>
-                <td class="text-right">Rp <?= number_format($gt, 0, ',', '.') ?></td>
               </tr>
             </tfoot>
           </table>

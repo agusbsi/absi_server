@@ -1,20 +1,49 @@
 <style>
+  .kartu {
+    width: 100%;
+    height: 100%;
+    min-height: 150px;
+    background-color: #0069d9;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px 10px 20px;
+    color: #f4f6f9;
+  }
+
+  .notifikasi {
+    height: 100%;
+    width: 100%;
+    background-color: #ffc71f;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px 10px 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .kartu .judul {
+    color: #e1e1e1;
+    margin-bottom: 10px;
+  }
+
   .toko {
     display: flex;
     align-items: flex-start;
     gap: 10px;
+    margin-bottom: 10px;
   }
 
   .tombol {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 10px;
   }
 
   .tombol a {
-    border-radius: 5px;
-    border: 2px solid rgb(0, 123, 255);
-    padding: 2px 10px 2px 10px;
+    border-radius: 15px;
+    padding: 2px 20px 2px 20px;
+    color: #0069d9;
+    background-color: #f4f6f9;
   }
 
   .tombol a:hover {
@@ -94,27 +123,33 @@
 </style>
 <section class="content">
   Hi, <strong> <?= $this->session->userdata('nama_user') ?>.</strong>
-  <div class="card card-primary card-outline mt-3">
-    <div class="card-header text-center">
-      Toko Terpilih
+  <div class="kartu">
+    <div class="judul">Toko Terpilih</div>
+    <div class="toko">
+      <i class="fas fa-store"></i>
+      <div class="namaToko">
+        <strong><?= $toko_new->nama_toko ?></strong>
+        <small><?= $toko_new->alamat ?></small>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="toko">
-        <i class="fas fa-store"></i>
-        <div class="namaToko">
-          <strong><?= $toko_new->nama_toko ?></strong>
-          <small><?= $toko_new->alamat ?></small>
-        </div>
-      </div>
-      <hr>
-      <div class="tombol">
-        <?php if ($jml > 1) { ?>
-          <a href="<?= base_url('Login/list_toko') ?>">Ganti <i class="fas fa-exchange-alt"></i></a>
-        <?php } ?>
-        <a href="<?= base_url('spg/Dashboard/toko_spg/' . $this->session->userdata('id_toko')) ?>">Lihat <i class="fas fa-arrow-right"></i></a>
-      </div>
+    <div class="tombol">
+      <?php if ($jml > 1) { ?>
+        <a href="<?= base_url('Login/list_toko') ?>">Ganti <i class="fas fa-exchange-alt"></i></a>
+      <?php } ?>
+      <a href="<?= base_url('spg/Dashboard/toko_spg/' . $this->session->userdata('id_toko')) ?>">Lihat <i class="fas fa-arrow-right"></i></a>
     </div>
   </div>
+  <?php if ($bap != 0) { ?>
+    <div class="notifikasi">
+      <div class="toko">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="namaToko">
+          <strong>Peringatan !</strong>
+          <small>Kamu memiliki <?= $bap ?> pengiriman yang selisih, segera buat BAP.</small>
+        </div>
+      </div>
+    </div>
+  <?php } ?>
   <strong> Menu Utama</strong>
   <div class="areaMenu">
     <a href="<?= base_url('spg/permintaan') ?>" class="cardMenu">
@@ -158,6 +193,15 @@
     <a href="<?= base_url('spg/Stok_opname') ?>" class="cardMenu">
       <i class="fas fa-chart-pie"></i>
       <strong>SO Artikel</strong>
+    </a>
+    <a href="<?= base_url('spg/Bap') ?>" class="cardMenu">
+      <?php if ($bap != 0) { ?>
+        <div class="notif">
+          <?= $bap; ?>
+        </div>
+      <?php } ?>
+      <i class="fas fa-envelope"></i>
+      <strong>BAP</strong>
     </a>
   </div>
 </section>
