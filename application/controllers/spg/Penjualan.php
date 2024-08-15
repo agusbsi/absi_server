@@ -33,7 +33,6 @@ class Penjualan extends CI_Controller
           JOIN tb_produk tp ON ts.id_produk = tp.id
           WHERE ts.id_toko = '$id_toko' AND ts.status = 1 AND tp.status = 1 
           AND (tp.kode LIKE '%$keyword%' OR tp.nama_produk LIKE '%$keyword%')
-          LIMIT 5
       ");
     $output = '<ul class="list-group">';
     if ($query->num_rows() > 0) {

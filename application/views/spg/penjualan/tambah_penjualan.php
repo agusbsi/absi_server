@@ -46,6 +46,14 @@
     color: #f4f6f9;
     cursor: pointer;
   }
+
+  #list_suggestions {
+    max-height: 300px;
+    /* Atur tinggi maksimal sesuai keinginan */
+    overflow-y: auto;
+    display: none;
+    /* Ini untuk menyembunyikan elemen ketika tidak ada hasil pencarian */
+  }
 </style>
 
 <section class="content">
