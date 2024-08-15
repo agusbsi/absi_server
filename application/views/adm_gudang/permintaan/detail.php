@@ -66,17 +66,17 @@
                                                         <th rowspan="2" style="width: 20px;">No</th>
                                                         <th rowspan="2" style="width: 45%;">Artikel</th>
                                                         <th colspan="2">Jumlah</th>
-                                                        <th rowspan="2">Harga</th>
-                                                        <th rowspan="2">Total</th>
                                                     </tr>
                                                     <tr class="text-center">
                                                         <th>Diminta</th>
-                                                        <th style="width: 12%;">Dikirim</th>
+                                                        <th style="width: 20%;">Dikirim</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
                                                     $no = 0;
+                                                    $total_minta = 0;
+                                                    $total_kirim = 0;
                                                     foreach ($detail as $d) :
                                                         $no++;
                                                         if ($d->het == 1) {
@@ -99,29 +99,33 @@
                                                                 <input type="hidden" class="form-control" name="id_toko" value="<?= $d->id_toko ?>">
                                                                 <input type="hidden" class="form-control" name="id_detail[]" value="<?= $d->id ?>">
                                                                 <input type="hidden" class="form-control" name="id_produk[]" value="<?= $d->id_produk ?>">
-                                                                <input type="number" class="form-control form-control-sm" name="qty_input[]" min="0" value="<?= $d->qty_acc ?>" required>
-                                                            </td>
-                                                            <td class="text-right">
-                                                                <input type="text" name="hrg[]" class="form-control form-control-sm text-right" value="Rp <?= number_format($harga, 0, ',', '.') ?>" readonly>
-                                                            </td>
-                                                            <td class="text-right">
-                                                                <input type="text" name="total[]" class="form-control form-control-sm text-right" value="<?= number_format($d->qty_acc * $harga) ?>" readonly>
-
+                                                                <input type="number" class="form-control form-control-sm" name="qty_input[]" min="0" value="<?= $d->qty_acc ?>" max="<?= $d->qty_acc ?>" required>
+                                                                <input type="hidden" name="hrg[]" class="form-control form-control-sm text-right" value="Rp <?= number_format($harga, 0, ',', '.') ?>" readonly>
+                                                                <input type="hidden" name="total[]" class="form-control form-control-sm text-right" value="<?= number_format($d->qty_acc * $harga) ?>" readonly>
                                                             </td>
                                                         </tr>
                                                     <?php
-                                                    endforeach
+                                                        $total_minta += $d->qty_acc;
+                                                    endforeach;
                                                     ?>
                                                     <tr>
-                                                        <td colspan="5" class="text-right">Grand Total :</td>
-                                                        <td class="text-right"><strong>
-                                                                <div id="grandTotal"></div>
-                                                            </strong></td>
+                                                        <td colspan="2" class="text-right">Total :</td>
+                                                        <td class="text-center"><?= $total_minta ?></td>
+                                                        <td class="text-center"> <span id="total_kirim"></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">
+                                                            <strong>Grand Total : <div id="grandTotal"></div></strong>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                             <hr>
-                                            <b>Noted:</b> <br> Untuk Artikel yang jumlahnya = 0, maka secara otomatis tidak akan ditampilkan di list lagi.
+                                            <b>Perhatian :</b>
+                                            <li>Proses pembuatan DO / Pengiriman artikel tidak perlu menunggu approve MV lagi.</li>
+                                            <li>Jika ada artikel yang kosong, silahkan input dengan jumlah 0 (nol).</li>
+                                            <li>Jika Total pengiriman masih minor dan perlu tambah artikel baru, silahkan hubungi mv untuk edit data.</li>
+                                            <li>Sebelum di simpan, pastikan data sudah benar. karena jika sudah di simpan maka data tidak bisa di perbarui lagi.</li>
                                             <hr>
                                             <div class="form-group">
                                                 <strong>Catatan :</strong> <br>
@@ -159,34 +163,50 @@
             return `Rp ${angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
         }
 
-        // Fungsi untuk menghitung total dan memformat input
-        function updateTotals(inputs, grandTotalElement) {
+        // Fungsi untuk menghitung dan memperbarui total serta jumlah kirim
+        function updateTotalsAndKirim() {
             var grandTotal = 0;
+            var totalKirim = 0;
 
-            inputs.forEach(function(input) {
-                var value = parseInt(input.value.replace(/\D/g, ''), 10) || 0;
-                grandTotal += value;
-                input.value = formatRupiah(value);
+            qtyAccInputs.forEach(function(input) {
+                var maxQty = parseInt(input.getAttribute('max'), 10);
+                var value = parseInt(input.value, 10) || 0;
+
+                // Pengecekan jika qty_input melebihi max
+                if (value > maxQty) {
+                    Swal.fire(
+                        'Peringatan !',
+                        'Jumlah tidak boleh melebihi maksimum di minta.',
+                        'info'
+                    );
+                    input.value = maxQty;
+                    value = maxQty;
+                }
+
+                totalKirim += value;
+
+                var parentRow = input.closest("tr");
+                var hrgProdukValue = parseInt(parentRow.querySelector('input[name="hrg[]"]').value.replace(/\D/g, ''), 10) || 0;
+                var total = value * hrgProdukValue;
+                parentRow.querySelector('input[name="total[]"]').value = formatRupiah(total);
+
+                grandTotal += total;
             });
 
             grandTotalElement.textContent = formatRupiah(grandTotal);
+            totalKirimElement.textContent = totalKirim;
         }
 
-        // Ambil semua elemen input qty_acc dan terapkan event listener
         var qtyAccInputs = document.querySelectorAll('input[name="qty_input[]"]');
+        var grandTotalElement = document.getElementById("grandTotal");
+        var totalKirimElement = document.getElementById("total_kirim");
+
         qtyAccInputs.forEach(function(input) {
-            input.addEventListener("input", function() {
-                var parentRow = input.closest("tr");
-                var hrgProdukValue = parseInt(parentRow.querySelector('input[name="hrg[]"]').value.replace(/\D/g, ''), 10) || 0;
-                var totalInput = parentRow.querySelector('input[name="total[]"]');
-                var total = parseInt(input.value, 10) * hrgProdukValue;
-                totalInput.value = formatRupiah(total);
-                updateTotals(document.querySelectorAll('input[name="total[]"]'), document.getElementById("grandTotal"));
-            });
+            input.addEventListener("input", updateTotalsAndKirim);
         });
 
-        // Ambil semua elemen input total dan terapkan format Rupiah
-        updateTotals(document.querySelectorAll('input[name="total[]"]'), document.getElementById("grandTotal"));
+        // Inisialisasi pertama kali
+        updateTotalsAndKirim();
     });
 </script>
 <script>
@@ -208,7 +228,7 @@
             e.preventDefault();
             Swal.fire({
                 title: 'Apakah anda yakin?',
-                text: "Data Permintaan akan di proses Kirim",
+                text: "Data Permintaan akan di proses dan di buatkan DO .",
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',

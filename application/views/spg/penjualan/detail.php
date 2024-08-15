@@ -48,7 +48,7 @@
           }
           ?>
           <tr>
-            <td colspan="2"></td>
+            <td colspan="2" class="text-right">Total :</td>
             <td class="text-center"><?= $total ?></td>
           </tr>
         </table>

@@ -146,12 +146,36 @@
               <?php endforeach ?>
             </div>
             <hr>
+            <strong>Info :</strong>
+            <li>Data permintaan masih bisa di edit selama tim gudang belum membuat DO.</li>
+            <li>Data pengiriman tidak lagi approve MV dan bisa langsung di kirim oleh tim gudang.</li>
           </div>
         </div>
       </div>
       <div class="card-footer">
         <a href="<?= base_url('sup/Permintaan') ?>" class="btn btn-danger btn-sm float-right" title="Tutup"><i class="fas fa-times-circle"></i> Tutup</a>
+        <button class="btn btn-warning btn-sm float-right mr-1 <?= $permintaan->status == 2 ? '' : 'd-none' ?>" data-id="<?= $permintaan->id ?>" id="btn_edit" title="Edit PO"><i class="fas fa-edit"></i> Edit</button>
       </div>
     </div>
   </div>
 </section>
+<script>
+  $('#btn_edit').click(function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    Swal.fire({
+      title: 'YAKIN EDIT DATA PO ?',
+      text: "Status Data PO akan di kembalikan ke TIM MV.",
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Yakin'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "<?= base_url('sup/Permintaan/edit/') ?>" + id;
+      }
+    })
+  })
+</script>

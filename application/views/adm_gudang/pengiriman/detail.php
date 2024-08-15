@@ -89,9 +89,9 @@
                 </tfoot>
               </table>
             </div>
-            <!-- /.end table list isi -->
-            <b>Noted:</b> Untuk Artikel yang jumlahnya = 0, maka secara otomatis tidak akan ditampilkan di list lagi.
-            <!-- footer untuk TTD  -->
+            <b>Perhatian :</b>
+            <li>Proses pembuatan DO / Pengiriman artikel tidak perlu menunggu approve MV lagi.</li>
+            <li>Untuk artikel yang di input 0 (nol), otomatis tidak di tampilkan lagi.</li>
             <hr>
             <div class="row">
               <div class="col-md-6">
@@ -110,28 +110,14 @@
             <hr>
             <div class="row no-print">
               <div class="col-md-12">
-                <a href="<?= base_url('adm_gudang/pengiriman') ?>" class="btn btn-danger btn-sm float-right"><i class="fas fa-times-circle"></i> Close </a>
-                <a type="button" class="btn btn-default btn-sm float-right <?= ($pengiriman->status != "1") ? 'd-none' : ''; ?>" target="_blank" href="<?= base_url('adm_gudang/Pengiriman/detail_print/' . $pengiriman->id) ?>" style="margin-right: 5px;"><i class="fa fa-print" aria-hidden="true"></i> </a>
+                <a href="<?= base_url('adm_gudang/pengiriman') ?>" class="btn btn-danger btn-sm float-right mr-1"><i class="fas fa-times-circle"></i> Close </a>
+                <a type="button" class="btn btn-default btn-sm float-right <?= ($pengiriman->status != "1") ? 'd-none' : ''; ?>" target="_blank" href="<?= base_url('adm_gudang/Pengiriman/detail_print/' . $pengiriman->id) ?>" style="margin-right: 5px;"><i class="fa fa-print" aria-hidden="true"></i> Print SJ</a>
+                <a href="<?= base_url('adm_gudang/Permintaan') ?>" class="btn btn-warning btn-sm float-right mr-1"> <i class="fas fa-arrow-left"></i> Ke Permintaan</a>
               </div>
             </div>
-
           </div>
-          <!-- /.invoice -->
         </div>
-        <!-- end print area -->
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </div><!-- /.container-fluid -->
+      </div>
+    </div>
+  </div>
 </section>
-<!-- /.content -->
-
-
-<script>
-  function printDiv(divName) {
-    var printContents = document.getElementById(divName).innerHTML;
-    var originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-  }
-</script>

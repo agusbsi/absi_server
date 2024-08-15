@@ -5,7 +5,7 @@
            <div class="card card-info">
              <div class="card-header">
                <h3 class="card-title">
-                 <li class="fas fa-file"></li> Data Permintaan Barang
+                 <li class="fas fa-file"></li> Data Permintaan Artikel
                </h3>
              </div>
              <div class="card-body">
@@ -22,12 +22,17 @@
                  </thead>
                  <tbody>
                    <?php $no = 0;
-                    foreach ($list_data as $dd) :
+                    foreach ($list as $dd) :
                       $no++ ?>
                      <tr>
                        <td class="text-center"><?= $no ?></td>
                        <td class="text-center"><small><strong><?= $dd->id ?></strong></small></td>
-                       <td><small><?= $dd->nama_toko ?></small></td>
+                       <td>
+                         <small>
+                           <strong><?= $dd->nama_toko ?></strong><br>
+                           <strong>Leader : </strong><?= $dd->leader ?>
+                         </small>
+                       </td>
                        <td>
                          <small><?= $dd->keterangan ?></small>
                        </td>
@@ -35,13 +40,17 @@
                          <small><?= date('d-M-Y', strtotime($dd->updated_at)) ?></small>
                        </td>
                        <td class="text-center">
-                         <?php if (($dd->status == 2)) { ?>
-                           <a type="button" class="btn btn-success btn-sm" href="<?= base_url('adm_gudang/permintaan/detail/' . $dd->id) ?>" name="btn_proses" title="proses"><i class="fas fa-paper-plane"></i></a>
-                           <a type="button" href="<?= base_url('adm_gudang/permintaan/packing_list/' . $dd->id) ?>" target="_blank" class="btn btn-warning float-right btn-sm" style="margin-right: 2px;" title="Packing List ">
-                             <i class="fas fa-print"></i></a>
-                         <?php } else { ?>
-                           <a type="button" class="btn btn-primary" href="<?= base_url('adm_gudang/permintaan/detail_p/' . $dd->id) ?>" name="btn_detail"><i class="fa fa-eye" aria-hidden="true"></i> Detail</a>
-                         <?php } ?>
+                         <div class="btn-group">
+                           <button type="button" class="btn btn-outline-success btn-sm"> Proses</button>
+                           <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-hover dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                             <span class="sr-only">Toggle Dropdown</span>
+                           </button>
+                           <div class="dropdown-menu" role="menu">
+                             <a class="dropdown-item" href="<?= base_url('adm_gudang/permintaan/detail/' . $dd->id) ?>" title="Buat DO">Buat DO</a>
+                             <div class="dropdown-divider"></div>
+                             <a class="dropdown-item" href="<?= base_url('adm_gudang/permintaan/packing_list/' . $dd->id) ?>" target="_blank" title="Packing List">Packing List</a>
+                           </div>
+                         </div>
                        </td>
                      </tr>
                    <?php endforeach; ?>

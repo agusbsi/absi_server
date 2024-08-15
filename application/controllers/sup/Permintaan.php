@@ -188,4 +188,19 @@ class Permintaan extends CI_Controller
     $this->db->insert('tb_permintaan_detail', $data);
     redirect(base_url('sup/Permintaan/terima/') . $id_permintaan);
   }
+  public function edit($po)
+  {
+    $mv  = $this->session->userdata('nama_user');
+    $this->db->update('tb_permintaan', array('status' => 1), array('id' => $po));
+    // Insert histori
+    $histori = array(
+      'id_po' => $po,
+      'aksi' => 'Di edit Oleh :',
+      'pembuat' => $mv
+    );
+
+    $this->db->insert('tb_po_histori', $histori);
+    tampil_alert('success', 'Berhasil', 'Status Data PO telah di kembalikan ke tim MV.');
+    redirect(base_url('sup/permintaan/terima/' . $po));
+  }
 }
