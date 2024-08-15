@@ -104,13 +104,13 @@
     <div class="popup" id="popupOverlay">
       <div class="popup-card">
         <h3><?= $this->session->flashdata('judul'); ?></h3>
-        <img src="<?= base_url('assets/img/popup.svg') ?>" alt="Gambar">
+        <img src="<?= base_url('assets/img/saran.svg') ?>" alt="Gambar">
         <div class="konten">
           <?= $this->session->flashdata('pesan'); ?>
         </div>
         <hr>
         <a class="btn btn-sm btn-default" onclick="closePopup()">Nanti Saja</a>
-        <a href="<?= base_url($this->session->flashdata('link')); ?>" class="btn btn-sm btn-success">Coba Sekarang <i class="fas fa-arrow-right"></i></a>
+        <a href="<?= base_url($this->session->flashdata('link')); ?>" class="btn btn-sm btn-success">Isi saran <i class="fas fa-arrow-right"></i></a>
       </div>
     </div>
   <?php endif; ?>

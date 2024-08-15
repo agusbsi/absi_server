@@ -172,4 +172,27 @@ class Profile extends CI_Controller
     tampil_alert('success', 'BERHASIL', 'Pola Tanda tangan berhasil di kosongkan.');
     redirect(base_url('profile'));
   }
+  public function saran()
+  {
+    $data['title'] = 'Profile';
+    $this->template->load('template/template', 'profile/saran', $data);
+  }
+  public function saran_kirim()
+  {
+    $id_user = $this->session->userdata('id');
+    $nama = $this->input->post('nama');
+    $rating = $this->input->post('rating');
+    $kritik = $this->input->post('kritik');
+    $saran = $this->input->post('saran');
+    $data = [
+      'id_user' => $id_user,
+      'nama' => $nama,
+      'rating' => $rating,
+      'kritik' => $kritik,
+      'saran' => $saran
+    ];
+    $this->db->insert('tb_saran', $data);
+    tampil_alert('success', 'TERKIRIM', 'Terima kasih telah memberikan saran dan masukan untuk ABSI.');
+    redirect('profile');
+  }
 }

@@ -191,4 +191,10 @@ class Dashboard extends CI_Controller
     $data = $query->result_array();
     echo json_encode($data);
   }
+  public function saran()
+  {
+    $data['title'] = 'Dashboard';
+    $data['saran'] = $this->db->query("SELECT * from tb_saran order by id desc")->result();
+    $this->template->load('template/template', 'adm/saran', $data);
+  }
 }
