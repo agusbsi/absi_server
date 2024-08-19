@@ -292,7 +292,7 @@
       let items = JSON.parse(localStorage.getItem('items')) || [];
 
       // Cek jika artikel sudah ada
-      const isDuplicate = items.some(item => item.artikel === artikel.textContent);
+      const isDuplicate = items.some(item => item.kode === kode.textContent);
       if (isDuplicate) {
         Swal.fire(
           'Peringatan !',
