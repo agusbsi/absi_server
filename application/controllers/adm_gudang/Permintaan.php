@@ -55,9 +55,20 @@ class Permintaan extends CI_Controller
     $update_at         = date('Y-m-d h:i:s');
     $jumlah = count($id_produk);
     $cekPO = $this->db->get_where('tb_permintaan', array('id' => $id_po))->row();
+    if (!$cekPO) {
+      tampil_alert('error', 'DATA TIDAK DITEMUKAN', 'Data permintaan tidak ditemukan.');
+      redirect(base_url('adm_gudang/Permintaan'));
+      return;
+    }
+    $cekIDPo = $this->db->get_where('tb_pengiriman', array('id_permintaan' => $id_po))->num_rows();
     if ($cekPO->status == 1) {
       tampil_alert('error', 'PROSES DI BATALKAN', 'Data Permintaan sedang di perbarui oleh tim MV, silahkan tunggu dan buat kembali nanti.');
       redirect(base_url('adm_gudang/Permintaan'));
+      return;
+    }
+    if ($cekIDPo > 0) {
+      tampil_alert('info', 'BERHASIL BUAT DO', 'Sepertinya internet anda lemot, DO tetap berhasil di buat.');
+      redirect(base_url('adm_gudang/Pengiriman'));
       return;
     }
     $this->db->trans_start();
