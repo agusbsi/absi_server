@@ -96,6 +96,59 @@
       background-color: #f44336;
       color: white;
     }
+
+    .chat-button {
+      display: inline-block;
+      background-color: #28a745;
+      border-radius: 20px;
+      padding: 8px 20px;
+      color: #f4f6f9;
+      font-size: 14px;
+      font-weight: bold;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-button a {
+      color: #f4f6f9;
+    }
+
+    .chat-button::before {
+      margin-right: 8px;
+    }
+
+    .chat-button a:hover {
+      color: #f4f6f9;
+    }
+
+    .notification {
+      position: absolute;
+      top: -8px;
+      right: -5px;
+      background-color: #FF3B30;
+      border-radius: 50%;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      border: 1px solid #f7f7f7;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
   </style>
 </head>
 
@@ -202,6 +255,15 @@
       <!-- Main content -->
       <?= $contents ?>
       <!-- /.content -->
+      <div>
+        <a href="<?= base_url('Profile/chat') ?>">
+          <div class="chat-button" id="chat_notif">
+            <i class="fas fa-comments"></i>
+            Chat
+          </div>
+        </a>
+      </div>
+
     </div>
     <!-- /.content-wrapper -->
     <footer class="main-footer no-print">
@@ -338,15 +400,57 @@
       })
     }
   </script>
+  <script>
+    let ws = new WebSocket("ws://localhost:8080");
+
+    function loadList(penerima) {
+      // Tambahkan parameter penerima ke URL
+      fetch(`<?= base_url('Profile/notif'); ?>?penerima=${penerima}`)
+        .then(response => response.json())
+        .then(data => {
+          // Clear previous notifications
+          document.getElementById('chat_notif').innerHTML = '';
+
+          data.forEach(notification => {
+            listChat(notification.jmlPesan);
+          });
+        });
+    }
+
+    function listChat(notif) {
+      let chatList = document.getElementById('chat_notif');
+      let messageHtml = `
+      <i class="fas fa-comments"></i>
+            Chat
+        <span class="notification ${notif > 0 ? '' : 'd-none'}">${notif}</span>`;
+      chatList.innerHTML = messageHtml; // Overwrite to ensure accurate display
+    }
+
+    // Penanganan pesan dari WebSocket
+    ws.onmessage = function(event) {
+      let data = JSON.parse(event.data);
+      loadList(data.penerima);
+    };
+
+    // Penanganan kesalahan WebSocket
+    ws.onerror = function(error) {
+      console.error('WebSocket Error:', error);
+    };
+
+    // Penanganan saat WebSocket ditutup
+    ws.onclose = function() {
+      console.log('WebSocket connection closed');
+    };
+
+    // Memuat list notifikasi saat halaman dimuat
+    window.onload = function() {
+      // Pastikan penerima dikirim dengan benar saat halaman dimuat
+      let penerima = <?= $this->session->userdata('id') ?>;
+      loadList(penerima);
+    };
   </script>
 
 
-  <script type="text/javascript">
-    $('.btn-upload').click(function() {
-      var id = $(this).data('id');
-      $('[name=id]').val(id);
-    })
-  </script>
 
 </body>
 

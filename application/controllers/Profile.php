@@ -195,4 +195,185 @@ class Profile extends CI_Controller
     tampil_alert('success', 'TERKIRIM', 'Terima kasih telah memberikan saran dan masukan untuk ABSI.');
     redirect('profile');
   }
+  public function chat()
+  {
+    $id_user = $this->session->userdata('id');
+    $data['title'] = 'Profile';
+    $data['foto'] = $this->db->query("SELECT foto_diri from tb_user where id ='$id_user'")->row()->foto_diri;
+    $this->load->view('profile/chat', $data);
+  }
+  public function dashboard()
+  {
+    $role = $this->session->userdata('role');
+    $roleRedirects = [
+      '1' => 'adm/dashboard',
+      '2' => 'spv/dashboard',
+      '3' => 'leader/dashboard',
+      '4' => 'spg/dashboard',
+      '5' => 'adm_gudang/dashboard',
+      '6' => 'sup/dashboard',
+      '7' => 'hrd/dashboard',
+      '8' => 'adm_mv/dashboard',
+      '9' => 'mng_mkt/dashboard',
+      '10' => 'audit/dashboard',
+      '11' => 'staff_hrd/dashboard',
+      '12' => 'staff_ga/dashboard',
+      '14' => 'mng_ops/dashboard',
+      '15' => 'accounting/dashboard',
+    ];
+    if (isset($roleRedirects[$role])) {
+      redirect($roleRedirects[$role]);
+    } else {
+      redirect('profile');
+    }
+  }
+  // ambil list chat
+  public function list_chat()
+  {
+    $id_user = $this->session->userdata('id');
+
+    // Subquery untuk mendapatkan pesan terakhir dari setiap pengguna
+    $subquery = "
+          SELECT 
+              CASE
+                  WHEN pengirim = '$id_user' THEN penerima
+                  ELSE pengirim
+              END AS user_interaction,
+              MAX(waktu) AS tanggal_terakhir
+          FROM tb_chat
+          WHERE penerima = '$id_user' OR pengirim = '$id_user'
+          GROUP BY CASE
+                      WHEN pengirim = '$id_user' THEN penerima
+                      ELSE pengirim
+                    END
+      ";
+
+    // Query utama untuk mendapatkan data pengguna dan pesan terakhir
+    $query = $this->db->query("
+          SELECT 
+              tu.id AS user_id,
+              tu.nama_user,
+              tu.foto_diri,
+              tc.pesan AS pesan_terakhir,
+              tc.waktu AS tanggal_terakhir,
+              COALESCE(SUM(CASE WHEN tc_all.status = 0 AND tc_all.penerima = '$id_user' THEN 1 ELSE 0 END), 0) AS unread_count
+          FROM tb_chat tc
+          JOIN tb_user tu ON (
+              (tc.pengirim = tu.id AND tc.penerima = '$id_user')
+              OR
+              (tc.penerima = tu.id AND tc.pengirim = '$id_user')
+          )
+          JOIN ($subquery) last_msg ON (
+              (tc.pengirim = last_msg.user_interaction AND tc.penerima = '$id_user')
+              OR
+              (tc.penerima = last_msg.user_interaction AND tc.pengirim = '$id_user')
+          ) AND tc.waktu = last_msg.tanggal_terakhir
+          LEFT JOIN tb_chat tc_all ON (
+              tc_all.pengirim = tu.id AND tc_all.penerima = '$id_user' AND tc_all.status = 0
+          )
+          WHERE tc.penerima = '$id_user' OR tc.pengirim = '$id_user'
+          GROUP BY tu.id, tu.nama_user, tu.foto_diri, tc.pesan, tc.waktu
+          ORDER BY tc.waktu DESC
+      ");
+
+    echo json_encode($query->result());
+  }
+
+
+
+
+  public function notif()
+  {
+    $penerima = $this->input->get('penerima'); // Ambil parameter penerima dari query string
+    if (!$penerima) {
+      echo json_encode(['error' => 'Parameter penerima tidak diberikan']);
+      return;
+    }
+
+    $query = $this->db->query("SELECT sum(status = 0) as jmlPesan FROM tb_chat WHERE penerima = ?", array($penerima));
+    echo json_encode($query->result());
+  }
+
+  public function get_messages()
+  {
+    // Ambil data JSON dari body request
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true); // Decode JSON ke array asosiatif
+
+    $penerima = $this->session->userdata('id');
+    $pengirim = isset($data['pengirim']) ? $data['pengirim'] : '';
+
+    if (empty($pengirim)) {
+      echo json_encode(['error' => 'Pengirim tidak dikirim atau kosong']);
+      return;
+    }
+    $this->db->update('tb_chat', array('status' => 1), array('pengirim' => $pengirim, 'penerima' => $penerima));
+    // Ambil profil pengirim
+    $profil = $this->db->query("SELECT * FROM tb_user WHERE id = ?", array($pengirim))->row();
+
+    // Query untuk mendapatkan semua pesan antara pengirim dan penerima
+    $query = $this->db->query(
+      "SELECT tc.*, tu.nama_user, tu.foto_diri 
+         FROM tb_chat tc
+         JOIN tb_user tu ON tc.pengirim = tu.id
+         WHERE (tc.penerima = ? AND tc.pengirim = ?) 
+            OR (tc.penerima = ? AND tc.pengirim = ?)
+         ORDER BY tc.waktu ASC",
+      array($penerima, $pengirim, $pengirim, $penerima)
+    );
+
+    // Format hasil JSON
+    echo json_encode(array(
+      'pengirim' => $profil ? $profil->nama_user : '',
+      'foto_pengirim' => $profil ? $profil->foto_diri : '',
+      'chat' => $query->result()
+    ));
+  }
+
+  public function send_message()
+  {
+    $pengirim = $this->session->userdata('id');
+    $data = [
+      'penerima'  => $this->input->post('penerima'),
+      'pengirim' => $pengirim,
+      'pesan'  => $this->input->post('message')
+    ];
+    $this->db->insert('tb_chat', $data);
+
+    echo json_encode(['status' => 'success', 'pesan' => $data['pesan']]);
+  }
+  public function getUserList()
+  {
+    $id_user = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
+    $where = "";
+    if ($role == 4) {
+      $where = "AND tu.role != 1 AND tu.role != 9";
+    }
+    $query = $this->db->query("
+        SELECT tu.id as id_user,tu.nama_user, tu.foto_diri, tr.nama as roleAkses 
+        FROM tb_user tu
+        JOIN tb_user_role tr ON tu.role = tr.id 
+        WHERE tu.status = 1 AND tu.id != ? $where LIMIT 10", [$id_user]);
+    echo json_encode($query->result());
+  }
+  public function search_user()
+  {
+    $id_user = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
+    $where = "";
+    if ($role == 4) {
+      $where = "AND tu.role != 1 AND tu.role != 9";
+    }
+    $keyword = $this->db->escape_like_str($this->input->get('keyword'));
+    $sql = "SELECT tu.id as id_user,tu.nama_user, tu.foto_diri, tr.nama as roleAkses
+            FROM tb_user tu
+            JOIN tb_user_role tr ON tu.role = tr.id
+            WHERE tu.nama_user LIKE '%$keyword%'
+            AND tu.status = 1
+            AND tu.id != ?
+            $where";
+    $query = $this->db->query($sql, array($id_user));
+    echo json_encode($query->result());
+  }
 }
