@@ -576,9 +576,14 @@
             let message = JSON.parse(event.data);
             let formattedTime = formatTime(new Date().toISOString());
             let tipe = message.pengirim == id_pengirim ? 'sent' : 'received';
-            let status_pesan = 'Terkirim'; // Assuming status is part of the message
-            appendMessage(message.pesan, formattedTime, tipe, status_pesan);
+
+            // Pastikan pesan hanya ditampilkan jika penerimanya adalah Anda atau pengirimnya adalah Anda
+            if (message.penerima === id_pengirim || message.pengirim === id_pengirim) {
+                let status_pesan = 'Terkirim'; // Assuming status is part of the message
+                appendMessage(message.pesan, formattedTime, tipe, status_pesan);
+            }
         };
+
         // Memuat pesan ketika halaman dimuat
         window.onload = function() {
             loadList();
@@ -647,6 +652,7 @@
                 }
             });
         }
+
         // Menambahkan pesan ke dalam tampilan chat
         function appendMessage(pesan, time, tipe, status_pesan) {
             let messagesDiv = document.getElementById('messages');
