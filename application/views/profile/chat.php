@@ -603,22 +603,27 @@
                 console.error('Element with ID chat-list not found');
                 return;
             }
-            let fotoProfil = foto ? `<?= base_url('assets/img/user/') ?>${foto}` : 'https://via.placeholder.com/40';
-            let messageHtml = `
-            <div class="chat-item" data-user-id="${id_user}" onclick="handleClick(${id_user})">
-                <img src="${fotoProfil}" alt="Profile">
-                <div class="chat-info">
-                    <div class="name ${notif > 0 ? 'active' : ''}">${nama_user}</div>
-                    <div class="last-message">${pesan}</div>
-                </div>
-                <div class="chat-time">
-                    ${waktu}
-                    <div class="notification-badge ${notif > 0 ? '' : 'd-none'}">${notif}</div>
-                </div>
-            </div>`;
-            chatList.innerHTML += messageHtml;
 
+            let fotoProfil = foto ? `<?= base_url('assets/img/user/') ?>${foto}` : 'https://via.placeholder.com/40';
+
+            // Potong pesan jika lebih dari 25 karakter
+            let truncatedPesan = pesan.length > 25 ? pesan.substring(0, 40) + '...' : pesan;
+
+            let messageHtml = `
+                <div class="chat-item" data-user-id="${id_user}" onclick="handleClick(${id_user})">
+                    <img src="${fotoProfil}" alt="Profile">
+                    <div class="chat-info">
+                        <div class="name ${notif > 0 ? 'active' : ''}">${nama_user}</div>
+                        <div class="last-message">${truncatedPesan}</div>
+                    </div>
+                    <div class="chat-time">
+                        ${waktu}
+                        <div class="notification-badge ${notif > 0 ? '' : 'd-none'}">${notif}</div>
+                    </div>
+                </div>`;
+            chatList.innerHTML += messageHtml;
         }
+
         // Mengirim pesan dan menyimpannya ke database
         function sendMessage() {
             let penerima = document.getElementById('penerima').value;
