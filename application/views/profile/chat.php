@@ -575,12 +575,16 @@
         ws.onmessage = function(event) {
             let message = JSON.parse(event.data);
             let formattedTime = formatTime(new Date().toISOString());
-            let tipe = message.pengirim == id_pengirim ? 'sent' : 'received';
-
-            // Pastikan pesan hanya ditampilkan jika penerimanya adalah Anda atau pengirimnya adalah Anda
-            if (message.penerima === id_pengirim || message.pengirim === id_pengirim) {
-                let status_pesan = 'Terkirim'; // Assuming status is part of the message
+            let tipe = message.pengirim === id_pengirim ? 'sent' : 'received';
+            let last_pesan = message.pesan;
+            if (message.penerima !== id_pengirim && message.pengirim !== id_pengirim) return;
+            let status_pesan = 'Terkirim';
+            if ($('#tempat_chat').css('display') !== 'none') {
                 appendMessage(message.pesan, formattedTime, tipe, status_pesan);
+            }
+            if (message.chat && message.chat.length > 0) {
+                let chatInfo = message.chat[0]; // Assuming there's only one chat item in the array
+                listChat(chatInfo.foto_diri, chatInfo.user_id, chatInfo.nama_user, last_pesan, formattedTime, chatInfo.jml_pesan);
             }
         };
 
@@ -604,30 +608,37 @@
         // Menambahkan pesan ke dalam tampilan chat
         function listChat(foto, id_user, nama_user, pesan, waktu, notif) {
             let chatList = document.getElementById('list_chat');
-            if (!chatList) {
-                console.error('Element with ID chat-list not found');
-                return;
-            }
-
             let fotoProfil = foto ? `<?= base_url('assets/img/user/') ?>${foto}` : 'https://via.placeholder.com/40';
-
-            // Potong pesan jika lebih dari 25 karakter
             let truncatedPesan = pesan.length > 25 ? pesan.substring(0, 40) + '...' : pesan;
 
-            let messageHtml = `
-                <div class="chat-item" data-user-id="${id_user}" onclick="handleClick(${id_user})">
-                    <img src="${fotoProfil}" alt="Profile">
-                    <div class="chat-info">
-                        <div class="name ${notif > 0 ? 'active' : ''}">${nama_user}</div>
-                        <div class="last-message">${truncatedPesan}</div>
-                    </div>
-                    <div class="chat-time">
-                        ${waktu}
-                        <div class="notification-badge ${notif > 0 ? '' : 'd-none'}">${notif}</div>
-                    </div>
+            // Buat elemen div untuk pesan baru
+            let messageElement = document.createElement('div');
+            messageElement.className = 'chat-item';
+            messageElement.setAttribute('data-user-id', id_user);
+            messageElement.setAttribute('onclick', `handleClick(${id_user})`);
+
+            messageElement.innerHTML = `
+                <img src="${fotoProfil}" alt="Profile">
+                <div class="chat-info">
+                    <div id="list_name${id_user}" class="name ${notif > 0 ? 'active' : ''}">${nama_user}</div>
+                    <div class="last-message">${truncatedPesan}</div>
+                </div>
+                <div class="chat-time">
+                    ${waktu}
+                    <div id="list_notif${id_user}" class="notification-badge ${notif > 0 ? '' : 'd-none'}">${notif}</div>
                 </div>`;
-            chatList.innerHTML += messageHtml;
+
+            // Cek apakah data-user-id sudah ada
+            let existingChatItem = chatList.querySelector(`[data-user-id="${id_user}"]`);
+            if (existingChatItem) {
+                // Jika sudah ada, ganti elemen yang ada dengan elemen baru
+                chatList.replaceChild(messageElement, existingChatItem);
+            } else {
+                // Jika belum ada, tambahkan elemen baru di urutan pertama
+                chatList.insertBefore(messageElement, chatList.firstChild);
+            }
         }
+
 
         // Mengirim pesan dan menyimpannya ke database
         function sendMessage() {
@@ -641,12 +652,12 @@
                 body: 'penerima=' + encodeURIComponent(penerima) + '&message=' + encodeURIComponent(message)
             }).then(response => response.json()).then(data => {
                 if (data.status === 'success') {
-                    // Kirim pesan melalui WebSocket setelah berhasil disimpan di database
                     ws.send(JSON.stringify({
                         pesan: data.pesan,
                         pengirim: id_pengirim,
                         status: data.status,
-                        penerima: penerima
+                        penerima: penerima,
+                        chat: data.chat_info
                     }));
                     document.getElementById('input_pesan').value = '';
                 }
@@ -664,7 +675,7 @@
                     </div>
                 </div>`;
             messagesDiv.innerHTML += messageHtml;
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll ke bawah
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
         function loadMessages(id_user) {
@@ -720,6 +731,8 @@
             // Menjalankan loadMessages
             loadMessages(id_user);
             $('#tempat_chat').removeClass('d-none');
+            $('#list_name' + id_user).removeClass('active');
+            $('#list_notif' + id_user).addClass('d-none');
             let chatListContainer = document.getElementById('chatListContainer');
             chatListContainer.style.display = 'none';
             // Memeriksa apakah lebar layar adalah untuk ponsel

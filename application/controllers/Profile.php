@@ -273,7 +273,7 @@ class Profile extends CI_Controller
           )
           WHERE tc.penerima = '$id_user' OR tc.pengirim = '$id_user'
           GROUP BY tu.id, tu.nama_user, tu.foto_diri, tc.pesan, tc.waktu
-          ORDER BY tc.waktu DESC
+          ORDER BY tc.waktu ASC
       ");
 
     echo json_encode($query->result());
@@ -330,15 +330,43 @@ class Profile extends CI_Controller
   public function send_message()
   {
     $pengirim = $this->session->userdata('id');
+    $penerima = $this->input->post('penerima');
+    $pesan = $this->input->post('message');
+
+    // Simpan pesan ke database
     $data = [
-      'penerima'  => $this->input->post('penerima'),
+      'penerima' => $penerima,
       'pengirim' => $pengirim,
-      'pesan'  => $this->input->post('message')
+      'pesan' => $pesan,
+      'status' => 0,
     ];
     $this->db->insert('tb_chat', $data);
 
-    echo json_encode(['status' => 'success', 'pesan' => $data['pesan']]);
+    // Ambil informasi chat terbaru
+    $result = $this->db->query("
+          SELECT 
+              tu.id as user_id, 
+              tu.nama_user, 
+              tu.foto_diri, 
+              COUNT(tc.id) as jml_pesan
+          FROM 
+              tb_chat tc
+          JOIN 
+              tb_user tu ON tc.pengirim = tu.id
+          WHERE 
+              tu.id = ? AND tc.status = 0 AND tc.penerima = ?
+          GROUP BY 
+              tu.id", [$pengirim, $penerima])->result();
+    echo json_encode([
+      'status' => 'success',
+      'pesan' => $pesan,
+      'pengirim' => $pengirim,
+      'penerima' => $penerima,
+      'chat_info' => $result
+    ]);
   }
+
+
   public function getUserList()
   {
     $id_user = $this->session->userdata('id');
