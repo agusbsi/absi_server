@@ -357,12 +357,27 @@ class Profile extends CI_Controller
               tu.id = ? AND tc.status = 0 AND tc.penerima = ?
           GROUP BY 
               tu.id", [$pengirim, $penerima])->result();
+    // Ambil informasi chat terbaru
+    $dataPenerima = $this->db->query("
+          SELECT 
+              tu.id as user_id, 
+              tu.nama_user, 
+              tu.foto_diri
+          FROM 
+              tb_chat tc
+          JOIN 
+              tb_user tu ON tc.penerima = tu.id
+          WHERE 
+              tu.id = ?  AND tc.pengirim = ?
+          GROUP BY 
+              tu.id", [$penerima, $pengirim])->result();
     echo json_encode([
       'status' => 'success',
       'pesan' => $pesan,
       'pengirim' => $pengirim,
       'penerima' => $penerima,
-      'chat_info' => $result
+      'chat_info' => $result,
+      'chatPenerima' => $dataPenerima
     ]);
   }
 

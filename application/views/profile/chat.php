@@ -577,16 +577,24 @@
             let formattedTime = formatTime(new Date().toISOString());
             let tipe = message.pengirim === id_pengirim ? 'sent' : 'received';
             let last_pesan = message.pesan;
-            if (message.penerima !== id_pengirim && message.pengirim !== id_pengirim) return;
-            let status_pesan = 'Terkirim';
-            if ($('#tempat_chat').css('display') !== 'none') {
-                appendMessage(message.pesan, formattedTime, tipe, status_pesan);
-            }
-            if (message.chat && message.chat.length > 0) {
-                let chatInfo = message.chat[0]; // Assuming there's only one chat item in the array
-                listChat(chatInfo.foto_diri, chatInfo.user_id, chatInfo.nama_user, last_pesan, formattedTime, chatInfo.jml_pesan);
+            let kosong = '';
+
+            // Check if the message is for or from the current user
+            if (message.penerima === id_pengirim || message.pengirim === id_pengirim) {
+                let status_pesan = 'Terkirim';
+                if ($('#tempat_chat').css('display') !== 'none') {
+                    appendMessage(message.pesan, formattedTime, tipe, status_pesan);
+                }
+                if (message.penerima === id_pengirim && message.chat && message.chat.length > 0) {
+                    let chatInfo = message.chat[0]; // Assuming there's only one chat item in the array
+                    listChat(chatInfo.foto_diri, chatInfo.user_id, chatInfo.nama_user, last_pesan, formattedTime, chatInfo.jml_pesan);
+                } else {
+                    let chatfix = message.chatPenerima[0]; // Assuming there's only one chat item in the array
+                    listChat(chatfix.foto_diri, chatfix.user_id, chatfix.nama_user, last_pesan, formattedTime, kosong);
+                }
             }
         };
+
 
         // Memuat pesan ketika halaman dimuat
         window.onload = function() {
@@ -657,7 +665,8 @@
                         pengirim: id_pengirim,
                         status: data.status,
                         penerima: penerima,
-                        chat: data.chat_info
+                        chat: data.chat_info,
+                        chatPenerima: data.chatPenerima
                     }));
                     document.getElementById('input_pesan').value = '';
                 }
