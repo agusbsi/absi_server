@@ -279,9 +279,6 @@ class Profile extends CI_Controller
     echo json_encode($query->result());
   }
 
-
-
-
   public function notif()
   {
     $penerima = $this->input->get('penerima'); // Ambil parameter penerima dari query string
@@ -348,13 +345,15 @@ class Profile extends CI_Controller
     $role = $this->session->userdata('role');
     $where = "";
     if ($role == 4) {
-      $where = "AND tu.role != 1 AND tu.role != 9";
+      $where = "AND tu.role = 8 OR tu.role = 14 OR tu.id = 129";
+    } else {
+      $where = "LIMIT 10";
     }
     $query = $this->db->query("
         SELECT tu.id as id_user,tu.nama_user, tu.foto_diri, tr.nama as roleAkses 
         FROM tb_user tu
         JOIN tb_user_role tr ON tu.role = tr.id 
-        WHERE tu.status = 1 AND tu.id != ? $where LIMIT 10", [$id_user]);
+        WHERE tu.status = 1 AND tu.id != ? $where", [$id_user]);
     echo json_encode($query->result());
   }
   public function search_user()
@@ -372,7 +371,7 @@ class Profile extends CI_Controller
             WHERE tu.nama_user LIKE '%$keyword%'
             AND tu.status = 1
             AND tu.id != ?
-            $where";
+            $where LIMIT 20";
     $query = $this->db->query($sql, array($id_user));
     echo json_encode($query->result());
   }

@@ -291,8 +291,8 @@
         .message {
             margin-bottom: 3px;
             max-width: 60%;
-            padding: 10px;
-            border-radius: 3px;
+            padding: 8px;
+            border-radius: 10px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -568,7 +568,7 @@
     <script src="<?= base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let ws = new WebSocket("ws://localhost:8080");
+        let ws = new WebSocket("wss://absiwebsocket.pepri.site");
         const id_pengirim = "<?php echo $this->session->userdata('id'); ?>";
 
         // Ketika pesan baru diterima dari WebSocket server

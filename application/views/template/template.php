@@ -401,7 +401,7 @@
     }
   </script>
   <script>
-    let ws = new WebSocket("ws://localhost:8080");
+    let ws = new WebSocket("wss://absiwebsocket.pepri.site");
 
     function loadList(penerima) {
       // Tambahkan parameter penerima ke URL
