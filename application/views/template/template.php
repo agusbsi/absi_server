@@ -98,19 +98,18 @@
     }
 
     .chat-button {
-      display: inline-block;
       background-color: #28a745;
       border-radius: 20px;
-      padding: 8px 20px;
+      padding: 5px 20px 5px 20px;
       color: #f4f6f9;
       font-size: 14px;
       font-weight: bold;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      text-align: center;
+      position: relative;
       cursor: pointer;
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      width: auto;
+      height: 30px;
+      top: 9px;
     }
 
     .chat-button a {
@@ -138,21 +137,18 @@
       animation: bounce 1.5s infinite;
     }
 
-    .chat-minus {
-      position: absolute;
-      top: -17px;
-      right: -8px;
-      width: 20px;
-      height: 20px;
-      background-color: #494e53;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 12px;
-      font-weight: bold;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    @media (max-width: 600px) {
+      .chat-button a {
+        justify-content: center;
+      }
+
+      .chat-button .desk {
+        display: none;
+      }
+
+      .pt {
+        font-size: 10px;
+      }
     }
 
     @keyframes bounce {
@@ -212,8 +208,14 @@
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
       </ul>
-      <?= $this->session->userdata('pt') ? $this->session->userdata('pt') : '' ?>
+      <span class="pt"><?= $this->session->userdata('pt') ? $this->session->userdata('pt') : '' ?></span>
       <ul class="navbar-nav ml-auto mr-3 mb-1">
+        <div class="chat-button" id="chat_notif">
+          <a href="<?= base_url('Profile/chat') ?>">
+            <i class="fas fa-comments"></i>
+            <span class="desk">Chat</span>
+          </a>
+        </div>
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             <?php if (!empty($foto)) { ?>
@@ -272,19 +274,6 @@
       <!-- Main content -->
       <?= $contents ?>
       <!-- /.content -->
-      <div class="chat-button" id="chat_notif">
-        <div class="chat-minus" onclick="hideChatButton()">
-          <i class="fas fa-times"></i>
-        </div>
-        <a href="<?= base_url('Profile/chat') ?>">
-          <div>
-            <i class="fas fa-comments"></i>
-            Chat
-          </div>
-        </a>
-      </div>
-
-
     </div>
   </div>
 
@@ -431,12 +420,9 @@
     function listChat(notif) {
       let chatList = document.getElementById('chat_notif');
       let messageHtml = `
-      <div class="chat-minus" onclick="hideChatButton()">
-          <i class="fas fa-times"></i>
-        </div>
       <a href="<?= base_url('Profile/chat') ?>">
             <i class="fas fa-comments"></i>
-            Chat
+            <span class="desk">Chat</span>
         <span class="notification ${notif > 0 ? '' : 'd-none'}">${notif}</span> </a>`;
       chatList.innerHTML = messageHtml; // Overwrite to ensure accurate display
     }
