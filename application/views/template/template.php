@@ -138,6 +138,23 @@
       animation: bounce 1.5s infinite;
     }
 
+    .chat-minus {
+      position: absolute;
+      top: -17px;
+      right: -8px;
+      width: 20px;
+      height: 20px;
+      background-color: #494e53;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
     @keyframes bounce {
 
       0%,
@@ -255,23 +272,20 @@
       <!-- Main content -->
       <?= $contents ?>
       <!-- /.content -->
-      <div>
+      <div class="chat-button" id="chat_notif">
+        <div class="chat-minus" onclick="hideChatButton()">
+          <i class="fas fa-times"></i>
+        </div>
         <a href="<?= base_url('Profile/chat') ?>">
-          <div class="chat-button" id="chat_notif">
+          <div>
             <i class="fas fa-comments"></i>
             Chat
           </div>
         </a>
       </div>
 
+
     </div>
-    <!-- /.content-wrapper -->
-    <footer class="main-footer no-print">
-      <div class="float-right d-none d-sm-block">
-        <b>Version</b> 1.2
-      </div>
-      <strong>Copyright &copy; <?= date('Y') ?> <a href="#">Globalindo Group</a>.</strong> All rights reserved.
-    </footer>
   </div>
 
   <!-- Bootstrap 4 -->
@@ -408,9 +422,6 @@
       fetch(`<?= base_url('Profile/notif'); ?>?penerima=${penerima}`)
         .then(response => response.json())
         .then(data => {
-          // Clear previous notifications
-          document.getElementById('chat_notif').innerHTML = '';
-
           data.forEach(notification => {
             listChat(notification.jmlPesan);
           });
@@ -420,10 +431,19 @@
     function listChat(notif) {
       let chatList = document.getElementById('chat_notif');
       let messageHtml = `
-      <i class="fas fa-comments"></i>
+      <div class="chat-minus" onclick="hideChatButton()">
+          <i class="fas fa-times"></i>
+        </div>
+      <a href="<?= base_url('Profile/chat') ?>">
+            <i class="fas fa-comments"></i>
             Chat
-        <span class="notification ${notif > 0 ? '' : 'd-none'}">${notif}</span>`;
+        <span class="notification ${notif > 0 ? '' : 'd-none'}">${notif}</span> </a>`;
       chatList.innerHTML = messageHtml; // Overwrite to ensure accurate display
+    }
+
+    function hideChatButton() {
+      const chatButton = document.getElementById('chat_notif');
+      chatButton.style.display = 'none';
     }
 
     // Penanganan pesan dari WebSocket

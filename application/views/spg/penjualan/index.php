@@ -20,7 +20,7 @@
           <thead>
             <tr>
               <th class="text-center">No</th>
-              <th>Kode Penjualan</th>
+              <th>No Penjualan</th>
               <th class="text-center">Menu</th>
             </tr>
           </thead>

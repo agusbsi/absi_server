@@ -54,6 +54,77 @@
     display: none;
     /* Ini untuk menyembunyikan elemen ketika tidak ada hasil pencarian */
   }
+
+  .produk {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .produk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 15px;
+    background-color: rgb(1, 164, 19, 0.2);
+    border-bottom: 2px solid #ddd;
+  }
+
+  .produk-number {
+    width: 22px;
+    height: 22px;
+    background-color: #f4f5f6;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+  }
+
+  .produk-code {
+    font-size: 14px;
+    flex-grow: 1;
+    font-weight: 600;
+    margin-left: 10px;
+  }
+
+  .produk-close {
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .produk-content {
+    background-color: rgb(241, 243, 244, 0.8);
+    color: #333;
+    padding: 5px 15px;
+  }
+
+  .produk-content p {
+    margin: 0 0 2px 0;
+    font-size: 12px;
+  }
+
+  .produk-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .produk-info span {
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .produk-info input {
+    width: 100px;
+    padding: 2px;
+    border-radius: 15px;
+    border: 1px solid rgb(1, 164, 19);
+    text-align: center;
+    font-size: 12px;
+  }
 </style>
 
 <section class="content">
@@ -61,7 +132,9 @@
     <div class="card card-info">
       <form action="<?= base_url('spg/Penjualan/simpan') ?>" method="post" id="form_jual">
         <div class="card-header">
-          <h3 class="card-title"><i class="nav-icon fas fa-cart-plus"></i> Tambah Penjualan</h3>
+          <small>
+            <strong><?= $toko->nama_toko ?></strong>
+          </small>
           <div class="card-tools">
             <a href="<?= base_url('spg/Penjualan') ?>" type="button" class="btn btn-tool">
               <i class="fas fa-times"></i>
@@ -70,25 +143,15 @@
         </div>
         <div class="card-body">
           <div class="form-group">
-            <strong>Nama Toko :</strong>
-            <textarea class="form-control form-control-sm" readonly><?= $toko->nama_toko ?></textarea>
-          </div>
-          <div class="form-group">
-            <strong>Tanggal Penjualan : *</strong>
+            <small><strong>Tanggal Penjualan : *</strong></small>
             <input type="hidden" name="unique_id" value="<?= uniqid() ?>">
             <input id="tanggal_penjualan" name="tgl_jual" class="form-control form-control-sm" type="date" max="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d', strtotime('-100 days')) ?>" required>
           </div>
           <hr>
+          <div class="item-list" id="item-list">
+          </div>
+          <br>
           <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Artikel</th>
-                <th>Qty</th>
-                <th>Menu</th>
-              </tr>
-            </thead>
-            <tbody id="item-list"></tbody>
             <tr>
               <td colspan="4">
                 <button id="btn-tampil" class="btn btn-link btn-block" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
@@ -114,19 +177,19 @@
                     </div>
                   </div>
                   <div class="form-group mt-1" style="width: 92%;">
-                    <input class="form-control form-control-sm" type="number" id="qty" placeholder="Jumlah terjual..." required>
+                    <input class="form-control form-control-sm" type="number" id="qty" placeholder="Jumlah terjual..." autocomplete="off" required>
                   </div>
                   <div class="form-group text-center">
-                    <button type="button" id="btn-tambah" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Tambahkan ke List</button>
+                    <button type="button" id="btn-tambah" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Tambah List</button>
                   </div>
                 </div>
               </td>
             </tr>
           </table>
         </div>
-        <div class="card-footer text-right">
+        <div class="card-footer text-center">
           <a href="<?= base_url('spg/Penjualan') ?>" class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i> Close</a>
-          <button type="submit" id="btn_simpan" class="btn btn-sm btn-primary"><i class="fas fa-paper-plane"></i> Kirim Data</button>
+          <button type="submit" id="btn_simpan" class="btn btn-sm btn-primary"><i class="fas fa-paper-plane"></i> Kirim</button>
         </div>
       </form>
     </div>
@@ -142,7 +205,7 @@
       isValid = false;
     }
     // Get all required input fields
-    $('#form_jual').find('#tanggal_penjualan').each(function() {
+    $('#form_jual').find('#tanggal_penjualan, .qtyProduk').each(function() {
       if ($(this).val() === '') {
         isValid = false;
         $(this).addClass('is-invalid');
@@ -173,7 +236,7 @@
           Swal.fire({
             icon: 'info',
             title: 'Belum Lengkap',
-            text: 'Tanggal Penjualan dan List Artikel tidak boleh kosong.',
+            text: 'Tanggal Penjualan,List Artikel dan qty Produk tidak boleh kosong.',
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'OK'
           });
@@ -250,40 +313,67 @@
     });
 
     function loadItems() {
-      itemList.innerHTML = ''; // Clear existing items
+      const itemList = document.getElementById('item-list');
+      itemList.innerHTML = '';
       const items = JSON.parse(localStorage.getItem('items')) || [];
       items.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>
-                        <input type="hidden" name="id_produk[]" value="${item.id_produk}">
-                        <input type="hidden" name="stok[]" value="${item.stok}">
-                        <small><strong>${item.kode}</strong><br>${item.artikel}
-                        </td>
-                        <td>
-                        ${item.qty}
-                        <input type="hidden" name="qty[]" value="${item.qty}">
-                        </td>
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="deleteItem(${item.id})"><i class="fas fa-trash"></i></button></td>
-                    `;
-        itemList.appendChild(row);
+        const produk = document.createElement('div');
+        produk.className = 'produk';
+        produk.innerHTML = `
+            <div class="produk-header">
+                <div class="produk-number">${index + 1}</div>
+                <div class="produk-code">${item.kode}</div>
+                <div class="produk-close" onclick="deleteItem(${item.id})">X</div>
+            </div>
+            <div class="produk-content">
+                <p>${item.artikel}</p>
+                <div class="produk-info">
+                    <span>Stok: ${item.stok} </span>
+                    <div>
+                        <span>Qty: </span>
+                        <input type="number" class="qtyProduk" name="qtyProduk[]" value="${item.qty}" data-index="${index}" data-stok="${item.stok}" required>
+                    </div>
+                </div>
+                <input type="hidden" name="idProduk[]" value="${item.id_produk}">
+                <input type="hidden" name="stokProduk[]" value="${item.stok}">
+            </div>
+        `;
+        itemList.appendChild(produk);
+        const qtyInput = produk.querySelector('.qtyProduk');
+        qtyInput.addEventListener('input', function() {
+          const stok = parseInt(this.getAttribute('data-stok'), 10);
+          const itemIndex = parseInt(this.getAttribute('data-index'), 10);
+          if (this.value > stok) {
+            this.value = stok;
+            Swal.fire(
+              'Peringatan !',
+              'QTY Tidak boleh melebihi Stok.',
+              'info'
+            );
+          }
+          // Update the qty in items array and localStorage
+          items[itemIndex].qty = this.value;
+          localStorage.setItem('items', JSON.stringify(items));
+        });
       });
     }
-
+    document.getElementById('qty').addEventListener('input', function() {
+      const qtyInput = this;
+      const stok = parseInt(document.getElementById('stok').innerText, 10);
+      if (qtyInput.value > stok) {
+        qtyInput.value = stok; // Set value to stok if it exceeds
+        Swal.fire(
+          'Peringatan !',
+          'QTY Tidak boleh melebihi Stok.',
+          'info'
+        );
+      }
+    });
     btnTambah.addEventListener('click', function() {
       if (artikel.textContent === '' || qtyInput.value === '') {
         Swal.fire(
           'Peringatan !',
           'Artikel dan Qty tidak boleh kosong!',
-          'info'
-        );
-        return;
-      }
-      if (parseInt(stok.textContent) < qtyInput.value) {
-        Swal.fire(
-          'Peringatan !',
-          'QTY Tidak boleh melebihi Stok.',
           'info'
         );
         return;
@@ -330,10 +420,8 @@
       let items = JSON.parse(localStorage.getItem('items')) || [];
       items = items.filter(item => item.id !== id);
       localStorage.setItem('items', JSON.stringify(items));
-
-      loadItems(); // Refresh item list
+      loadItems();
     };
-
-    loadItems(); // Initial load
+    loadItems();
   });
 </script>

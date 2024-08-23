@@ -22,7 +22,10 @@
           </div>
         </div>
         <hr>
-        <table class="table table-bordered table-striped">
+        <div class="form-group">
+          <input type="search" class="form-control form-control-sm " id="searchInput" autocomplete="off" placeholder="Cari berdasarkan kode atau nama artikel...">
+        </div>
+        <table id="myTable" class="table table-bordered table-striped">
           <tr>
             <th class="text-center">No</th>
             <th>Artikel</th>
@@ -56,3 +59,26 @@
     </div>
   </div>
 </section>
+<script>
+  // Fungsi untuk melakukan pencarian
+  function searchTable() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("myTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td");
+      for (var j = 0; j < td.length; j++) {
+        txtValue = td[j].textContent || td[j].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+          break; // keluar dari loop jika sudah ada satu td yang cocok
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+  document.getElementById("searchInput").addEventListener("input", searchTable);
+</script>

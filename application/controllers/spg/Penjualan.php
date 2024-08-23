@@ -14,8 +14,6 @@ class Penjualan extends CI_Controller
     }
     $this->load->model('M_spg');
   }
-
-
   public function index()
   {
     $id_toko = $this->session->userdata('id_toko');
@@ -94,9 +92,9 @@ class Penjualan extends CI_Controller
     $id_toko = $this->session->userdata('id_toko');
     $tgl_jual = $this->input->post('tgl_jual');
     $unique_id = $this->input->post('unique_id');
-    $id_produk = $this->input->post('id_produk');
-    $stok = $this->input->post('stok');
-    $qty = $this->input->post('qty');
+    $id_produk = $this->input->post('idProduk');
+    $stok = $this->input->post('stokProduk');
+    $qty = $this->input->post('qtyProduk');
     $id_penjualan = $this->M_spg->kode_penjualan();
     $jml = count($id_produk);
 
