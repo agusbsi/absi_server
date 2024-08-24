@@ -326,18 +326,18 @@
 
     });
     // jumlah di isi
-    $('input[name="qty"]').on('keydown keyup change', function() {
-      var input = $(this).val();
-      var stok = $('input[name="stok"]').val();
-      if (parseInt(input) > parseInt(stok)) {
-        Swal.fire(
-          'Peringatan !',
-          'Pastikan jumlah yang di Transfer tidak melebihi jumlah stok yang tersedia.',
-          'info'
-        )
-        $(this).val(stok);
-      }
+    // $('input[name="qty"]').on('keydown keyup change', function() {
+    //   var input = $(this).val();
+    //   var stok = $('input[name="stok"]').val();
+    //   if (parseInt(input) > parseInt(stok)) {
+    //     Swal.fire(
+    //       'Peringatan !',
+    //       'Pastikan jumlah yang di Transfer tidak melebihi jumlah stok yang tersedia.',
+    //       'info'
+    //     )
+    //     $(this).val(stok);
+    //   }
 
-    });
+    // });
   });
 </script>

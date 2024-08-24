@@ -343,32 +343,32 @@
         qtyInput.addEventListener('input', function() {
           const stok = parseInt(this.getAttribute('data-stok'), 10);
           const itemIndex = parseInt(this.getAttribute('data-index'), 10);
-          if (this.value > stok) {
-            this.value = stok;
-            Swal.fire(
-              'Peringatan !',
-              'QTY Tidak boleh melebihi Stok.',
-              'info'
-            );
-          }
+          // if (this.value > stok) {
+          //   this.value = stok;
+          //   Swal.fire(
+          //     'Peringatan !',
+          //     'QTY Tidak boleh melebihi Stok.',
+          //     'info'
+          //   );
+          // }
           // Update the qty in items array and localStorage
           items[itemIndex].qty = this.value;
           localStorage.setItem('items', JSON.stringify(items));
         });
       });
     }
-    document.getElementById('qty').addEventListener('input', function() {
-      const qtyInput = this;
-      const stok = parseInt(document.getElementById('stok').innerText, 10);
-      if (qtyInput.value > stok) {
-        qtyInput.value = stok; // Set value to stok if it exceeds
-        Swal.fire(
-          'Peringatan !',
-          'QTY Tidak boleh melebihi Stok.',
-          'info'
-        );
-      }
-    });
+    // document.getElementById('qty').addEventListener('input', function() {
+    //   const qtyInput = this;
+    //   const stok = parseInt(document.getElementById('stok').innerText, 10);
+    //   if (qtyInput.value > stok) {
+    //     qtyInput.value = stok; // Set value to stok if it exceeds
+    //     Swal.fire(
+    //       'Peringatan !',
+    //       'QTY Tidak boleh melebihi Stok.',
+    //       'info'
+    //     );
+    //   }
+    // });
     btnTambah.addEventListener('click', function() {
       if (artikel.textContent === '' || qtyInput.value === '') {
         Swal.fire(
