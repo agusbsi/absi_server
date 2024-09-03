@@ -1,5 +1,5 @@
 <?php
-$Toko = $this->db->query("SELECT id FROM tb_toko WHERE status = '3'")->num_rows();
+$Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '2'")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">

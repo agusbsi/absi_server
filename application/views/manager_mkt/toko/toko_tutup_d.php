@@ -4,14 +4,23 @@
       <div class="col-12">
         <div class="card card-danger ">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> Detail Toko Tutup</b> </h3>
+            <h3 class="card-title"><i class="fas fa-store"></i> Pengajuan <?= kategori_pengajuan($retur->kategori) ?></b> </h3>
+            <div class="card-tools">
+              <a href="<?= base_url('mng_mkt/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i></a>
+            </div>
           </div>
           <div class="card-body">
             <div class="row">
               <div class="col-md-2">
                 <div class="form-group">
-                  <label for="">Nomor</label> <br>
-                  <h5><?= $retur->id ?></h5>
+                  <label for="">No. Pengajuan</label> <br>
+                  <h5><?= $retur->nomor ?></h5>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label for="">No. Retur</label> <br>
+                  <h5><?= $retur->id_retur ?></h5>
                 </div>
               </div>
               <div class="col-md-4">
@@ -21,17 +30,17 @@
                   <address><?= $retur->alamat ?></address>
                 </small>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label for="">Tanggal</label> <br>
                 <small>
                   Dibuat : <?= date('d M Y', strtotime($retur->created_at)) ?> <br>
                   Penjemputan : <?= date('d M Y', strtotime($retur->tgl_jemput)) ?>
                 </small>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label for="">Status</label> <br>
                 <small>
-                  <?= status_retur($retur->status) ?>
+                  <?= status_pengajuan($retur->status) ?>
                 </small>
               </div>
             </div>
@@ -146,7 +155,7 @@
               <?php endforeach ?>
             </div>
             <hr>
-            <?php if ($retur->status == 11) { ?>
+            <?php if ($retur->status == 0) { ?>
               <form action="<?= base_url('mng_mkt/Toko/tindakan') ?>" method="post" id="form_approve">
                 <div class="form-group">
                   <label for="">Tgl Jemput</label>
@@ -154,9 +163,10 @@
                 </div>
                 <strong>Catatan MM:</strong>
                 <textarea name="catatan_mm" rows="3" class="form-control form-control-sm" required></textarea>
-                <input type="hidden" name="id_retur" value="<?= $retur->id ?>">
+                <input type="hidden" name="id_pengajuan" value="<?= $retur->id ?>">
+                <input type="hidden" name="id_retur" value="<?= $retur->id_retur ?>">
                 <input type="hidden" name="id_toko" value="<?= $retur->id_toko ?>">
-                <input type="hidden" name="pembuat" value="<?= $retur->id_user ?>">
+                <input type="hidden" name="pembuat" value="<?= $retur->id_pembuat ?>">
                 <small>* harus di isi.</small>
                 <div class="form-group">
                   <label for="">Tindakan</label>
@@ -168,15 +178,15 @@
                 </div>
                 <hr>
                 <div class="text-right">
+                  <a href="<?= base_url('mng_mkt/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Kembali</a>
                   <button type="submit" class="btn btn-sm btn-primary btn_simpan"><i class="fas fa-save"></i> Simpan</button>
-                  <a href="<?= base_url('mng_mkt/Toko/toko_tutup') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Kembali</a>
                 </div>
               </form>
               <hr>
             <?php } else { ?>
               <div class="row no-print">
                 <div class="col-12">
-                  <a href="<?= base_url('mng_mkt/Toko/toko_tutup') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
+                  <a href="<?= base_url('mng_mkt/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
                     <i class="fas fa-arrow-left"></i> Kembali </a>
                 </div>
               </div>

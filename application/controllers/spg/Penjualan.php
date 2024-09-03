@@ -173,4 +173,39 @@ class Penjualan extends CI_Controller
 
     redirect(base_url('spg/Penjualan/detail/' . $id_penjualan));
   }
+  // hapus penjualan
+  public function hapus_data($id)
+  {
+    $username = $this->session->userdata('username');
+    $toko = $this->db->query("SELECT id_toko from tb_penjualan where id = '$id'")->row()->id_toko;
+    $detail = $this->db->query("SELECT id_produk, qty from tb_penjualan_detail where id_penjualan = '$id'")->result();
+
+    $this->db->trans_start();
+    foreach ($detail as $d) {
+      $currentStock = $this->db->select('qty')->where(['id_produk' => $d->id_produk, 'id_toko' => $toko])->get('tb_stok')->row()->qty;
+      $newStock = $currentStock + $d->qty;
+      $this->db->where(['id_produk' => $d->id_produk, 'id_toko' => $toko])->update('tb_stok', ['qty' => $newStock]);
+      $kartu = array(
+        'no_doc' => $id,
+        'id_produk' => $d->id_produk,
+        'id_toko' => $toko,
+        'masuk' => $d->qty,
+        'stok' => $currentStock,
+        'sisa' => $currentStock + $d->qty,
+        'keterangan' => 'Cancel Penjualan',
+        'pembuat' => $username
+      );
+      $this->db->insert('tb_kartu_stok', $kartu);
+    }
+    $this->db->delete('tb_penjualan', array('id' => $id));
+    $this->db->delete('tb_penjualan_detail', array('id_penjualan' => $id));
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      tampil_alert('error', 'GAGAL', 'Gagal menghapus data penjualan ' . $id);
+    } else {
+      $this->db->trans_commit();
+      tampil_alert('success', 'DI HAPUS', 'Data Penjualan ' . $id . ' berhasil dihapus');
+    }
+    redirect(base_url('spg/penjualan'));
+  }
 }

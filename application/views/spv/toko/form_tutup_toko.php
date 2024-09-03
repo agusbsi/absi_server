@@ -4,18 +4,15 @@
     <div class="row">
       <div class="col-12">
         <form action="<?= base_url('spv/Toko/saveTutup'); ?>" method="post" id="form_tutup">
-          <div class="card card-success ">
+          <div class="card card-danger ">
             <div class="card-header">
-              <h3 class="card-title"><i class="fas fa-file"></i> Form Tutup Toko</b> </h3>
+              <h3 class="card-title"><i class="fas fa-store"></i> Form Tutup Toko</b> </h3>
+              <div class="card-tools">
+                <a href="<?= base_url('spv/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i></a>
+              </div>
             </div>
             <div class="card-body">
               <div class="row">
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <label for="">No Pengajuan :</label>
-                    <input type="text" name="no_retur" value="<?= $kode_retur ?>" class="form-control form-control-sm" readonly>
-                  </div>
-                </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="">Nama Toko :</label>
@@ -27,18 +24,18 @@
                     </select>
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <div class="form-group">
                     <label for="">Tgl Penarikan :</label>
                     <div class="input-group">
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                       </div>
-                      <input type="date" name="tgl_tarik" id="tgl_tarik" class="form-control form-control-sm" autocomplete="off" required>
+                      <input type="date" name="tgl_tarik" id="tgl_tarik" class="form-control form-control-sm" autocomplete="off" min="<?= date('Y-m-d') ?>" required>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <div class="form-group">
                     <label for="">Di ajukan Oleh:</label>
                     <input type="text" value="<?= $this->session->userdata('nama_user'); ?>" class="form-control form-control-sm" readonly>
@@ -116,8 +113,7 @@
                               <thead>
                                 <tr>
                                   <th class="text-center">No</th>
-                                  <th class="text-center">Kode Artikel</th>
-                                  <th class="text-center">Deskripsi</th>
+                                  <th class="text-center">Artikel</th>
                                   <th class="text-center">Stok Sistem</th>
                                   <th class="text-center">QTY Retur</th>
                                 </tr>
@@ -131,7 +127,7 @@
                               <small>Harus di isi.</small>
                             </div>
                             <button type="button" class="btn btn-danger btn-sm" onclick="stepper.previous()"><i class="fas fa-arrow-left"></i> Previous</button>
-                            <button type="submit" class="btn btn-primary btn-sm btn_kirim"><i class="fas fa-paper-plane"></i> Kirim</button>
+                            <button type="submit" class="btn btn-primary btn-sm btn_kirim"><i class="fas fa-paper-plane"></i> Ajukan</button>
                           </div>
                         </div>
                       </div>
@@ -170,34 +166,98 @@
           success: function(data) {
             var html = '';
             var aset = '';
+            var totalQtyArtikel = 0;
+            var totalQtyInputArtikel = 0;
+            var totalQtyAset = 0;
+            var totalQtyInputAset = 0;
 
             if (data.aset.length === 0) {
               aset += '<tr>';
-              aset += '<td colspan ="4" class="text-center"> ASET KOSONG</td>';
+              aset += '<td colspan="5" class="text-center"> ASET KOSONG</td>';
               aset += '</tr>';
             } else {
               $.each(data.aset, function(i, item) {
                 aset += '<tr>';
                 aset += '<td class="text-center">' + (i + 1) + '</td>';
-                aset += '<td> <small><strong>' + item.no_aset + '</strong><br>' + item.aset + '</small></td>';
-                aset += '<td><input type="number" class="form-control form-control-sm" name="qty_aset[]" value="' + item.qty + '"></td>';
+                aset += '<td><small><strong>' + item.no_aset + '</strong><br>' + item.aset + '</small></td>';
+                aset += '<td class="text-center">' + item.qty + '</td>';
+                aset += '<td><input type="number" class="form-control form-control-sm qty-input-aset" name="qty_aset[]" value="' + item.qty + '" min="0"></td>';
                 aset += '<td><input type="hidden" class="id_produk" name="id_aset[]" value="' + item.id_aset + '"><textarea class="form-control form-control-sm" name="keterangan[]"></textarea></td>';
                 aset += '</tr>';
+
+                totalQtyAset += parseInt(item.qty);
+                totalQtyInputAset += parseInt(item.qty);
               });
+
+              // Append total row for aset
+              aset += '<tr>';
+              aset += '<td colspan="2" class="text-right"><strong>Total</strong></td>';
+              aset += '<td class="text-center"><strong>' + totalQtyAset + '</strong></td>';
+              aset += '<td class="text-center"><strong id="totalQtyInputAset">' + totalQtyInputAset + '</strong></td>';
+              aset += '<td></td>';
+              aset += '</tr>';
             }
 
-            $.each(data.artikel, function(i, item) {
+            if (data.artikel.length === 0) {
               html += '<tr>';
-              html += '<td class="text-center">' + (i + 1) + '</td>';
-              html += '<td>' + item.kode + '</td>';
-              html += '<td>' + item.nama_produk + '</td>';
-              html += '<td class="text-center">' + item.qty + '</td>';
-              html += '<td><input type="hidden" class="id_produk" name="id_produk[]" value="' + item.id_produk + '"><input type="number" class="form-control form-control-sm" name="qty_retur[]" value="' + item.qty + '" required></td>';
+              html += '<td colspan="5" class="text-center"> ARTIKEL KOSONG</td>';
               html += '</tr>';
-            });
+            } else {
+              $.each(data.artikel, function(i, item) {
+                html += '<tr>';
+                html += '<td class="text-center">' + (i + 1) + '</td>';
+                html += '<td><small><strong>' + item.kode + '</strong><br>' + item.nama_produk + '</small></td>';
+                html += '<td class="text-center">' + item.qty + '</td>';
+                html += '<td><input type="number" class="form-control form-control-sm qty-input-artikel" name="qty_retur[]" value="' + item.qty + '" min="0" required></td>';
+                html += '<td><input type="hidden" class="id_produk" name="id_produk[]" value="' + item.id_produk + '"></td>';
+                html += '</tr>';
+
+                totalQtyArtikel += parseInt(item.qty);
+                totalQtyInputArtikel += parseInt(item.qty);
+              });
+
+              // Append total row for artikel
+              html += '<tr>';
+              html += '<td colspan="2" class="text-right"><strong>Total</strong></td>';
+              html += '<td class="text-center"><strong>' + totalQtyArtikel + '</strong></td>';
+              html += '<td class="text-center"><strong id="totalQtyInputArtikel">' + totalQtyInputArtikel + '</strong></td>';
+              html += '<td></td>';
+              html += '</tr>';
+            }
+
             $("#body_hasil").html(html);
             $("#body_aset").html(aset);
+
+            // Function to update total qty_input for artikel
+            function updateTotalQtyInputArtikel() {
+              var total = 0;
+              $('.qty-input-artikel').each(function() {
+                var qty = parseInt($(this).val()) || 0;
+                total += qty;
+              });
+              $('#totalQtyInputArtikel').text(total);
+            }
+
+            // Function to update total qty_input for aset
+            function updateTotalQtyInputAset() {
+              var total = 0;
+              $('.qty-input-aset').each(function() {
+                var qty = parseInt($(this).val()) || 0;
+                total += qty;
+              });
+              $('#totalQtyInputAset').text(total);
+            }
+
+            // Attach event listeners to qty input fields
+            $(document).on('input', '.qty-input-artikel', function() {
+              updateTotalQtyInputArtikel();
+            });
+
+            $(document).on('input', '.qty-input-aset', function() {
+              updateTotalQtyInputAset();
+            });
           },
+
           error: function(xhr, status, error) {
             console.log(xhr.responseText);
           }

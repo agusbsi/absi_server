@@ -4,7 +4,7 @@
       <div class="col-12">
         <div class="card card-info ">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> List Toko yang anda kelola</b> </h3>
+            <h3 class="card-title"><i class="fas fa-store"></i> Toko Aktif</b> </h3>
           </div>
           <div class="card-body">
             <table id="table_toko" class="table table-bordered table-striped">

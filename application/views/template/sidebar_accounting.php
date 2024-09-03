@@ -28,11 +28,37 @@
           </p>
         </a>
       </li>
-      <li class="nav-item">
-        <a href="<?= base_url('adm/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "active" : "" ?>">
           <i class="nav-icon fas fa-store"></i>
-          <p>Toko </p>
+          <p>
+            Toko
+            <i class="right fas fa-angle-left"></i>
+          </p>
         </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Toko/pengajuanToko') ?>" class="nav-link <?= ($title == 'Pengajuan Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Pengajuan Toko
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Toko Aktif</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Toko/toko_tutup') ?>" class="nav-link <?= ($title == 'List Toko Tutup') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Toko Tutup
+              </p>
+            </a>
+          </li>
+        </ul>
       </li>
       <li class="nav-item">
         <a href="<?= base_url('hrd/Aset') ?>" class="nav-link <?= ($title == 'Kelola Aset') ? "active" : "" ?>">

@@ -28,7 +28,12 @@ class Retur extends CI_Controller
   // detail permintaan
   public function detail_p($Retur)
   {
-
+    $id_user = $this->session->userdata('id');
+    $cekTTD = $this->db->query("SELECT ttd from tb_user where id = ?", array($id_user))->row();
+    if (empty($cekTTD->ttd)) {
+      popup('Tanda Tangan Digital', 'Anda harus membuat TTD Digital terlebih dahulu sebelum memverifikasi Retur', 'Profile');
+      redirect('leader/Retur');
+    }
     $data['title'] = 'Retur';
     $data['retur'] = $this->db->query("SELECT tp.*, tk.nama_toko, tk.alamat, tk.telp, tu.nama_user as spg from tb_retur tp
         JOIN tb_toko tk on tp.id_toko = tk.id

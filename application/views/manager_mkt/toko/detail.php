@@ -5,7 +5,7 @@
         <form action="<?= base_url('mng_mkt/Toko/approve') ?>" method="post" id="form_proses">
           <div class="card card-info ">
             <div class="card-header">
-              <h3 class="card-title"><i class="fas fa-store"></i> Data Pengajuan Toko </h3>
+              <h3 class="card-title"><i class="fas fa-store"></i> Pengajuan <?= kategori_pengajuan($toko->kategori) ?> </h3>
               <div class="card-tools">
                 <a href="<?= base_url('mng_mkt/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i> Close </a>
               </div>
@@ -137,22 +137,28 @@
                       <td>Potensi Sales</td>
                       <td>
                         <div class="row">
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Rider</label>
+                              <p class="mb-0">Rider</p>
                               <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->s_rider) ?>" readonly>
                             </div>
                           </div>
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">GT-Men</label>
+                              <p class="mb-0">GT-Men</p>
                               <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->s_gtman) ?>" readonly>
                             </div>
                           </div>
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Crocodile</label>
+                              <p class="mb-0">Crocodile</p>
                               <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->s_crocodile) ?>" readonly>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Target Sales</p>
+                              <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->target) ?>" readonly>
                             </div>
                           </div>
                         </div>
@@ -162,39 +168,50 @@
                       <td></td>
                       <td>
                         <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Target Sales Toko</label>
-                              <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->target) ?>" readonly>
+                              <p class="mb-0">Limit Toko</p>
+                              <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->limit_toko) ?>" readonly>
                             </div>
                           </div>
-                          <div class="col-md-6">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Limit Toko</label>
-                              <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->limit_toko) ?>" readonly>
+                              <p class="mb-0">Listing fee</p>
+                              <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->listing) ?>" readonly>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Etc fee</p>
+                              <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->etc) ?>" readonly>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Sewa Rak</p>
+                              <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->sewa_rak) ?>" readonly>
                             </div>
                           </div>
                         </div>
                       </td>
                     </tr>
-                    <tr>
-                      <td>PIC</td>
-                      <td>
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="">Nama</label>
-                              <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_pic ?>" readonly>
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="">Telp</label>
-                              <input type="text" class="form-control form-control-sm" value="<?= $toko->telp ?>" readonly>
-                            </div>
+                    <td>PIC</td>
+                    <td>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="">Nama</label>
+                            <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_pic ?>" readonly>
                           </div>
                         </div>
-                      </td>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="">Telp</label>
+                            <input type="text" class="form-control form-control-sm" value="<?= $toko->telp ?>" readonly>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                     </tr>
                     <tr>
                       <td>Alamat Toko</td>
@@ -220,6 +237,10 @@
                           </div>
                         </div>
                       </td>
+                    </tr>
+                    <tr>
+                      <td> Waktu Realisasi</td>
+                      <td><input type="text" class="form-control form-control-sm" value="<?= $toko->realisasi == null ? '-' : date('d M Y', strtotime($toko->realisasi)) ?>" readonly></td>
                     </tr>
                   </table>
                   <hr>
@@ -282,27 +303,28 @@
                 <?php endforeach ?>
               </div>
               <hr>
-              <?php if ($toko->status == 2) { ?>
+              <?php if ($toko->status_pengajuan == 0) { ?>
                 <div class="form-group">
                   <label for=""> Catatan anda *</label>
-                  <input type="hidden" name="id_toko" value="<?= $toko->id ?>">
+                  <input type="hidden" name="id_pengajuan" value="<?= $toko->id_pengajuan ?>">
+                  <input type="hidden" name="id_pembuat" value="<?= $toko->id_pembuat ?>">
+                  <input type="hidden" name="id_toko" value="<?= $toko->id_toko ?>">
                   <textarea name="catatan" cols="3" class="form-control form-control-sm" required></textarea>
                 </div>
                 <div class="form-group">
                   <label for=""> Keputusan anda *</label>
                   <select name="keputusan" class="form-control form-control-sm" required>
                     <option value="">- Pilih -</option>
-                    <option value="3"> Setujui </option>
+                    <option value="2"> Setujui </option>
                     <option value="5"> Tolak </option>
                   </select>
                 </div>
               <?php } ?>
             </div>
             <div class="card-footer">
-              <?php if ($toko->status == 2) { ?>
+              <?php if ($toko->status_pengajuan == 0) { ?>
                 <button type="submit" class="btn btn-success float-right btn-sm" id="btn-kirim"><i class="fas fa-save"></i> Simpan</button>
               <?php } ?>
-              <a href="<?= base_url('mng_mkt/Toko/unduh_pdf/' . $toko->id) ?>" target="_blank" class="btn btn-secondary float-right btn-sm mr-3"><i class="fas fa-download"></i> Unduh</a>
               <a href="<?= base_url('mng_mkt/Toko/pengajuanToko') ?>" class="btn btn-danger float-right mr-3 btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
             </div>
           </div>

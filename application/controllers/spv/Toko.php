@@ -15,8 +15,6 @@ class Toko extends CI_Controller
     $this->load->model('M_spv');
     $this->load->model('M_spg');
   }
-
-  // tampil data Aset
   public function index()
   {
     $id_spv = $this->session->userdata('id');
@@ -31,12 +29,21 @@ class Toko extends CI_Controller
   {
     $id_spv = $this->session->userdata('id');
     $data['title'] = 'Pengajuan Toko';
-    $data['toko'] = $this->db->query("SELECT * from tb_toko 
-    where id_spv = $id_spv AND status != 1 AND status != 0 order by id desc")->result();
+    $data['pengajuan'] = $this->db->query("SELECT tpt.*, tt.nama_toko, tt.alamat, tc.nama_cust from tb_pengajuan_toko tpt
+    JOIN tb_toko tt on tpt.id_toko = tt.id
+    JOIN tb_customer tc on tt.id_customer = tc.id
+    WHERE tpt.id_pembuat = '$id_spv'
+    order by tpt.id desc")->result();
     $this->template->load('template/template', 'spv/toko/pengajuanToko', $data);
   }
   public function customer()
   {
+    $id_spv = $this->session->userdata('id');
+    $cekTTD = $this->db->query("SELECT ttd from tb_user where id = ?", array($id_spv))->row();
+    if (empty($cekTTD->ttd)) {
+      popup('Tanda Tangan Digital', 'Anda harus membuat TTD Digital terlebih dahulu untuk melanjutkan proses Pengajuan Toko', 'Profile');
+      redirect('spv/Toko/pengajuanToko');
+    }
     $data['title'] = 'Pengajuan Toko';
     $data['list_leader'] = $this->db->query("SELECT * FROM tb_user WHERE role = 3")->result();
     $data['list_spg'] = $this->db->query("SELECT * FROM tb_user WHERE role = 4")->result();
@@ -46,41 +53,67 @@ class Toko extends CI_Controller
   }
   public function toko()
   {
+    $id_spv = $this->session->userdata('id');
+    $cekTTD = $this->db->query("SELECT ttd from tb_user where id = ?", array($id_spv))->row();
+    if (empty($cekTTD->ttd)) {
+      popup('Tanda Tangan Digital', 'Anda harus membuat TTD Digital terlebih dahulu untuk melanjutkan proses Pengajuan Toko', 'Profile');
+      redirect('spv/Toko/pengajuanToko');
+    }
     $data['title'] = 'Pengajuan Toko';
-    $data['list_leader'] = $this->db->query("SELECT * FROM tb_user WHERE role = 3")->result();
-    $data['list_spg'] = $this->db->query("SELECT * FROM tb_user WHERE role = 4")->result();
+    $data['list_leader'] = $this->db->query("SELECT * FROM tb_user WHERE role = 3 AND status = 1")->result();
+    $data['list_spg'] = $this->db->query("SELECT * FROM tb_user WHERE role = 4 AND status = 1")->result();
     $get_prov = $this->db->select('*')->from('wilayah_provinsi')->get();
     $data['provinsi'] = $get_prov->result();
     $data['customer'] = $this->db->query("SELECT * FROM tb_customer WHERE deleted_at is NULL order by id desc")->result();
     $this->template->load('template/template', 'spv/toko/toko', $data);
   }
-  public function detail($toko)
+  public function detail($id)
   {
     $data['title'] = 'Pengajuan Toko';
-    $data['toko'] = $this->db->query("SELECT tt.*,tc.nama_cust,tc.top,tc.alamat_cust,tc.foto_ktp,tc.foto_npwp,tu.nama_user as leader,ts.nama_user as spg,tp.nama_user as spv FROM tb_toko tt
+    $query = $this->db->query("SELECT tpt.*, tpt.id as id_pengajuan, tpt.status as status_p,tt.*,tc.*,tt.nama_pic as pic_toko, tt.telp as telp_toko,tu.nama_user as leader,ts.nama_user as spg,tp.nama_user as spv FROM tb_pengajuan_toko tpt
+    JOIN tb_toko tt on tpt.id_toko = tt.id
     join tb_customer tc on tt.id_customer = tc.id
     left join tb_user tu on tt.id_leader = tu.id
     left join tb_user ts on tt.id_spg = tu.id
     join tb_user tp on tt.id_spv = tp.id
-     WHERE tt.id = '$toko'")->row();
+     WHERE tpt.id = '$id'");
+    $data['toko'] = $query->row();
+    $id_toko = $query->row()->id_toko;
     $data['histori'] = $this->db->query("SELECT * from tb_toko_histori tpo
-    join tb_toko tt on tpo.id_toko = tt.id where tpo.id_toko = '$toko'")->result();
+    join tb_toko tt on tpo.id_toko = tt.id where tpo.id_toko = '$id_toko'")->result();
     $this->template->load('template/template', 'spv/toko/detail', $data);
   }
-  // list toko tutup
+  public function detail_tutup($id)
+  {
+    $data['title'] = 'Pengajuan Toko';
+    $query = $this->db->query("SELECT trt.*, tr.tgl_jemput, tt.nama_toko, tt.alamat from tb_pengajuan_toko trt
+    JOIN tb_retur tr on trt.id_retur = tr.id
+    JOIN tb_toko tt on tr.id_toko = tt.id
+    WHERE trt.id = '$id'");
+    $id_retur = $query->row()->id_retur;
+    $data['retur'] = $query->row();
+    $data['artikel'] = $this->db->query("SELECT trd.*,tp.kode, tp.nama_produk from tb_retur_detail trd
+    join tb_produk tp on trd.id_produk = tp.id
+    where trd.id_retur = ?  order by tp.nama_produk desc ", array($id_retur))->result();
+    $data['aset'] = $this->db->query("SELECT tra.*, ta.aset, ta.kode from tb_retur_aset tra
+    join tb_aset_master ta on tra.id_aset = ta.id
+    where tra.id_retur = ?  order by ta.aset desc ", array($id_retur))->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_retur_histori tro
+    join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$id_retur'")->result();
+    $this->template->load('template/template', 'spv/toko/toko_tutup_d', $data);
+  }
   public function toko_tutup()
   {
     $role = $this->session->userdata('role');
     if ($role == 3) {
-      $where = 'tt.id_leader';
+      $where = 'id_leader';
     } else {
-      $where = 'tt.id_spv';
+      $where = 'id_spv';
     }
     $id = $this->session->userdata('id');
     $data['title'] = 'List Toko Tutup';
-    $data['toko_tutup'] = $this->db->query("SELECT tr.id as id_retur, tr.created_at, tr.status, tt.nama_toko from tb_retur tr
-    join tb_toko tt on tr.id_toko = tt.id
-    where tr.status >= 10 AND $where = '$id' order by tr.id desc")->result();
+    $data['toko_tutup'] = $this->db->query("SELECT * from tb_toko
+    where status = 0 AND $where = '$id' order by id desc")->result();
     $this->template->load('template/template', 'spv/toko/toko_tutup', $data);
   }
   public function getdataRetur()
@@ -116,8 +149,6 @@ class Toko extends CI_Controller
     echo json_encode($result);
     exit();
   }
-
-  //  form tutup
   public function form_tutup()
   {
     $id = $this->session->userdata('id');
@@ -127,13 +158,16 @@ class Toko extends CI_Controller
     } else {
       $where = 'id_spv';
     }
-    $data['title'] = 'List Toko Tutup';
+    $cekTTD = $this->db->query("SELECT ttd from tb_user where id = ?", array($id))->row();
+    if (empty($cekTTD->ttd)) {
+      popup('Tanda Tangan Digital', 'Anda harus membuat TTD Digital terlebih dahulu untuk melanjutkan proses Pengajuan Toko', 'Profile');
+      redirect('spv/Toko/pengajuanToko');
+    }
+    $data['title'] = 'Pengajuan Toko';
     $data['list_toko']  = $this->db->query("SELECT * from tb_toko where $where = '$id' AND status = 1")->result();
-    $data['kode_retur'] = $this->M_spg->kode_retur();
     $data['list_aset']  = $this->db->query("SELECT * from tb_aset where status = 1 order by nama_aset asc")->result();
     $this->template->load('template/template', 'spv/toko/form_tutup_toko', $data);
   }
-  // cek list artikel
   public function artikelToko()
   {
     $id_toko = $this->input->get('id_toko');
@@ -153,9 +187,6 @@ class Toko extends CI_Controller
 
     echo json_encode($data);
   }
-
-
-  // simpan simpanRetur
   public function saveTutup()
   {
     $id_toko        = $this->input->post('id_toko');
@@ -218,10 +249,23 @@ class Toko extends CI_Controller
       'catatan_h' => $catatan
     );
     $this->db->insert('tb_retur_histori', $histori);
+    $cek = $this->db->query("SELECT MAX(no_urut) as urut FROM tb_pengajuan_toko")->row();
+    $urut = isset($cek->urut) ? $cek->urut + 1 : 1;
+    $dataPengajuan = array(
+      'id_toko' => $id_toko,
+      'id_retur' => $no_retur,
+      'kategori' => 3,
+      'id_pembuat' => $id_spv,
+      'no_urut' => $urut,
+      'nomor' => 'T-' . date('Y') . '-' . date('n') . '-' . $urut
+    );
+
+    $this->db->insert('tb_pengajuan_toko', $dataPengajuan);
+
     $this->db->trans_complete();
     $hp = $this->db->select('no_telp')
       ->from('tb_user')
-      ->where_in('role', array(6, 8))
+      ->where('role', 9)
       ->get()
       ->result();
     foreach ($hp as $h) {
@@ -230,7 +274,7 @@ class Toko extends CI_Controller
       kirim_wa($phone, $message);
     }
     tampil_alert('success', 'Berhasil', 'Pengajuan Tutup Toko berhasil di ajukan.');
-    redirect(base_url('spv/Toko/toko_tutup'));
+    redirect(base_url('spv/Toko/pengajuanToko'));
   }
   // ambil data ajax untuk wilayah
   function add_ajax_kab($id_prov)
@@ -322,7 +366,7 @@ class Toko extends CI_Controller
   public function cek_toko()
   {
     $toko = $this->input->post('toko');
-    $result = $this->db->get_where('tb_toko', array('nama_toko' => $toko))->result();
+    $result = $this->db->get_where('tb_toko', array('nama_toko' => $toko, 'status' => 1))->result();
     if (count($result) > 0) {
       echo json_encode(TRUE);
       return;
@@ -427,6 +471,10 @@ class Toko extends CI_Controller
     $jenis_toko         = $this->input->post('jenis_toko');
     $target_toko        = $this->input->post('target');
     $limit_toko        = $this->input->post('limit');
+    $listing            = $this->input->post('listing');
+    $etc                = $this->input->post('etc');
+    $sewa_rak           = $this->input->post('sewa_rak');
+    $realisasi          = $this->input->post('realisasi');
     $provinsi           = $this->input->post('provinsi');
     $kabupaten          = $this->input->post('kabupaten');
     $kecamatan          = $this->input->post('kecamatan');
@@ -452,6 +500,10 @@ class Toko extends CI_Controller
       's_crocodile'    => str_replace(['Rp. ', '.'], '', $s_crocodile),
       'target'         => str_replace(['Rp. ', '.'], '', $target_toko),
       'limit_toko'     => str_replace(['Rp. ', '.'], '', $limit_toko),
+      'listing'        => str_replace(['Rp. ', '.'], '', $listing),
+      'etc'            => str_replace(['Rp. ', '.'], '', $etc),
+      'sewa_rak'       => str_replace(['Rp. ', '.'], '', $sewa_rak),
+      'realisasi'      => $realisasi,
       'provinsi'       => $provinsi,
       'kabupaten'      => $kabupaten,
       'kecamatan'      => $kecamatan,
@@ -475,6 +527,16 @@ class Toko extends CI_Controller
       'catatan' => $catatan_spv
     );
     $this->db->insert('tb_toko_histori', $histori);
+    $cek = $this->db->query("SELECT MAX(no_urut) as urut FROM tb_pengajuan_toko")->row();
+    $urut = isset($cek->urut) ? $cek->urut + 1 : 1;
+    $dataPengajuan = array(
+      'id_toko' => $id_toko,
+      'kategori' => 1,
+      'id_pembuat'  => $id_spv,
+      'no_urut' => $urut,
+      'nomor' => 'T-' . date('Y') . '-' . date('n') . '-' . $urut
+    );
+    $this->db->insert('tb_pengajuan_toko', $dataPengajuan);
     $this->db->trans_complete();
     $pt = $this->session->userdata('pt');
     $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 9 and status = 1")->result_array();
@@ -501,7 +563,11 @@ class Toko extends CI_Controller
     $s_crocodile        = $this->input->post('s_crocodile');
     $jenis_toko         = $this->input->post('jenis_toko');
     $target_toko        = $this->input->post('target');
-    $limit_toko        = $this->input->post('limit');
+    $limit_toko         = $this->input->post('limit');
+    $listing            = $this->input->post('listing');
+    $etc                = $this->input->post('etc');
+    $sewa_rak           = $this->input->post('sewa_rak');
+    $realisasi          = $this->input->post('realisasi');
     $provinsi           = $this->input->post('provinsi');
     $kabupaten          = $this->input->post('kabupaten');
     $kecamatan          = $this->input->post('kecamatan');
@@ -550,10 +616,7 @@ class Toko extends CI_Controller
       $foto_pic = $this->upload->data('file_name');
     } else {
       $foto_pic = "";
-      // Tampilkan error jika upload foto KTP gagal
     }
-
-
     $data_toko = array(
       'id_customer'    => $id_customer,
       'id_spv'         => $id_spv,
@@ -565,7 +628,11 @@ class Toko extends CI_Controller
       's_gtman'        => str_replace(['Rp. ', '.'], '', $s_gtman),
       's_crocodile'    => str_replace(['Rp. ', '.'], '', $s_crocodile),
       'target'         => str_replace(['Rp. ', '.'], '', $target_toko),
-      'limit_toko'         => str_replace(['Rp. ', '.'], '', $limit_toko),
+      'limit_toko'     => str_replace(['Rp. ', '.'], '', $limit_toko),
+      'listing'        => str_replace(['Rp. ', '.'], '', $listing),
+      'etc'            => str_replace(['Rp. ', '.'], '', $etc),
+      'sewa_rak'       => str_replace(['Rp. ', '.'], '', $sewa_rak),
+      'realisasi'      => $realisasi,
       'provinsi'       => $provinsi,
       'kabupaten'      => $kabupaten,
       'kecamatan'      => $kecamatan,
@@ -575,14 +642,14 @@ class Toko extends CI_Controller
       'status'         => '2',
       'foto_toko'      => $foto_toko,
       'foto_pic'       => $foto_pic,
-      'het'               => $het,
-      'diskon'            => $diskon,
-      'tgl_so'            => $tgl_so,
+      'het'            => $het,
+      'diskon'         => $diskon,
+      'tgl_so'         => $tgl_so,
     );
     $this->db->trans_start();
     $this->db->insert('tb_toko', $data_toko);
     $id_toko  = $this->db->insert_id();
-    $get_spv = $this->db->query("SELECT nama_user from tb_user where id ='$id_spv'")->row()->nama_user;
+    $get_spv             = $this->session->userdata('nama_user');
     $histori = array(
       'id_toko' => $id_toko,
       'aksi' => 'Dibuat oleh SPV: ',
@@ -590,6 +657,16 @@ class Toko extends CI_Controller
       'catatan' => $catatan_spv
     );
     $this->db->insert('tb_toko_histori', $histori);
+    $cek = $this->db->query("SELECT MAX(no_urut) as urut FROM tb_pengajuan_toko")->row();
+    $urut = isset($cek->urut) ? $cek->urut + 1 : 1;
+    $dataPengajuan = array(
+      'id_toko' => $id_toko,
+      'kategori' => 2,
+      'id_pembuat'  => $id_spv,
+      'no_urut' => $urut,
+      'nomor' => 'T-' . date('Y') . '-' . date('n') . '-' . $urut
+    );
+    $this->db->insert('tb_pengajuan_toko', $dataPengajuan);
     $this->db->trans_complete();
     $pt = $this->session->userdata('pt');
 
@@ -603,7 +680,7 @@ class Toko extends CI_Controller
       }
       kirim_wa($number, $message);
     }
-    tampil_alert('success', 'Berhasil', 'Toko Cabang Berhasil di buat');
+    tampil_alert('success', 'Berhasil', 'Pengajuan Toko berhasil di kirim.');
     redirect(base_url('spv/Toko/pengajuanToko'));
   }
   // add leader

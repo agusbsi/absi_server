@@ -77,7 +77,7 @@ class Retur extends CI_Controller
   }
   public function tambah_cart()
   {
-    $id = $this->input->post('id');
+    $id = $this->input->post('id_produk');
     $kirim = $this->input->post('no_kirim');
     $qty = $this->input->post('qty');
     $keterangan = $this->input->post('keterangan');

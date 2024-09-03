@@ -65,64 +65,73 @@
     flex-direction: column;
   }
 
-  /* Grid container untuk area menu */
-  .areaMenu {
+  /* menu livin */
+  .menu-container {
     display: grid;
-    gap: 20px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 5px;
+    background-color: #f7f7f7;
   }
 
-  @media (min-width: 992px) {
-    .areaMenu {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-  }
-
-  @media (max-width: 991px) {
-    .areaMenu {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .cardMenu {
-    position: relative;
+  .menu-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-decoration: none;
-    color: #000;
-  }
-
-  .cardMenu .notif {
-    position: absolute;
-    top: 1px;
-    right: 5px;
-    background-color: #ff0000;
-    color: #fff;
-    border-radius: 20%;
-    padding: 5px 5px 5px 5px;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .cardMenu i {
-    font-size: 3rem;
+    text-align: center;
     margin-bottom: 10px;
   }
 
-  .cardMenu:hover {
-    box-shadow: 0 8px 16px rgb(0, 123, 255);
+  .menu-item a {
+    position: relative;
+  }
+
+  .notif {
+    position: absolute;
+    top: -10px;
+    right: -6px;
+    background-color: #ed2938;
+    color: #fff;
+    border-radius: 50%;
+    padding: 3px 4px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .menu-item i {
+    font-size: 30px;
+    margin-bottom: 5px;
+    color: #007bff;
+    padding: 12px 16px;
+    background-color: #fff;
+    border-radius: 25%;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .menu-item a:hover i {
+    color: #28a745;
+  }
+
+  .menu-item span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .judul-menu {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 </style>
 <section class="content">
-  Hi, <strong> <?= $this->session->userdata('nama_user') ?>.</strong>
+  <div class="judul-menu">
+    Hi, <?= $this->session->userdata('nama_user') ?>.
+  </div>
   <div class="kartu">
     <div class="judul">Toko Terpilih</div>
     <div class="toko">
@@ -150,8 +159,8 @@
       </div>
     </div>
   <?php } ?>
-  <strong> Menu Utama</strong>
-  <div class="areaMenu">
+  <div class="judul-menu">Menu Utama</div>
+  <!-- <div class="areaMenu">
     <a href="<?= base_url('spg/permintaan') ?>" class="cardMenu">
       <i class="fas fa-file-alt"></i>
       <strong>PO Artikel</strong>
@@ -203,5 +212,65 @@
       <i class="fas fa-envelope"></i>
       <strong>BAP</strong>
     </a>
+  </div> -->
+  <div class="menu-container">
+    <div class="menu-item">
+      <a href="<?= base_url('spg/permintaan') ?>"><i class="fas fa-file-alt"></i></a>
+      <span>PO Artikel</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/Penerimaan') ?>">
+        <?php if ($terima != 0) { ?>
+          <div class="notif">
+            <?= $terima; ?>
+          </div>
+        <?php } ?>
+        <i class="fas fa-check-circle"></i>
+      </a>
+      <span>Terima PO</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/penjualan') ?>"><i class="fas fa-cart-plus"></i></a>
+      <span>Penjualan</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/Dashboard/toko_spg/' . $this->session->userdata('id_toko')) ?>"><i class="fas fa-cube"></i></a>
+      <span>Stok</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/retur') ?>"><i class="fas fa-exchange-alt"></i></a>
+      <span>Retur Artikel</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/Mutasi') ?>">
+        <?php if ($mutasi != 0) { ?>
+          <div class="notif">
+            <?= $mutasi; ?>
+          </div>
+        <?php } ?>
+        <i class="fas fa-copy"></i>
+      </a>
+      <span>Terima Mutasi</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/Aset') ?>"><i class="fas fa-dolly"></i></a>
+      <span>Update ASET</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/Stok_opname') ?>"><i class="fas fa-chart-pie"></i></a>
+      <span>SO Artikel</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/Bap') ?>">
+        <?php if ($bap != 0) { ?>
+          <div class="notif">
+            <?= $bap; ?>
+          </div>
+        <?php } ?>
+        <i class="fas fa-envelope"></i>
+      </a>
+      <span>BAP</span>
+    </div>
   </div>
+
 </section>

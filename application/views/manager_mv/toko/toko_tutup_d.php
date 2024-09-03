@@ -4,14 +4,23 @@
       <div class="col-12">
         <div class="card card-danger ">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> Detail Toko Tutup</b> </h3>
+            <h3 class="card-title"><i class="fas fa-store"></i> Pengajuan <?= kategori_pengajuan($retur->kategori) ?></b> </h3>
+            <div class="card-tools">
+              <a href="<?= base_url('sup/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i></a>
+            </div>
           </div>
           <div class="card-body">
             <div class="row">
               <div class="col-md-2">
                 <div class="form-group">
-                  <label for="">Nomor</label> <br>
-                  <h5><?= $retur->id ?></h5>
+                  <label for="">No. Pengajuan</label> <br>
+                  <h5><?= $retur->nomor ?></h5>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label for="">No. Retur</label> <br>
+                  <h5><?= $retur->id_retur ?></h5>
                 </div>
               </div>
               <div class="col-md-4">
@@ -21,17 +30,17 @@
                   <address><?= $retur->alamat ?></address>
                 </small>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label for="">Tanggal</label> <br>
                 <small>
                   Dibuat : <?= date('d M Y', strtotime($retur->created_at)) ?> <br>
                   Penjemputan : <?= date('d M Y', strtotime($retur->tgl_jemput)) ?>
                 </small>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label for="">Status</label> <br>
                 <small>
-                  <?= status_retur($retur->status) ?>
+                  <?= status_pengajuan($retur->status) ?>
                 </small>
               </div>
             </div>
@@ -107,7 +116,7 @@
                       <small><?= $t->nama_produk ?></small>
                     </td>
                     <td class="text-center"><?= $t->qty ?></td>
-                    <td class="text-center <?= $retur->status == 15 && $t->qty_terima != $t->qty ? 'bg-danger' : '' ?>"><?= $retur->status == 15 ? $t->qty_terima : 'Belum' ?></td>
+                    <td class="text-center <?= $retur->status_retur == 15 && $t->qty_terima != $t->qty ? 'bg-danger' : '' ?>"><?= $retur->status_retur == 15 ? $t->qty_terima : 'Belum' ?></td>
                   </tr>
                 <?php
                   $total += $t->qty;
@@ -117,7 +126,7 @@
                 <tr>
                   <td colspan="3" class="text-right">Total :</td>
                   <td class="text-center"><?= $total ?></td>
-                  <td class="text-center"><?= $retur->status == 15 ? $total_a : 'Belum' ?></td>
+                  <td class="text-center"><?= $retur->status_retur == 15 ? $total_a : 'Belum' ?></td>
                 </tr>
               </tbody>
             </table>
@@ -146,7 +155,7 @@
               <?php endforeach ?>
             </div>
             <hr>
-            <?php if ($retur->status == 10) { ?>
+            <?php if ($retur->status == 1) { ?>
               <form action="<?= base_url('sup/Toko/tindakan') ?>" method="post" id="form_approve">
                 <div class="form-group">
                   <label for="">Tgl Jemput</label>
@@ -154,29 +163,31 @@
                 </div>
                 <strong>Catatan MV:</strong>
                 <textarea name="catatan_mv" rows="3" class="form-control form-control-sm" required></textarea>
-                <input type="hidden" name="id_retur" value="<?= $retur->id ?>">
+                <input type="hidden" name="id_pengajuan" value="<?= $retur->id ?>">
+                <input type="hidden" name="id_retur" value="<?= $retur->id_retur ?>">
                 <input type="hidden" name="id_toko" value="<?= $retur->id_toko ?>">
-                <input type="hidden" name="pembuat" value="<?= $retur->id_user ?>">
+                <input type="hidden" name="pembuat" value="<?= $retur->id_pembuat ?>">
                 <small>* harus di isi.</small>
                 <div class="form-group">
                   <label for="">Tindakan</label>
                   <select name="tindakan" id="tindakan" class="form-control form-control-sm" required>
                     <option value="">Pilih</option>
-                    <option value="1">Setuju</option>
+                    <option value="3">Setuju</option>
                     <option value="5">Tolak</option>
                   </select>
                 </div>
                 <hr>
                 <div class="text-right">
-                  <button type="submit" class="btn btn-sm btn-primary btn_simpan"><i class="fas fa-save"></i> Simpan</button>
                   <a href="<?= base_url('sup/Toko/toko_tutup') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Kembali</a>
+                  <button type="submit" class="btn btn-sm btn-primary btn_simpan"><i class="fas fa-save"></i> Simpan</button>
                 </div>
               </form>
               <hr>
             <?php } else { ?>
               <div class="row no-print">
                 <div class="col-12">
-                  <a href="<?= base_url('sup/Toko/toko_tutup') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
+                  <a class="btn btn-default btn-sm float-right mr-2 <?= $retur->status_retur == 14 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('adm_gudang/retur/sppr_toko/' . $retur->id_retur) ?>"><i class="fas fa-print"></i> Sppr</a>
+                  <a href="<?= base_url('sup/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
                     <i class="fas fa-arrow-left"></i> Kembali </a>
                 </div>
               </div>

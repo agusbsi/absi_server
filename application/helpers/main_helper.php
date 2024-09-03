@@ -102,31 +102,61 @@ function status_het($id)
         echo "<span class='badge badge-danger'>Belum di pilih</span>";
     }
 }
+function kategori_pengajuan($id)
+{
+    if ($id == 1) {
+        echo "Customer & Toko Baru";
+    } else if ($id == 2) {
+        echo "Toko Baru";
+    } else if ($id == 3) {
+        echo "Tutup Toko";
+    } else {
+        echo "- Kategori tidak ditemukan -";
+    }
+}
+function status_pengajuan($id)
+{
+    if ($id == 0) {
+        echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (MM)</span>";
+    } else if ($id == 1) {
+        echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (MV)</span>";
+    } else if ($id == 2) {
+        echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (Audit)</span>";
+    } else if ($id == 3) {
+        echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (Direksi)</span>";
+    } else if ($id == 4) {
+        echo "<span class='badge badge-success badge-sm'>Disetujui</span>";
+    } else {
+        echo "<span class='badge badge-danger badge-sm'>Di Tolak</span>";
+    }
+}
 
 function status_retur($id)
 {
     if ($id == 0) {
-        echo "<span class='badge badge-danger'>Menunggu approve Leader</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (Leader)</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-warning'>Menunggu approve MM</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (MM)</span>";
     } elseif ($id == 2) {
-        echo "<span class='badge badge-info'>Menunggu approve MV</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (MV)</span>";
     } elseif ($id == 3) {
-        echo "<span class='badge badge-warning'>Proses Penjemputan Gudang</span>";
+        echo "<span class='badge badge-primary'>Disetujui</span>";
+    } elseif ($id == 7) {
+        echo "<span class='badge badge-info'>Proses Pengambilan</span>";
     } elseif ($id == 4) {
         echo "<span class='badge badge-success'>Selesai</span>";
     } elseif ($id == 5) {
         echo "<span class='badge badge-danger'>Ditolak !</span>";
     } elseif ($id == 6) {
-        echo "<span class='badge badge-danger'>Menunggu Penjemputan Gudang!</span>";
+        echo "<span class='badge badge-warning'>Menunggu Penjemputan Gudang!</span>";
     } elseif ($id == 10) {
-        echo "<span class='badge badge-danger'>Menunggu Approve MV!</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (MM)</span>";
     } elseif ($id == 11) {
-        echo "<span class='badge badge-warning'>Menunggu Approve MM!</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (MV)</span>";
     } elseif ($id == 12) {
-        echo "<span class='badge badge-info'>Menunggu Approve Direksi!</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (Direksi)</span>";
     } elseif ($id == 13) {
-        echo "<span class='badge badge-warning'>Proses Penjemputan Gudang</span>";
+        echo "<span class='badge badge-info'>Disetujui</span>";
     } elseif ($id == 14) {
         echo "<span class='badge badge-primary'>Proses Pengambilan</span>";
     } elseif ($id == 15) {

@@ -19,7 +19,7 @@ class Retur extends CI_Controller
     $data['list_data'] = $this->db->query("SELECT tr.*, tk.nama_toko, tu.nama_user as spg from tb_retur tr
     JOIN tb_toko tk on tr.id_toko = tk.id
     JOIN tb_user tu on tr.id_user = tu.id
-    WHERE tr.status > 1 AND tr.status < 7 ORDER BY tr.status = 2 desc, tr.id desc")->result();
+    WHERE tr.status > 1 AND tr.status <= 7 ORDER BY tr.status = 2 desc, tr.id desc")->result();
     $this->template->load('template/template', 'manager_mv/retur/index', $data);
   }
   public function detail($no_retur)

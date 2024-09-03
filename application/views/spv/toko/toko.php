@@ -7,7 +7,7 @@
             <div class="card-header">
               <h3 class="card-title"><i class="fas fa-store"></i> Data Pengajuan Toko </h3>
               <div class="card-tools">
-                <a href="<?= base_url('spv/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i> Close </a>
+                <a href="<?= base_url('spv/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i></a>
               </div>
             </div>
             <div class="card-body">
@@ -15,13 +15,13 @@
                 <div class="card-header">
                   <h3 class="card-title">
                     <i class="fas fa-store"></i>
-                    Data Toko
+                    <strong>Data Toko</strong>
                   </h3>
                 </div>
                 <div class="card-body">
                   <div class="form-group">
-                    <label for="">Customer *</label>
-                    <select name="id_customer" class="form-control form-control-sm select2bs4" id="customer" required>
+                    <label for="">Pilih Customer *</label>
+                    <select name="id_customer" class="form-control form-control-sm select2" id="customer" required>
                       <option value="">- Pilih customer -</option>
                       <?php foreach ($customer as $c) : ?>
                         <option value="<?= $c->id ?>"><?= $c->nama_cust ?></option>
@@ -31,7 +31,7 @@
                   <hr>
                   <table class="table">
                     <tr>
-                      <td>Nama Toko *</td>
+                      <td><strong>Nama Toko *</strong></td>
                       <td>
                         <input type="text" class="form-control form-control-sm" id="toko" name="nama_toko" placeholder="...." required>
                       </td>
@@ -40,9 +40,9 @@
                       <td></td>
                       <td>
                         <div class="row">
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Jenis Toko *</label>
+                              <p class="mb-0">Jenis Toko *</p>
                               <select name="jenis_toko" class="form-control form-control-sm" required>
                                 <option value="">Pilih Jenis Toko</option>
                                 <option value="1">Dept Store</option>
@@ -54,9 +54,9 @@
                               </select>
                             </div>
                           </div>
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">HET *</label>
+                              <p class="mb-0">HET *</p>
                               <select name="het" class="form-control form-control-sm" required>
                                 <option value="">- Pilih Type Harga -</option>
                                 <option value="1">HET JAWA</option>
@@ -64,59 +64,15 @@
                               </select>
                             </div>
                           </div>
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Margin (%) *</label>
+                              <p class="mb-0">Margin (%) *</p>
                               <input type="text" class="form-control form-control-sm" name="diskon" id="diskon" autocomplete="off" placeholder="contoh : 23.6" required>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Potensi Sales *</td>
-                      <td>
-                        <div class="row">
-                          <div class="col-md-4">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Rider</label>
-                              <input type="text" class="form-control form-control-sm rupiah-input" name="s_rider" placeholder="..." required>
-                            </div>
-                          </div>
-                          <div class="col-md-4">
-                            <div class="form-group">
-                              <label for="">GT-Man</label>
-                              <input type="text" class="form-control form-control-sm rupiah-input" name="s_gtman" placeholder="..." required>
-                            </div>
-                          </div>
-                          <div class="col-md-4">
-                            <div class="form-group">
-                              <label for="">Crocodile</label>
-                              <input type="text" class="form-control form-control-sm rupiah-input" name="s_crocodile" placeholder="..." required>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td>
-                        <div class="row">
-                          <div class="col-md-4">
-                            <div class="form-group">
-                              <label for="">Target Sales Toko *</label>
-                              <input type="text" class="form-control form-control-sm rupiah-input" name="target" id="target" placeholder="..." required>
-                            </div>
-                          </div>
-                          <div class="col-md-4">
-                            <div class="form-group">
-                              <label for="">Limit Toko</label>
-                              <input type="text" class="form-control form-control-sm rupiah-input" name="limit" id="limit" placeholder="...">
-                            </div>
-                          </div>
-                          <div class="col-md-4">
-                            <div class="form-group">
-                              <label>Tgl Stok Opname (SO):</label>
+                              <p class="mb-0">Tgl Stok Opname (SO) *</p>
                               <div class="input-group input-group-sm date" id="reservationdate" data-target-input="nearest">
                                 <select name="tgl_so" class="form-control" required>
                                   <option value="">- Pilih Tgl SO -</option>
@@ -138,19 +94,31 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>PIC *</td>
+                      <td><strong>Potensi Sales *</strong></td>
                       <td>
                         <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Nama</label>
-                              <input type="text" class="form-control form-control-sm" name="pic_toko" placeholder="..." required>
+                              <p class="mb-0">Rider *</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="s_rider" placeholder="..." required>
                             </div>
                           </div>
-                          <div class="col-md-6">
+                          <div class="col-md-3">
                             <div class="form-group">
-                              <label for="">Telp</label>
-                              <input type="number" class="form-control form-control-sm" name="telp_toko" placeholder="..." required>
+                              <p class="mb-0">GT-Man *</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="s_gtman" placeholder="..." required>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Crocodile *</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="s_crocodile" placeholder="..." required>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Target Sales *</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="target" id="target" placeholder="..." required>
                             </div>
                           </div>
                         </div>
@@ -160,10 +128,60 @@
                       <td></td>
                       <td>
                         <div class="row">
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Limit Toko</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="limit" id="limit" placeholder="( opsional )">
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Listing Fee</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="listing" placeholder="( opsional )">
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Etc Fee</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="etc" placeholder="( opsional )">
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <p class="mb-0">Sewa Rak</p>
+                              <input type="text" class="form-control form-control-sm rupiah-input" name="sewa_rak" placeholder="( opsional )">
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>PIC *</strong></td>
+                      <td>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <p class="mb-0">Nama lengkap *</p>
+                              <input type="text" class="form-control form-control-sm" name="pic_toko" placeholder="..." required>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <p class="mb-0">Telp *</p>
+                              <input type="number" class="form-control form-control-sm" name="telp_toko" placeholder="..." required>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>Alamat Toko *</strong></td>
+                      <td>
+                        <div class="row">
                           <div class="col-md-4">
                             <div class="form-group">
-                              <p class="mb-0">Provinsi :</p>
-                              <select name="provinsi" class="form-control select2bs4" id="provinsi_toko" required>
+                              <p class="mb-0">Provinsi *</p>
+                              <select name="provinsi" class="form-control form-control-sm select2" id="provinsi_toko" required>
                                 <option>- Pilih Provinsi -</option>
                                 <?php
                                 foreach ($provinsi as $prov) {
@@ -175,16 +193,16 @@
                           </div>
                           <div class="col-md-4">
                             <div class="form-group">
-                              <p class="mb-0">Kabupaten :</p>
-                              <select name="kabupaten" class="form-control select2bs4" id="kabupaten_toko" required>
+                              <p class="mb-0">Kabupaten *</p>
+                              <select name="kabupaten" class="form-control form-control-sm select2" id="kabupaten_toko" required>
                                 <option value=''>- Pilih Kabupaten -</option>
                               </select>
                             </div>
                           </div>
                           <div class="col-md-4">
                             <div class="form-group">
-                              <p class="mb-0">Kecamatan :</p>
-                              <select name="kecamatan" class="form-control select2bs4" id="kecamatan_toko" required>
+                              <p class="mb-0">Kecamatan *</p>
+                              <select name="kecamatan" class="form-control form-control-sm select2" id="kecamatan_toko" required>
                                 <option>- Pilih Kecamatan -</option>
                               </select>
                             </div>
@@ -193,21 +211,22 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>Alamat Toko *</td>
+                      <td></td>
                       <td>
+                        <p class="mb-0">Alamat lengkap *</p>
                         <textarea class="form-control form-control-sm" name="alamat_toko" placeholder="..." required></textarea>
                         <small>Alamat untuk pengiriman Barang</small>
                       </td>
                     </tr>
                     <tr>
-                      <td>Pengguna Sistem</td>
+                      <td><strong>Pengguna Sistem</strong></td>
                       <td>
                         <div class="row">
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label for="">Leader</label>
-                              <select name="id_leader" class="form-control form-control-sm select2bs4" required>
-                                <option value="">Pilih Team Leader</option>
+                              <label for="">Leader *</label>
+                              <select name="id_leader" class="form-control form-control-sm select2" required>
+                                <option value="">- Pilih Team Leader -</option>
                                 <?php foreach ($list_leader as $l) { ?>
                                   <option value="<?= $l->id ?>"><?= $l->nama_user ?></option>
                                 <?php } ?>
@@ -217,7 +236,7 @@
                           <div class="col-md-6">
                             <div class="form-group">
                               <label for="">SPG</label>
-                              <select name="id_spg" class="form-control form-control-sm select2bs4">
+                              <select name="id_spg" class="form-control form-control-sm select2">
                                 <option value="0"> - Belum ada SPG -</option>
                                 <?php foreach ($list_spg as $l) { ?>
                                   <option value="<?= $l->id ?>"><?= $l->nama_user ?></option>
@@ -228,21 +247,29 @@
                         </div>
                       </td>
                     </tr>
+                    <tr>
+                      <td><strong>Waktu Realisasi *</strong></td>
+                      <td>
+                        <input type="date" class="form-control form-control-sm" style="max-width: 200px;" name="realisasi" min="<?= date('Y-m-d') ?>" required>
+                      </td>
+                    </tr>
                   </table>
                   <hr>
-                  # Data Pendukung *
+                  <strong># Data Pendukung</strong>
                   <hr>
                   <div class="row">
                     <div class="col-sm-5">
                       <div class="form-group">
-                        <label for=""> Foto Toko</label>
+                        <label for=""> Foto Toko *</label>
                         <input type="file" class="form-control form-control-sm" name="foto_toko" accept="image/png, image/jpeg, image/jpg" required>
+                        <small>Jenis foto : JPG,JPEG,PNG (Max size 5mb)</small>
                       </div>
                     </div>
                     <div class="col-sm-5">
                       <div class="form-group">
-                        <label for=""> Foto Kepala Toko</label>
+                        <label for=""> Foto PIC *</label>
                         <input type="file" class="form-control form-control-sm" name="foto_pic" accept="image/png, image/jpeg, image/jpg" required>
+                        <small>Jenis foto : JPG,JPEG,PNG (Max size 5mb)</small>
                       </div>
                     </div>
                   </div>
@@ -253,7 +280,7 @@
                 <textarea name="catatan_spv" class="form-control form-control-sm" placeholder="...." required></textarea>
               </div>
               <hr>
-              <small>*) Harus Di lengkapi.</small>
+              <small><strong>*) Harus Di lengkapi.</strong></small>
             </div>
             <div class="card-footer">
               <button type="submit" class="btn btn-success float-right btn-sm" id="btn-kirim"><i class="fa fa-paper-plane"></i> Kirim</button>

@@ -176,7 +176,7 @@
         </div>
         <hr>
         <a class="btn btn-sm btn-default" onclick="closePopup()">Nanti Saja</a>
-        <a href="<?= base_url($this->session->flashdata('link')); ?>" class="btn btn-sm btn-success">Isi saran <i class="fas fa-arrow-right"></i></a>
+        <a href="<?= base_url($this->session->flashdata('link')); ?>" class="btn btn-sm btn-success">Ok, Lanjut <i class="fas fa-arrow-right"></i></a>
       </div>
     </div>
   <?php endif; ?>

@@ -7,12 +7,6 @@
             <h3 class="card-title"><i class="fas fa-store"></i> List Pengajuan Toko</b> </h3>
           </div>
           <div class="card-body">
-            <div class="alert alert-success alert-dismissible">
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-              <i class="icon fas fa-check"></i>
-              <small>Proses pengajuan Toko baru sekarang hanya melalui ABSI, Marketing tidak perlu lagi membuat pengajuan secara manual. </small>
-            </div>
-            <hr>
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -52,9 +46,7 @@
                       <?= status_pengajuan($t->status) ?>
                     </td>
                     <td>
-                      <?php if ($t->kategori != 3) { ?>
-                        <a href="<?= base_url('audit/Toko/detail/' . $t->id) ?>" class="btn btn-<?= $t->status == 2 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 2 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 2 ? "Proses" : "Detail" ?> </a>
-                      <?php } ?>
+                      <a href="<?= base_url('sup/Toko/toko_tutup_d/' . $t->id) ?>" class="btn btn-<?= $t->status == 1 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 1 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 1 ? "Proses" : "Detail" ?> </a>
                     </td>
                   </tr>
                 <?php endforeach ?>

@@ -10,12 +10,10 @@
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr class="text-center">
-                  <th>#</th>
-                  <th>No Pengajuan</th>
-                  <th style="width:30%">Nama Toko</th>
-                  <th>Tanggal</th>
+                  <th>No</th>
+                  <th>Nama Toko</th>
+                  <th>Alamat</th>
                   <th>Status</th>
-                  <th style="width:13%">Menu</th>
                 </tr>
               </thead>
               <tbody>
@@ -26,26 +24,17 @@
                 ?>
                   <tr>
                     <td class="text-center"><?= $no ?></td>
-                    <td><?= $t->id ?></td>
-                    <td>
+                    <td style="width: 25%;">
                       <small>
-                        <strong><?= $t->nama_toko ?></strong>
-                        <address>
-                          <?= $t->alamat ?>
-                        </address>
+                        <strong><?= $t->nama_toko ?></strong> <br>
+                        <?= jenis_toko($t->jenis_toko) ?>
                       </small>
                     </td>
                     <td>
-                      <small>
-                        Dibuat : <?= date('d M Y', strtotime($t->created_at)) ?> <br>
-                        Penjemputan : <?= date('d M Y', strtotime($t->tgl_jemput)) ?> <br>
-                      </small>
+                      <small><?= $t->alamat ?></small>
                     </td>
                     <td class="text-center">
-                      <?= status_retur($t->status) ?>
-                    </td>
-                    <td>
-                      <a href="<?= base_url('sup/Toko/toko_tutup_d/' . $t->id) ?>" class="btn btn-sm btn-<?= ($t->status == 10 ? "success" : "info") ?>"> <?= ($t->status == 10 ? "Proses <i class='fa fa-arrow-right'></i>" : "<i class='fa fa-eye'></i> Detail") ?></a>
+                      <?= status_toko($t->status) ?>
                     </td>
                   </tr>
                 <?php endforeach ?>

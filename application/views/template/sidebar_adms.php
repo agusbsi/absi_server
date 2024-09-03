@@ -3,7 +3,7 @@ $Permintaan = $this->db->query("SELECT id FROM tb_permintaan WHERE status = '1'"
 $Selisih = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '3'")->num_rows();
 $Pengiriman = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '0'")->num_rows();
 $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '2'")->num_rows();
-$TokoTutup = $this->db->query("SELECT id FROM tb_retur WHERE status = '10'")->num_rows();
+$Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '1'")->num_rows();
 $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_rows();
 $Bap = $this->db->query("SELECT * FROM tb_bap 
   JOIN tb_toko ON tb_bap.id_toko = tb_toko.id 
@@ -32,20 +32,31 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
           </p>
         </a>
       </li>
-      <li class="nav-item <?= ($title == 'Toko' || $title == 'List Toko Tutup') ? "menu-open" : "" ?>">
-        <a href="#" class="nav-link <?= ($title == 'Toko' || $title == 'List Toko Tutup') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "active" : "" ?>">
           <i class="nav-icon fas fa-store"></i>
           <p>
             Toko
             <i class="right fas fa-angle-left"></i>
-            <?php if ($TokoTutup == 0) { ?>
+            <?php if ($Toko == 0) { ?>
             <?php } else { ?>
-              <span class="right badge badge-danger"><?= $TokoTutup ?></span>
+              <span class="right badge badge-danger"><?= $Toko ?></span>
             <?php } ?>
 
           </p>
         </a>
         <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('sup/Toko/pengajuanToko') ?>" class="nav-link <?= ($title == 'Pengajuan Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Pengajuan Toko
+                <?php if ($Toko != 0) { ?>
+                  <span class="right badge badge-danger"><?= $Toko ?></span>
+                <?php } ?>
+              </p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="<?= base_url('adm/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
@@ -56,10 +67,6 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
             <a href="<?= base_url('sup/Toko/toko_tutup') ?>" class="nav-link <?= ($title == 'List Toko Tutup') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
               <p>Toko Tutup
-                <?php if ($TokoTutup == 0) { ?>
-                <?php } else { ?>
-                  <span class="right badge badge-danger"><?= $TokoTutup ?></span>
-                <?php } ?>
               </p>
             </a>
           </li>

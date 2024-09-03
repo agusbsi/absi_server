@@ -157,7 +157,7 @@
                 <div class="col-12">
                   <a href="<?= base_url('sup/Retur') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
                     <i class="fas fa-arrow-left"></i> Kembali </a>
-                  <a class="btn btn-default btn-sm float-right mr-2 <?= $retur->status == 2 || $retur->status == 3 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('sup/retur/sppr/' . $retur->id) ?>"><i class="fas fa-print"></i> Sppr</a>
+                  <a class="btn btn-default btn-sm float-right mr-2 <?= $retur->status == 7 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('adm_gudang/retur/sppr/' . $retur->id) ?>"><i class="fas fa-print"></i> Sppr</a>
                 </div>
               </div>
             <?php } ?>

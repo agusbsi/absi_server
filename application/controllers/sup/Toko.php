@@ -28,29 +28,41 @@ class Toko extends CI_Controller
     $data['provinsi'] = $this->db->query("SELECT * from wilayah_provinsi")->result();
     $this->template->load('template/template', 'manager_mv/toko/index', $data);
   }
+  public function pengajuanToko()
+  {
+    $data['title'] = 'Pengajuan Toko';
+    $data['pengajuan'] = $this->db->query("SELECT tpt.*, tt.nama_toko, tt.alamat, tc.nama_cust from tb_pengajuan_toko tpt
+    JOIN tb_toko tt on tpt.id_toko = tt.id
+    JOIN tb_customer tc on tt.id_customer = tc.id
+    WHERE tpt.kategori = 3
+    order by tpt.id desc")->result();
+    $this->template->load('template/template', 'manager_mv/toko/pengajuanToko', $data);
+  }
   // list toko tutup
   public function toko_tutup()
   {
     $data['title'] = 'List Toko Tutup';
-    $data['toko_tutup'] = $this->db->query("SELECT tr.*, tt.nama_toko, tt.alamat from tb_retur tr
-    join tb_toko tt on tr.id_toko = tt.id
-    where tr.status >= 10 order by tr.status = 10 desc, tr.id desc")->result();
+    $data['toko_tutup'] = $this->db->query("SELECT * from tb_toko
+    where status = 0 order by id desc")->result();
     $this->template->load('template/template', 'manager_mv/toko/toko_tutup', $data);
   }
   public function toko_tutup_d($id)
   {
-    $data['title'] = 'List Toko Tutup';
-    $data['retur'] = $this->db->query("SELECT tr.*, tt.nama_toko, tt.alamat from tb_retur tr
+    $data['title'] = 'Pengajuan Toko';
+    $query = $this->db->query("SELECT trt.*, tr.tgl_jemput, tt.nama_toko, tt.alamat, tr.status as status_retur from tb_pengajuan_toko trt
+    JOIN tb_retur tr on trt.id_retur = tr.id
     JOIN tb_toko tt on tr.id_toko = tt.id
-    WHERE tr.id = '$id'")->row();
+    WHERE trt.id = '$id'");
+    $id_retur = $query->row()->id_retur;
+    $data['retur'] = $query->row();
     $data['artikel'] = $this->db->query("SELECT trd.*,tp.kode, tp.nama_produk from tb_retur_detail trd
     join tb_produk tp on trd.id_produk = tp.id
-    where trd.id_retur = ?  order by tp.nama_produk desc ", array($id))->result();
+    where trd.id_retur = ?  order by tp.nama_produk desc ", array($id_retur))->result();
     $data['aset'] = $this->db->query("SELECT tra.*, ta.aset, ta.kode from tb_retur_aset tra
     join tb_aset_master ta on tra.id_aset = ta.id
-    where tra.id_retur = ?  order by ta.aset desc ", array($id))->result();
+    where tra.id_retur = ?  order by ta.aset desc ", array($id_retur))->result();
     $data['histori'] = $this->db->query("SELECT * from tb_retur_histori tro
-    join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$id'")->result();
+    join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$id_retur'")->result();
     $this->template->load('template/template', 'manager_mv/toko/toko_tutup_d', $data);
   }
   // tindakan tutup toko
@@ -60,32 +72,34 @@ class Toko extends CI_Controller
     $catatan = $this->input->post('catatan_mv');
     $action = $this->input->post('tindakan');
     $id_retur = $this->input->post('id_retur');
+    $id_pengajuan = $this->input->post('id_pengajuan');
     $id_toko = $this->input->post('id_toko');
     $pembuat = $this->input->post('pembuat');
-    $mv = $this->session->userdata('nama_user');
+    $mm = $this->session->userdata('nama_user');
     $pt = $this->session->userdata('pt');
     $id_mv = $this->session->userdata('id');
-    $status = $action == "1" ? "11" : "16";
-    $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
+    $status = $action == "3" ? "3" : "5";
+    $aksi = $action == "3" ? 'Disetujui' : 'Ditolak';
 
     // Update status retur
-    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput, 'id_mv' => $id_mv);
-    $where = array('id' => $id_retur);
-    $this->db->update('tb_retur', $data, $where);
-
+    $data = array('status' => $status, 'id_mv' => $id_mv);
+    $where = array('id' => $id_pengajuan);
+    $this->db->update('tb_pengajuan_toko', $data, $where);
+    $dataRetur = array('tgl_jemput' => $tgl_jemput, 'id_mv' => $id_mv);
+    $this->db->update('tb_retur', $dataRetur, array('id' => $id_retur));
     // Insert history retur
     $histori = array(
       'id_retur' => $id_retur,
       'aksi' => $aksi . ' oleh : ',
-      'pembuat' => $mv,
+      'pembuat' => $mm,
       'catatan_h' => $catatan
     );
     $this->db->insert('tb_retur_histori', $histori);
     $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
-    if ($action == "1") {
+    if ($action == "3") {
       $hp = $this->db->select('no_telp')
         ->from('tb_user')
-        ->where('role', 9)
+        ->where('role', 1)
         ->get()
         ->result();
       foreach ($hp as $h) {
@@ -100,7 +114,7 @@ class Toko extends CI_Controller
       kirim_wa($phones, $message);
     }
     tampil_alert('success', 'BERHASIL', 'Pengajuan Tutup Toko berhasil di' . $aksi);
-    redirect(base_url('sup/Toko/toko_tutup_d/' . $id_retur));
+    redirect(base_url('sup/Toko/toko_tutup_d/' . $id_pengajuan));
   }
 
   // halaman detail toko

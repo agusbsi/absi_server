@@ -4,50 +4,59 @@
       <div class="col-12">
         <div class="card card-info ">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> List Pengajuan Toko</b> </h3>
+            <h3 class="card-title"><i class="fas fa-store"></i> Pengajuan Toko</b> </h3>
           </div>
           <div class="card-body">
-            <table id="table_toko" class="table table-bordered table-striped">
+            <div class="alert alert-success alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+              <i class="icon fas fa-check"></i>
+              <small>Proses pengajuan Toko baru sekarang hanya melalui ABSI, Marketing tidak perlu lagi membuat pengajuan secara manual. </small>
+            </div>
+            <hr>
+            <table id="example1" class="table table-bordered table-striped">
               <thead>
-                <tr class="text-center">
-                  <th style="width:4%">No</th>
-                  <th>Nama Toko</th>
-                  <th style="width:28%">Alamat</th>
-                  <th>PIC</th>
-                  <th>Status</th>
-                  <th style="width:13%">Menu</th>
+                <tr>
+                  <th class="text-center" style="width:4%">No</th>
+                  <th style="width:14%">No Pengajuan</th>
+                  <th>Toko</th>
+                  <th>Kategori</th>
+                  <th class="text-center">Status</th>
+                  <th class="text-center" style="width:10%">Menu</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
                 $no = 0;
-                foreach ($toko as $t) :
+                foreach ($pengajuan as $t) :
                   $no++
                 ?>
                   <tr>
-                    <td><?= $no ?></td>
+                    <td class="text-center"><?= $no ?></td>
                     <td>
                       <small>
-                        <strong><?= $t->nama_toko ?></strong> <br>
-                        <?= jenis_toko($t->jenis_toko) ?>
+                        <strong><?= $t->nomor ?></strong>
                       </small>
                     </td>
                     <td>
                       <small>
+                        <strong><?= $t->nama_toko ?></strong>
                         <address><?= $t->alamat ?></address>
                       </small>
                     </td>
                     <td>
                       <small>
-                        <strong> <i class="fas fa-user"></i> <?= $t->nama_pic ?></strong> <br>
-                        <i class="fas fa-phone"></i> <?= $t->telp ?>
+                        <strong><?= kategori_pengajuan($t->kategori) ?></strong>
                       </small>
                     </td>
                     <td class="text-center">
-                      <?= status_toko($t->status) ?>
+                      <?= status_pengajuan($t->status) ?>
                     </td>
                     <td>
-                      <a href="<?= base_url('adm/Toko/detail/' . $t->id) ?>" class="btn btn-<?= $t->status == 4 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 4 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 4 ? "Proses" : "Detail" ?> </a>
+                      <?php if ($t->kategori == 3) { ?>
+                        <a href="<?= base_url('adm/Toko/toko_tutup_d/' . $t->id) ?>" class="btn btn-<?= $t->status == 3 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 3 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 3 ? "Proses" : "Detail" ?> </a>
+                      <?php } else { ?>
+                        <a href="<?= base_url('adm/Toko/detail/' . $t->id) ?>" class="btn btn-<?= $t->status == 3 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 3 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 3 ? "Proses" : "Detail" ?> </a>
+                      <?php } ?>
                     </td>
                   </tr>
                 <?php endforeach ?>
@@ -61,21 +70,3 @@
   </div>
   </div>
 </section>
-
-<!-- jQuery -->
-<script src="<?php echo base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
-<script>
-  $(document).ready(function() {
-
-    $('#table_toko').DataTable({
-      order: [
-        [0, 'asc']
-      ],
-      responsive: true,
-      lengthChange: false,
-      autoWidth: false,
-    });
-
-
-  })
-</script>

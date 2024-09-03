@@ -149,7 +149,6 @@
                                 <div class="col-12">
                                     <a href="<?= base_url('mng_mkt/Retur/retur') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
                                         <i class="fas fa-arrow-left"></i> Kembali </a>
-                                    <a class="btn btn-default btn-sm float-right mr-2 <?= $retur->status == 2 || $retur->status == 3 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('mng_mkt/retur/sppr/' . $retur->id) ?>"><i class="fas fa-print"></i> Sppr</a>
                                 </div>
                             </div>
                         <?php } ?>

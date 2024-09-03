@@ -125,6 +125,16 @@
     text-align: center;
     font-size: 12px;
   }
+
+  .total-qty {
+    text-align: end;
+    padding: 10px;
+    padding-right: 55px;
+    font-size: 12px;
+    font-weight: 700;
+    background-color: rgb(1, 164, 19, 0.2);
+    border-radius: 10px;
+  }
 </style>
 
 <section class="content">
@@ -149,6 +159,9 @@
           </div>
           <hr>
           <div class="item-list" id="item-list">
+          </div>
+          <div class="total-qty" id="total-qty">
+            Total Qty: 0
           </div>
           <br>
           <table class="table table-bordered table-striped">
@@ -314,49 +327,81 @@
 
     function loadItems() {
       const itemList = document.getElementById('item-list');
+      const totalQtyElement = document.getElementById('total-qty');
+
       itemList.innerHTML = '';
+      let totalQty = 0;
       const items = JSON.parse(localStorage.getItem('items')) || [];
+
       items.forEach((item, index) => {
         const produk = document.createElement('div');
         produk.className = 'produk';
         produk.innerHTML = `
-            <div class="produk-header">
-                <div class="produk-number">${index + 1}</div>
-                <div class="produk-code">${item.kode}</div>
-                <div class="produk-close" onclick="deleteItem(${item.id})">X</div>
-            </div>
-            <div class="produk-content">
-                <p>${item.artikel}</p>
-                <div class="produk-info">
-                    <span>Stok: ${item.stok} </span>
-                    <div>
-                        <span>Qty: </span>
-                        <input type="number" class="qtyProduk" name="qtyProduk[]" value="${item.qty}" data-index="${index}" data-stok="${item.stok}" required>
-                    </div>
+        <div class="produk-header">
+            <div class="produk-number">${index + 1}</div>
+            <div class="produk-code">${item.kode}</div>
+            <div class="produk-close" onclick="deleteItem(${item.id})">X</div>
+        </div>
+        <div class="produk-content">
+            <p>${item.artikel}</p>
+            <div class="produk-info">
+                <span>Stok: ${item.stok} </span>
+                <div>
+                    <span>Qty: </span>
+                    <input type="number" class="qtyProduk" name="qtyProduk[]" value="${item.qty}" data-index="${index}" data-stok="${item.stok}" required>
                 </div>
-                <input type="hidden" name="idProduk[]" value="${item.id_produk}">
-                <input type="hidden" name="stokProduk[]" value="${item.stok}">
             </div>
-        `;
+            <input type="hidden" name="idProduk[]" value="${item.id_produk}">
+            <input type="hidden" name="stokProduk[]" value="${item.stok}">
+        </div>
+    `;
         itemList.appendChild(produk);
+
+        // Tambahkan qty dari item ini ke total qty
+        totalQty += parseInt(item.qty, 10);
+
         const qtyInput = produk.querySelector('.qtyProduk');
+
+        // Mengupdate qty total saat pengguna mengetik
         qtyInput.addEventListener('input', function() {
           const stok = parseInt(this.getAttribute('data-stok'), 10);
           const itemIndex = parseInt(this.getAttribute('data-index'), 10);
-          // if (this.value > stok) {
-          //   this.value = stok;
-          //   Swal.fire(
-          //     'Peringatan !',
-          //     'QTY Tidak boleh melebihi Stok.',
-          //     'info'
-          //   );
-          // }
-          // Update the qty in items array and localStorage
-          items[itemIndex].qty = this.value;
-          localStorage.setItem('items', JSON.stringify(items));
+          let qtyValue = parseInt(this.value, 10);
+
+          if (isNaN(qtyValue) || qtyValue < 0) {
+            qtyValue = 0;
+          }
+
+          this.value = qtyValue;
+
+          // Update qty in items array
+          items[itemIndex].qty = qtyValue;
+
+          // Perbarui total qty
+          updateTotalQty(); // Memperbarui total qty tanpa reload
         });
+
+        // Menyimpan qty ke localStorage setelah pengguna selesai mengetik
+        qtyInput.addEventListener('blur', function() {
+          // Simpan perubahan qty ke localStorage
+          localStorage.setItem('items', JSON.stringify(items));
+
+          // Reload items untuk memastikan data disimpan dengan benar
+          loadItems();
+        });
+
+        // Fungsi untuk mengupdate total qty
+        function updateTotalQty() {
+          const totalQty = items.reduce((total, item) => total + parseInt(item.qty, 10), 0);
+          document.getElementById('total-qty').textContent = `Total Qty: ${totalQty}`;
+        }
+
       });
+
+      // Update total qty element
+      totalQtyElement.textContent = `Total : ${totalQty}`;
     }
+
     // document.getElementById('qty').addEventListener('input', function() {
     //   const qtyInput = this;
     //   const stok = parseInt(document.getElementById('stok').innerText, 10);
@@ -382,32 +427,32 @@
       let items = JSON.parse(localStorage.getItem('items')) || [];
 
       // Cek jika artikel sudah ada
-      const isDuplicate = items.some(item => item.kode === kode.textContent);
-      if (isDuplicate) {
+      const existingItemIndex = items.findIndex(item => item.kode === kode.textContent);
+
+      if (existingItemIndex !== -1) {
+        // Jika artikel ditemukan, tambahkan qty-nya
+        items[existingItemIndex].qty = parseInt(items[existingItemIndex].qty) + parseInt(qtyInput.value);
         Swal.fire(
-          'Peringatan !',
-          'Artikel sudah ada di List, Pilih artikel lain !',
+          'info',
+          'Artikel sudah ada di List, Otomatis jumlah di tambahkan.',
           'info'
         );
-        return;
+      } else {
+        const id = new Date().getTime(); // Unique ID based on timestamp
+        const item = {
+          id: id,
+          id_produk: id_produk.value,
+          kode: kode.textContent,
+          artikel: artikel.textContent,
+          stok: stok.textContent,
+          qty: parseInt(qtyInput.value)
+        };
+
+        items.push(item);
       }
-
-      const id = new Date().getTime(); // Unique ID based on timestamp
-      const item = {
-        id: id,
-        id_produk: id_produk.value,
-        kode: kode.textContent,
-        artikel: artikel.textContent,
-        stok: stok.textContent,
-        qty: qtyInput.value
-      };
-
-      items.push(item);
       localStorage.setItem('items', JSON.stringify(items));
-
-      loadItems(); // Refresh item list
-
-      // Reset fields
+      const totalQty = items.reduce((total, item) => total + parseInt(item.qty), 0);
+      loadItems();
       txtCari.value = '';
       artikel.textContent = '';
       kode.textContent = '';
@@ -415,6 +460,7 @@
       qtyInput.value = '';
       detailProduk.style.display = 'none';
     });
+
 
     window.deleteItem = function(id) {
       let items = JSON.parse(localStorage.getItem('items')) || [];

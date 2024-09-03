@@ -7,9 +7,9 @@ class Retur extends CI_Controller
   function __construct()
   {
     parent::__construct();
-    $role = $this->session->userdata('role');
-    if ($role != "5" and $role != "16") {
-      tampil_alert('error', 'DI TOLAK !', 'Silahkan login kembali!');
+    $login = $this->session->userdata('status');
+    if ($login != "login") {
+      tampil_alert('error', 'Session Habis!', 'Silahkan login kembali!');
       redirect(base_url(''));
     }
   }
@@ -20,7 +20,7 @@ class Retur extends CI_Controller
     $data['title'] = 'Retur';
     $data['list_data'] = $this->db->query("SELECT tr.*, tt.nama_toko, tt.alamat from tb_retur tr
     JOIN tb_toko tt on tr.id_toko = tt.id
-    WHERE tr.status IN (3, 4,13,14,15)
+    WHERE tr.status IN (7, 4,14,15)
     ORDER BY tr.status = 3 desc,tr.status = 13 desc, tr.id desc")->result();
     $this->template->load('template/template', 'adm_gudang/retur/lihat_data', $data);
   }
@@ -98,27 +98,30 @@ class Retur extends CI_Controller
   // print SPPR
   public function sppr($no_retur)
   {
-    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tu.no_telp, mv.ttd as ttd_mv,mm.ttd as ttd_mm,mv.nama_user as nama_mv, mm.nama_user as nama_mm from tb_retur tr
+    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tl.ttd as ttd_leader, tu.no_telp, mv.ttd as ttd_mv,mm.ttd as ttd_mm,mv.nama_user as nama_mv, mm.nama_user as nama_mm,kg.ttd as ttd_kgudang, kg.nama_user as nama_kg from tb_retur tr
     JOIN tb_toko tt on tr.id_toko = tt.id
     JOIN tb_user tu on tt.id_spg = tu.id
     JOIN tb_user tl on tt.id_leader = tl.id
     LEFT JOIN tb_user mv on tr.id_mv = mv.id
     LEFT JOIN tb_user mm on tr.id_mm = mm.id
+    LEFT JOIN tb_user kg on tr.id_kgudang = kg.id
     where tr.id = '$no_retur'")->row();
     $data['detail'] = $this->db->query("SELECT trd.*, tpk.nama_produk, tpk.kode, tpk.satuan from tb_retur_detail trd
     join tb_produk tpk on trd.id_produk = tpk.id
     where trd.id_retur = '$no_retur' order by tpk.nama_produk desc")->result();
-    $this->load->view('adm_gudang/retur/sppr', $data);
+    $this->load->view('adm_gudang/retur/sppr_new', $data);
   }
   // print SPPR TUTUP TOKO
   public function sppr_toko($no_retur)
   {
-    $data['r'] = $this->db->query(" SELECT tr.*, tt.nama_toko, tspg.nama_user as spg, tl.nama_user as leader, tl.no_telp,mv.ttd as ttd_mv,mm.ttd as ttd_mm, mv.nama_user as nama_mv, mm.nama_user as nama_mm from tb_retur tr
+    $data['r'] = $this->db->query(" SELECT tr.*, tt.nama_toko, tspg.nama_user as spg, tl.nama_user as leader, tl.no_telp,spv.nama_user as nama_spv,spv.ttd as ttd_spv,mv.ttd as ttd_mv,mm.ttd as ttd_mm, mv.nama_user as nama_mv, mm.nama_user as nama_mm, kg.ttd as ttd_kgudang, kg.nama_user as nama_kg from tb_retur tr
     join tb_toko tt on tr.id_toko = tt.id
     join tb_user tspg on tt.id_spg = tspg.id
     join tb_user tl on tt.id_leader = tl.id
+    LEFT JOIN tb_user spv on tr.id_spv = spv.id
     LEFT JOIN tb_user mv on tr.id_mv = mv.id
     LEFT JOIN tb_user mm on tr.id_mm = mm.id
+    LEFT JOIN tb_user kg on tr.id_kgudang = kg.id
     where tr.id = '$no_retur'")->row();
     $data['aset'] = $this->db->query("SELECT tra.*, ta.aset, ta.kode from tb_retur_aset tra
     join tb_aset_master ta on tra.id_aset = ta.id
@@ -126,7 +129,7 @@ class Retur extends CI_Controller
     $data['artikel'] = $this->db->query("SELECT trd.*, tpk.nama_produk, tpk.kode, tpk.satuan from tb_retur_detail trd
     join tb_produk tpk on trd.id_produk = tpk.id
     where trd.id_retur = '$no_retur'")->result();
-    $this->load->view('adm_gudang/retur/sppr_toko', $data);
+    $this->load->view('adm_gudang/retur/sppr_toko_new', $data);
   }
   public function getdataRetur()
   {

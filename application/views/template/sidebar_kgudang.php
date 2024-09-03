@@ -1,17 +1,11 @@
 <?php
-$Permintaan = $this->db->query("SELECT id FROM tb_permintaan WHERE status = '2'")->num_rows();
-$Selisih = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '3'")->num_rows();
-$Pengiriman = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '1'")->num_rows();
-$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status IN (7,14) ")->num_rows();
-$Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_rows();
+$retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '3'  OR status = '13' ")->num_rows();
 ?>
-<!-- Sidebar -->
 <div class="sidebar">
-  <!-- Sidebar Menu -->
   <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
       <li class="nav-item">
-        <a href="<?= base_url('adm_gudang/Dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
+        <a href="<?= base_url('k_gudang/Dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
           <i class="nav-icon fas fa-tachometer-alt"></i>
           <p>
             Dashboard
@@ -20,42 +14,48 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
       </li>
       <li class="nav-header">Menu Utama</li>
       <li class="nav-item">
-        <a href="<?= base_url('adm_gudang/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan Barang') ? "active" : "" ?>">
+        <a href="<?= base_url('k_gudang/Dashboard/artikel') ?>" class="nav-link <?= ($title == 'Artikel') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-box"></i>
+          <p>
+            Artikel
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('k_gudang/Dashboard/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-store"></i>
+          <p>
+            Toko
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('k_gudang/Dashboard/po') ?>" class="nav-link <?= ($title == 'Permintaan') ? "active" : "" ?>">
           <i class="nav-icon fas fa-file-alt"></i>
           <p>
             Permintaan
-            <?php if ($Permintaan == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Permintaan ?></span>
-            <?php } ?>
           </p>
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('adm_gudang/Pengiriman') ?>" class="nav-link <?= ($title == 'Pengiriman Barang') ? "active" : "" ?>">
+        <a href="<?= base_url('k_gudang/Dashboard/kirim') ?>" class="nav-link <?= ($title == 'Pengiriman') ? "active" : "" ?>">
           <i class="nav-icon fas fa-truck"></i>
           <p>
             Pengiriman
-            <?php if ($Pengiriman == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Pengiriman ?></span>
-            <?php } ?>
           </p>
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('adm_gudang/Retur') ?>" class="nav-link <?= ($title == 'Retur') ? "active" : "" ?>">
+        <a href="<?= base_url('k_gudang/Dashboard/retur') ?>" class="nav-link <?= ($title == 'Retur') ? "active" : "" ?>">
           <i class="nav-icon fas fa-exchange-alt"></i>
           <p>
             Retur
-            <?php if ($Retur == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Retur ?></span>
+            <?php if ($retur != 0) { ?>
+              <span class="right badge badge-danger"><?= $retur ?></span>
             <?php } ?>
           </p>
         </a>
       </li>
-      <li class="nav-header">Laporan</li>
       <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
@@ -81,15 +81,6 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
               </p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="nav-link <?= ($title == 'Kartu Stok') ? "active" : "" ?>">
-              <i class="far fa-circle nav-icon"></i>
-              <p>
-                Kartu Stok
-              </p>
-            </a>
-          </li>
-
         </ul>
 
       <li class="nav-header">Akun</li>

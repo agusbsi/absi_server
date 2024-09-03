@@ -38,7 +38,8 @@
                   </small>
                 </td>
                 <td class="text-center">
-                  <a class="btn btn-primary btn-sm" href="<?= base_url('spg/Penjualan/detail/') . $row->id ?>"><i class="fa fa-eye"></i> Detail</a>
+                  <a class="btn btn-primary btn-sm" href="<?= base_url('spg/Penjualan/detail/') . $row->id ?>" title="Lihat Detail"><i class="fa fa-eye"></i></a>
+                  <a class="btn btn-danger btn-sm btn_delete <?= date('m Y', strtotime($row->created_at)) != date('m Y') ? 'disabled' : '' ?>" href="#" data-id="<?= $row->id ?>" title="Hapus"><i class="fa fa-trash"></i></a>
                 </td>
               </tr>
             <?php } ?>
@@ -49,3 +50,23 @@
   </div>
   </div>
 </section>
+<script>
+  $('.btn_delete').click(function(e) {
+    const id = $(this).data('id');
+    e.preventDefault();
+    Swal.fire({
+      title: 'Apakah anda yakin ?',
+      text: " Data yang dihapus tidak bisa di kembalikan lagi.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Yakin'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        location.href = "<?php echo base_url('spg/Penjualan/hapus_data/') ?>" + id;
+      }
+    })
+  })
+</script>

@@ -6,7 +6,7 @@
           <div class="card-header">
             <h3 class="card-title"><i class="fas fa-store"></i> Pengajuan <?= kategori_pengajuan($retur->kategori) ?></b> </h3>
             <div class="card-tools">
-              <a href="<?= base_url('adm/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i></a>
+              <a href="<?= base_url('spv/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i></a>
             </div>
           </div>
           <div class="card-body">
@@ -155,42 +155,12 @@
               <?php endforeach ?>
             </div>
             <hr>
-            <?php if ($retur->status == 3) { ?>
-              <form action="<?= base_url('adm/Toko/tindakan') ?>" method="post" id="form_approve">
-                <div class="form-group">
-                  <label for="">Tgl Jemput</label>
-                  <input type="date" name="tgl_jemput" class="form-control form-control-sm" value="<?= date('Y-m-d', strtotime($retur->tgl_jemput)) ?>" required>
-                </div>
-                <strong>Catatan Direksi:</strong>
-                <textarea name="catatan_direksi" rows="3" class="form-control form-control-sm" required></textarea>
-                <input type="hidden" name="id_pengajuan" value="<?= $retur->id ?>">
-                <input type="hidden" name="id_retur" value="<?= $retur->id_retur ?>">
-                <input type="hidden" name="id_toko" value="<?= $retur->id_toko ?>">
-                <input type="hidden" name="pembuat" value="<?= $retur->id_pembuat ?>">
-                <small>* harus di isi.</small>
-                <div class="form-group">
-                  <label for="">Tindakan</label>
-                  <select name="tindakan" id="tindakan" class="form-control form-control-sm" required>
-                    <option value="">Pilih</option>
-                    <option value="4">Setuju</option>
-                    <option value="5">Tolak</option>
-                  </select>
-                </div>
-                <hr>
-                <div class="text-right">
-                  <a href="<?= base_url('adm/Toko/toko_tutup') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Kembali</a>
-                  <button type="submit" class="btn btn-sm btn-primary btn_simpan"><i class="fas fa-save"></i> Simpan</button>
-                </div>
-              </form>
-              <hr>
-            <?php } else { ?>
-              <div class="row no-print">
-                <div class="col-12">
-                  <a href="<?= base_url('adm/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
-                    <i class="fas fa-arrow-left"></i> Kembali </a>
-                </div>
+            <div class="row no-print">
+              <div class="col-12">
+                <a href="<?= base_url('spv/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
+                  <i class="fas fa-arrow-left"></i> Kembali </a>
               </div>
-            <?php } ?>
+            </div>
           </div>
         </div>
       </div>
@@ -199,56 +169,3 @@
   </div>
   </div>
 </section>
-<script>
-  $(document).ready(function() {
-    function validateForm() {
-      let isValid = true;
-      // Get all required input fields
-      $('#form_approve').find('input[required], select[required], textarea[required]').each(function() {
-        if ($(this).val() === '') {
-          isValid = false;
-          $(this).addClass('is-invalid');
-        } else {
-          $(this).removeClass('is-invalid');
-        }
-      });
-      return isValid;
-    }
-    $('.btn_simpan').click(function(e) {
-      e.preventDefault();
-      Swal.fire({
-        title: 'Apakah anda yakin?',
-        text: "Data Pengajuan Tutp Toko akan di proses",
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        cancelButtonText: 'Batal',
-        confirmButtonText: 'Yakin'
-      }).then((result) => {
-        if (result.isConfirmed) {
-
-          if (validateForm()) {
-            document.getElementById("form_approve").submit();
-          } else {
-            Swal.fire({
-              title: 'Belum Lengkap',
-              text: ' Semua kolom  harus di isi.',
-              icon: 'error',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'OK'
-            });
-          }
-        }
-      })
-    })
-
-    function printDiv(divName) {
-      var printContents = document.getElementById(divName).innerHTML;
-      var originalContents = document.body.innerHTML;
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
-    }
-  });
-</script>

@@ -29,24 +29,27 @@ class Toko extends CI_Controller
   public function pengajuanToko()
   {
     $data['title'] = 'Pengajuan Toko';
-    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user
-    from tb_toko tt
-    left join tb_user tu on tt.id_spg = tu.id
-    where tt.status != 1 AND tt.status != 0
-    ORDER BY FIELD(tt.status, 3) DESC, tt.id DESC")->result();
+    $data['pengajuan'] = $this->db->query("SELECT tpt.*, tt.nama_toko, tt.alamat, tc.nama_cust from tb_pengajuan_toko tpt
+    JOIN tb_toko tt on tpt.id_toko = tt.id
+    JOIN tb_customer tc on tt.id_customer = tc.id
+    WHERE tpt.kategori != 3
+    order by tpt.id desc")->result();
     $this->template->load('template/template', 'audit/toko/pengajuanToko', $data);
   }
   public function detail($id)
   {
     $data['title'] = 'Pengajuan Toko';
-    $data['toko'] = $this->db->query("SELECT tt.*, tc.nama_cust,tc.top,tc.foto_ktp,tc.foto_npwp,tc.alamat_cust, tp.nama_user as spv,tl.nama_user as leader, ts.nama_user as spg from tb_toko tt
+    $query = $this->db->query("SELECT tpt.*,tpt.id as id_pengajuan,tpt.status as status_pengajuan,tt.*,tc.*,tt.nama_pic as pic_toko, tt.telp as telp_toko,tu.nama_user as leader,ts.nama_user as spg,tp.nama_user as spv FROM tb_pengajuan_toko tpt
+    JOIN tb_toko tt on tpt.id_toko = tt.id
     join tb_customer tc on tt.id_customer = tc.id
-    left join tb_user tl on tt.id_leader = tl.id
-    left join tb_user ts on tt.id_spg = ts.id
+    left join tb_user tu on tt.id_leader = tu.id
+    left join tb_user ts on tt.id_spg = tu.id
     join tb_user tp on tt.id_spv = tp.id
-    where tt.id = '$id'")->row();
+     WHERE tpt.id = '$id'");
+    $data['toko'] = $query->row();
+    $id_toko = $query->row()->id_toko;
     $data['histori'] = $this->db->query("SELECT * from tb_toko_histori tpo
-    join tb_toko tt on tpo.id_toko = tt.id where tpo.id_toko = '$id'")->result();
+    join tb_toko tt on tpo.id_toko = tt.id where tpo.id_toko = '$id_toko'")->result();
     $this->template->load('template/template', 'audit/toko/detail', $data);
   }
 
@@ -94,14 +97,15 @@ class Toko extends CI_Controller
   {
     $pt = $this->session->userdata('pt');
     $id = $this->session->userdata('id');
-    $audit = $this->db->query("SELECT nama_user from tb_user where id = '$id'")->row()->nama_user;
+    $audit = $this->session->userdata('nama_user');
     $id_toko = $this->input->post('id_toko');
+    $id_pengajuan = $this->input->post('id_pengajuan');
     $toko = $this->input->post('toko');
     $catatan = $this->input->post('catatan');
     $keputusan = $this->input->post('keputusan');
     $this->db->trans_start();
-    $this->db->query("UPDATE tb_toko set status = $keputusan, catatan_audit = '$catatan' where id = '$id_toko'");
-    if ($keputusan == 4) {
+    $this->db->query("UPDATE tb_pengajuan_toko set status = $keputusan where id = '$id_pengajuan'");
+    if ($keputusan == 3) {
       $pesan = "Data Toko di teruskan ke Direksi!";
       $aksi = "Di Setujui Oleh AUDIT : ";
       $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 1 and status = 1")->result_array();
@@ -130,7 +134,7 @@ class Toko extends CI_Controller
       kirim_wa($number, $message);
     }
     tampil_alert('success', 'Berhasil di Proses', $pesan);
-    redirect(base_url('audit/Toko/pengajuanToko'));
+    redirect(base_url('audit/Toko/detail/' . $id_pengajuan));
   }
 
   // download pdf

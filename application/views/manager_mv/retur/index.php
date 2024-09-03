@@ -50,11 +50,10 @@
                   if ($data->status == 2) {
                   ?>
                     <a type="button" class="btn btn-success btn-sm" href="<?= base_url('sup/Retur/detail/' . $data->id) ?>" name="btn_proses">Proses <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-                    <a class="btn btn-default btn-sm <?= $data->status == 2 || $data->status == 3 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('sup/retur/sppr/' . $data->id) ?>"><i class="fas fa-print"></i> Sppr</a>
                   <?php } else { ?>
                     <a type="button" class="btn btn-primary btn-sm" href="<?= base_url('sup/Retur/detail/' . $data->id) ?>" name="btn_detail"><i class="fas fa-eye" aria-hidden="true"></i> Detail</a>
-                    <a class="btn btn-default btn-sm <?= $data->status == 2 || $data->status == 3 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('sup/retur/sppr/' . $data->id) ?>"><i class="fas fa-print"></i> Sppr</a>
                   <?php } ?>
+                  <a class="btn btn-default btn-sm <?= $data->status == 7 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('adm_gudang/retur/sppr/' . $data->id) ?>"><i class="fas fa-print"></i> Sppr</a>
                 </td>
               </tr>
             <?php endforeach; ?>
