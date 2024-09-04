@@ -76,7 +76,8 @@ class Dashboard extends CI_Controller
     $data['po'] = $this->db->query("SELECT tp.*, tt.nama_toko, tt.alamat,tl.nama_user as leader from tb_permintaan tp
     JOIN tb_toko tt on tp.id_toko = tt.id
     LEFT JOIN tb_user tl on tt.id_leader = tl.id
-    WHERE tp.status >= 2 AND tp.status != 5")->result();
+    WHERE tp.status >= 2 AND tp.status != 5
+    ORDER BY tp.id desc")->result();
     $this->template->load('template/template', 'k_gudang/po', $data);
   }
   public function po_detail($id)
@@ -97,7 +98,8 @@ class Dashboard extends CI_Controller
     $data['title'] = 'Pengiriman';
     $data['po'] = $this->db->query("SELECT tp.*, tt.nama_toko, tt.alamat,tl.nama_user as leader from tb_pengiriman tp
     JOIN tb_toko tt on tp.id_toko = tt.id
-    LEFT JOIN tb_user tl on tt.id_leader = tl.id")->result();
+    LEFT JOIN tb_user tl on tt.id_leader = tl.id
+    ORDER BY tp.id desc")->result();
     $this->template->load('template/template', 'k_gudang/kirim', $data);
   }
   public function kirim_detail($id)
