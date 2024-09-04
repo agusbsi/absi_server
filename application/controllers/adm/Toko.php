@@ -50,6 +50,12 @@ class Toko extends CI_Controller
   public function detail($id)
   {
     $data['title'] = 'Pengajuan Toko';
+    $id_user = $this->session->userdata('id');
+    $cekTTD = $this->db->query("SELECT ttd from tb_user where id = ?", array($id_user))->row();
+    if (empty($cekTTD->ttd)) {
+      popup('Tanda Tangan Digital', 'Anda harus membuat TTD Digital terlebih dahulu untuk melanjutkan proses Pengajuan Toko', 'Profile');
+      redirect('adm/Toko/pengajuanToko');
+    }
     $query = $this->db->query("SELECT tpt.*,tpt.id as id_pengajuan,tpt.status as status_pengajuan,tt.*,tc.*,tt.nama_pic as pic_toko, tt.telp as telp_toko,tu.nama_user as leader,ts.nama_user as spg,tp.nama_user as spv FROM tb_pengajuan_toko tpt
     JOIN tb_toko tt on tpt.id_toko = tt.id
     join tb_customer tc on tt.id_customer = tc.id
@@ -82,7 +88,7 @@ class Toko extends CI_Controller
       $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$spv'")->result_array();
       $telpacc = $this->db->query("SELECT no_telp FROM tb_user where role = 15 AND status = 1")->result_array();
       $message = "Pengajuan Toko ( " . $toko . " - " . $pt . " ) anda telah di setujui & Sudah AKTIF, silahkan kunjungi s.id/absi-app";
-      $pesancc = "Ada Toko Baru ( " . $toko . " - " . $pt . " ) telah di setujui di ABSI, silahkan input ke database Easy Accounting.";
+      $pesancc = "Ada Toko Baru ( " . $toko . " - " . $pt . " ) telah di setujui di ABSI, silahkan input ke database Easy Accounting, info lebih lanjut silahkan kunjungi s.id/absi-app.";
       $this->db->query("UPDATE tb_toko set status = 1 where id = '$id_toko'");
     } else {
       $pesan = "Data Toko DI Tolak";

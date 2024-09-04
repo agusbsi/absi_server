@@ -66,31 +66,16 @@ class Retur extends CI_Controller
     if ($action == "1") {
       $hp = $this->db->select('no_telp')
         ->from('tb_user')
-        ->where('role', 5)
+        ->where('role', 16)
         ->get()
         ->result();
       foreach ($hp as $h) {
         $phone = $h->no_telp;
-        $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu di jemput, silahkan kunjungi s.id/absi-app";
+        $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu di proses, silahkan kunjungi s.id/absi-app";
         kirim_wa($phone, $message);
       }
     }
     tampil_alert('success', 'BERHASIL', 'Pengajuan Retur berhasil di' . $aksi);
     redirect(base_url('sup/Retur/detail/' . $id_retur));
-  }
-  // print SPPR
-  public function sppr($no_retur)
-  {
-    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tu.no_telp,mv.ttd as ttd_mv,mm.ttd as ttd_mm,mv.nama_user as nama_mv, mm.nama_user as nama_mm from tb_retur tr
-      JOIN tb_toko tt on tr.id_toko = tt.id
-      JOIN tb_user tu on tt.id_spg = tu.id
-      JOIN tb_user tl on tt.id_leader = tl.id
-      LEFT JOIN tb_user mv on tr.id_mv = mv.id
-    LEFT JOIN tb_user mm on tr.id_mm = mm.id
-      where tr.id = '$no_retur'")->row();
-    $data['detail'] = $this->db->query("SELECT trd.*, tpk.nama_produk, tpk.kode, tpk.satuan from tb_retur_detail trd
-      join tb_produk tpk on trd.id_produk = tpk.id
-      where trd.id_retur = '$no_retur' order by tpk.nama_produk desc")->result();
-    $this->load->view('adm_gudang/retur/sppr', $data);
   }
 }
