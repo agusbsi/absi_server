@@ -168,15 +168,15 @@ function status_retur($id)
 function status_toko($id)
 {
     if ($id == 0) {
-        echo "<span class='badge badge-default'>Tidak Aktif !</span>";
+        echo "<span class='badge badge-secondary'>Tidak Aktif</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-success'>Aktif !</span>";
+        echo "<span class='badge badge-success'>Aktif</span>";
     } elseif ($id == 2) {
-        echo "<span class='badge badge-warning'>Menunggu Approve Manager Marketing !</span>";
+        echo "<span class='badge badge-warning'>Proses Pengajuan</span>";
     } elseif ($id == 3) {
-        echo "<span class='badge badge-warning'>Dalam Pengecekan Audit !</span>";
+        echo "<span class='badge badge-warning'>Proses Pengajuan</span>";
     } elseif ($id == 4) {
-        echo "<span class='badge badge-warning'>Menunggu Approve Direksi !</span>";
+        echo "<span class='badge badge-warning'>Proses Pengajuan</span>";
     } elseif ($id == 5) {
         echo "<span class='badge badge-danger'>Di Tolak !</span>";
     } else {

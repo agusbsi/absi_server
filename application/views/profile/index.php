@@ -1,6 +1,6 @@
 <style>
   #signature {
-    width: 300px;
+    width: 330px;
     height: 250px;
     border: 1px solid #e8e8e8;
     background-color: #fff;
@@ -9,7 +9,7 @@
   }
 
   .ttd_img {
-    width: 300px;
+    width: 330px;
     height: auto;
     border: 2px solid blue;
     border-radius: 5px;
@@ -87,26 +87,48 @@
                   TTD Saat ini :
                   <img src="<?= base_url('assets/img/ttd/' . $profil->ttd) . '?t=' . time(); ?>" class="ttd_img mb-1">
                   <button type="button" id="btn_edit_ttd" class="btn btn-sm btn-outline-primary "><i class="fas fa-edit"></i> Ganti</button>
-                  <a href="<?= base_url('Profile/reset_ttd') ?>" class="btn btn-sm btn-outline-danger "><i class="fas fa-trash"></i> Kosongkan</a>
+                  <a href="<?= base_url('Profile/reset_ttd') ?>" class="btn btn-sm btn-outline-danger "><i class="fas fa-trash"></i> Hapus</a>
+                </div>
+                <small>
+                  <strong># Cara Menggunakan :</strong>
+                  <li>Tekan & Tahan Kursor, Lalu gerakan sesuai Pola TTD Anda.</li>
+                  <li>Buat Pola di tengah agar rapi.</li>
+                  <li>Lalu klik Simpan.</li>
+                  <li>Selesai.</li>
+                </small>
+                <div id="menu_footer" class="card-footer text-center <?= (empty($profil->ttd)) ? '' : 'd-none' ?>">
+                  <button type="button" id="save_ttd" class="btn btn-sm btn-primary "><i class="fas fa-save"></i> Simpan</button>
+                  <button type="button" id="clear" class="btn btn-sm btn-warning "><i class="fas fa-magic"></i> Clear</button>
                 </div>
               </div>
-              <div class="col-md-6">
-                <strong># Cara Menggunakan :</strong>
-                <li>Tekan & Tahan Kursor, Lalu gerakan sesuai Pola TTD Anda.</li>
-                <li>Buat Pola di tengah agar rapi.</li>
-                <li>Lalu klik Simpan.</li>
-                <li>Selesai.</li>
-                <br>
-                <strong># Tanda Tangan ini akan otomatis di tempelkan ke :</strong>
-                <li>Semua Surat/form yang anda buat.</li>
-                <li>Semua Surat/form yang anda Setujui.</li>
+              <div class="col-md-1 text-center <?= (empty($profil->ttd)) ? '' : 'd-none' ?>" style="padding-top:15%">
+                Atau
+              </div>
+              <div class="col-md-4 text-center <?= (empty($profil->ttd)) ? '' : 'd-none' ?>">
+                <form action="<?= base_url('Profile/update_ttd') ?>" method="post" enctype="multipart/form-data">
+                  <div class="form-group" style="padding-top: 30%; margin-bottom:120px;">
+                    <label for="ttd">Upload foto TTD</label>
+                    <input type="file" name="ttd" class="form-control form-control-sm" placeholder="pilih file" accept="image/png" required>
+                  </div>
+                  <hr>
+                  <small class="text-left">
+                    <li> Jenis foto : .PNG</li>
+                    <li> pilih foto yg transparant</li>
+                    <li> Maksimal 2mb</li>
+                    <li> Ukuran : 330 x 250 pixel</li>
+                  </small>
+                  <div id="menu_footer" class="card-footer text-center <?= (empty($profil->ttd)) ? '' : 'd-none' ?>">
+                    <button type="submit" class="btn btn-sm btn-primary "><i class="fas fa-save"></i> Simpan</button>
+                  </div>
+                </form>
               </div>
             </div>
+            <hr>
+            <strong># Tanda Tangan ini akan otomatis di tempelkan ke :</strong>
+            <li>Semua Surat/form yang anda buat.</li>
+            <li>Semua Surat/form yang anda Setujui.</li>
           </div>
-          <div id="menu_footer" class="card-footer <?= (empty($profil->ttd)) ? '' : 'd-none' ?>">
-            <button type="submit" id="save_ttd" class="btn btn-sm btn-primary "><i class="fas fa-save"></i> Simpan</button>
-            <button type="button" id="clear" class="btn btn-sm btn-warning "><i class="fas fa-magic"></i> Clear</button>
-          </div>
+
         </div>
         <div class="card card-warning card-outline">
           <form method="POST" action="<?= base_url('profile/ganti_password') ?>">
@@ -149,7 +171,7 @@
 <script>
   const root = document.getElementById("signature");
   const component = Signature(root, {
-    width: 300,
+    width: 330,
     height: 250,
   });
 

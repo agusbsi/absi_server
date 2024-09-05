@@ -75,6 +75,29 @@ class Profile extends CI_Controller
       redirect(base_url('Profile'));
     }
   }
+  public function update_ttd()
+  {
+    $id_user = $this->session->userdata('id');
+    $config['upload_path'] = 'assets/img/ttd/';
+    $config['allowed_types'] = 'png';
+    $config['max_size'] = '5048';
+    $config['file_name'] = 'ttd_' . $id_user;
+    $config['overwrite'] = TRUE;
+    $config['remove_spaces'] = TRUE;
+    $this->load->library('upload', $config);
+    $this->upload->initialize($config);
+
+    if (!$this->upload->do_upload('ttd')) {
+      $error = $this->upload->display_errors();
+      tampil_alert('error', 'Gagal', $error);
+      redirect(base_url('Profile'));
+    } else {
+      $foto = $this->upload->data('file_name');
+      $this->db->query("UPDATE tb_user SET ttd = ? WHERE id = ?", array($foto, $id_user));
+      tampil_alert('success', 'Berhasil', 'TTD berhasil di upload.');
+      redirect(base_url('Profile'));
+    }
+  }
 
   private function hash_password($password)
   {
