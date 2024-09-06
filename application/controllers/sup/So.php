@@ -66,6 +66,12 @@ class So extends CI_Controller
   public function riwayat_so_toko($id_toko, $id_so)
   {
     $data['title'] = 'Detail SO';
+    $cek = $this->db->query("SELECT * FROM tb_so where id = ?", array($id_so))->row();
+    if ($cek->status == 1) {
+      tampil_alert('info', 'SEDANG DI PERBARUI', 'Data SO sedang di perbarui oleh SPG, mohon tunggu dan coba lagi nanti.');
+      redirect('sup/So');
+      return;
+    }
     $data['SO']  = $this->db->query("SELECT ts.*, tt.nama_toko from tb_so ts 
     join tb_toko tt on ts.id_toko = tt.id
     where ts.id_toko = '$id_toko' and ts.id = '$id_so'")->row();
@@ -115,6 +121,13 @@ class So extends CI_Controller
 
     $data['detail_so'] = $this->db->query($query, array($id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $id_so))->result();
     $this->template->load('template/template', 'manager_mv/stokopname/detail_so_toko', $data);
+  }
+  public function reset_so()
+  {
+    $id_so = $this->input->post('id_so');
+    $this->db->update('tb_so', array('status' => 1), array('id' => $id_so));
+    tampil_alert('success', 'Berhasil', 'Data SO berhasil direset.');
+    redirect(base_url('sup/So'));
   }
   public function unduh_so($id_so)
   {

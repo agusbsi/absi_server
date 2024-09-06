@@ -19,7 +19,6 @@
             <h5><i class="fas fa-store"></i> <strong><?= $SO->nama_toko; ?></strong></h5>
           </div>
           <div class="callout callout-info">
-
             <div class="row">
               <div class="col-md-3">
                 <div class="form-group">
@@ -144,7 +143,6 @@
                   </tbody>
                   <tfoot>
                     <tr>
-
                       <td colspan="2" align="right"> <strong>Total :</strong> </td>
                       <td class="text-center"><strong><?= number_format(DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $t_awal : $t_awal_update); ?></strong></td>
                       <td class="text-center"><strong><?= number_format($terima); ?></strong></td>
@@ -166,28 +164,24 @@
               </div>
               <!-- /.col -->
             </div>
-            <!-- /.row -->
-
-            <div class="row">
-              <!-- accepted payments column -->
-              <div class="col-4">
-                <p class="lead">Catatan SPG:</p>
-                <textarea class="form-control" readonly>
-                      <?= $SO->catatan ?>
-                    </textarea>
-              </div>
-              <!-- /.col -->
-              <div class="col-8">
-              </div>
-              <!-- /.col -->
-            </div>
+            <label for="">Catatan SPG :</label>
+            <textarea class="form-control form-control-sm" readonly><?= $SO->catatan ?></textarea>
             <hr>
-            <b>Note : </b> Kolom Penjualan <b> tgl 01 s/d <?= date('d-m-y', strtotime($SO->tgl_so)) ?></b> akan terisi otomatis setelah spg menginput data penjualan terbaru.
+            <b>Info : </b> <br> Kolom Penjualan <small>( <strong><?= date('M Y', strtotime($SO->tgl_so)) ?>, tgl : 01 s/d <?= date('d', strtotime($SO->tgl_so)) ?></strong> )</small> akan terisi otomatis setelah spg menginput data penjualan terbaru.
             <hr>
+            <form id="resetSOForm" action="<?= base_url('sup/So/reset_so') ?>" method="POST" style="display:none;">
+              <input type="hidden" name="id_so" value="<?= $SO->id ?>">
+            </form>
             <div class="row no-print">
               <div class="col-12">
+                <?php
+                $role = $this->session->userdata('role');
+                if ($role == 14) { ?>
+                  <a href="#" class="btn btn-info btn-sm float-right mr-2 disabled" id="btn_adjust"><i class="fa fa-paper-plane"></i> Adjust Stok</a>
+                  <a href="#" class="btn btn-warning btn-sm float-right mr-2 " id="btn_resetSO" data-so="<?= $SO->id ?>"><i class="fa fa-share"></i> Reset & SO ulang</a>
+                <?php } ?>
                 <a href="<?= base_url('sup/So/unduh_so/' . $SO->id) ?>" class="btn btn-success btn-sm float-right mr-2 "><i class="fa fa-download"></i> Unduh Excel</a>
-                <button onclick="goBack()" class="btn btn-danger btn-sm float-right mr-2"> <i class="fas fa-times-circle"></i> Kembali</button>
+                <button onclick="goBack()" class="btn btn-danger btn-sm float-right mr-2"> <i class="fas fa-arrow-left"></i> Kembali</button>
               </div>
             </div>
           </div>
@@ -197,9 +191,46 @@
     </div>
   </div>
 </section>
-
-
 <script>
+  $('#btn_resetSO').click(function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: "Data SO akan di reset dan SPG bisa update SO kembali.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Yakin'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Submit form secara aman
+        document.getElementById('resetSOForm').submit();
+      }
+    });
+  });
+  $('#btn_adjust').click(function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+      title: 'Anda mengajukan Adjust Stok ?',
+      text: "Pengajuan Adjustmen Stok akan di buat",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('adjust_so').submit();
+      }
+    });
+  });
+
+
   function printDiv(divName) {
     var printContents = document.getElementById(divName).innerHTML;
     var originalContents = document.body.innerHTML;

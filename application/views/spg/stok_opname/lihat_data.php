@@ -1,31 +1,73 @@
+<style>
+  .foto_so {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+  }
+
+  .area-footer {
+    text-align: center;
+    margin-bottom: 5px;
+  }
+
+  .area-footer small {
+    display: block;
+  }
+
+  .waktu {
+    font-size: 16px;
+    font-weight: 700;
+    padding: 6px 20px;
+    background-color: #3e007c;
+    color: #ff9628;
+    margin: 15px 30%;
+    border-radius: 25px;
+    letter-spacing: 2px;
+  }
+
+  .waktu-open {
+    font-size: 16px;
+    font-weight: 700;
+    padding: 6px 20px;
+    background-color: rgb(33, 136, 56);
+    color: #ffffff;
+    margin: 15px 30%;
+    border-radius: 25px;
+    letter-spacing: 2px;
+  }
+</style>
 <section class="content">
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
         <?php if (($toko->status_so) == 1) { ?>
-          <!-- jika toko belum so -->
-          <!-- eror page -->
-          <div class="error-page">
-            <h2 class="headline text-success"> <i class="fas fa-check-circle"></i></h2>
-
-            <div class="error-content">
-              <h3><i class="fas fa-file-alt text-success"></i> STOK OPNAME BERHASIL !</h3>
-
-              <p>
-                Terima kasih, Anda telah melakukan Stok Opname di bulan ini ! Data sedang di proses oleh Admin Support Hicoop.
-              </p>
-
-              <form class="search-form">
-                <div class="input-group text-center">
-                  <a href="<?php echo base_url('spg/dashboard') ?>" class="btn btn-success"> Ke Beranda</a>
-                </div>
-                <!-- /.input-group -->
-              </form>
+          <div class="row text-center">
+            <div class="col-md-6">
+              <img src="<?= base_url('assets/img/komplet.svg') ?>" alt="complete" class="foto_so">
             </div>
-            <!-- /.error-content -->
+            <div class="col-md-6" style="padding-top: 30px;">
+              <h3>Stok Opname Berhasil</h3>
+              <p>Terima kasih, kamu telah selesai melakukan stok opname artikel di bulan ini.
+                data akan di verifikasi oleh tim Operasional ABSI.</p>
+            </div>
           </div>
-          <!-- end eror page -->
-          <!-- end toko so -->
+          <hr>
+
+          <div class="area-footer">
+            <small>* Jika data SO belum sesuai, kamu bisa memperbaruinya selama waktu tersedia atau bisa hubungi tim operasional.</small>
+            <input type="hidden" id="waktuSo" value="<?= $dataSo ? $dataSo->created_at : '' ?>">
+            <?php if ($dataSo->status == 1) { ?>
+              <div class="waktu-open">Terbuka</div>
+              <a href="<?php echo base_url('spg/dashboard') ?>" class="btn btn-sm btn-success" title="Ke Beranda"> <i class="fas fa-home"></i> Beranda</a>
+              <a href="<?php echo base_url('spg/Stok_opname/detail/' . $dataSo->id . '/edit') ?>" class="btn btn-sm btn-warning" title="Edit Data"> <i class="fas fa-edit"></i> Edit</a>
+              <a href="<?php echo base_url('spg/Stok_opname/detail/' . $dataSo->id . '/tampil') ?>" class="btn btn-sm btn-primary" title="Lihat Detail"> Lihat <i class="fas fa-arrow-right"></i></a>
+            <?php } else { ?>
+              <div class="waktu" id="waktu"></div>
+              <a href="<?php echo base_url('spg/dashboard') ?>" class="btn btn-sm btn-success" title="Ke Beranda"> <i class="fas fa-home"></i> Beranda</a>
+              <a href="<?php echo base_url('spg/Stok_opname/detail/' . $dataSo->id . '/edit') ?>" class="btn btn-sm btn-warning" title="Edit Data" id="editButton"> <i class="fas fa-edit"></i> Edit</a>
+              <a href="<?php echo base_url('spg/Stok_opname/detail/' . $dataSo->id . '/tampil') ?>" class="btn btn-sm btn-primary" title="Lihat Detail"> Lihat <i class="fas fa-arrow-right"></i></a>
+            <?php } ?>
+          </div>
 
         <?php } else { ?>
           <form action="<?= base_url('spg/stok_opname/simpan_so') ?>" method="post" id="form-so">
@@ -113,8 +155,29 @@
   </div>
   </div>
 </section>
-<!-- jQuery -->
-<script src="<?php echo base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
+<script>
+  const waktuSo = new Date($('#waktuSo').val()).getTime();
+  const targetTime = waktuSo + (23 * 60 * 60 * 1000);
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = targetTime - now;
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const formattedTime = `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+    document.getElementById('waktu').textContent = formattedTime;
+    const editButton = document.getElementById('editButton');
+    if (distance < 0) {
+      clearInterval(interval);
+      document.getElementById('waktu').textContent = 'Terkunci';
+      $('#editButton').addClass('disabled').attr('disabled', true);
+      return;
+    }
+  }
+  const interval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+</script>
 <script>
   $(document).ready(function() {
     // table

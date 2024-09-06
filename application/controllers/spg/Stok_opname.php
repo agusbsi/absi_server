@@ -25,11 +25,12 @@ class Stok_opname extends CI_Controller
     from tb_stok ts
     join tb_produk tp on ts.id_produk = tp.id
     where ts.id_toko = '$id_toko'  order by tp.kode asc")->result();
-
-    // ambil data toko
     $data['toko'] = $this->db->query("SELECT * from tb_toko 
     where id ='$id_toko'")->row();
-    // cek data status aset
+    $thn = date('Y');
+    $bln = date('m');
+    $data['dataSo'] = $this->db->query("SELECT * from tb_so 
+    where id_toko ='$id_toko' AND YEAR(created_at) = '$thn' AND MONTH(created_at) = '$bln' ORDER BY id desc LIMIT 1 ")->row();
     $cek = $this->db->query("SELECT status_aset FROM tb_toko WHERE id = ?", array($id_toko))->row();
     if ($cek->status_aset != 1) {
       tampil_alert('info', 'WAJIB UPDATE ASET', 'Anda harus melakukan Update Aset terlebih dahulu agar bisa Stok Opname.');
@@ -87,73 +88,65 @@ class Stok_opname extends CI_Controller
     }
     redirect('spg/Stok_opname');
   }
-  // simpan penjualan
-  public function saveSo()
+  public function detail($id, $aksi)
   {
-    $id_user = $this->input->post('id_user');
-    $id_toko = $this->input->post('id_toko');
-    $detail = $this->input->post('detail');
-    $response = [];
+    $data['title'] = 'Stok Opname';
+    $data['aksi'] = $aksi;
+    if ($aksi == 'edit') {
+      $cek = $this->db->query("SELECT * FROM tb_so WHERE id = ?", array($id))->row();
+      if ($cek) {
+        $waktu_sekarang = strtotime(date('Y-m-d H:i:s'));
+        $waktu_created = strtotime($cek->created_at);
+        $selisih_jam = ($waktu_sekarang - $waktu_created) / 3600; // Konversi selisih ke jam
 
-    if (empty($id_toko) || empty($id_user)) {
-      $response['success'] = false;
-      $response['message'] = 'ID toko atau ID user tidak valid.';
-      header('Content-Type: application/json');
-      echo json_encode($response);
+        if ($selisih_jam < 25 || $cek->status == 1) {
+          $data['aksi'] = 'edit';
+        } else {
+          tampil_alert('info', 'TERKUNCI', 'Batas waktu edit berakhir, silahkan hubungi tim Operasional');
+          redirect('spg/Stok_opname');
+          return;
+        }
+      }
+    } elseif ($aksi != 'tampil') {
+      tampil_alert('info', 'NOT FOUND', 'Halaman tidak ditemukan, Anda diarahakan ke Dashboard.');
+      redirect('spg/Dashboard');
       return;
     }
-
-    $id_so = $this->kodeSo();
-    $data_so = array(
-      'id' => $id_so,
-      'id_toko' => $id_toko,
-      'id_user' => $id_user,
-    );
-
-    $this->db->trans_start();
-
-    $this->db->insert('tb_so', $data_so);
-
-    if (is_array($detail)) {
-      foreach ($detail as $d) {
-        $data_detail = array(
-          'id_so' => $id_so,
-          'id_produk' => $d['id_produk'],
-          'qty' => $d['qty'],
-          'hasil_so' => $d['hasil_so'],
-        );
-        $this->db->insert('tb_so_detail', $data_detail);
-      }
-    }
-    $this->db->query("UPDATE tb_toko set status_so = 1 where id = '$id_toko'");
-    if ($this->db->trans_complete()) {
-      $response['success'] = true;
-      $response['message'] = 'Berhasil';
-    } else {
-      $response['success'] = false;
-      $response['message'] = 'Gagal menyimpan transaksi.';
-    }
-
-    header('Content-Type: application/json');
-    echo json_encode($response);
+    $data['so'] = $this->db->query("SELECT * FROM tb_so WHERE id = ?", array($id))->row();
+    $data['detail'] = $this->db->query(
+      "SELECT tsd.*, tp.kode, tp.nama_produk as artikel
+         FROM tb_so_detail tsd
+         JOIN tb_produk tp ON tsd.id_produk = tp.id
+         WHERE tsd.id_so = ?",
+      array($id)
+    )->result();
+    $this->template->load('template/template', 'spg/stok_opname/detail', $data);
   }
-
-  //   no so otomatis
-  public function kodeSo()
+  public function update_so()
   {
-    date_default_timezone_set('Asia/Jakarta');
-    $q = $this->db->query("SELECT MAX(RIGHT(id, 4)) AS kd_max FROM tb_so WHERE DATE_FORMAT(created_at, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')");
-    $kd = "";
-
-    if ($q->num_rows() > 0) {
-      foreach ($q->result() as $k) {
-        $tmp = ((int)$k->kd_max) + 1;
-        $kd = sprintf("%04s", $tmp);
-      }
-    } else {
-      $kd = "0001";
+    $id_so          = $this->input->post('id_so');
+    $id_detail      = $this->input->post('id_detail');
+    $qty            = $this->input->post('qty');
+    $jumlah        = count($id_detail);
+    $this->db->trans_start();
+    for ($i = 0; $i < $jumlah; $i++) {
+      $d_id_detail = $id_detail[$i];
+      $d_qty       = $qty[$i];
+      $data_detail = array(
+        'hasil_so'       => $d_qty
+      );
+      $this->db->update('tb_so_detail', $data_detail, array('id' => $d_id_detail));
     }
+    $this->db->update('tb_so', array('status' => 0), array('id' => $id_so));
+    $this->db->trans_complete();
 
-    return "SO-" . date('ym') . "-" . $kd;
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      tampil_alert('error', 'Gagal', 'Terjadi kesalahan saat memproses data, coba lagi dengan jaringan yang bagus.');
+    } else {
+      $this->db->trans_commit();
+      tampil_alert('success', 'Berhasil', 'Data berhasil diproses');
+    }
+    redirect('spg/Stok_opname/detail/' . $id_so . '/tampil');
   }
 }
