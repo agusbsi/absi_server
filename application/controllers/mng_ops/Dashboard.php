@@ -224,4 +224,14 @@ class Dashboard extends CI_Controller
     where tpd.id_retur = '$id'")->result();
     $this->template->load('template/template', 'manager_ops/retur/detail', $data);
   }
+  public function adjust_stok()
+  {
+    $data['title'] = 'Adjustment Stok';
+    $this->template->load('template/template', 'manager_ops/toko/adjust_tampil', $data);
+  }
+  public function adjust_buat($id)
+  {
+    $data['title'] = 'Adjustment Stok';
+    $this->template->load('template/template', 'manager_ops/toko/adjust_buat', $data);
+  }
 }

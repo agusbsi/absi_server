@@ -92,7 +92,6 @@
                       <td>
                         <b><?= $d->kode ?></b> <br>
                         <small><?= $d->nama_produk ?></small>
-                        <input type="hidden" name="id_produk[]" value="<?= $d->id_produk ?>">
                         <input type="hidden" name="id_detail[]" value="<?= $d->id ?>">
                       </td>
                       <td class="text-center">

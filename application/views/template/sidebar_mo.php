@@ -118,6 +118,14 @@
           </li>
         </ul>
       </li>
+      <!-- <li class="nav-item">
+        <a href="<?= base_url('mng_ops/Dashboard/adjust_stok') ?>" class="nav-link <?= ($title == 'Adjustment Stok') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-window-restore"></i>
+          <p>
+            Adjustment Stok
+          </p>
+        </a>
+      </li> -->
       <li class="nav-header">Laporan</li>
       <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">

@@ -190,6 +190,10 @@
     })
 </script>
 <script>
+    document.querySelectorAll('.qty_input').forEach(input => {
+        input.addEventListener('input', updateTotal); // Menambahkan event listener untuk update total setiap ada perubahan
+    });
+
     function updateTotal() {
         const qtyInputs = document.querySelectorAll('.qty_input');
         let total = 0;
@@ -199,7 +203,4 @@
         });
         document.getElementById('total').textContent = total;
     }
-    document.querySelectorAll('.qty_input').forEach(input => {
-        input.addEventListener('input', updateTotal);
-    });
 </script>
