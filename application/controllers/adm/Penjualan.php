@@ -49,30 +49,55 @@ class Penjualan extends CI_Controller
     $id_artikel = $this->input->get('id_artikel');
     $tgl_awal = $this->input->get('tgl_awal');
     $tgl_akhir = $this->input->get('tgl_akhir');
-    $summary = $this->db->query("SELECT * from tb_produk where id = '$id_artikel'")->row();
-    $tabel_data = $this->db->query("
-          SELECT 
-              tt.nama_toko, 
-              SUM(tpd.qty) as total
-          FROM 
-              tb_penjualan_detail tpd 
-              JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
-              JOIN tb_toko tt ON tp.id_toko = tt.id
-          WHERE 
-              tpd.id_produk = '$id_artikel'  
-              AND DATE(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir'
-          GROUP BY 
-              tt.id
-          ORDER BY 
-              SUM(tpd.qty) DESC
-      ")->result();
+    if ($id_artikel == 'all') {
+      $kode = 'Semua Artikel';
+      $artikel = 'Semua Artikel';
+      $tipe = 'artikel';
+      $query = "
+        SELECT 
+            tpp.nama_produk, tpp.kode, 
+            SUM(tpd.qty) as total
+        FROM 
+            tb_penjualan_detail tpd 
+            JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+            JOIN tb_produk tpp on tpd.id_produk = tpp.id
+        WHERE 
+            DATE(tp.tanggal_penjualan) BETWEEN ? AND ?
+        GROUP BY 
+            tpp.id
+        ORDER BY 
+            SUM(tpd.qty) DESC";
+      $hasil_data = $this->db->query($query, [$tgl_awal, $tgl_akhir])->result();
+    } else {
+      $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
+      $kode = $summary->kode;
+      $artikel = $summary->nama_produk;
+      $tipe = 'toko';
+      $query = "
+        SELECT 
+            tt.nama_toko, 
+            SUM(tpd.qty) as total
+        FROM 
+            tb_penjualan_detail tpd 
+            JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+            JOIN tb_toko tt ON tp.id_toko = tt.id
+        WHERE 
+            tpd.id_produk = ? AND
+            DATE(tp.tanggal_penjualan) BETWEEN ? AND ?
+        GROUP BY 
+            tt.id
+        ORDER BY 
+            SUM(tpd.qty) DESC";
+      $hasil_data = $this->db->query($query, [$id_artikel, $tgl_awal, $tgl_akhir])->result();
+    }
 
     $data = [
-      'kode' => $summary->kode,
-      'artikel' => $summary->nama_produk,
+      'kode' => $kode,
+      'artikel' => $artikel,
+      'tipe'  => $tipe,
       'awal' => date('d-M-Y', strtotime($tgl_awal)),
       'akhir' => date('d-M-Y', strtotime($tgl_akhir)),
-      'tabel_data' => $tabel_data
+      'tabel_data' => $hasil_data
     ];
     echo json_encode($data);
   }
@@ -174,9 +199,9 @@ class Penjualan extends CI_Controller
     } else {
       $queri = "";
     }
-      $tgl_awal = $this->input->get('tgl_awal');
-      $tgl_akhir = $this->input->get('tgl_akhir');
-      $query = "SELECT tt.nama_toko, COALESCE(SUM(penjualan.qty), 0) as total
+    $tgl_awal = $this->input->get('tgl_awal');
+    $tgl_akhir = $this->input->get('tgl_akhir');
+    $query = "SELECT tt.nama_toko, COALESCE(SUM(penjualan.qty), 0) as total
           FROM tb_toko tt
           LEFT JOIN (
               SELECT tp.id_toko, tpd.qty
@@ -187,15 +212,13 @@ class Penjualan extends CI_Controller
           WHERE tt.status = 1 $queri
           GROUP BY tt.nama_toko
           ORDER BY COALESCE(SUM(penjualan.qty), 0) DESC";
-      $tabel_data = $this->db->query($query)->result();
+    $tabel_data = $this->db->query($query)->result();
 
-      $data = [
-          'awal' => date('d-M-Y', strtotime($tgl_awal)),
-          'akhir' => date('d-M-Y', strtotime($tgl_akhir)),
-          'tabel_data' => $tabel_data
-      ];
-      echo json_encode($data);
+    $data = [
+      'awal' => date('d-M-Y', strtotime($tgl_awal)),
+      'akhir' => date('d-M-Y', strtotime($tgl_akhir)),
+      'tabel_data' => $tabel_data
+    ];
+    echo json_encode($data);
   }
-
-  
 }

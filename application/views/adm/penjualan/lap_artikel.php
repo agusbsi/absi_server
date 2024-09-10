@@ -96,6 +96,7 @@
               <label for="">Artikel :</label>
               <select name="id_artikel" class="form-control form-control-sm select2" id="id_artikel" required>
                 <option value="">- Pilih Artikel -</option>
+                <option value="all"> Semua Artikel</option>
                 <?php foreach ($artikel as $t) : ?>
                   <option value="<?= $t->id ?>">[ <?= $t->kode ?> ] <?= $t->nama_produk ?></option>
                 <?php endforeach ?>
@@ -148,12 +149,10 @@
           </div>
           <table class="table table-bordered mt-4">
             <thead>
-              <tr class="text-center">
-                <th>No</th>
-                <th>Nama Toko</th>
-                <th>Terjual</th>
-              </tr>
-            </thead>
+              <thead>
+                <tr class="text-center" id="tableHeader">
+                </tr>
+              </thead>
             <tbody id="dataTableBody">
             </tbody>
           </table>
@@ -188,20 +187,29 @@
     });
     return isValid;
   }
-  document.getElementById('downloadExcelBtn').addEventListener('click', function() {
-    downloadExcel();
-  });
 
-  function downloadExcel() {
+
+  function downloadExcel(tipe) {
     var wb = XLSX.utils.book_new();
-    var header = ["No", "Nama Toko", "Qty"];
     var sheetData = [];
+
+    // Sesuaikan header berdasarkan tipe
+    var header;
+    if (tipe === 'toko') {
+      header = ["No", "Nama Toko", "Qty"];
+    } else {
+      header = ["No", "Kode", "Artikel", "Qty"];
+    }
+
     sheetData.push(header);
+
     var table = document.getElementById('dataTableBody');
     for (var i = 0; i < table.rows.length; i++) {
       var row = [];
       for (var j = 0; j < table.rows[i].cells.length; j++) {
         var cellValue = table.rows[i].cells[j].textContent.trim();
+
+        // Pastikan format Qty diubah menjadi angka
         if (header[j] === "Qty") {
           var numericValue = parseFloat(cellValue.replace(/[^0-9.-]+/g, ''));
           row.push(isNaN(numericValue) ? cellValue : numericValue);
@@ -211,11 +219,15 @@
       }
       sheetData.push(row);
     }
+
     var ws = XLSX.utils.aoa_to_sheet(sheetData);
-    XLSX.utils.book_append_sheet(wb, ws, 'Data Penjualan per artikel');
-    var filename = 'Laporan_jual_artikel.xlsx';
+    XLSX.utils.book_append_sheet(wb, ws, 'Data Penjualan');
+
+    // Tentukan nama file berdasarkan tipe
+    var filename = tipe === 'toko' ? 'Laporan_jual_artikel.xlsx' : 'Laporan_jual_semua_artikel.xlsx';
     XLSX.writeFile(wb, filename);
   }
+
 
   document.getElementById('searchBtn').addEventListener('click', function() {
     var idArtikel = document.getElementById('id_artikel').value;
@@ -320,13 +332,42 @@
     var tableBody = document.getElementById('dataTableBody');
     var totalQty = 0;
     tableBody.innerHTML = '';
+    const tableHeader = document.getElementById('tableHeader');
+    let headerContent;
+
+    if (data.tipe === 'toko') {
+      headerContent = `
+    <th>No</th>
+    <th>Nama Toko</th>
+    <th>Terjual</th>
+  `;
+    } else {
+      headerContent = `
+    <th>No</th>
+    <th>Kode</th>
+    <th>Artikel</th>
+    <th>Terjual</th>
+  `;
+    }
+
+    tableHeader.innerHTML = headerContent;
     data.tabel_data.forEach((item, index) => {
       var row = document.createElement('tr');
-      row.innerHTML = `
+      if (data.tipe === 'toko') {
+        row.innerHTML = `
             <td class="text-center">${index + 1}</td>
             <td>${item.nama_toko}</td>
             <td class="text-center">${item.total}</td>
         `;
+      } else {
+        row.innerHTML = `
+            <td class="text-center">${index + 1}</td>
+            <td><small><strong>${item.kode}</strong></small></td>
+            <td><small>${item.nama_produk}</small></td>
+            <td class="text-center">${item.total}</td>
+        `;
+      }
+
       tableBody.appendChild(row);
       var qty = parseInt(item.total, 10);
       if (!isNaN(qty)) {
@@ -335,11 +376,23 @@
     });
 
     var totalRow = document.createElement('tr');
-    totalRow.innerHTML = `
-    <td colspan="2" class="text-right"><strong>Total Qty:</strong></td>
-    <td class="text-center">${totalQty}</td>
-`;
+    if (data.tipe === 'toko') {
+      totalRow.innerHTML = `
+          <td colspan="2" class="text-right"><strong>Total Qty:</strong></td>
+          <td class="text-center">${totalQty}</td>
+      `;
+    } else {
+      totalRow.innerHTML = `
+          <td colspan="3" class="text-right"><strong>Total Qty:</strong></td>
+          <td class="text-center">${totalQty}</td>
+      `;
+    }
+
     tableBody.appendChild(totalRow);
+    document.getElementById('downloadExcelBtn').addEventListener('click', function() {
+      var tipe = data.tipe;
+      downloadExcel(tipe);
+    });
   }
 
   function printDiv(divName) {
