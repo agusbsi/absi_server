@@ -353,11 +353,6 @@
     </div>
   </div>
 </div>
-<!-- end modal tambah produk -->
-
-<!-- jQuery -->
-<script src="<?= base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
-<script src="<?php echo base_url() ?>assets/app/js/alert.js"></script>
 <script>
   $(document).ready(function() {
 

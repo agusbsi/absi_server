@@ -20,12 +20,14 @@ class Stok extends CI_Controller
     $query = "SELECT tp.*, COALESCE(SUM(ts.qty), 0) as stok
           FROM tb_produk tp
           LEFT JOIN tb_stok ts ON tp.id = ts.id_produk
-          WHERE tp.status = 1
+          JOIN tb_toko tt on ts.id_toko = tt.id
+          WHERE tp.status = 1 AND tt.status = 1
           GROUP BY tp.id
           ORDER BY tp.kode ASC";
     $data['list_data'] = $this->db->query($query)->result();
     $data['artikel'] = $this->db->query("SELECT count(id) as total from tb_produk where status = 1 ")->row();
-    $data['stok'] = $this->db->query("SELECT SUM(qty) as total from tb_stok where status = 1 ")->row();
+    $data['stok'] = $this->db->query("SELECT sum(ts.qty) as total FROM tb_stok ts
+    JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1 ")->row();
     $this->template->load('template/template', 'adm/stok/index', $data);
   }
   public function detail($id)
@@ -35,7 +37,7 @@ class Stok extends CI_Controller
           FROM tb_stok ts
           JOIN tb_toko tt ON ts.id_toko = tt.id
           join tb_produk tp on ts.id_produk = tp.id
-          where ts.id_produk = '$id'
+          where ts.id_produk = '$id' AND ts.status = 1 AND tt.status = 1
           ORDER BY ts.qty DESC";
 
     $data['data'] = $this->db->query($query)->row();
@@ -62,7 +64,8 @@ class Stok extends CI_Controller
         tc.nama_cust ASC";
     $data['list_data'] = $this->db->query($query)->result();
     $data['cust'] = $this->db->query("SELECT count(id) as total from tb_customer")->row();
-    $data['stok'] = $this->db->query("SELECT SUM(qty) as total, SUM(qty_awal) as stok_akhir from tb_stok where status = 1 ")->row();
+    $data['stok'] = $this->db->query("SELECT SUM(ts.qty) as total, SUM(ts.qty_awal) as stok_akhir from tb_stok ts
+    JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1 ")->row();
     $data['jual'] = $this->db->query("SELECT SUM(jml_jual) as total from vw_penjualan where tahun = '$thn' AND bulan = '$bln' ")->row();
     $this->template->load('template/template', 'adm/stok/customer', $data);
   }
