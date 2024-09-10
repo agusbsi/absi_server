@@ -127,6 +127,7 @@ class Stok_opname extends CI_Controller
     $id_so          = $this->input->post('id_so');
     $id_detail      = $this->input->post('id_detail');
     $qty            = $this->input->post('qty');
+    $tgl_so            = $this->input->post('tgl_so');
     $jumlah        = count($id_detail);
     $this->db->trans_start();
     for ($i = 0; $i < $jumlah; $i++) {
@@ -137,7 +138,7 @@ class Stok_opname extends CI_Controller
       );
       $this->db->update('tb_so_detail', $data_detail, array('id' => $d_id_detail));
     }
-    $this->db->update('tb_so', array('status' => 0), array('id' => $id_so));
+    $this->db->update('tb_so', ['status' => 0, 'tgl_so' => $tgl_so], ['id' => $id_so]);
     $this->db->trans_complete();
 
     if ($this->db->trans_status() === FALSE) {

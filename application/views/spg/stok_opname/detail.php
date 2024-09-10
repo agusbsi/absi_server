@@ -86,20 +86,28 @@
 </style>
 <section class="content">
     <div class="container-fluid">
-        <div class="callout callout-info">
-            <div class="row">
-                <div class="col-6">
-                    <small><i class="fas fa-store"></i> <strong><?= $so->id; ?></strong></small>
-                </div>
-                <div class="col-6">
-                    <small>
-                        <i class="fas fa-calendar"></i> Tgl SO : <?= date('d M Y', strtotime($so->tgl_so)) ?>
-                    </small>
+        <form action="<?= base_url('spg/Stok_opname/update_so') ?>" method="post" id="form_update">
+            <div class="callout callout-info">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <small><i class="fas fa-store"></i> <strong>Nomor SO </strong></small>
+                            <input type="text" name="id_so" class="form-control form-control-sm" value="<?= $so->id; ?>" readonly>
+                        </div>
+
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <i class="fas fa-date"></i> <small><strong>Tanggal SO *</strong></small>
+                            <?php if ($aksi == 'edit') { ?>
+                                <input type="date" name="tgl_so" class="form-control form-control-sm" value="<?= $so->tgl_so ?>" max="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d', strtotime('-31 days')) ?>" required>
+                            <?php } else { ?>
+                                <input type="text" name="id_so" class="form-control form-control-sm" value="<?= date('d M Y', strtotime($so->tgl_so)) ?>" readonly>
+                            <?php } ?>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <form action="<?= base_url('spg/Stok_opname/update_so') ?>" method="post" id="form_update">
-            <input type="hidden" name="id_so" value="<?= $so->id ?>">
             <div class="artikel-container">
                 <div class="judul">
                     <h2>Detail Artikel</h2>
@@ -144,15 +152,15 @@
                     <button type="submit" class="btn btn-sm btn-primary" id="btn_update" title="Simpan"><i class="fas fa-save"></i> Simpan</button>
                 <?php } ?>
             </div>
+            <hr>
         </form>
-        <hr>
     </div>
 </section>
 <script>
     function validateForm() {
         let isValid = true;
-        $('#form_update').find('.qty_input').each(function() {
-            if ($(this).val() === '') {
+        $('#form_update').find('input, textarea').each(function() {
+            if ($(this).attr('type') !== 'hidden' && $(this).val().trim() === '') {
                 isValid = false;
                 $(this).addClass('is-invalid');
             } else {
@@ -161,6 +169,7 @@
         });
         return isValid;
     }
+
     $('#btn_update').click(function(e) {
         e.preventDefault();
         Swal.fire({
@@ -180,7 +189,7 @@
                     Swal.fire({
                         icon: 'info',
                         title: 'Belum Lengkap',
-                        text: 'Kolom Hasil So tidak boleh kosong.',
+                        text: 'Tanggal dan Kolom Hasil So tidak boleh kosong.',
                         confirmButtonColor: '#3085d6',
                         confirmButtonText: 'OK'
                     });

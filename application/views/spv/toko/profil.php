@@ -190,7 +190,7 @@
       <button type="button" class="btn btn-default btn-sm btn-sm">Toko ini berlaku untuk harga : <?= status_het($toko->het) ?></button>
       <hr>
       <div class="tab-content">
-        <table id="table_stok" class="table table-bordered table-striped">
+        <table id="example1" class="table table-bordered table-striped">
           <thead>
             <tr class="text-center">
               <th>#</th>
@@ -306,7 +306,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
-            <input type="text" class="form-control form-control-sm " id="searchInput" placeholder="Cari artikel...">
+            <input type="text" class="form-control form-control-sm " id="searchInput" placeholder="Cari artikel berdasarkan kode atau nama artikel...">
           </div>
         </div>
         <form action="<?= base_url('spv/toko/tambah_artikel') ?>" role="form" method="post">
@@ -355,12 +355,6 @@
 </div>
 <script>
   $(document).ready(function() {
-
-    $('#table_stok').DataTable({
-      responsive: true,
-      lengthChange: false,
-      autoWidth: false,
-    });
     $("#cekAll").click(function() {
       $(".checkbox-item").prop('checked', $(this).prop('checked'));
     });
