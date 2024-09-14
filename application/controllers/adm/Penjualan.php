@@ -104,7 +104,7 @@ class Penjualan extends CI_Controller
   public function lap_toko()
   {
     $data['title'] = 'Penjualan Toko';
-    $data['toko'] = $this->db->query("SELECT * from tb_toko where status ='1'")->result();
+    $data['toko'] = $this->db->query("SELECT * from tb_toko order by status = 1 desc")->result();
     $this->template->load('template/template', 'adm/penjualan/lap_toko', $data);
   }
   public function cari_toko()
