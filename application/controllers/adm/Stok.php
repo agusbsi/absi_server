@@ -253,7 +253,7 @@ class Stok extends CI_Controller
       $aksi = "Diverifikasi Oleh :";
       $kartu_data = [];
       for ($i = 0; $i < $jml; $i++) {
-        $terima_result = $this->db->query("SELECT SUM(tpd.qty) AS total_qty FROM tb_pengiriman_detail tpd
+        $terima_result = $this->db->query("SELECT SUM(tpd.qty_diterima) AS total_qty FROM tb_pengiriman_detail tpd
         JOIN tb_pengiriman tp ON tpd.id_pengiriman = tp.id
         WHERE tp.id_toko = ? 
         AND tp.updated_at BETWEEN ? AND ? 

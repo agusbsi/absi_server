@@ -316,10 +316,12 @@ class Dashboard extends CI_Controller
   {
     $pengguna = $this->session->userdata('nama_user');
     $no_so = $this->input->post('no_so', true);
+    $get_toko = $this->input->post('toko', true);
     $id_produk = $this->input->post('id_produk', true);
     $qty_sistem = $this->input->post('qty_sistem', true);
     $hasil_so = $this->input->post('hasil_so', true);
     $catatan = $this->input->post('catatan', true);
+    $pt = $this->session->userdata('pt');
 
     $jml = count($id_produk);
     $this->db->trans_start();
@@ -357,6 +359,17 @@ class Dashboard extends CI_Controller
       tampil_alert('eror', 'Gagal', 'Terjadi kesalahan, data tidak tersimpan.');
     } else {
       tampil_alert('success', 'Berhasil', 'Data Adjustment Stok berhasil diajukan.');
+      $hp = $this->db->select('no_telp')
+        ->from('tb_user')
+        ->where('role', 1)
+        ->where('status', 1)
+        ->get()
+        ->result();
+      foreach ($hp as $h) {
+        $phone = $h->no_telp;
+        $message = "Anda memiliki 1 Pengajuan Adjustment Stok ($get_toko - $pt) yang perlu di cek, silahkan kunjungi s.id/absi-app";
+        kirim_wa($phone, $message);
+      }
     }
 
     redirect(base_url('mng_ops/Dashboard/adjust_detail/' . $id_adjust));

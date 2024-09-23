@@ -100,6 +100,7 @@ class Toko extends CI_Controller
       $hp = $this->db->select('no_telp')
         ->from('tb_user')
         ->where('role', 1)
+        ->where('status', 1)
         ->get()
         ->result();
       foreach ($hp as $h) {

@@ -213,6 +213,7 @@
           <div class="form-group">
             <strong>Catatan : *</strong>
             <textarea name="catatan" class="form-control form-control-sm" placeholder="Catatan anda..." required></textarea>
+            <input type="hidden" name="toko" value="<?= $SO->nama_toko; ?>">
           </div>
         </div>
         <div class="modal-footer">
