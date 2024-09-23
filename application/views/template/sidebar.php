@@ -3,6 +3,7 @@ $id = $this->session->userdata('id');
 $Artikel = $this->db->query("SELECT id FROM tb_produk WHERE status = '2'")->num_rows();
 $Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '3'")->num_rows();
 $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
+$adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 0")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">
@@ -147,7 +148,17 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
           </p>
         </a>
       </li>
-
+      <li class="nav-item">
+        <a href="<?= base_url('adm/Stok/adjust_stok') ?>" class="nav-link <?= ($title == 'Adjustment Stok') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-window-restore"></i>
+          <p>
+            Adjustment Stok
+            <?php if ($adjust != 0) { ?>
+              <span class="right badge badge-danger"><?= $adjust ?></span>
+            <?php } ?>
+          </p>
+        </a>
+      </li>
       <li class="nav-header">Laporan</li>
       <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">

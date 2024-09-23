@@ -211,27 +211,154 @@ class Dashboard extends CI_Controller
       order by tp.id desc")->result();
     $this->template->load('template/template', 'manager_ops/retur/index', $data);
   }
-  // detail retur
-  public function detail_retur($id)
-  {
-    $data['title'] = 'retur';
-    $data['retur'] = $this->db->query("SELECT tp.*, tt.nama_toko from tb_retur tp 
-    join tb_toko tt on tp.id_toko = tt.id
-    where tp.id = '$id'")->row();
-    $data['list_data'] = $this->db->query("SELECT tpd.*, tpk.kode, tpk.nama_produk from tb_retur_detail tpd
-    join tb_retur tp on tpd.id_retur = tp.id
-    join tb_produk tpk on tpd.id_produk = tpk.id
-    where tpd.id_retur = '$id'")->result();
-    $this->template->load('template/template', 'manager_ops/retur/detail', $data);
-  }
+
   public function adjust_stok()
   {
     $data['title'] = 'Adjustment Stok';
     $this->template->load('template/template', 'manager_ops/toko/adjust_tampil', $data);
   }
-  public function adjust_buat($id)
+  public function get_adjust_stok()
+  {
+    $request = $this->input->post(null, true);
+    $column_order = ['tas.id', 'tas.nomor', 'tt.nama_toko', 'tas.status', 'tas.created_at'];
+    $search_value = $request['search']['value'] ?? '';
+    $start = filter_var($request['start'], FILTER_VALIDATE_INT) ?: 0;
+    $length = filter_var($request['length'], FILTER_VALIDATE_INT) ?: 10;
+    $draw = filter_var($request['draw'], FILTER_VALIDATE_INT) ?: 1;
+    $this->db->from('tb_adjust_stok tas')
+      ->join('tb_so ts', 'tas.id_so = ts.id')
+      ->join('tb_toko tt', 'ts.id_toko = tt.id');
+    $total_data = $this->db->count_all_results();
+    $this->db->select(['tas.*', 'tt.nama_toko'])
+      ->from('tb_adjust_stok tas')
+      ->join('tb_so ts', 'tas.id_so = ts.id')
+      ->join('tb_toko tt', 'ts.id_toko = tt.id');
+    if (!empty($search_value)) {
+      $this->db->group_start()
+        ->like('tas.nomor', $search_value)
+        ->or_like('tt.nama_toko', $search_value)
+        ->group_end();
+    }
+    $filtered_data = $this->db->count_all_results('', false);
+    $this->db->limit($length, $start);
+    if (isset($request['order'])) {
+      $column_index = $request['order'][0]['column'];
+      $column_dir = $request['order'][0]['dir'];
+      $this->db->order_by($column_order[$column_index], $column_dir);
+    } else {
+      $this->db->order_by('tas.id', 'desc');
+    }
+    $query = $this->db->get()->result();
+    $data = [];
+    $no = $start + 1;
+    foreach ($query as $row) {
+      $data[] = [
+        'no' => $no++,
+        'nomor' => html_escape($row->nomor),
+        'nama_toko' => html_escape($row->nama_toko),
+        'id_so' => html_escape($row->id_so),
+        'status' => $row->status,
+        'created_at' => $row->created_at,
+        'id' => $row->id
+      ];
+    }
+    $response = [
+      "draw" => $draw,
+      "recordsTotal" => $total_data,
+      "recordsFiltered" => $filtered_data,
+      "data" => $data
+    ];
+
+    echo json_encode($response);
+  }
+  public function adjust_waktu()
+  {
+    $now = date('Y-m-d H:i:s');
+    $this->db->where('DATE_ADD(created_at, INTERVAL 10 DAY) <=', $now);
+    $this->db->where('status =', 0);
+    $expired_so = $this->db->get('tb_adjust_stok')->result();
+    $batch_data = [];
+    $histori_data = [];
+    foreach ($expired_so as $so) {
+      $batch_data[] = [
+        'id' => $so->id,
+        'status' => 3
+      ];
+      $histori_data[] = [
+        'id_adjust' => $so->id,
+        'aksi' => 'Dicancel oleh :',
+        'pembuat' => 'sistem',
+        'catatan' => 'Tidak di proses lebih dari 10 hari.'
+      ];
+    }
+    if (!empty($batch_data)) {
+      $this->db->update_batch('tb_adjust_stok', $batch_data, 'id');
+    }
+    if (!empty($histori_data)) {
+      $this->db->insert_batch('tb_adjust_histori', $histori_data);
+    }
+  }
+
+  public function adjust_detail($id)
   {
     $data['title'] = 'Adjustment Stok';
-    $this->template->load('template/template', 'manager_ops/toko/adjust_buat', $data);
+    $data['row'] = $this->db->query("SELECT tas.*, tt.nama_toko, ts.tgl_so as periode from tb_adjust_stok tas
+    JOIN tb_so ts on tas.id_so = ts.id
+    JOIN tb_toko tt on ts.id_toko = tt.id
+    WHERE tas.id = ?", array($id))->row();
+    $data['detail'] = $this->db->query("SELECT tad.*, tp.kode,tp.nama_produk as artikel from tb_adjust_detail tad
+    JOIN tb_produk tp on tad.id_produk = tp.id
+    WHERE tad.id_adjust = ?", array($id))->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_adjust_histori where id_adjust = ?", array($id))->result();
+    $this->template->load('template/template', 'manager_ops/toko/adjust_detail', $data);
+  }
+  public function adjust_save()
+  {
+    $pengguna = $this->session->userdata('nama_user');
+    $no_so = $this->input->post('no_so', true);
+    $id_produk = $this->input->post('id_produk', true);
+    $qty_sistem = $this->input->post('qty_sistem', true);
+    $hasil_so = $this->input->post('hasil_so', true);
+    $catatan = $this->input->post('catatan', true);
+
+    $jml = count($id_produk);
+    $this->db->trans_start();
+
+    // Insert ke tb_adjust_stok
+    $cek = $this->db->query("SELECT MAX(no_urut) as urut FROM tb_adjust_stok")->row();
+    $urut = isset($cek->urut) ? $cek->urut + 1 : 1;
+    $this->db->insert('tb_adjust_stok', ['id_so' => $no_so, 'no_urut' => $urut, 'nomor' => 'AD-' . date('Y') . '-' . date('n') . '-' . $urut]);
+    $id_adjust = $this->db->insert_id();
+
+    // Insert batch ke tb_adjust_detail
+    $detail_data = [];
+    for ($i = 0; $i < $jml; $i++) {
+      $detail_data[] = [
+        'id_adjust' => $id_adjust,
+        'id_produk' => $id_produk[$i],
+        'stok_akhir' => $qty_sistem[$i],
+        'hasil_so' => $hasil_so[$i]
+      ];
+    }
+    $this->db->insert_batch('tb_adjust_detail', $detail_data);
+
+    // Insert ke tb_adjust_histori
+    $this->db->insert('tb_adjust_histori', [
+      'id_adjust' => $id_adjust,
+      'aksi' => 'Diajukan oleh :',
+      'pembuat' => $pengguna,
+      'catatan' => $catatan
+    ]);
+
+    // Complete transaction
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE) {
+      tampil_alert('eror', 'Gagal', 'Terjadi kesalahan, data tidak tersimpan.');
+    } else {
+      tampil_alert('success', 'Berhasil', 'Data Adjustment Stok berhasil diajukan.');
+    }
+
+    redirect(base_url('mng_ops/Dashboard/adjust_detail/' . $id_adjust));
   }
 }

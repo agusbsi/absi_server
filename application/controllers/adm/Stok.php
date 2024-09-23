@@ -161,4 +161,164 @@ class Stok extends CI_Controller
 
     echo json_encode($data);
   }
+  public function adjust_stok()
+  {
+    $data['title'] = 'Adjustment Stok';
+    $this->template->load('template/template', 'adm/stok/adjust_tampil', $data);
+  }
+  public function get_adjust_stok()
+  {
+    $request = $this->input->post(null, true);
+    $column_order = ['tas.id', 'tas.nomor', 'tt.nama_toko', 'tas.status', 'tas.created_at'];
+    $search_value = $request['search']['value'] ?? '';
+    $start = filter_var($request['start'], FILTER_VALIDATE_INT) ?: 0;
+    $length = filter_var($request['length'], FILTER_VALIDATE_INT) ?: 10;
+    $draw = filter_var($request['draw'], FILTER_VALIDATE_INT) ?: 1;
+    $this->db->from('tb_adjust_stok tas')
+      ->join('tb_so ts', 'tas.id_so = ts.id')
+      ->join('tb_toko tt', 'ts.id_toko = tt.id');
+    $total_data = $this->db->count_all_results();
+    $this->db->select(['tas.*', 'tt.nama_toko'])
+      ->from('tb_adjust_stok tas')
+      ->join('tb_so ts', 'tas.id_so = ts.id')
+      ->join('tb_toko tt', 'ts.id_toko = tt.id');
+    if (!empty($search_value)) {
+      $this->db->group_start()
+        ->like('tas.nomor', $search_value)
+        ->or_like('tt.nama_toko', $search_value)
+        ->group_end();
+    }
+    $filtered_data = $this->db->count_all_results('', false);
+    $this->db->limit($length, $start);
+    if (isset($request['order'])) {
+      $column_index = $request['order'][0]['column'];
+      $column_dir = $request['order'][0]['dir'];
+      $this->db->order_by($column_order[$column_index], $column_dir);
+    } else {
+      $this->db->order_by('tas.status', 'asc');
+      $this->db->order_by('tas.id', 'desc');
+    }
+    $query = $this->db->get()->result();
+    $data = [];
+    $no = $start + 1;
+    foreach ($query as $row) {
+      $data[] = [
+        'no' => $no++,
+        'nomor' => html_escape($row->nomor),
+        'nama_toko' => html_escape($row->nama_toko),
+        'id_so' => html_escape($row->id_so),
+        'status' => $row->status,
+        'created_at' => $row->created_at,
+        'id' => $row->id
+      ];
+    }
+    $response = [
+      "draw" => $draw,
+      "recordsTotal" => $total_data,
+      "recordsFiltered" => $filtered_data,
+      "data" => $data
+    ];
+
+    echo json_encode($response);
+  }
+  public function adjust_detail($id)
+  {
+    $data['title'] = 'Adjustment Stok';
+    $data['row'] = $this->db->query("SELECT tas.*, tt.nama_toko, ts.tgl_so as periode, ts.id_toko from tb_adjust_stok tas
+    JOIN tb_so ts on tas.id_so = ts.id
+    JOIN tb_toko tt on ts.id_toko = tt.id
+    WHERE tas.id = ?", array($id))->row();
+    $data['detail'] = $this->db->query("SELECT tad.*, tp.kode,tp.nama_produk as artikel from tb_adjust_detail tad
+    JOIN tb_produk tp on tad.id_produk = tp.id
+    WHERE tad.id_adjust = ?", array($id))->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_adjust_histori where id_adjust = ?", array($id))->result();
+    $this->template->load('template/template', 'adm/stok/adjust_detail', $data);
+  }
+  public function adjust_save()
+  {
+    $pengguna = $this->session->userdata('nama_user');
+    $id_adjust = $this->input->post('id_adjust', true);
+    $no_adjust = $this->input->post('no_adjust', true);
+    $id_so = $this->input->post('id_so', true);
+    $id_toko = $this->input->post('id_toko', true);
+    $id_produk = $this->input->post('id_produk', true);
+    $hasil_so = $this->input->post('hasil_so', true);
+    $catatan = $this->input->post('catatan', true);
+    $keputusan = $this->input->post('keputusan', true);
+    $jml = count($id_produk);
+    $tgl_so = $this->db->query("SELECT tgl_so FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_so;
+    $tgl_acc = date('Y-m-d');
+    $this->db->trans_start();
+    if ($keputusan == 1) {
+      $aksi = "Diverifikasi Oleh :";
+      $kartu_data = [];
+      for ($i = 0; $i < $jml; $i++) {
+        $terima_result = $this->db->query("SELECT SUM(tpd.qty) AS total_qty FROM tb_pengiriman_detail tpd
+        JOIN tb_pengiriman tp ON tpd.id_pengiriman = tp.id
+        WHERE tp.id_toko = ? 
+        AND tp.updated_at BETWEEN ? AND ? 
+        AND tpd.id_produk = ?", array($id_toko, $tgl_so, $tgl_acc, $id_produk[$i]))->row();
+        $jual_result = $this->db->query("SELECT SUM(tpd.qty) AS total_qty FROM tb_penjualan_detail tpd
+        JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+        WHERE tp.id_toko = ? 
+        AND tp.tanggal_penjualan BETWEEN ? AND ? 
+        AND tpd.id_produk = ?", array($id_toko, $tgl_so, $tgl_acc, $id_produk[$i]))->row();
+        $mutasi_k = $this->db->query("SELECT SUM(tpd.qty_terima) AS total_qty FROM tb_mutasi_detail tpd
+        JOIN tb_mutasi tp ON tpd.id_mutasi = tp.id
+        WHERE tp.id_toko_asal = ?  AND tp.status = 2
+        AND tp.updated_at BETWEEN ? AND ? 
+        AND tpd.id_produk = ?", array($id_toko, $tgl_so, $tgl_acc, $id_produk[$i]))->row();
+        $mutasi_m = $this->db->query("SELECT SUM(tpd.qty_terima) AS total_qty FROM tb_mutasi_detail tpd
+        JOIN tb_mutasi tp ON tpd.id_mutasi = tp.id
+        WHERE tp.id_toko_tujuan = ?  AND tp.status = 2
+        AND tp.updated_at BETWEEN ? AND ? 
+        AND tpd.id_produk = ?", array($id_toko, $tgl_so, $tgl_acc, $id_produk[$i]))->row();
+        $retur_result = $this->db->query("SELECT SUM(tpd.qty_terima) AS total_qty FROM tb_retur_detail tpd
+        JOIN tb_retur tp ON tpd.id_retur = tp.id
+        WHERE tp.id_toko = ?  AND tp.status = 4
+        AND tp.updated_at BETWEEN ? AND ? 
+        AND tpd.id_produk = ?", array($id_toko, $tgl_so, $tgl_acc, $id_produk[$i]))->row();
+        $terima = $terima_result->total_qty ?? 0;
+        $jual = $jual_result->total_qty ?? 0;
+        $mutasi_keluar = $mutasi_k->total_qty ?? 0;
+        $mutasi_masuk = $mutasi_m->total_qty ?? 0;
+        $retur = $retur_result->total_qty ?? 0;
+        $cek_stok = $this->db->query("SELECT qty from tb_stok where id_toko = ? AND id_produk = ?", array($id_toko, $id_produk[$i]))->row();
+        $stok_sistem = $cek_stok->qty ?? 0;
+        $this->db->set('qty', $hasil_so[$i] + $terima + $mutasi_masuk - $jual - $mutasi_keluar - $retur)
+          ->set('qty_awal', $hasil_so[$i])
+          ->where('id_produk', $id_produk[$i])
+          ->where('id_toko', $id_toko)
+          ->update('tb_stok');
+        $kartu_data[] = [
+          'no_doc' => $no_adjust,
+          'id_produk' => $id_produk[$i],
+          'id_toko' => $id_toko,
+          'stok' => $stok_sistem,
+          'sisa' => $hasil_so[$i] + $terima + $mutasi_masuk - $jual - $mutasi_keluar - $retur,
+          'keterangan' => 'Adjustment Stok',
+          'pembuat' => $pengguna
+        ];
+      }
+      $this->db->insert_batch('tb_kartu_stok', $kartu_data);
+    } else {
+      $aksi = "Ditolak Oleh :";
+    }
+
+    $this->db->update('tb_adjust_stok', ['status' => $keputusan], ['id' => $id_adjust]);
+    $this->db->insert('tb_adjust_histori', [
+      'id_adjust' => $id_adjust,
+      'aksi' => $aksi,
+      'pembuat' => $pengguna,
+      'catatan' => $catatan
+    ]);
+
+    $this->db->trans_complete();
+    if ($this->db->trans_status() === FALSE) {
+      tampil_alert('error', 'Gagal', 'Terjadi kesalahan, data tidak tersimpan.');
+    } else {
+      tampil_alert('success', 'Berhasil', 'Data Adjustment Stok berhasil proses.');
+    }
+    redirect(base_url('adm/Stok/adjust_detail/' . $id_adjust));
+  }
 }

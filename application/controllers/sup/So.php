@@ -76,7 +76,7 @@ class So extends CI_Controller
     join tb_toko tt on ts.id_toko = tt.id
     where ts.id_toko = '$id_toko' and ts.id = '$id_so'")->row();
     $tgl_so = $this->db->query("SELECT tgl_so FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_so;
-    $query = "SELECT COALESCE(nj.qty, 0) as qty_jual,tp.kode,tsd.hasil_so,tsd.qty_awal, COALESCE(vt.jml_terima, 0) AS jml_terima,COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,COALESCE(vp.jml_jual, 0) AS jml_jual,COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,COALESCE(vr.jml_retur, 0) AS jml_retur,COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar FROM tb_stok ts
+    $query = "SELECT ts.id_produk, COALESCE(nj.qty, 0) as qty_jual,tp.kode,tsd.hasil_so,tsd.qty_awal, COALESCE(vt.jml_terima, 0) AS jml_terima,COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,COALESCE(vp.jml_jual, 0) AS jml_jual,COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,COALESCE(vr.jml_retur, 0) AS jml_retur,COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar FROM tb_stok ts
     LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -120,6 +120,7 @@ class So extends CI_Controller
     GROUP BY ts.id_produk ORDER BY tp.kode ASC";
 
     $data['detail_so'] = $this->db->query($query, array($id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $id_so))->result();
+    $data['cek_adjust'] = $this->db->query("SELECT * FROM tb_adjust_stok WHERE id_so = ?", array($id_so))->num_rows();
     $this->template->load('template/template', 'manager_mv/stokopname/detail_so_toko', $data);
   }
   public function reset_so()

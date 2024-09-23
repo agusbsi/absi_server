@@ -13,7 +13,7 @@
 <form id="resetSOForm" action="<?= base_url('sup/So/reset_so') ?>" method="POST" style="display:none;">
   <input type="hidden" name="id_so" value="<?= $SO->id ?>">
 </form>
-<form id="adjust_form" action="<?= base_url('sup/So/reset_so') ?>" method="POST">
+<form id="adjust_form" action="<?= base_url('mng_ops/Dashboard/adjust_save') ?>" method="POST">
   <section class="content">
     <div class="container-fluid">
       <div id="printableArea">
@@ -27,7 +27,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="">No SO :</label>
-                    <input type="text" value="<?= $SO->id; ?>" class="form-control form-control-sm" readonly>
+                    <input type="text" name="no_so" value="<?= $SO->id; ?>" class="form-control form-control-sm" readonly>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -110,6 +110,9 @@
                           <td>
                             <small>
                               <strong><?= $d->kode ?></strong>
+                              <input type="hidden" name="id_produk[]" value="<?= $d->id_produk ?>">
+                              <input type="hidden" name="qty_sistem[]" value="<?= $stok_akhir ?>">
+                              <input type="hidden" name="hasil_so[]" value="<?= $d->hasil_so ?>">
                             </small>
                           </td>
                           <td class="text-center"><strong><?= DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $d->qty_awal : $awal ?></strong></td>
@@ -177,8 +180,8 @@
                   <?php
                   $role = $this->session->userdata('role');
                   if ($role == 14) { ?>
-                    <button type="button" class="btn btn-info btn-sm float-right mr-2 disabled" data-toggle="modal" data-target="#demo"><i class="fa fa-paper-plane"></i> Adjust Stok</button>
-                    <a href="#" class="btn btn-warning btn-sm float-right mr-2 <?= date('m', strtotime($SO->created_at)) == date('m') ? '' : 'disabled' ?> " id="btn_resetSO" data-so="<?= $SO->id ?>"><i class="fa fa-share"></i> Reset & SO ulang</a>
+                    <button type="button" class="btn btn-info btn-sm float-right mr-2 " data-toggle="modal" data-target="#exampleModalCenter" <?= (date('m', strtotime($SO->created_at)) != date('m')) || ($cek_adjust > 0) ? 'disabled' : '' ?>><i class="fa fa-paper-plane"></i> Adjust Stok</button>
+                    <a href="#" class="btn btn-warning btn-sm float-right mr-2" id="btn_resetSO" data-so="<?= $SO->id ?>" <?= date('m', strtotime($SO->created_at)) == date('m') ? '' : 'disabled' ?>><i class="fa fa-share"></i> Reset & SO ulang</a>
                   <?php } ?>
                   <a href="<?= base_url('sup/So/unduh_so/' . $SO->id) ?>" class="btn btn-success btn-sm float-right mr-2 "><i class="fa fa-download"></i> Unduh Excel</a>
                   <button onclick="goBack()" class="btn btn-danger btn-sm float-right mr-2"> <i class="fas fa-arrow-left"></i> Kembali</button>
@@ -204,7 +207,7 @@
         <div class="modal-body">
           <li><small>Proses ini membutuhkan verifikasi dari Direksi.</small></li>
           <li><small>Proses ini hanya bisa di lakukan sekali untuk satu nomor SO.</small></li>
-          <li><small>Ketika proses sudah di verifikasi maka akan memperbarui stok sistem sesuai dengan hasil SO SPG, berdasarkan tanggal SO.</small></li>
+          <li><small>Ketika proses sudah di verifikasi maka akan memperbarui stok sistem sesuai dengan hasil SO SPG berdasarkan tanggal SO.</small></li>
           <li><small>Jika pengajuan ini tidak di verifikasi selama 10 hari, maka sistem akan membatalkan secara otomatis.</small></li>
           <hr>
           <div class="form-group">

@@ -203,6 +203,18 @@ function status_aset($id)
         echo "<span class='badge badge-info'>Tidak Aktif !</span>";
     }
 }
+function status_adjust($id)
+{
+    if ($id == 0) {
+        echo "<span class='badge badge-warning'>Proses Verifikasi</span>";
+    } elseif ($id == 1) {
+        echo "<span class='badge badge-success'>Disetujui</span>";
+    } elseif ($id == 2) {
+        echo "<span class='badge badge-danger'>Ditolak</span>";
+    } else {
+        echo "<span class='badge badge-danger'>Dicancel</span>";
+    }
+}
 function kategori_bap($id)
 {
     if ($id == 1) {

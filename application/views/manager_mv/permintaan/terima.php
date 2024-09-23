@@ -130,7 +130,7 @@
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colspan="5"><button type="button" class="btn btn-primary btn-sm <?= $permintaan->status == 1 ? '' : 'd-none' ?>" data-toggle="modal" data-target="#formTambah"><i class="fas fa-plus"></i> Tambah Artikel</button></td>
+                    <td colspan="5"><button type="button" class="btn btn-primary btn-sm <?= $permintaan->status == 1 || $permintaan->status == 7 ? '' : 'd-none' ?>" data-toggle="modal" data-target="#formTambah"><i class="fas fa-plus"></i> Tambah Artikel</button></td>
                     <td class="text-right">GrandTotal :</td>
                     <td>
                       <div id="grandTotal"></div>
