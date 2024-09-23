@@ -247,7 +247,7 @@ class Stok extends CI_Controller
     $keputusan = $this->input->post('keputusan', true);
     $jml = count($id_produk);
     $tgl_so = $this->db->query("SELECT tgl_so FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_so;
-    $tgl_acc = date('Y-m-d');
+    $tgl_acc = date('Y-m-d H:i:s');
     $this->db->trans_start();
     if ($keputusan == 1) {
       $aksi = "Diverifikasi Oleh :";
