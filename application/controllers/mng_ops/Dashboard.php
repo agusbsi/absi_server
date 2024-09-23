@@ -271,33 +271,6 @@ class Dashboard extends CI_Controller
 
     echo json_encode($response);
   }
-  public function adjust_waktu()
-  {
-    $now = date('Y-m-d H:i:s');
-    $this->db->where('DATE_ADD(created_at, INTERVAL 10 DAY) <=', $now);
-    $this->db->where('status =', 0);
-    $expired_so = $this->db->get('tb_adjust_stok')->result();
-    $batch_data = [];
-    $histori_data = [];
-    foreach ($expired_so as $so) {
-      $batch_data[] = [
-        'id' => $so->id,
-        'status' => 3
-      ];
-      $histori_data[] = [
-        'id_adjust' => $so->id,
-        'aksi' => 'Dicancel oleh :',
-        'pembuat' => 'sistem',
-        'catatan' => 'Tidak di proses lebih dari 10 hari.'
-      ];
-    }
-    if (!empty($batch_data)) {
-      $this->db->update_batch('tb_adjust_stok', $batch_data, 'id');
-    }
-    if (!empty($histori_data)) {
-      $this->db->insert_batch('tb_adjust_histori', $histori_data);
-    }
-  }
 
   public function adjust_detail($id)
   {

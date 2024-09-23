@@ -121,34 +121,32 @@
 <script>
     function updateCountdown() {
         document.querySelectorAll('.waktu').forEach((element) => {
-            const waktuData = element.getAttribute('data-waktu'); // Ambil atribut data-waktu
-            const waktuSo = new Date(waktuData).getTime(); // Konversi ke waktu dalam milidetik
-            const targetTime = waktuSo + (10 * 24 * 60 * 60 * 1000); // Tambahkan 10 hari ke waktu awal
-            const now = new Date().getTime(); // Waktu saat ini dalam milidetik
-            const distance = targetTime - now; // Hitung selisih antara targetTime dan waktu sekarang
-
-            // Menghitung hari, jam, menit, dan detik yang tersisa
+            const waktuData = element.getAttribute('data-waktu');
+            const waktuSo = new Date(waktuData).getTime();
+            const targetTime = waktuSo + (10 * 24 * 60 * 60 * 1000);
+            const now = new Date().getTime();
+            const distance = targetTime - now;
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Format waktu yang tersisa
             let formattedTime = '';
             if (days > 0) {
                 formattedTime += `${String(days).padStart(2, '0')} hari, `;
             }
             formattedTime += `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
-            element.textContent = formattedTime; // Tampilkan waktu di elemen
-
-            // Jika waktu sudah melewati targetTime, tampilkan "Kadaluarsa"
+            element.textContent = formattedTime;
             if (distance < 0) {
                 element.textContent = 'Kadaluarsa';
+                fetch('<?= base_url('Otomatis/adjust_waktu') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
             }
         });
     }
-
-    // Memanggil updateCountdown setiap 1 detik
     setInterval(updateCountdown, 1000);
     updateCountdown();
 </script>
