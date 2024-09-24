@@ -42,6 +42,7 @@ class Retur extends CI_Controller
     if (!empty($search_nama_toko)) {
       $this->db->like('tt.nama_toko', $search_nama_toko);
     }
+    $this->db->where('tp.status <=', 9);
     $this->db->order_by('tp.created_at', 'desc');
     $query_total = clone $this->db;
     $total_data = $query_total->count_all_results('', FALSE);
