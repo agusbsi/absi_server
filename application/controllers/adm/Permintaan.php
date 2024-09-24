@@ -11,64 +11,88 @@ class Permintaan extends CI_Controller
     if ($this->session->userdata('status') != 'login') {
       redirect(base_url());
     }
-
-    $this->load->model('M_spg');
-    $this->load->model('M_produk');
   }
 
   public function index()
   {
     $data['title'] = 'Permintaan Barang';
-    $tanggal = $this->input->post('tanggal');
-    $kategori = $this->input->post('kategori');
-    $awal = date('Y-m-01', strtotime('-1 month'));
-    $akhir = date('Y-m-d');
-    $data['kat'] = "";
-    $data['tgl'] = "";
-    if (!empty($kategori) && !empty($tanggal)) {
-      list($awal, $akhir) = explode(' - ', $tanggal);
-      $data['list'] = $this->db->query("
-            SELECT tp.*, tt.nama_toko
-            FROM tb_permintaan tp
-            JOIN tb_toko tt ON tp.id_toko = tt.id
-            WHERE tp.created_at >= ? AND tp.created_at <= ? 
-            AND (tp.id LIKE ? OR tt.nama_toko LIKE ?)
-        ", [$awal, $akhir, "%$kategori%", "%$kategori%"])->result();
-      $data['kat'] = $kategori;
-      $data['tgl'] = $tanggal;
-    } else if (empty($kategori) && !empty($tanggal)) {
-      list($awal, $akhir) = explode(' - ', $tanggal);
-      $data['list'] = $this->db->query("
-      SELECT tp.*, tt.nama_toko
-      FROM tb_permintaan tp
-      JOIN tb_toko tt ON tp.id_toko = tt.id
-      WHERE tp.created_at >= ? AND tp.created_at <= ?
-  ", [$awal, $akhir])->result();
-      $data['tgl'] = $tanggal;
-    } else if (!empty($kategori) && empty($tanggal)) {
-      $data['list'] = $this->db->query("
-      SELECT tp.*, tt.nama_toko
-      FROM tb_permintaan tp
-      JOIN tb_toko tt ON tp.id_toko = tt.id
-      AND (tp.id LIKE ? OR tt.nama_toko LIKE ?)
-  ", ["%$kategori%", "%$kategori%"])->result();
-      $data['kat'] = $kategori;
-    } else {
-      $data['list'] = $this->db->query("
-            SELECT tp.*, tt.nama_toko
-            FROM tb_permintaan tp
-            JOIN tb_toko tt ON tp.id_toko = tt.id
-            WHERE tp.created_at >= ? AND tp.created_at <= ?
-        ", [$awal, $akhir])->result();
-    }
     $this->template->load('template/template', 'adm/transaksi/permintaan.php', $data);
   }
+  public function get_po()
+  {
+    $search_nomor = $this->input->post('search_nomor');
+    $search_nama_toko = $this->input->post('search_nama_toko');
+    $search_status = $this->input->post('search_status');
+    $search_periode = $this->input->post('search_periode');
+    $limit = $_POST['length'];
+    $start = $_POST['start'];
+    $this->db->select('tp.*, tt.nama_toko');
+    $this->db->from('tb_permintaan tp');
+    $this->db->join('tb_toko tt', 'tp.id_toko = tt.id');
+    if (!empty($search_periode)) {
+      list($start_date, $end_date) = explode(' - ', $search_periode);
+      $this->db->where('tp.created_at >=', $start_date . ' 00:00:00');
+      $this->db->where('tp.created_at <=', $end_date . ' 23:59:59');
+    }
+    if (!empty($search_nomor)) {
+      $this->db->like('tp.id', $search_nomor);
+    }
+    if (!empty($search_status)) {
+      $this->db->like('tp.status', $search_status);
+    }
+    if (!empty($search_nama_toko)) {
+      $this->db->like('tt.nama_toko', $search_nama_toko);
+    }
+    $this->db->order_by('tp.created_at', 'desc');
+    $query_total = clone $this->db;
+    $total_data = $query_total->count_all_results('', FALSE);
+    $this->db->limit($limit, $start);
+    $query = $this->db->get();
+    $data = $query->result();
+    $output_data = array();
+    $no = $start + 1;
+    foreach ($data as $stok) {
+      $row = array();
+      $row['nomor_urut'] = $no++;
+      $row['nomor'] = $stok->id;
+      $row['nama_toko'] = $stok->nama_toko;
+      ob_start();
+      status_permintaan($stok->status);
+      $row['status'] = ob_get_clean();
+      $row['tgl_dibuat'] = date('d-M-Y H:i:s', strtotime($stok->created_at));
+      $row['menu'] = $stok->id;
+      $output_data[] = $row;
+    }
+    $this->db->select('tp.*, tt.nama_toko');
+    $this->db->from('tb_permintaan tp');
+    $this->db->join('tb_toko tt', 'tp.id_toko = tt.id');
 
+    if (!empty($search_periode)) {
+      list($start_date, $end_date) = explode(' - ', $search_periode);
+      $this->db->where('tp.created_at >=', $start_date . ' 00:00:00');
+      $this->db->where('tp.created_at <=', $end_date . ' 23:59:59');
+    }
 
+    if (!empty($search_nomor)) {
+      $this->db->like('tp.id', $search_nomor);
+    }
+    if (!empty($search_status)) {
+      $this->db->like('tp.status', $search_status);
+    }
 
+    if (!empty($search_nama_toko)) {
+      $this->db->like('tt.nama_toko', $search_nama_toko);
+    }
 
-
-
+    $total_filtered = $this->db->count_all_results();
+    $output = array(
+      "draw" => $_POST['draw'],
+      "recordsTotal" => $total_data,
+      "recordsFiltered" => $total_filtered,
+      "data" => $output_data
+    );
+    echo json_encode($output);
+  }
   public function detail($id)
   {
     $data['title'] = 'Permintaan Barang';

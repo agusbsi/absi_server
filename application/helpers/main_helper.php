@@ -41,11 +41,11 @@ function status_pengiriman($id)
     if ($id == 0) {
         echo "<span class='badge badge-danger'>Belum di Approve</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-info'>Sedang di Kirim</span>";
+        echo "<span class='badge badge-info'>Dikirim</span>";
     } elseif ($id == 2) {
-        echo "<span class='badge badge-success'>Selesai diterima</span>";
+        echo "<span class='badge badge-success'>Selesai</span>";
     } else {
-        echo "<span class='badge badge-warning'>Selisih !</span>";
+        echo "<span class='badge badge-warning'>Selisih</span>";
     }
 }
 function piutang($id)

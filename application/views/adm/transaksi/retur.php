@@ -1,175 +1,125 @@
-<style>
-  #loading {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: rgba(255, 255, 255, 0.7);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .loader {
-    position: relative;
-    width: 200px;
-    height: 200px;
-  }
-
-  .circle {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: conic-gradient(#3498db 0deg, #3498db 0deg, transparent 0deg);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .percentage {
-    position: absolute;
-    font-size: 2em;
-    font-weight: bold;
-    color: #ffc107;
-  }
-
-  .img-nodata {
-    width: 100%;
-
-  }
-</style>
 <section class="content">
   <div class="container-fluid">
-    <div id="loading" style="display: none;">
-      <div class="loader">
-        <div class="circle">
-          <div class="percentage" id="percentage">0%</div>
-        </div>
+    <div class="card card-primary">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-exchange-alt"></i> Data Retur</h3>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <div class="card card-info">
-          <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-file-alt"></i> <?= $title ?></h3>
+      <div class="card-body">
+        <label>Filter Pencarian :</label>
+        <div class="row">
+          <div class="col-md-3">
+            <input type="search" id="search_nomor" class="form-control form-control-sm" placeholder="Cari berdasarkan Nomor ...">
           </div>
-          <div class="card-body">
-            <form action="<?= base_url('adm/Retur') ?>" method="post" id="form_cari">
-              <div class="row">
-                <div class="col-md-5">
-                  <div class="form-group">
-                    <label>Kategori</label>
-                    <?php if (empty($kat)) { ?>
-                      <input type="text" name="kategori" value="<?= !empty($kat) ? $kat : '' ?>" class="form-control form-control-sm" placeholder="Cari berdasarkan Nomor atau Nama Toko">
-                    <?php } else { ?>
-                      <input type="text" class="form-control form-control-sm" value="<?= $kat ?>" readonly>
-                    <?php } ?>
-
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <label for="">Range Tanggal</label>
-                    <?php if (empty($tgl)) { ?>
-                      <input type="text" name="tanggal" class="form-control form-control-sm" autocomplete="off" placeholder="Periode">
-                    <?php } else { ?>
-                      <input type="text" class="form-control form-control-sm" value="<?= $tgl ?>" readonly>
-                    <?php } ?>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <br>
-                  <?php if (!empty($tgl || $kat)) { ?>
-                    <a href="<?= base_url('adm/Retur') ?>" class="btn btn-sm btn-danger mt-2"><i class="fas fa-times-circle"></i> Reset</a>
-                  <?php } else { ?>
-                    <button class="btn btn-info btn-sm mt-2" id="btn_cari"><i class="fas fa-search"></i> Cari Data</button>
-                  <?php } ?>
-                </div>
-              </div>
-            </form>
-            <hr>
-            <table id="example1" class="table table-bordered table-striped">
-              <thead>
-                <tr class="text-center">
-                  <th>#</th>
-                  <th>Nomor</th>
-                  <th>Nama Toko</th>
-                  <th>Status</th>
-                  <th>Tanggal</th>
-                  <th>Menu</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                $no = 0;
-                foreach ($list as $row) {
-                  $no++; ?>
-                  <tr>
-                    <td><?= $no ?></td>
-                    <td class="text-center"><small><strong><?= $row->id ?></strong></small></td>
-                    <td><small><?= $row->nama_toko ?></small></td>
-                    <td class="text-center"><?= status_retur($row->status) ?></td>
-                    <td class="text-center"><small><?= date('d-M-Y : H:m:s', strtotime($row->created_at)) ?></small></td>
-                    <td class="text-center"><a class="btn btn-primary btn-sm" href="<?= base_url('adm/Retur/detail/') . $row->id ?>"><i class="fa fa-eye" aria-hidden="true"></i> Detail</a></td>
-                  </tr>
-                <?php } ?>
-              </tbody>
-            </table>
+          <div class="col-md-3">
+            <input type="search" id="search_nama_toko" class="form-control form-control-sm" placeholder="Cari berdasarkan Nama Toko ...">
+          </div>
+          <div class="col-md-2">
+            <select id="search_status" class="form-control form-control-sm">
+              <option value="">Semua status</option>
+              <option value="1">Proses Verifikasi (MM)</option>
+              <option value="2">Proses Verifikasi (MV)</option>
+              <option value="3">Disetujui</option>
+              <option value="4">Proses Pengambilan</option>
+              <option value="5">Selesai</option>
+              <option value="6">Ditolak</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <input type="text" name="tanggal" id="search_periode" class="form-control form-control-sm" placeholder="Cari per periode ...">
           </div>
         </div>
+        <br>
+        <table id="tabel_baru" class="table table-striped">
+          <thead>
+            <tr class="text-center">
+              <th>#</th>
+              <th>Nomor</th>
+              <th>Nama Toko</th>
+              <th>Status</th>
+              <th>Tanggal</th>
+              <th>Menu</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
-  </div>
   </div>
 </section>
 <script>
   $(document).ready(function() {
+    var table = $('#tabel_baru').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "ajax": {
+        "url": "<?= base_url('adm/Retur/get_retur') ?>",
+        "type": "POST",
+        "data": function(d) {
+          d.search_nomor = $('#search_nomor').val();
+          d.search_nama_toko = $('#search_nama_toko').val();
+          d.search_periode = $('#search_periode').val();
+          d.search_status = $('#search_status').val();
+        }
+      },
+      "columns": [{
+          "data": "nomor_urut"
+        },
+        {
+          "data": "nomor",
+          "render": function(data, type, row) {
+            return '<small><strong>' + data + '</strong></small>';
+          }
+        },
+        {
+          "data": "nama_toko",
+          "render": function(data, type, row) {
+            return '<small>' + data + '</small>';
+          }
+        },
+        {
+          "data": "status"
+        },
+        {
+          "data": "tgl_dibuat",
+          "render": function(data, type, row) {
+            return '<small>' + data + '</small>';
+          }
+        },
+        {
+          "data": "menu",
+          "orderable": false,
+          "searchable": false,
+          "render": function(data, type, row) {
+            return '<a href="<?= base_url('adm/Retur/detail/') ?>' + data + '" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+          }
+        }
+
+      ],
+      "order": [
+        [0, "asc"]
+      ],
+      "searching": false,
+    });
+    $('#search_nomor, #search_nama_toko, #search_status').on('keyup change', function() {
+      table.draw();
+    });
     $('input[name="tanggal"]').daterangepicker({
       autoUpdateInput: false,
       locale: {
-        cancelLabel: 'Clear'
+        cancelLabel: 'Clear',
+        applyLabel: 'Apply',
+        format: 'YYYY-MM-DD'
       }
     });
-
     $('input[name="tanggal"]').on('apply.daterangepicker', function(ev, picker) {
-      $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+      var dateRange = picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD');
+      $('#search_periode').val(dateRange);
+      table.draw();
     });
-
     $('input[name="tanggal"]').on('cancel.daterangepicker', function(ev, picker) {
+      $('#search_periode').val('');
       $(this).val('');
+      table.draw();
     });
-  })
-  document.getElementById('btn_cari').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent form submission
-
-    var loadingElement = document.getElementById('loading');
-    loadingElement.style.display = 'flex';
-    var percentageElement = document.getElementById('percentage');
-    var circle = document.querySelector('.circle');
-    var percentage = 0;
-    var intervalTime = 50; // Update every 50ms
-    var intervalDuration = 500; // 2 seconds
-
-    var interval = setInterval(() => {
-      if (percentage < 100) {
-        percentage += 5;
-        percentageElement.textContent = Math.round(percentage) + '%';
-        var angle = percentage * 3.6;
-        circle.style.background = `conic-gradient(
-                #3498db 0deg,
-                #3498db ${angle}deg,
-                transparent ${angle}deg,
-                transparent 360deg
-            )`;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => {
-          document.getElementById('form_cari').submit();
-        }, intervalDuration);
-      }
-    }, intervalTime);
   });
 </script>

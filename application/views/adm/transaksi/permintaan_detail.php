@@ -1,8 +1,13 @@
 <section class="content">
   <div class="container-fluid">
-    <div class="card card-info">
+    <div class="card card-warning">
       <div class="card-header">
-        <h3 class="card-title"><i class="nav-icon fas fa-box"></i> <?= $title ?></h3>
+        <h3 class="card-title"><i class="fas fa-file-alt"></i> Detail Permintaan</h3>
+        <div class="card-tools">
+          <a href="<?= base_url('adm/Permintaan') ?>" type="button" class="btn btn-tool">
+            <i class="fas fa-times"></i>
+          </a>
+        </div>
       </div>
       <div class="card-body">
         <div class="row">
@@ -113,9 +118,7 @@
             </div>
           <?php endforeach ?>
         </div>
-        <hr>
       </div>
     </div>
-    <a href="<?= base_url('adm/Permintaan') ?>" class="btn btn-link"><i class="fa fa-arrow-left"></i> Kembali ke halaman depan</a>
   </div>
 </section>

@@ -61,7 +61,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('mng_ops/Dashboard/retur') ?>" class="nav-link <?= ($title == 'retur') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Retur') ?>" class="nav-link <?= ($title == 'Retur Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-exchange-alt"></i>
           <p>
             Retur
@@ -77,7 +77,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('sup/Penjualan') ?>" class="nav-link <?= ($title == 'Penjualan Toko') ? "active" : "" ?>">
+        <a href="<?= base_url('sup/Penjualan') ?>" class="nav-link <?= ($title == 'Transaksi Penjualan') ? "active" : "" ?>">
           <i class="nav-icon fas fa-shopping-cart"></i>
           <p>
             Transaksi Penjualan
