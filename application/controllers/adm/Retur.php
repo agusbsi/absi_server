@@ -83,7 +83,7 @@ class Retur extends CI_Controller
     if (!empty($search_nama_toko)) {
       $this->db->like('tt.nama_toko', $search_nama_toko);
     }
-
+    $this->db->where('tp.status <=', 9);
     $total_filtered = $this->db->count_all_results();
     $output = array(
       "draw" => $_POST['draw'],
