@@ -19,9 +19,9 @@
               <option value="1">Proses Verifikasi (MM)</option>
               <option value="2">Proses Verifikasi (MV)</option>
               <option value="3">Disetujui</option>
-              <option value="4">Proses Pengambilan</option>
-              <option value="5">Selesai</option>
-              <option value="6">Ditolak</option>
+              <option value="7">Proses Pengambilan</option>
+              <option value="4">Selesai</option>
+              <option value="5">Ditolak</option>
             </select>
           </div>
           <div class="col-md-4">
