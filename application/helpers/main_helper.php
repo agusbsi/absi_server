@@ -230,13 +230,13 @@ function kategori_bap($id)
 function status_mutasi($id)
 {
     if ($id == 0) {
-        echo "<span class='badge badge-danger'>Menunggu disetujui MV.</span>";
+        echo "<span class='badge badge-warning'>Menunggu disetujui MV.</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-warning'>Disetujui,Proses Mutasi.</span>";
+        echo "<span class='badge badge-info'>Disetujui,Proses Mutasi.</span>";
     } elseif ($id == 2) {
         echo "<span class='badge badge-success'>selesai.</span>";
     } elseif ($id == 3) {
-        echo "<span class='badge badge-danger'>Di tolak.</span>";
+        echo "<span class='badge badge-danger'>Ditolak.</span>";
     } elseif ($id == 4) {
         echo "<span class='badge badge-warning'>Proses BAP</span>";
     } elseif ($id == 5) {

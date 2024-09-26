@@ -103,6 +103,16 @@
         [0, "asc"]
       ],
       "searching": false,
+      "dom": '<"top d-flex justify-content-between"lB>rt<"bottom"ip><"clear">',
+      "buttons": [{
+          extend: 'excel',
+          text: 'Excel'
+        },
+        {
+          extend: 'pdf',
+          text: 'PDF'
+        }
+      ]
     });
     $('#search_nomor, #search_nama_toko, #search_status').on('keyup change', function() {
       table.draw();

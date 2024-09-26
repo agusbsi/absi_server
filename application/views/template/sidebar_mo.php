@@ -131,7 +131,7 @@
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
-            Stok
+            Stok Toko
             <i class="right fas fa-angle-left"></i>
           </p>
         </a>

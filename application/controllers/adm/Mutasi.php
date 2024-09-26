@@ -75,6 +75,8 @@ class Mutasi extends CI_Controller
     $data['detail'] = $this->db->query("SELECT tmd.*, tp.kode,tp.nama_produk from tb_mutasi_detail tmd
     join tb_produk tp on tmd.id_produk = tp.id
     where tmd.id_mutasi ='$id'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_mutasi_histori tpo
+    join tb_mutasi tp on tpo.id_mutasi = tp.id where tpo.id_mutasi = '$id'")->result();
     $this->template->load('template/template', 'adm/transaksi/mutasi_detail', $data);
   }
 }

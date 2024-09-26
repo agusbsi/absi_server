@@ -54,7 +54,7 @@
       <div class="col-12">
         <div class="card card-info">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-file-alt"></i> <?= $title ?></h3>
+            <h3 class="card-title"><i class="fas fa-copy"></i> <?= $title ?></h3>
           </div>
           <div class="card-body">
             <form action="<?= base_url('adm/Mutasi') ?>" method="post" id="form_cari">

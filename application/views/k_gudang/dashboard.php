@@ -49,18 +49,15 @@
     margin: 0;
   }
 
-  /* Penyesuaian untuk layar ponsel */
   @media (max-width: 768px) {
     .cardgudang {
       flex: 1 1 calc(50% - 10px);
-      /* Dua kolom pada layar ponsel */
     }
   }
 
   @media (max-width: 480px) {
     .cardgudang {
       flex: 1 1 100%;
-      /* Satu kolom pada layar sangat kecil */
     }
   }
 </style>

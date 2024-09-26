@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+require 'vendor/autoload.php';
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Stok extends CI_Controller
 {
@@ -320,5 +322,165 @@ class Stok extends CI_Controller
       tampil_alert('success', 'Berhasil', 'Data Adjustment Stok berhasil proses.');
     }
     redirect(base_url('adm/Stok/adjust_detail/' . $id_adjust));
+  }
+  public function stok_gudang()
+  {
+    $data['title'] = 'Stok Gudang';
+    $data['t_item'] = $this->db->query("SELECT count(id) as total_item, SUM(stok) as total_stok FROM tb_produk where status = 1  ")->row();
+    $data['waktu']  = $this->db->query("SELECT updated_at from tb_produk_histori order by id desc limit 1")->row();
+    $this->template->load('template/template', 'adm/stok/stok_gudang', $data);
+  }
+  public function get_stokGudang()
+  {
+    $request = $this->input->post(null, true);
+    $column_order = ['id', 'kode', 'nama_produk', 'satuan', 'stok'];
+    $search_value = $request['search']['value'] ?? '';
+    $start = filter_var($request['start'], FILTER_VALIDATE_INT) ?: 0;
+    $length = filter_var($request['length'], FILTER_VALIDATE_INT) ?: 10;
+    $draw = filter_var($request['draw'], FILTER_VALIDATE_INT) ?: 1;
+    $this->db->from('tb_produk');
+    $total_data = $this->db->count_all_results();
+    $this->db->select(['*'])
+      ->from('tb_produk');
+    if (!empty($search_value)) {
+      $this->db->group_start()
+        ->like('kode', $search_value)
+        ->or_like('nama_produk', $search_value)
+        ->or_like('stok', $search_value)
+        ->or_like('satuan', $search_value)
+        ->group_end();
+    }
+    $filtered_data = $this->db->count_all_results('', false);
+    $this->db->limit($length, $start);
+    if (isset($request['order'])) {
+      $column_index = $request['order'][0]['column'];
+      $column_dir = $request['order'][0]['dir'];
+      $this->db->order_by($column_order[$column_index], $column_dir);
+    } else {
+      $this->db->order_by('id', 'desc');
+    }
+    $query = $this->db->get()->result();
+    $data = [];
+    $no = $start + 1;
+    foreach ($query as $row) {
+      $data[] = [
+        'no' => $no++,
+        'kode' => html_escape($row->kode),
+        'nama_produk' => html_escape($row->nama_produk),
+        'satuan' => html_escape($row->satuan),
+        'stok' => $row->stok
+      ];
+    }
+    $response = [
+      "draw" => $draw,
+      "recordsTotal" => $total_data,
+      "recordsFiltered" => $filtered_data,
+      "data" => $data
+    ];
+
+    echo json_encode($response);
+  }
+  public function process_import()
+  {
+    if ($_FILES['excel_file']['name']) {
+      $config['upload_path'] = './assets/excel/';
+      $config['allowed_types'] = 'xlsx';
+      $config['max_size'] = 2048;
+      $this->upload->initialize($config);
+      if (!$this->upload->do_upload('excel_file')) {
+        $error = array('error' => $this->upload->display_errors());
+        echo json_encode($error);
+      } else {
+        $data = $this->upload->data();
+        $file_path = './assets/excel/' . $data['file_name'];
+        $spreadsheet = IOFactory::load($file_path);
+        $sheet = $spreadsheet->getActiveSheet();
+        $excelData = '';
+        $rowNum = 1;
+        $startRow = 6;
+        $highestRow = $sheet->getHighestRow();
+        $totalData = 0;
+        $totalTerverifikasi = 0;
+        $totalTidakDitemukan = 0;
+        $kodeArray = [];
+        for ($row = $startRow; $row <= $highestRow; $row++) {
+          $kode = $sheet->getCell('C' . $row)->getValue();
+          $kodeArray[] = $kode;
+        }
+        $this->db->where_in('kode', $kodeArray);
+        $produkQuery = $this->db->get('tb_produk');
+        $existingProduk = $produkQuery->result_array();
+        $existingKodeArray = array_column($existingProduk, 'kode');
+        for ($row = $startRow; $row <= $highestRow; $row++) {
+          $excelData .= '<tr>';
+          $excelData .= '<td>' . ($row - $startRow + 1) . '</td>';
+          $kode = $sheet->getCell('C' . $row)->getValue();
+          $nama_artikel = $sheet->getCell('F' . $row)->getValue();
+          $stok = $sheet->getCell('I' . $row)->getValue();
+          $totalData++;
+          if (in_array($kode, $existingKodeArray)) {
+            $status = "<small class='text-success'> Terverifikasi </small>";
+            $totalTerverifikasi++;
+          } else {
+            $status = "<small class='text-danger'> Kode tidak ditemukan </small>";
+            $totalTidakDitemukan++;
+          }
+          $excelData .= '<td>' . $kode . '</td>';
+          $excelData .= '<td>' . $nama_artikel . '</td>';
+          $excelData .= '<td>' . $stok . '</td>';
+          $excelData .= '<td>' . $status . '</td>';
+          $excelData .= '</tr>';
+        }
+        unlink($file_path);
+        $response = [
+          'excelData' => $excelData,
+          'totalData' => $totalData,
+          'totalTerverifikasi' => $totalTerverifikasi,
+          'totalTidakDitemukan' => $totalTidakDitemukan
+        ];
+        echo json_encode($response);
+      }
+    } else {
+      echo json_encode(['error' => 'No file uploaded']);
+    }
+  }
+  public function save_import()
+  {
+    $pengguna = $this->session->userdata('nama_user');
+    $this->db->trans_start();
+    $this->db->insert('tb_produk_histori', array('pengguna' => $pengguna));
+    $postData = json_decode(file_get_contents('php://input'), true);
+    if (!empty($postData)) {
+      $notFoundCodes = [];
+      $updateData = [];
+      foreach ($postData as $data) {
+        $kode = $data['kode'];
+        $stok = $data['stok'];
+        $productExists = $this->db->get_where('tb_produk', ['kode' => $kode])->row();
+        if ($productExists) {
+          $updateData[] = [
+            'kode' => $kode,
+            'stok' => $stok
+          ];
+        } else {
+          $notFoundCodes[] = $kode;
+        }
+      }
+      if (!empty($updateData)) {
+        $this->db->update_batch('tb_produk', $updateData, 'kode');
+      }
+      $response = [
+        'status' => 'success',
+        'message' => empty($notFoundCodes) ? 'Semua data berhasil disimpan.' : 'Menyimpan data sebagian, beberapa kode artikel tidak ditemukan.'
+      ];
+      echo json_encode($response);
+    } else {
+      $response = [
+        'status' => 'error',
+        'message' => 'Tidak ada data yang diterima.'
+      ];
+      echo json_encode($response);
+    }
+    $this->db->trans_complete();
   }
 }

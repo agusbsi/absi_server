@@ -97,7 +97,7 @@
          <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
            <i class="nav-icon fas fa-chart-pie"></i>
            <p>
-             Stok
+             Stok Toko
              <i class="right fas fa-angle-left"></i>
            </p>
          </a>
@@ -146,13 +146,13 @@
              </a>
            </li>
            <li class="nav-item">
-              <a href="<?= base_url('adm/Penjualan/lap_periode') ?>" class="nav-link <?= ($title == 'Penjualan Periode') ? "active" : "" ?>">
-                <i class="far fa-circle nav-icon"></i>
-                <p>
-                  Per Periode
-                </p>
-              </a>
-            </li>
+             <a href="<?= base_url('adm/Penjualan/lap_periode') ?>" class="nav-link <?= ($title == 'Penjualan Periode') ? "active" : "" ?>">
+               <i class="far fa-circle nav-icon"></i>
+               <p>
+                 Per Periode
+               </p>
+             </a>
+           </li>
          </ul>
        </li>
        <li class="nav-item">

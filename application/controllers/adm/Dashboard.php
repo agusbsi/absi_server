@@ -12,7 +12,6 @@ class Dashboard extends CI_Controller
       tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }
-    $this->load->model('M_adm_gudang');
   }
 
   public function index()

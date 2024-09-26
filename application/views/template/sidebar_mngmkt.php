@@ -152,7 +152,7 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
-            Stok
+            Stok Toko
             <i class="right fas fa-angle-left"></i>
           </p>
         </a>

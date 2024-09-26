@@ -80,6 +80,14 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
           </p>
         </a>
       </li>
+      <li class="nav-item">
+        <a href="<?= base_url('adm/Stok/stok_gudang') ?>" class="nav-link <?= ($title == 'Stok Gudang') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-warehouse"></i>
+          <p>
+            Stok Gudang
+          </p>
+        </a>
+      </li>
       <li class="nav-header">Menu Utama</li>
 
       <li class="nav-item">
@@ -192,7 +200,7 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
-            Stok
+            Stok Toko
             <i class="right fas fa-angle-left"></i>
           </p>
         </a>
