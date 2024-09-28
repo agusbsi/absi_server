@@ -40,15 +40,27 @@ class Dashboard extends CI_Controller
     $data['t_stok'] = $this->db->query("SELECT sum(ts.qty) as total FROM tb_stok ts
     JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1 ")->row();
     // 5 top toko
-    $data['top_toko'] = $this->db->query("SELECT tt.*, SUM(tpd.qty) as total, tu.nama_user as spg 
+    $data['top_toko'] = $this->db->query("
+    SELECT tt.*, 
+           SUM(tpd.qty) as total_bulan_ini, 
+           COALESCE((
+              SELECT SUM(tpd2.qty)
+              FROM tb_penjualan tp2
+              JOIN tb_penjualan_detail tpd2 ON tp2.id = tpd2.id_penjualan
+              WHERE tp2.id_toko = tp.id_toko
+              AND DATE_FORMAT(tp2.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 2 MONTH, '%Y-%m')
+           ), 0) as total_bulan_lalu,
+           tu.nama_user as spg 
     FROM tb_toko tt
     JOIN tb_user tu on tt.id_spg = tu.id
     JOIN tb_penjualan tp ON tt.id = tp.id_toko
     JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_penjualan
     WHERE DATE_FORMAT(tp.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')
     GROUP BY tp.id_toko 
-    ORDER BY total DESC 
-    LIMIT 5")->result();
+    ORDER BY total_bulan_ini DESC 
+    LIMIT 5
+")->result();
+
     $data['top_artikel'] = $this->db->query("SELECT tp.*, SUM(tpd.qty) as total
     FROM tb_produk tp
     JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_produk
@@ -88,41 +100,30 @@ class Dashboard extends CI_Controller
   // fungsi box
   public function box()
   {
-    $box = [
-
-      [
-        'box'         => 'bg-info',
-        'total'       => $this->db->query("SELECT count(id) as total from tb_toko where  status = 1")->row()->total,
-        'title'       => 'Toko',
-        'link'        => 'adm/Toko/',
-        'icon'        => 'fas fa-store'
-      ],
-      [
-        'box'         => 'bg-warning',
-        'total'       =>  $this->db->query("SELECT count(id) as total from tb_produk where  status != 0")->row()->total,
-        'title'       => 'Artikel',
-        'link'        => 'adm/Produk/',
-        'icon'        => 'fas fa-cube'
-      ],
-      [
-        'box'         => 'bg-info',
-        'total'       =>  $this->db->query("SELECT count(id) as total from tb_user where  status != 0")->row()->total,
-        'title'       => 'User',
-        'link'        => 'adm/User/',
-        'icon'        => 'fas fa-users'
-      ],
-      [
-        'box'         => 'bg-success',
-        'total'       => $this->db->query("SELECT count(id) as total from tb_aset_master")->row()->total,
-        'title'       => 'Aset',
-        'link'        => 'adm/Promo',
-        'icon'        => 'fas fa-hospital'
-      ]
-
+    $queries = [
+      ['bg-primary', 'SELECT count(id) as total from tb_toko where status = 1', 'Toko Aktif', 'adm/Toko/', 'fas fa-store'],
+      ['bg-primary', 'SELECT count(id) as total from tb_toko where status = 0', 'Toko Tutup', 'adm/Toko/toko_tutup', 'fas fa-store-slash'],
+      ['bg-primary', 'SELECT count(id) as total from tb_customer', 'Customer', 'adm/Customer', 'fas fa-building'],
+      ['bg-primary', 'SELECT count(id) as total from tb_produk where status != 0', 'Artikel', 'adm/Produk/', 'fas fa-cube'],
+      ['bg-primary', 'SELECT count(id) as total from tb_user where status != 0', 'User', 'adm/User/', 'fas fa-users'],
+      ['bg-primary', 'SELECT count(id) as total from tb_aset_master', 'Jenis Aset', 'hrd/Aset', 'fas fa-layer-group'],
+      ['bg-primary', 'SELECT sum(ts.qty) as total FROM tb_stok ts JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1', 'Stok Semua Toko', 'adm/Stok', 'fas fa-chart-pie'],
+      ['bg-primary', 'SELECT SUM(stok) as total FROM tb_produk where status = 1', 'Stok Gudang Prepedan', 'adm/Stok/stok_gudang', 'fas fa-cubes'],
     ];
-    $info_box = json_decode(json_encode($box), FALSE);
-    return $info_box;
+
+    $box = array_map(function ($query) {
+      return [
+        'box'   => $query[0],
+        'total' => $this->db->query($query[1])->row()->total,
+        'title' => $query[2],
+        'link'  => $query[3],
+        'icon'  => $query[4]
+      ];
+    }, $queries);
+
+    return json_decode(json_encode($box), FALSE);
   }
+
   // grafik Transaksi
   public function transaksi()
   {

@@ -4,6 +4,70 @@
     transform: translate(-250%, 10%);
     font-weight: bold;
   }
+
+  .list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+  }
+
+  .list-item:last-child {
+    border-bottom: none;
+  }
+
+  .number {
+    background-color: #e8f5e9;
+    color: #34a853;
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+  }
+
+  .details {
+    flex-grow: 1;
+    margin-left: 10px;
+  }
+
+  .details h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .details span {
+    font-size: 14px;
+    color: gray;
+  }
+
+  .amount {
+    text-align: right;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .amount .percentage {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .amount span {
+    color: gray;
+    font-size: 12px;
+    font-weight: normal;
+  }
 </style>
 <section class="content">
   <div class="container-fluid">
@@ -14,12 +78,7 @@
           <div class="small-box <?= $info_box->box ?>">
             <div class="inner">
               <h3 class="count">
-                <?php if (($info_box->total) == 0) {
-                  echo "kosong";
-                } else {
-                  echo $info_box->total;
-                }
-                ?>
+                <?= ($info_box->total == 0) ? "Kosong" : number_format($info_box->total) ?>
               </h3>
               <p><?= $info_box->title; ?></p>
             </div>
@@ -35,94 +94,73 @@
       <?php endforeach; ?>
     </div>
     <div class="callout callout-danger">
-      <p> Data Transaksi Bulan : <b><?= date('M-Y') ?></b> </p>
+      <p> Data Transaksi Bulan ini ( <b><?= date('M-Y') ?></b> )</p>
     </div>
     <!-- box transaksi -->
     <div class="row">
-      <div class="col-md-5">
-        <div class="small-box bg-danger">
-          <div class="inner">
-            <h3 style="font-size:70px;">
-              <?= ($t_stok->total == 0) ? "Kosong" : number_format($t_stok->total) ?>
-            </h3>
-            <p>Stok</p>
+      <div class="col-md-6">
+        <div class="info-box bg-gradient-warning">
+          <span class="info-box-icon"><i class="fas fa-list-alt"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Data Permintaan</span>
+            <strong><?= ($t_minta->total == 0) ? "Kosong" : number_format($t_minta->total) . " Artikel" ?></strong>
+            <div class="progress">
+              <div class="progress-bar" style="width: 100%"></div>
+            </div>
           </div>
-          <div class="icon">
-            <i class="fa fa-chart-pie"></i>
-          </div>
-          <a href="#" class="small-box-footer">
-            semua toko
-          </a>
+          <!-- /.info-box-content -->
         </div>
-      </div>
-      <div class="col-md-7">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="info-box bg-gradient-warning">
-              <span class="info-box-icon"><i class="fas fa-list-alt"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Data Permintaan</span>
-                <strong><?= ($t_minta->total == 0) ? "Kosong" : number_format($t_minta->total) . " Artikel" ?></strong>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 100%"></div>
-                </div>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
-          <div class="col-md-6">
-            <div class="info-box bg-gradient-info">
-              <span class="info-box-icon"><i class="fas fa-truck"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Data Pengiriman</span>
-                <strong><?= ($t_kirim->total == 0) ? "Kosong" : number_format($t_kirim->total) . " Artikel" ?></strong>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 100%"></div>
-                </div>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
-          <div class="col-md-6">
-            <div class="info-box bg-gradient-success">
-              <span class="info-box-icon"><i class="fas fa-cart-plus"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Data Penjualan</span>
-                <strong><?= ($t_jual->total == 0) ? "Kosong" : number_format($t_jual->total) . " Artikel" ?></strong>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 100%"></div>
-                </div>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
-          <div class="col-md-6">
-            <div class="info-box bg-gradient-danger">
-              <span class="info-box-icon"><i class="fas fa-exchange-alt"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Data Retur</span>
-                <strong><?= ($t_retur->total == 0) ? "Kosong" : number_format($t_retur->total) . " Artikel" ?></strong>
-                <div class="progress">
-                  <div class="progress-bar" style="width: 100%"></div>
-                </div>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div>
-        </div>
+        <!-- /.info-box -->
       </div>
       <!-- /.col -->
+      <div class="col-md-6">
+        <div class="info-box bg-gradient-info">
+          <span class="info-box-icon"><i class="fas fa-truck"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Data Pengiriman</span>
+            <strong><?= ($t_kirim->total == 0) ? "Kosong" : number_format($t_kirim->total) . " Artikel" ?></strong>
+            <div class="progress">
+              <div class="progress-bar" style="width: 100%"></div>
+            </div>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-md-6">
+        <div class="info-box bg-gradient-success">
+          <span class="info-box-icon"><i class="fas fa-cart-plus"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Data Penjualan</span>
+            <strong><?= ($t_jual->total == 0) ? "Kosong" : number_format($t_jual->total) . " Artikel" ?></strong>
+            <div class="progress">
+              <div class="progress-bar" style="width: 100%"></div>
+            </div>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-md-6">
+        <div class="info-box bg-gradient-danger">
+          <span class="info-box-icon"><i class="fas fa-exchange-alt"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Data Retur</span>
+            <strong><?= ($t_retur->total == 0) ? "Kosong" : number_format($t_retur->total) . " Artikel" ?></strong>
+            <div class="progress">
+              <div class="progress-bar" style="width: 100%"></div>
+            </div>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
     </div>
     <div class="callout callout-danger">
       <p> Data Transaksi Tahun : <b><?= date('Y') ?></b> </p>
@@ -145,32 +183,40 @@
             <strong> TOP 5 TOKO - PENJUALAN TERBANYAK</strong>
           </div>
           <div class="card-body">
-            <ul class="products-list product-list-in-card">
+            <ul class="list">
               <?php if (is_array($top_toko)) { ?>
                 <?php
                 $no = 0;
                 foreach ($top_toko as $dd) :
                   $no++;
+                  // Menghitung persentase perubahan
+                  $persen = 0;
+                  if ($dd->total_bulan_lalu > 0) {
+                    $persen = (($dd->total_bulan_ini - $dd->total_bulan_lalu) / $dd->total_bulan_lalu) * 100;
+                  }
                 ?>
-                  <li class="item">
-                    <div class="product-img">
-                      <i class="fas fa-certificate text-success fa-2x"></i>
-                      <span class="nomor text-white"><?= $no ?></span>
+                  <li class="list-item">
+                    <div class="number"><?= $no ?></div>
+                    <div class="details">
+                      <h4><?= $dd->nama_toko ?></h4>
+                      <span><?= $dd->spg ?></span>
                     </div>
-                    <div class="product-info">
-                      <a href="javascript:void(0)" class="product-title"><?= $dd->nama_toko ?>
-                        <span class="badge badge-warning float-right"><?= number_format($dd->total) ?> Artikel</span></a>
-                      <span class="product-description">
-                        <small><?= $dd->spg ?></small>
-                      </span>
+                    <div class="amount">
+                      <?= number_format($dd->total_bulan_ini) ?>
+                      <div>
+                        <span class="percentage <?= ($persen >= 0) ? 'text-success' : 'text-danger' ?>">
+                          <?= ($persen >= 0) ? '<i class="fas fa-arrow-up"></i> ' . number_format($persen, 2) . '%' : '<i class="fas fa-arrow-down"></i> ' . number_format($persen, 2) . '%' ?>
+                        </span>
+                        <span>dari bulan sebelumnya</span>
+                      </div>
                     </div>
                   </li>
-                  <!-- /.item -->
                 <?php endforeach; ?>
-              <?php  } else { ?>
+              <?php } else { ?>
                 <span> Data Kosong</span>
               <?php } ?>
             </ul>
+
           </div>
           <div class="card-footer">
             <small>* Periode Penjualan : <?= date('M-Y', strtotime('last month')) ?></small>
