@@ -20,7 +20,7 @@
                   <th style="width:4%">No</th>
                   <th>Nama Toko</th>
                   <th style="width:30%">Alamat</th>
-                  <th>Pengguna</th>
+                  <th>Tim Marketing</th>
                   <th>Status</th>
                   <th style="width:10%">Menu</th>
                 </tr>

@@ -275,7 +275,7 @@
         </div>
       </div>
     </div>
-    <div class="card card-primary">
+    <div class="card card-primary mt-3">
       <div class="card-header">
         <h3 class="card-title">
           <li class="fas fa-box"></li> Data Stok Artikel
