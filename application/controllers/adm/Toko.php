@@ -22,10 +22,11 @@ class Toko extends CI_Controller
     $data['title'] = 'Toko';
     $data['customer'] = $this->db->query("SELECT * FROM tb_customer WHERE deleted_at is NULL")->result();
     $data['provinsi'] = $this->db->query("SELECT * from wilayah_provinsi")->result();
-    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user as spg, tl.nama_user as leader
+    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user as spg, tl.nama_user as leader, spv.nama_user as nama_spv
     from tb_toko tt
     left join tb_user tu on tt.id_spg = tu.id
     left join tb_user tl on tt.id_leader = tl.id
+    left join tb_user spv on tt.id_spv = spv.id
     where tt.status = 1
     ORDER BY  tt.id desc")->result();
     $this->template->load('template/template', 'adm/toko/lihat_data', $data);
@@ -152,8 +153,6 @@ class Toko extends CI_Controller
     tampil_alert('success', 'Berhasil', 'Data Toko berhasil di tambahkan!');
     redirect(base_url('adm/Toko/'));
   }
-
-  // list toko tutup
   public function toko_tutup()
   {
     $data['title'] = 'List Toko Tutup';
@@ -277,7 +276,6 @@ class Toko extends CI_Controller
     tampil_alert('success', 'Berhasil', 'Data Pengajuan berhasil di Approve!');
     redirect(base_url('adm/Toko/toko_tutup'));
   }
-
   public function update($id)
   {
     $data['title'] = 'Toko';
@@ -297,7 +295,6 @@ class Toko extends CI_Controller
     $data['spg'] = $this->db->query("SELECT * from tb_user where role ='4' and status ='1'")->result();
     $this->template->load('template/template', 'adm/toko/update', $data);
   }
-
   function add_ajax_kab($id_prov)
   {
     $this->db->select('id, nama'); // Pilih kolom yang ingin Anda sertakan dalam respons JSON
@@ -371,7 +368,14 @@ class Toko extends CI_Controller
     tampil_alert('success', 'Berhasil', 'Data Toko berhasil di Perbaharui!');
     redirect(base_url('adm/Toko/profil/' . $id_toko));
   }
-  // update foto toko
+  public function update_toko()
+  {
+    $id_toko = $this->input->post('id_toko');
+    $nama_toko = $this->input->post('nama_toko');
+    $this->db->update('tb_toko', array('nama_toko' => $nama_toko), array('id' => $id_toko));
+    tampil_alert('success', 'Berhasil', 'Data Toko berhasil di Perbaharui!');
+    redirect(base_url('adm/Toko/profil/' . $id_toko));
+  }
   public function update_foto()
   {
     $id_toko = $this->input->post('id_toko_foto');
@@ -384,60 +388,105 @@ class Toko extends CI_Controller
     $this->load->library('upload', $config);
     $this->upload->initialize($config);
     if (!$this->upload->do_upload('foto')) {
-      // Tampilkan error upload jika ada
       $error = $this->upload->display_errors();
       tampil_alert('error', 'Gagal', $error);
-      redirect(base_url('adm/Toko/update/' . $id_toko));
+      redirect(base_url('adm/Toko/profil/' . $id_toko));
     } else {
-      // Ambil nama file foto lama dari database
-      $query = $this->db->query("SELECT foto_toko FROM tb_toko WHERE id = ?", array($id_toko));
-      $old_foto = $query->row()->foto_toko;
-
-      // Hapus foto lama dari server jika ada
-      if (!empty($old_foto) && file_exists('assets/img/toko/' . $old_foto)) {
-        unlink('assets/img/toko/' . $old_foto);
-      }
-
-      // Simpan foto baru
       $foto = $this->upload->data('file_name');
       $this->db->query("UPDATE tb_toko SET foto_toko = ? WHERE id = ?", array($foto, $id_toko));
       tampil_alert('success', 'Berhasil', 'Foto Toko berhasil di Perbaharui!');
-      redirect(base_url('adm/Toko/update/' . $id_toko));
+      redirect(base_url('adm/Toko/profil/' . $id_toko));
     }
   }
-
+  public function update_detail()
+  {
+    $id_toko = $this->input->post('id_toko_detail');
+    $id_cust = $this->input->post('id_cust');
+    $jenis_toko = $this->input->post('jenis_toko');
+    $pic = $this->input->post('pic');
+    $telp = $this->input->post('telp');
+    $provinsi = $this->input->post('provinsi');
+    $kabupaten = $this->input->post('kabupaten');
+    $kecamatan = $this->input->post('kecamatan');
+    $alamat = $this->input->post('alamat');
+    $detail = array(
+      'id_customer' => $id_cust,
+      'jenis_toko' => $jenis_toko,
+      'nama_pic' => $pic,
+      'telp' => $telp,
+      'provinsi' => $provinsi,
+      'kabupaten' => $kabupaten,
+      'kecamatan' => $kecamatan,
+      'alamat' => $alamat,
+    );
+    $this->db->update('tb_toko', $detail, array('id' => $id_toko));
+    tampil_alert('success', 'Berhasil', 'Data Toko berhasil di Perbaharui!');
+    redirect(base_url('adm/Toko/profil/' . $id_toko));
+  }
+  public function update_pengaturan()
+  {
+    $id_toko = $this->input->post('id_toko_pengaturan');
+    $gudang = $this->input->post('gudang');
+    $tgl_so = $this->input->post('tgl_so');
+    $margin = $this->input->post('margin');
+    $target = $this->input->post('target');
+    $het = $this->input->post('het');
+    $detail = array(
+      'gudang' => $gudang,
+      'tgl_so' => $tgl_so,
+      'diskon' => $margin,
+      'target' => str_replace(['Rp. ', '.'], '', $target),
+      'het' => $het
+    );
+    $this->db->update('tb_toko', $detail, array('id' => $id_toko));
+    tampil_alert('success', 'Berhasil', 'Data Toko berhasil di Perbaharui!');
+    redirect(base_url('adm/Toko/profil/' . $id_toko));
+  }
+  public function update_po()
+  {
+    $id_toko = $this->input->post('id_toko_po');
+    $batas_po = $this->input->post('batas_po');
+    $ssr = $this->input->post('ssr');
+    $max_po = $this->input->post('max_po');
+    $detail = array(
+      'status_ssr' => $batas_po,
+      'ssr' => $ssr,
+      'max_po' => $max_po
+    );
+    $this->db->update('tb_toko', $detail, array('id' => $id_toko));
+    tampil_alert('success', 'Berhasil', 'Data Toko berhasil di Perbaharui!');
+    redirect(base_url('adm/Toko/profil/' . $id_toko));
+  }
+  public function update_marketing()
+  {
+    $id_toko = $this->input->post('id_toko_marketing');
+    $spv = $this->input->post('id_spv');
+    $leader = $this->input->post('id_leader');
+    $spg = $this->input->post('id_spg');
+    $detail = array(
+      'id_spv' => $spv,
+      'id_leader' => $leader,
+      'id_spg' => $spg
+    );
+    $this->db->update('tb_toko', $detail, array('id' => $id_toko));
+    tampil_alert('success', 'Berhasil', 'Data Toko berhasil di Perbaharui!');
+    redirect(base_url('adm/Toko/profil/' . $id_toko));
+  }
   public function profil($id_toko)
   {
-
-    $id_spv = $this->session->userdata('id');
     $data['title']         = 'Toko';
-    $data['toko']          = $this->db->query("SELECT tt.*,tcs.nama_cust, tp.nama as provinsi,tk.nama as kabupaten,tc.nama as kecamatan, tt.provinsi as id_provinsi from tb_toko tt
+    $query = $this->db->query("SELECT tt.*,tcs.nama_cust, tp.nama as provinsi,tk.nama as kabupaten,
+    tc.nama as kecamatan, tt.provinsi as id_provinsi, tt.kabupaten as id_kab, tt.kecamatan as id_kec, tg.nama_user as spg, tl.nama_user as leader, ts.nama_user as nama_spv from tb_toko tt
      join wilayah_provinsi tp on tt.provinsi = tp.id
      join wilayah_kabupaten tk on tt.kabupaten = tk.id
      join wilayah_kecamatan tc on tt.kecamatan = tc.id
      join tb_customer tcs on tt.id_customer = tcs.id
+     LEFT join tb_user tg on tt.id_spg = tg.id
+     LEFT join tb_user tl on tt.id_leader = tl.id
+     LEFT join tb_user ts on tt.id_spv = ts.id
      where tt.id = '$id_toko'")->row();
-    //  lihat SPV toko
-    $data['spv']   = $this->db->query("SELECT tt.*, tb_user.nama_user
-   from tb_toko tt
-   left join tb_user on tt.id_spv = tb_user.id
-   where tt.id = '$id_toko'
-   ")->row();
-    //  lihat leader toko
-    $data['leader_toko']   = $this->db->query("SELECT tt.*, tb_user.nama_user
-   from tb_toko tt
-   left join tb_user on tt.id_leader = tb_user.id
-   where tt.id = '$id_toko'
-   ")->row();
-    //  lihat spg
-    $data['spg']   = $this->db->query("SELECT tt.*,tb_user.nama_user 
-   from tb_toko tt
-   left join tb_user on tt.id_spg = tb_user.id
-   where tt.id = '$id_toko'
-   ")->row();
-    //  cek status di stok masing" toko
+    $data['toko']          = $query;
     $data['cek_status_stok']  = $this->db->query("SELECT status from tb_stok where id_toko = '$id_toko' and status = 2 ")->num_rows();
-    //  stok produk per toko
     $ssr = $this->db->query("SELECT ssr from tb_toko where id = '$id_toko'")->row()->ssr;
     $data['stok_produk'] = $this->db->query("
         SELECT tb_produk.*, tb_stok.qty,tb_stok.updated_at, COALESCE(ROUND(AVG(penjualan_3_bulan.qty), 0), 0) * '$ssr' as ssr
@@ -455,8 +504,16 @@ class Toko extends CI_Controller
         GROUP BY tb_produk.id
     ")->result();
     $data['list_produk'] = $this->db->query("SELECT * from tb_produk where id not in (select id_produk from tb_stok where id_toko = '$id_toko') ")->result();
-    // cek status toko
     $data['cek_status'] = $this->db->query("SELECT status from tb_toko where id = '$id_toko'")->row();
+    $data['customer'] = $this->db->query("SELECT * from tb_customer")->result();
+    $data['spv'] = $this->db->query("SELECT * from tb_user where role = 2 AND status = 1")->result();
+    $data['leader'] = $this->db->query("SELECT * from tb_user where role = 3 AND status = 1")->result();
+    $data['spg'] = $this->db->query("SELECT * from tb_user where role = 4 AND status = 1")->result();
+    $id_prov = $query->id_provinsi;
+    $id_kab = $query->id_kab;
+    $data['provinsi'] = $this->db->query("SELECT * from wilayah_provinsi")->result();
+    $data['kabupaten'] = $this->db->query("SELECT * from wilayah_kabupaten where provinsi_id = '$id_prov'")->result();
+    $data['kecamatan'] = $this->db->query("SELECT * from wilayah_kecamatan where kabupaten_id = '$id_kab'")->result();
     $this->template->load('template/template', 'adm/toko/profil', $data);
   }
 
@@ -752,7 +809,6 @@ class Toko extends CI_Controller
 
     echo json_encode($data);
   }
-  // Controller: Ambil histori berdasarkan id
   public function histori($id)
   {
     $histori = $this->db->query("SELECT * from tb_toko_histori where id_toko ='$id'")->result();

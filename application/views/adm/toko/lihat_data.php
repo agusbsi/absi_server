@@ -46,6 +46,7 @@
                     </td>
                     <td>
                       <small>
+                        <strong>SPV : </strong> <?= $t->nama_spv ?><br>
                         <strong>Leader : </strong> <?= $t->leader ?><br>
                         <strong>Spg : </strong> <?= $t->spg ?>
                       </small>
@@ -54,8 +55,7 @@
                       <?= status_toko($t->status) ?>
                     </td>
                     <td>
-                      <a href="<?= base_url('adm/Toko/profil/' . $t->id) ?>" class="btn btn-<?= ($t->status == "4" || $t->status == "5") ? 'warning' : 'info'; ?> btn-sm"> <i class="fas <?= ($t->status == "4" || $t->status == "5") ? 'fa-cog' : 'fa-eye'; ?>"></i></a>
-                      <a href="<?= base_url('adm/Toko/update/' . $t->id) ?>" class="btn btn-warning btn-sm "><i class="fas fa-edit"></i> </a>
+                      <a href="<?= base_url('adm/Toko/profil/' . $t->id) ?>" class="btn btn-<?= ($t->status == "4" || $t->status == "5") ? 'warning' : 'info'; ?> btn-sm"> <i class="fas <?= ($t->status == "4" || $t->status == "5") ? 'fa-cog' : 'fa-eye'; ?>"></i> Detail</a>
                     </td>
                   </tr>
                 <?php endforeach ?>

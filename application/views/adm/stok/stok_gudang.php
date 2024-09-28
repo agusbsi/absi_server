@@ -57,7 +57,7 @@
                     <small>
                         <strong>Keterangan :</strong>
                         <li>Data stok gudang ini diambil dari data Easy Accounting.</li>
-                        <li>Data di perbarui setiap hari pukul 08.00 WIB.</li>
+                        <li>Data di perbarui setiap hari pukul 08.00 - 09.00 WIB.</li>
                         <li>Data di import oleh tim Accounting.</li>
                     </small>
                 </div>

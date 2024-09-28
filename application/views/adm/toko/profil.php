@@ -40,6 +40,99 @@
     width: 100%;
 
   }
+
+  .judul_toko {
+    grid-column: span 2;
+    background-color: #FFFFFF;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+  }
+
+  .judul_toko h5 {
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .btn_edit {
+    background-color: #FFC107;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: black;
+    border-radius: 5px;
+    padding: 0 5px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    overflow: hidden;
+    transition: color 0.4s ease;
+    z-index: 1;
+  }
+
+  .btn_edit::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: #3498db;
+    transition: left 0.4s ease;
+    z-index: 0;
+  }
+
+  .btn_edit:hover::before {
+    left: 0;
+  }
+
+  .btn_edit:hover {
+    color: white;
+  }
+
+  .btn_edit i,
+  .btn_edit span {
+    position: relative;
+    z-index: 1;
+  }
+
+
+  .image-section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .image-section img {
+    width: 100%;
+    border-radius: 8px;
+  }
+
+  .detail-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+    display: block;
+  }
+
+  .detail-description {
+    display: block;
+    font-size: 12px;
+    color: #666666;
+    margin-bottom: 2px;
+  }
 </style>
 <section class="content">
   <div class="container-fluid">
@@ -51,196 +144,138 @@
         </div>
       </div>
     <?php } ?>
-    <div class="card card-info">
-      <div class="card-header">
-        Detail Toko
+    <div class="judul_toko">
+      <h5><i class="fas fa-store"></i> <?= $toko->nama_toko ?></h5>
+      <button class="btn_edit" data-toggle="modal" data-target="#modal_toko" data-id="<?= $toko->id; ?>" data-toko="<?= $toko->nama_toko; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+    </div>
+    <div class="row">
+      <div class="col-md-5">
+        <div class="image-section">
+          <?php if ($toko->foto_toko == null) { ?>
+            <img src="<?php echo base_url() ?>assets/img/toko/hicoop.png" alt="Foto toko">
+          <?php } else { ?>
+            <img src="<?php echo base_url('assets/img/toko/' . $toko->foto_toko . "?" . time()) ?>" alt="Foto toko">
+          <?php } ?>
+          <button class="btn_edit" data-toggle="modal" data-target="#modal_foto" data-id="<?= $toko->id; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+        </div>
+        <div class="card card-outline card-info">
+          <div class="card-header">
+            <strong>Detail</strong>
+          </div>
+          <div class="card-body">
+            <p class="detail-title">Customer</p>
+            <p class="detail-description"><?= $toko->nama_cust ?></p>
+            <p class="detail-title">Jenis Toko</p>
+            <p class="detail-description"><?= jenis_toko($toko->jenis_toko) ?></p>
+            <p class="detail-title">PIC & Telp</p>
+            <p class="detail-description"><?= $toko->nama_pic ?> | <?= $toko->telp ?></p>
+            <p class="detail-title">Provinsi</p>
+            <p class="detail-description"><?= $toko->provinsi ?></p>
+            <p class="detail-title">Kabupaten</p>
+            <p class="detail-description"><?= $toko->kabupaten ?></p>
+            <p class="detail-title">Kecamatan</p>
+            <p class="detail-description"><?= $toko->kecamatan ?></p>
+            <p class="detail-title">Alamat</p>
+            <p class="detail-description"><?= $toko->alamat ?></p>
+            <p class="detail-title">Di buat</p>
+            <p class="detail-description"><?= date('d M Y H:i:s', strtotime($toko->created_at)) ?></p>
+            <button class="btn_edit" data-toggle="modal" data-target="#modal_detail"
+              data-id="<?= $toko->id; ?>"
+              data-id_cust="<?= $toko->id_customer; ?>"
+              data-jenis_toko="<?= $toko->jenis_toko; ?>"
+              data-pic="<?= $toko->nama_pic; ?>"
+              data-telp="<?= $toko->telp; ?>"
+              data-provinsi="<?= $toko->id_provinsi; ?>"
+              data-kabupaten="<?= $toko->id_kab; ?>"
+              data-kecamatan="<?= $toko->id_kec; ?>"
+              data-alamat="<?= $toko->alamat; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
+      <div class="col-md-7">
         <div class="row">
-          <div class="col-md-7">
-            <!-- Profile Image -->
+          <div class="col-md-6">
             <div class="card card-outline card-info">
               <div class="card-header">
-                Foto
+                <strong>Pengaturan</strong>
               </div>
               <div class="card-body">
-                <div class="text-center">
-                  <?php if ($toko->foto_toko == "") {
-                  ?>
-                    <img style="width: 150px;" class="img-responsive img-rounded" src="<?php echo base_url() ?>assets/img/toko/hicoop.png" alt="User profile picture">
-                  <?php
-                  } else { ?>
-                    <img style="width: 150px;" class=" img-responsive img-rounded" src="<?php echo base_url('assets/img/toko/' . $toko->foto_toko) ?>" alt="User profile picture">
-                  <?php } ?>
-                </div>
-                <h3 class="profile-username text-center"><strong><?= $toko->nama_toko ?></strong></h3>
-                <p class="text-muted text-center">[ ID : <?= $toko->id ?> ]</p>
-
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <div class="card card-outline card-info">
-              <div class="card-header">
-                Detail
-              </div>
-              <div class="card-body">
-                <table class="table table-sm">
-                  <tbody>
-                    <tr>
-                      <td><b>Customer</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_cust ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Jenis Toko</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= jenis_toko($toko->jenis_toko) ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>PIC & Telp</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->nama_pic ?> | <?= $toko->telp ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Provinsi</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->provinsi ?> " readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Kabupaten</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->kabupaten ?> " readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Kecamatan</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->kecamatan ?> " readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Alamat</b></td>
-                      <td>
-                        <textarea class="form-control form-control-sm" readonly><?= $toko->alamat ?></textarea>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Di buat</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->created_at ?> " readonly>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <p class="detail-title">Gudang Easy</p>
+                <p class="detail-description"><?= $toko->gudang ? $toko->gudang : 'kosong' ?></p>
+                <p class="detail-title">Max Tgl SO</p>
+                <p class="detail-description"><?= $toko->tgl_so ?> / Bulan</p>
+                <p class="detail-title">Margin</p>
+                <p class="detail-description"><?= $toko->diskon ?> %</p>
+                <p class="detail-title">Target Toko</p>
+                <p class="detail-description">Rp <?= number_format($toko->target) ?></p>
+                <p class="detail-title">Tipe Harga</p>
+                <p class="detail-description"><?= $toko->het == 1 ? 'HET JAWA' : 'HET INDOBARAT' ?></p>
+                <button class="btn_edit" data-toggle="modal" data-target="#modal_pengaturan"
+                  data-id_toko_pengaturan="<?= $toko->id; ?>"
+                  data-gudang="<?= $toko->gudang; ?>"
+                  data-tgl_so="<?= $toko->tgl_so; ?>"
+                  data-margin="<?= $toko->diskon; ?>"
+                  data-target_toko="<?= $toko->target; ?>"
+                  data-het="<?= $toko->het; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
               </div>
             </div>
           </div>
-          <div class="col-md-5">
+          <div class="col-md-6">
             <div class="card card-outline card-info">
               <div class="card-header">
-                Pengaturan
+                <strong>Purchase Order ( PO )</strong>
               </div>
               <div class="card-body">
-                <table class="table table-sm">
-                  <tbody>
-                    <tr>
-                      <td><b>Gudang Easy</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->gudang ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Max Tgl SO</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->tgl_so ?> / Bulan" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Margin</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->diskon ?> % " readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Target Toko</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="Rp <?= number_format($toko->target) ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Jenis Harga</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->het == 1 ? 'HET JAWA' : 'HET INDOBARAT' ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Batas PO</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->status_ssr == 1 ? 'AKTIF' : 'NON-AKTIF' ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>SSR Toko</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->ssr ?>" readonly>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Max PO</b></td>
-                      <td>
-                        <input type="text" class="form-control form-control-sm" value="<?= $toko->max_po ?> %" readonly>
-                        <small>( Dari Total Penjualan bulan kemarin )</small>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <p class="detail-title">Batas PO</p>
+                <p class="detail-description"><?= $toko->status_ssr == 1 ? 'AKTIF' : 'NON-AKTIF' ?></p>
+                <p class="detail-title">SSR Toko</p>
+                <p class="detail-description"><?= $toko->ssr ?> X <small>( dari stok saat ini )</small></p>
+                <p class="detail-title">Max PO</p>
+                <p class="detail-description"><?= $toko->max_po ?> % <small>( Dari Total Penjualan bulan kemarin )</small></p>
+
+                <button class="btn_edit" data-toggle="modal" data-target="#modal_po"
+                  data-id_toko_po="<?= $toko->id; ?>"
+                  data-batas_po="<?= $toko->status_ssr; ?>"
+                  data-ssr="<?= $toko->ssr; ?>"
+                  data-max_po="<?= $toko->max_po; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
               </div>
             </div>
+          </div>
+          <div class="col-md-6">
             <div class="card card-outline card-info">
               <div class="card-header">
-                Pengguna Sistem
+                <strong>PO Otomatis</strong>
               </div>
               <div class="card-body">
-                <table class="table table-sm">
-                  <tbody>
-                    <tr>
-                      <td><b>Supervisor</b></td>
-                      <td>
-                        : <?= $spv->id_spv == "0" ? "Belum di kaitkan " : $spv->nama_user ?>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Team Leader</b></td>
-                      <td>
-                        : <?= $leader_toko->id_leader == "0" ? "Belum di kaitkan " : $leader_toko->nama_user ?>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><b>Spg</b></td>
-                      <td>
-                        : <?= $spg->id_spg == "0" ? "Belum di kaitkan " : $spg->nama_user ?>
-                      </td>
-                    </tr>
-
-                  </tbody>
-                </table>
+                <p class="detail-title">Coming Soon ...</p>
               </div>
-              <!-- /.card-body -->
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                <strong> Tim Marketing</strong>
+              </div>
+              <div class="card-body">
+                <p class="detail-title">Supervisor</p>
+                <p class="detail-description"><?= $toko->id_spv == 0 ? "Belum di kaitkan " : $toko->nama_spv ?></p>
+                <p class="detail-title">Team Leader</p>
+                <p class="detail-description"><?= $toko->id_leader == 0 ? "Belum di kaitkan " : $toko->leader ?></p>
+                <p class="detail-title">SPG / SPB</p>
+                <p class="detail-description"><?= $toko->id_spg == 0 ? "Belum di kaitkan " : $toko->spg ?></p>
+                <button class="btn_edit" data-toggle="modal" data-target="#modal_marketing"
+                  data-id_toko_marketing="<?= $toko->id; ?>"
+                  data-spv="<?= $toko->id_spv; ?>"
+                  data-leader="<?= $toko->id_leader; ?>"
+                  data-spg="<?= $toko->id_spg; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+              </div>
             </div>
             <button type="button" class="btn btn-outline-info btn-block btn-sm" id="btnHistori" data-id="<?= $toko->id ?>"><i class="fas fa-feather"></i> Histori Pengajuan </button>
           </div>
         </div>
       </div>
-      <div class="card-footer">
-        <a href="<?= base_url('adm/Toko/update/' . $toko->id) ?>" class="btn btn-warning btn-sm float-right"><i class="fas fa-edit"></i> Update</a>
-      </div>
     </div>
-    <!-- Stok-->
-    <div class="card card-warning">
+    <div class="card card-primary">
       <div class="card-header">
         <h3 class="card-title">
           <li class="fas fa-box"></li> Data Stok Artikel
@@ -348,11 +383,9 @@
                 <td></td>
                 <td></td>
               </tr>
-
             </tfoot>
           </table>
         </div>
-        <!-- /.tab-content -->
       </div>
     </div>
   </div>
@@ -482,7 +515,6 @@
     </div>
   </div>
 </div>
-<!-- Modal Histori Pengajuan -->
 <div class="modal fade" id="modalHistori" tabindex="-1" role="dialog" aria-labelledby="modalHistoriTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
@@ -503,7 +535,285 @@
     </div>
   </div>
 </div>
-
+<div class="modal fade" id="modal_toko" role="dialog">
+  <div class="modal-dialog" role="document">
+    <form action="<?= base_url('adm/Toko/update_toko') ?>" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"> Ubah Nama Toko</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grou mb-1p">
+            <label>Nama Toko</label>
+            <input type="text" class="form-control form-control-sm" id="nama_toko" name="nama_toko" autocomplete="off" placeholder="nama toko ..." required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-times-circle"></i> Cancel</button>
+          <input type="hidden" name="id_toko" id="toko_id">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal fade" id="modal_foto" role="dialog">
+  <div class="modal-dialog" role="document">
+    <form action="<?= base_url('adm/Toko/update_foto') ?>" method="POST" enctype="multipart/form-data">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"> Ubah Foto Toko</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grou mb-1p">
+            <label>Pilih Foto</label>
+            <input type="file" class="form-control form-control-sm" name="foto" accept="image/png, image/jpeg, image/jpg" required></input>
+            <small>noted: Jenis foto yang diperbolehkan : JPG|JPEG|PNG & size maksimal : 2 mb</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-times-circle"></i> Cancel</button>
+          <input type="hidden" name="id_toko_foto" id="toko_id_foto">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal fade" id="modal_detail">
+  <div class="modal-dialog modal-lg" role="document">
+    <form action="<?= base_url('adm/Toko/update_detail') ?>" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ubah Detail</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-grou mb-1p">
+                <label>Customer</label>
+                <select class="form-control form-control-sm select2" id="id_cust" name="id_cust" required>
+                  <?php foreach ($customer as $p) : ?>
+                    <option value="<?= $p->id ?>"><?= $p->nama_cust ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-grou mb-1p">
+                <label>Jenis Toko</label>
+                <select class="form-control form-control-sm" id="jenis_toko" name="jenis_toko" required>
+                  <option value="1">Dept Store</option>
+                  <option value="2">Supermarket</option>
+                  <option value="3">Grosir</option>
+                  <option value="4">Minimarket</option>
+                  <option value="6">Hypermart</option>
+                  <option value="5">Lain-lain.</option>
+                </select>
+              </div>
+              <div class="form-grou mb-1p">
+                <label>PIC</label>
+                <input type="text" class="form-control form-control-sm " id="pic" name="pic" autocomplete="off">
+              </div>
+              <div class="form-grou mb-1p">
+                <label>Telp / Whastapp</label>
+                <input type="number" class="form-control form-control-sm" id="telp" name="telp" autocomplete="off">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-grou mb-1p">
+                <label>Provinsi</label>
+                <select class="form-control form-control-sm select2" id="id_provinsi" name="provinsi" required>
+                  <?php foreach ($provinsi as $p) : ?>
+                    <option value="<?= $p->id ?>"><?= $p->nama ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-grou mb-1p">
+                <label>Kabupaten</label>
+                <select class="form-control form-control-sm select2" id="kabupaten" name="kabupaten" required>
+                  <?php foreach ($kabupaten as $p) : ?>
+                    <option value="<?= $p->id ?>"><?= $p->nama ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-grou mb-1p">
+                <label>Kecamatan</label>
+                <select class="form-control form-control-sm select2" id="kecamatan" name="kecamatan" required>
+                  <?php foreach ($kecamatan as $p) : ?>
+                    <option value="<?= $p->id ?>"><?= $p->nama ?></option>
+                  <?php endforeach ?>
+                </select>
+              </div>
+              <div class="form-grou mb-1p">
+                <label>Alamat</label>
+                <textarea class="form-control form-control-sm " id="alamat" name="alamat" required></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-times-circle"></i> Cancel</button>
+          <input type="hidden" name="id_toko_detail" id="id_toko_detail">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal fade" id="modal_pengaturan">
+  <div class="modal-dialog" role="document">
+    <form action="<?= base_url('adm/Toko/update_pengaturan') ?>" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ubah Pengaturan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grou mb-1p">
+            <label>Nama Gudang Easy</label>
+            <input type="text" class="form-control form-control-sm" id="gudang" name="gudang" autocomplete="off">
+          </div>
+          <div class="form-grou mb-1p">
+            <label>Tanggal SO</label>
+            <select class="form-control form-control-sm select2" id="tgl_so" name="tgl_so" required>
+              <option value="">- Pilih tgl SO -</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+            </select>
+          </div>
+          <div class="form-grou mb-1p">
+            <label>Margin</label>
+            <input type="number" class="form-control form-control-sm" id="margin" name="margin" autocomplete="off" required>
+          </div>
+          <div class="form-grou mb-1p">
+            <label>Target Toko</label>
+            <input type="text" class="form-control form-control-sm rupiah-input" id="target" name="target" autocomplete="off" required>
+          </div>
+          <div class="form-grou mb-1p">
+            <strong>Tipe Harga</strong>
+            <select class="form-control form-control-sm select2" id="het" name="het" required>
+              <option value="">- Pilih Tipe Harga -</option>
+              <option value="1">HET JAWA</option>
+              <option value="2">HET INDOBARAT</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-times-circle"></i> Cancel</button>
+          <input type="hidden" name="id_toko_pengaturan" id="id_toko_pengaturan">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal fade" id="modal_po" role="dialog">
+  <div class="modal-dialog" role="document">
+    <form action="<?= base_url('adm/Toko/update_po') ?>" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"> Ubah Purchase Order ( PO )</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grou mb-1p">
+            <strong>Batas PO</strong>
+            <select class="form-control form-control-sm select2" id="batas_po" name="batas_po" required>
+              <option value="">- Pilih fungsi -</option>
+              <option value="1">AKTIF</option>
+              <option value="0">TIDAK AKTIF</option>
+            </select>
+          </div>
+          <div class="form-grou mb-1p">
+            <strong>SSR Toko</strong>
+            <input type="number" class="form-control form-control-sm" id="ssr" name="ssr" autocomplete="off" required>
+          </div>
+          <div class="form-grou mb-1p">
+            <strong>Max PO</strong>
+            <input type="number" class="form-control form-control-sm" id="max_po" name="max_po" autocomplete="off" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-times-circle"></i> Cancel</button>
+          <input type="hidden" name="id_toko_po" id="id_toko_po">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal fade" id="modal_marketing" role="dialog">
+  <div class="modal-dialog" role="document">
+    <form action="<?= base_url('adm/Toko/update_marketing') ?>" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"> Ubah Tim Marketing</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grou mb-1p">
+            <label>Supervisor</label>
+            <select class="form-control form-control-sm select2" id="id_spv" name="id_spv" required>
+              <?php foreach ($spv as $p) : ?>
+                <option value="<?= $p->id ?>"><?= $p->nama_user ?></option>
+              <?php endforeach ?>
+            </select>
+          </div>
+          <div class="form-grou mb-1p">
+            <label>Tim Leader</label>
+            <select class="form-control form-control-sm select2" id="id_leader" name="id_leader">
+              <option value="0">- Belum Ada -</option>
+              <?php foreach ($leader as $p) : ?>
+                <option value="<?= $p->id ?>"><?= $p->nama_user ?></option>
+              <?php endforeach ?>
+            </select>
+          </div>
+          <div class="form-grou mb-1p">
+            <label>SPG / SPB</label>
+            <select class="form-control form-control-sm select2" id="id_spg" name="id_spg">
+              <option value="0">- Belum Ada -</option>
+              <?php foreach ($spg as $p) : ?>
+                <option value="<?= $p->id ?>"><?= $p->nama_user ?></option>
+              <?php endforeach ?>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-times-circle"></i> Cancel</button>
+          <input type="hidden" name="id_toko_marketing" id="id_toko_marketing">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 <script>
   $('.btn_kartu').click(function() {
     var id_produk = $(this).data('id');
@@ -672,6 +982,149 @@
           console.error(xhr.responseText);
           alert('Terjadi kesalahan saat mengambil data histori.');
         }
+      });
+    });
+    $('.btn_edit[data-target="#modal_toko"]').on('click', function() {
+      var id = $(this).data('id');
+      var namaToko = $(this).data('toko');
+      $('#toko_id').val(id);
+      $('#nama_toko').val(namaToko);
+    });
+    $('.btn_edit[data-target="#modal_foto"]').on('click', function() {
+      var id = $(this).data('id');
+      var namaToko = $(this).data('toko');
+      $('#toko_id_foto').val(id);
+    });
+    $('.btn_edit[data-target="#modal_detail"]').on('click', function() {
+      var id = $(this).data('id');
+      var id_cust = $(this).data('id_cust');
+      var jenis_toko = $(this).data('jenis_toko');
+      var pic = $(this).data('pic');
+      var telp = $(this).data('telp');
+      var provinsi = $(this).data('provinsi');
+      var kab = $(this).data('kabupaten');
+      var kec = $(this).data('kecamatan');
+      var alamat = $(this).data('alamat');
+      $('#id_cust').val(id_cust).trigger('change');
+      $('#jenis_toko').val(jenis_toko).trigger('change');
+      setAutoProvinsi(provinsi);
+      setAutoKabupaten(kab);
+      $('#kecamatan').val(kec).trigger('change');
+      $('#pic').val(pic);
+      $('#telp').val(telp);
+      $('#alamat').val(alamat);
+      $('#id_toko_detail').val(id);
+    });
+    $('.btn_edit[data-target="#modal_pengaturan"]').on('click', function() {
+      var id = $(this).data('id_toko_pengaturan');
+      var gudang = $(this).data('gudang');
+      var tgl_so = $(this).data('tgl_so');
+      var margin = $(this).data('margin');
+      var target_toko = $(this).data('target_toko');
+      var het = $(this).data('het');
+      $('#tgl_so').val(tgl_so).trigger('change');
+      $('#het').val(het).trigger('change');
+      $('#id_toko_pengaturan').val(id);
+      $('#gudang').val(gudang);
+      $('#margin').val(margin);
+      $('#target').val(target_toko);
+    });
+    $('.btn_edit[data-target="#modal_po"]').on('click', function() {
+      var id = $(this).data('id_toko_po');
+      var batas_po = $(this).data('batas_po');
+      var ssr = $(this).data('ssr');
+      var max_po = $(this).data('max_po');
+      $('#id_toko_po').val(id);
+      $('#batas_po').val(batas_po).trigger('change');
+      $('#ssr').val(ssr);
+      $('#max_po').val(max_po);
+    });
+    $('.btn_edit[data-target="#modal_marketing"]').on('click', function() {
+      var id = $(this).data('id_toko_marketing');
+      var spv = $(this).data('spv');
+      var leader = $(this).data('leader');
+      var spg = $(this).data('spg');
+      $('#id_toko_marketing').val(id);
+      $('#id_spv').val(spv).trigger('change');
+      $('#id_leader').val(leader).trigger('change');
+      $('#id_spg').val(spg).trigger('change');
+    });
+
+    function setAutoProvinsi(provinsi) {
+      autoTriggered = true;
+      $('#id_provinsi').val(provinsi).trigger('change');
+      autoTriggered = false;
+    }
+
+    function setAutoKabupaten(kabupaten) {
+      autoTriggered = true;
+      $('#kabupaten').val(kabupaten).trigger('change');
+      autoTriggered = false;
+    }
+  });
+  var autoTriggered = false;
+  $('#id_provinsi').on('change', function() {
+    if (!autoTriggered) {
+      var selectedProvinsi = $(this).val();
+      if (selectedProvinsi) {
+        $.ajax({
+          url: "<?php echo base_url('adm/Toko/add_ajax_kab'); ?>/" + selectedProvinsi,
+          dataType: 'json',
+          success: function(data) {
+            $('#kabupaten').empty();
+            $('#kecamatan').empty();
+            $('#kecamatan').append('<option value="">- Select Kecamatan -</option>');
+            $('#kabupaten').append('<option value="">- Select Kabupaten -</option>');
+            $.each(data, function(index, item) {
+              $('#kabupaten').append('<option value="' + item.id + '">' + item.nama + '</option>');
+            });
+          }
+        });
+      }
+    }
+  });
+  $("#kabupaten").change(function() {
+    if (!autoTriggered) {
+      var selectedkab = $(this).val();
+      if (selectedkab) {
+        $.ajax({
+          url: "<?php echo base_url('adm/Toko/add_ajax_kec'); ?>/" + selectedkab,
+          dataType: 'json',
+          success: function(data) {
+            $('#kecamatan').empty();
+            $('#kecamatan').append('<option value="">- Select Kecamatan -</option>');
+            $.each(data, function(index, item) {
+              $('#kecamatan').append('<option value="' + item.id + '">' + item.nama + '</option>');
+            });
+          }
+        });
+      }
+    }
+
+  });
+</script>
+<script>
+  function formatRupiah(angka, prefix) {
+    var number_string = angka.replace(/[^,\d]/g, '').toString(),
+      split = number_string.split(','),
+      sisa = split[0].length % 3,
+      rupiah = split[0].substr(0, sisa),
+      ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+    if (ribuan) {
+      separator = sisa ? '.' : '';
+      rupiah += separator + ribuan.join('.');
+    }
+
+    rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+    return prefix === undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var inputs = document.querySelectorAll('.rupiah-input');
+    inputs.forEach(function(input) {
+      input.addEventListener('keyup', function(e) {
+        this.value = formatRupiah(this.value, 'Rp. ');
       });
     });
   });

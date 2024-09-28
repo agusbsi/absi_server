@@ -226,8 +226,6 @@
         }
       });
     });
-
-
     $("#kabupaten").change(function() {
       var url = "<?php echo base_url('adm/Toko/add_ajax_kec'); ?>/" + $(this).val();
       $.ajax({
