@@ -3,6 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Stok extends CI_Controller
 {
@@ -45,6 +47,22 @@ class Stok extends CI_Controller
     $data['data'] = $this->db->query($query)->row();
     $data['list_data'] = $this->db->query($query)->result();
     $this->template->load('template/template', 'adm/stok/detail', $data);
+  }
+  public function detail_cust($id)
+  {
+    $data['title'] = 'Stok Artikel';
+    $query = "SELECT SUM(ts.qty) as stok,tc.nama_cust, tp.nama_produk, tp.kode
+          FROM tb_stok ts
+          JOIN tb_toko tt ON ts.id_toko = tt.id
+          JOIN tb_customer tc ON tt.id_customer = tc.id
+          join tb_produk tp on ts.id_produk = tp.id
+          where ts.id_produk = '$id' AND ts.status = 1 AND tt.status = 1
+          GROUP BY tc.id
+          ORDER BY SUM(ts.qty) DESC";
+
+    $data['data'] = $this->db->query($query)->row();
+    $data['list_data'] = $this->db->query($query)->result();
+    $this->template->load('template/template', 'adm/stok/detail_cust', $data);
   }
   public function s_customer()
   {
@@ -482,5 +500,35 @@ class Stok extends CI_Controller
       echo json_encode($response);
     }
     $this->db->trans_complete();
+  }
+  public function unduhExcel()
+  {
+    $dataToko = $this->db->query("SELECT * from tb_produk where status = 1 ORDER BY id desc")->result();
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'Kode');
+    $sheet->setCellValue('C1', 'Artikel');
+    $sheet->setCellValue('D1', 'Satuan');
+    $sheet->setCellValue('E1', 'Stok');
+    $row = 2;
+    $no = 1;
+    foreach ($dataToko as $data) {
+      $sheet->setCellValue('A' . $row, $no);
+      $sheet->setCellValue('B' . $row, $data->kode);
+      $sheet->setCellValue('C' . $row, $data->nama_produk);
+      $sheet->setCellValue('D' . $row, $data->satuan);
+      $sheet->setCellValue('E' . $row, $data->stok);
+      $row++;
+      $no++;
+    }
+    $fileName = 'stok_gudang' . date('dMY') . '.xlsx';
+    $writer = new Xlsx($spreadsheet);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $fileName . '"');
+    header('Cache-Control: max-age=0');
+    ob_end_clean();
+    $writer->save('php://output');
+    exit();
   }
 }

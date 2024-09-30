@@ -4,7 +4,7 @@
             <div class="col-12">
                 <div class="card card-info">
                     <div class="card-header">
-                        <h3 class="card-title"> <i class="fas fa-chartpie"></i> Detail stok Artikel per Toko</h3>
+                        <h3 class="card-title"> <i class="fas fa-chartpie"></i> Detail stok artikel per customer</h3>
                         <div class="card-tools">
                             <a href="<?= base_url('adm/Stok') ?>" type="button" class="btn btn-tool remove">
                                 <i class="fas fa-times"></i>
@@ -17,7 +17,7 @@
                         <input type="hidden" id="produk" value="<?= !empty($data->nama_produk) ? $data->kode : "KOSONG" ?>">
                         <div id="printableArea">
                             <div class="text-center">
-                                - Laporan stok Artikel per Toko -
+                                - Laporan stok artikel per customer -
                                 <hr>
                                 <b><?= !empty($data->nama_produk) ? $data->kode . ' </b> <br>  ' . $data->nama_produk  : 'DATA STOK KOSONG' ?>
                             </div>
@@ -27,7 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:3%">#</th>
-                                        <th class="text-center">Nama Toko</th>
+                                        <th class="text-center">Nama Customer</th>
                                         <th class="text-center">Total Stok</th>
                                     </tr>
                                 </thead>
@@ -41,11 +41,11 @@
                                     ?>
                                             <tr>
                                                 <td><?= $no ?></td>
-                                                <td><?= $dd->nama_toko ?></td>
-                                                <td class="text-center"><?= $dd->qty ?></td>
+                                                <td><?= $dd->nama_cust ?></td>
+                                                <td class="text-center"><?= $dd->stok ?></td>
                                             </tr>
                                         <?php
-                                            $total += $dd->qty; // Perbaiki penggunaan variabel
+                                            $total += $dd->stok; // Perbaiki penggunaan variabel
                                         endforeach;
                                         ?>
                                         <tr>
@@ -90,7 +90,7 @@
     function downloadExcel() {
         var wb = XLSX.utils.book_new();
         var sheetData = [];
-        var header = ["#", "Nama Toko", "Total Stok"];
+        var header = ["#", "Nama Customer", "Total Stok"];
         sheetData.push(header);
 
         // Select the table body

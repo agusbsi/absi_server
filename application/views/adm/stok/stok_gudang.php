@@ -62,6 +62,7 @@
                     </small>
                 </div>
                 <div class="card-footer text-right">
+                    <a href="<?= base_url('adm/Stok/unduhExcel') ?>" class="btn btn-warning btn-sm"><i class="fas fa-download"></i> Unduh Excel </a>
                     <?php if ($this->session->userdata('role') == 15) { ?>
                         <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#importModel"><i class="fas fa-upload"></i> Import Stok</button>
                     <?php } ?>

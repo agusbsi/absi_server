@@ -31,6 +31,47 @@ class Toko extends CI_Controller
     ORDER BY  tt.id desc")->result();
     $this->template->load('template/template', 'adm/toko/lihat_data', $data);
   }
+  public function unduhExcel()
+  {
+    // Ambil data dari database
+    $dataToko = $this->db->query("SELECT tt.nama_toko, tt.alamat, spv.nama_user as nama_spv, tl.nama_user as leader, tu.nama_user as spg
+        from tb_toko tt
+        left join tb_user tu on tt.id_spg = tu.id
+        left join tb_user tl on tt.id_leader = tl.id
+        left join tb_user spv on tt.id_spv = spv.id
+        where tt.status = 1
+        ORDER BY  tt.id desc")->result();
+
+    // Buat spreadsheet baru
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'Nama Toko');
+    $sheet->setCellValue('C1', 'Alamat');
+    $sheet->setCellValue('D1', 'SPV');
+    $sheet->setCellValue('E1', 'Leader');
+    $sheet->setCellValue('F1', 'SPG');
+    $row = 2;
+    $no = 1;
+    foreach ($dataToko as $data) {
+      $sheet->setCellValue('A' . $row, $no);
+      $sheet->setCellValue('B' . $row, $data->nama_toko);
+      $sheet->setCellValue('C' . $row, $data->alamat);
+      $sheet->setCellValue('D' . $row, $data->nama_spv);
+      $sheet->setCellValue('E' . $row, $data->leader);
+      $sheet->setCellValue('F' . $row, $data->spg);
+      $row++;
+      $no++;
+    }
+    $fileName = 'Data_Toko_' . date('dMY') . '.xlsx';
+    $writer = new Xlsx($spreadsheet);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $fileName . '"');
+    header('Cache-Control: max-age=0');
+    ob_end_clean();
+    $writer->save('php://output');
+    exit();
+  }
   // fitur proses pengajuan toko baru /tutup
   public function pengajuanToko()
   {

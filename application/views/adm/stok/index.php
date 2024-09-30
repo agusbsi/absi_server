@@ -55,7 +55,16 @@
                                             </td>
                                             <td class="text-center"><?= $dd->stok ?></td>
                                             <td>
-                                                <a href="<?= base_url('adm/Stok/detail/' . $dd->id) ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-info btn-sm"> Detail</button>
+                                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                    </button>
+                                                    <div class="dropdown-menu" role="menu" style="">
+                                                        <a class="dropdown-item" href="<?= base_url('adm/Stok/detail/' . $dd->id) ?>">Per Toko</a>
+                                                        <a class="dropdown-item" href="<?= base_url('adm/Stok/detail_cust/' . $dd->id) ?>">Per Customer</a>
+                                                    </div>
+                                                </div>
                                             </td>
                                 </tr>
                             <?php endforeach; ?>

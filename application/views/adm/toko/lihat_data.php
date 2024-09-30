@@ -9,8 +9,9 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-6"></div>
-              <div class="col-md-6">
-                <button type="button" class="btn btn-success btn-sm float-right <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-store"></i> Tambah Toko</button>
+              <div class="col-md-6 text-right">
+                <a href="<?= base_url('adm/Toko/unduhExcel') ?>" class="btn btn-warning btn-sm"><i class="fas fa-download"></i> Unduh Excel </a>
+                <button type="button" class="btn btn-success btn-sm <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-store"></i> Tambah Toko</button>
               </div>
             </div>
             <hr>
