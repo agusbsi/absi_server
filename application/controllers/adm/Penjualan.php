@@ -53,20 +53,22 @@ class Penjualan extends CI_Controller
       $kode = 'Semua Artikel';
       $artikel = 'Semua Artikel';
       $tipe = 'artikel';
-      $query = "
-        SELECT 
-            tpp.nama_produk, tpp.kode, 
-            SUM(tpd.qty) as total
-        FROM 
-            tb_penjualan_detail tpd 
-            JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
-            JOIN tb_produk tpp on tpd.id_produk = tpp.id
-        WHERE 
-            DATE(tp.tanggal_penjualan) BETWEEN ? AND ?
-        GROUP BY 
-            tpp.id
-        ORDER BY 
-            SUM(tpd.qty) DESC";
+      $query = "SELECT 
+        tpp.nama_produk, tpp.kode, 
+        COALESCE(SUM(tpd.qty), 0) as total
+    FROM 
+        tb_produk tpp
+    LEFT JOIN (
+        SELECT tpd.id_produk, SUM(tpd.qty) as qty
+        FROM tb_penjualan_detail tpd
+        JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+        WHERE DATE(tp.tanggal_penjualan) BETWEEN ? AND ?
+        GROUP BY tpd.id_produk
+    ) tpd ON tpp.id = tpd.id_produk
+    GROUP BY 
+        tpp.id
+    ORDER BY 
+        total DESC";
       $hasil_data = $this->db->query($query, [$tgl_awal, $tgl_akhir])->result();
     } else {
       $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();

@@ -361,10 +361,10 @@
         `;
       } else {
         row.innerHTML = `
-            <td class="text-center">${index + 1}</td>
-            <td><small><strong>${item.kode}</strong></small></td>
-            <td><small>${item.nama_produk}</small></td>
-            <td class="text-center">${item.total}</td>
+            <td class="text-center ${ item.total == 0 ? 'text-danger' : ''}">${index + 1}</td>
+            <td><small class="${ item.total == 0 ? 'text-danger' : ''}"><strong>${item.kode}</strong></small></td>
+            <td><small class="${ item.total == 0 ? 'text-danger' : ''}">${item.nama_produk}</small></td>
+            <td class="text-center ${ item.total == 0 ? 'text-danger' : ''}">${item.total}</td>
         `;
       }
 
