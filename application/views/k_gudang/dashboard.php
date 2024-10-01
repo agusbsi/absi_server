@@ -1,115 +1,54 @@
-<style>
-  .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-
-  .cardgudang {
-    flex: 1 1 calc(33.333% - 20px);
-    background-color: #343a40;
-    border-radius: 10px;
-    padding: 20px;
-    color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-  }
-
-  .box-icon {
-    position: absolute;
-    bottom: -30px;
-    left: 10px;
-    font-size: 60px;
-  }
-
-  .box-icon i {
-    color: #007bff;
-  }
-
-  .content {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .content p:first-child {
-    font-size: 18px;
-    margin: 0;
-  }
-
-  .content h2 {
-    font-size: 32px;
-    margin: 5px 0;
-  }
-
-  .content p:last-child {
-    font-size: 18px;
-    margin: 0;
-  }
-
-  @media (max-width: 768px) {
-    .cardgudang {
-      flex: 1 1 calc(50% - 10px);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .cardgudang {
-      flex: 1 1 100%;
-    }
-  }
-</style>
 <section class="content">
   <div class="container-fluid">
-    <div class="card">
+    <div class="card card-primary card-outline">
       <div class="card-body">
         <div class="row">
           <div class="col-lg-4">
-            <img src="<?= base_url('assets/img/saran.svg') ?>" alt="dashboard" style="width:100px;">
+            <img src="<?= base_url('assets/img/saran.svg') ?>" alt="dashboard" class="img-dashboard">
           </div>
-          <div class="col-lg-8 text-left">
-            <strong>Hi, <?= $this->session->userdata('nama_user') ?>.</strong> <br>
-            <small>Selamat datang di Dahboard Kepala Gudang. <br>
-              anda bisa menggunakan aplikasi ABSI ini untuk mempermudah pekerjaan anda, silahkan berikan saran dan masukan untuk pengembangan aplikasi dengan chat langsung TIM IT atau klik <a href="<?= base_url('Profile/saran') ?>"> <strong>Disini .</strong> </a></small>
+          <div class="col-lg-8">
+            <div class="konten text-left">
+              <h2>Hallo.. <?= $this->session->userdata('nama_user') ?></h2>
+              <p>Selamat datang di Dahboard <a href="#">Kepala Gudang.</a> <br>
+                anda bisa menggunakan aplikasi ABSI ini untuk mempermudah pekerjaan anda.</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="card-container">
-      <div class="cardgudang">
-        <div class="box-icon">
+    <div class="containerkartu">
+      <div class="kartu">
+        <div class="kartu-ikon">
           <i class="fas fa-box"></i>
         </div>
-        <div class="content">
+        <div class="konten">
           <p>Total Items</p>
           <h2><?= ($t_artikel->total == 0) ? "0" : number_format($t_artikel->total) ?></h2>
           <p>Artikel</p>
         </div>
       </div>
-      <div class="cardgudang">
-        <div class="box-icon">
+      <div class="kartu">
+        <div class="kartu-ikon">
           <i class="fas fa-store"></i>
         </div>
-        <div class="content">
+        <div class="konten">
           <p>Total Toko</p>
           <h2><?= ($t_toko->total == 0) ? "0" : number_format($t_toko->total) ?></h2>
           <p>Toko Aktif</p>
         </div>
       </div>
-      <div class="cardgudang">
-        <div class="box-icon">
+      <div class="kartu">
+        <div class="kartu-ikon">
           <i class="fas fa-cubes"></i>
         </div>
-        <div class="content">
+        <div class="konten">
           <p>Total Stok</p>
           <h2><?= ($t_stok->total == 0) ? "0" : number_format($t_stok->total) ?></h2>
           <p>Semua Toko</p>
         </div>
       </div>
     </div>
-    <div class="callout callout-danger text-left">
+    <div class="callout callout-info text-left">
       Transaksi Bulan : <b><?= date('M-Y') ?></b>
     </div>
     <div class="row">
@@ -158,4 +97,3 @@
     </div>
   </div>
 </section>
-<!-- end boxes -->

@@ -1,54 +1,18 @@
 <!-- Small boxes (Stat box) -->
 <section class="content">
-  <div class="row">
-    <div class="col-md-8">
-      <div class="card card-success card-outline">
-        <div class="card-header">
-          <h3 class="card-title">
-            <i class="fas fa-bullhorn"></i>
-            <?php
-            date_default_timezone_set("Asia/Jakarta");
-            $b = time();
-            $hour = date("G", $b);
-            if ($hour >= 0 && $hour <= 11) {
-              echo "Selamat Pagi :)";
-            } elseif ($hour >= 12 && $hour <= 14) {
-              echo "Selamat Siang :) ";
-            } elseif ($hour >= 15 && $hour <= 17) {
-              echo "Selamat Sore :) ";
-            } elseif ($hour >= 17 && $hour <= 18) {
-              echo "Selamat Petang :) ";
-            } elseif ($hour >= 19 && $hour <= 23) {
-              echo "Selamat Malam :) ";
-            }
-
-            ?>
-          </h3>
+  <div class="card card-primary card-outline">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-lg-4">
+          <img src="<?= base_url('assets/img/saran.svg') ?>" alt="dashboard" class="img-dashboard">
         </div>
-        <div class="card-body">
-          <h4>
-            <strong> <?= $this->session->userdata('nama_user') ?> !</strong>
-          </h4>
-          ini merupakan Halaman Manager Verifikasi .
+        <div class="col-lg-8">
+          <div class="konten text-left">
+            <h2>Hallo.. <?= $this->session->userdata('nama_user') ?>,</h2>
+            <p>Selamat datang di Dahboard <a href="#">Manager MV</a> <br>
+              anda bisa menggunakan aplikasi ABSI ini untuk mempermudah pekerjaan anda.</p>
+          </div>
         </div>
-        <div class="card-footer text-right">
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="small-box bg-primary">
-        <div class="inner">
-          <h3 style="font-size:70px;">
-            <?= ($t_toko->total == 0) ? "Kosong" : number_format($t_toko->total) ?>
-          </h3>
-          <p>Total Toko</p>
-        </div>
-        <div class="icon">
-          <i class="fa fa-store"></i>
-        </div>
-        <a href="<?= base_url('adm/toko') ?>" class="small-box-footer">
-          Lihat <i class="fas fa-arrow-right"></i>
-        </a>
       </div>
     </div>
   </div>

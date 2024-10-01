@@ -7,26 +7,16 @@
   <meta http-equiv="Content-Language" content="en">
   <title><?= $title ?></title>
   <link href="<?= base_url() ?>assets/img/app/icon_absi.png" rel="icon">
-  <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="<?= base_url() ?>assets/plugins/fontawesome-free/css/all.min.css">
-  <!-- overlayScrollbars -->
   <link rel="stylesheet" href="<?= base_url() ?>assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-  <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url() ?>assets/dist/css/adminlte.min.css">
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- tambahan untuk plugin -->
-  <!-- sweetalert2 -->
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/sweetalert2/sweetalert2.min.css">
-  <!-- Select2 -->
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/select2/css/select2.min.css">
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-  <!-- Tempusdominus Bootstrap 4 -->
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- daterange picker -->
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/daterangepicker/daterangepicker.css">
-  <!-- DataTables -->
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?php echo base_url() ?>assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
@@ -42,7 +32,6 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* Style for the overlay */
     .popup {
       position: fixed;
       top: 0;
@@ -56,7 +45,6 @@
       z-index: 1000;
     }
 
-    /* Style for the popup card */
     .popup-card {
       background-color: white;
       padding: 20px;
@@ -71,14 +59,12 @@
       font-size: large;
     }
 
-    /* Style for the image */
     .popup-card img {
       width: 80%;
       border-radius: 10px;
       margin-bottom: 5px;
     }
 
-    /* Style for the buttons */
     .popup-card button {
       margin: 10px;
       padding: 10px 20px;
@@ -162,6 +148,102 @@
         transform: translateY(-5px);
       }
     }
+
+    .containerkartu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .kartu {
+      flex: 1 1 calc(33.333% - 20px);
+      background-color: #343a40;
+      border-radius: 10px;
+      padding: 20px;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .kartu-ikon {
+      position: absolute;
+      bottom: -30px;
+      left: 10px;
+      font-size: 60px;
+    }
+
+    .kartu-ikon i {
+      color: #007bff;
+    }
+
+    .konten {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .konten p:first-child {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .konten h2 {
+      font-size: 32px;
+      margin: 5px 0;
+      font-weight: bold;
+    }
+
+    .konten a {
+      background-color: #007BFF;
+      color: #fff;
+      padding: 3px 5px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+
+    .konten p:last-child {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .img-dashboard {
+      max-width: 200px;
+      margin-bottom: 5px;
+      position: absolute;
+      top: -50px;
+      left: 0;
+    }
+
+    @media (max-width: 768px) {
+      .kartu {
+        flex: 1 1 calc(50% - 10px);
+      }
+
+      .img-dashboard {
+        max-width: 200px;
+        margin-bottom: 5px;
+        position: relative;
+        top: 0;
+        right: 0;
+      }
+
+    }
+
+    @media (max-width: 480px) {
+      .kartu {
+        flex: 1 1 100%;
+      }
+
+      .img-dashboard {
+        max-width: 200px;
+        margin-bottom: 5px;
+        position: relative;
+        top: 0;
+        right: 0;
+      }
+    }
   </style>
 </head>
 
@@ -196,13 +278,9 @@
     $id = $this->session->userdata('id');
     $foto = $this->db->query("SELECT foto_diri from tb_user where id ='$id'")->row()->foto_diri;
   }
-
   ?>
-
   <div class="wrapper">
-    <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light  fixed-top no-print">
-      <!-- Left navbar links -->
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
@@ -239,25 +317,18 @@
         </li>
       </ul>
     </nav>
-    <!-- /.navbar -->
-    <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4 no-print">
-      <!-- Brand Logo -->
       <a href="#" class="brand-link">
         <img src="<?= base_url() ?>assets/img/app/logo_a.png" alt="ABSI" class="brand-image">
         <span class="brand-text font-weight-light"><img src="<?= base_url() ?>assets/img/app/logo_b.png" class="brand-logo" style="width:40%;" alt="ABSI"></span>
       </a>
-
       <?php $this->load->view($sidebar) ?>
     </aside>
-    <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
       <section class="content-header mt-5 no-print">
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <!-- <h1>Fixed Layout</h1> -->
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
@@ -268,45 +339,24 @@
               </ol>
             </div>
           </div>
-        </div><!-- /.container-fluid -->
+        </div>
       </section>
-
-      <!-- Main content -->
       <?= $contents ?>
-      <!-- /.content -->
     </div>
   </div>
-
-  <!-- Bootstrap 4 -->
   <script src="<?= base_url() ?>assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <!-- overlayScrollbars -->
   <script src="<?= base_url() ?>assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-  <!-- AdminLTE App -->
   <script src="<?= base_url() ?>assets/dist/js/adminlte.min.js"></script>
-
-
-  <!-- Sweet alert -->
   <script src="<?= base_url(); ?>assets/plugins/sweetalert2/sweetalert2.all.min.js"></script>
-
-
-  <!-- Sweet alert -->
   <script src="<?= base_url(); ?>assets/plugins/sweetalert2/sweetalert2.all.min.js"></script>
-
-  <!-- tambahan untuk pluggin -->
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- InputMask -->
   <script src="<?php echo base_url() ?>assets/plugins/moment/moment.min.js"></script>
   <script src="<?php echo base_url() ?>assets/plugins/inputmask/jquery.inputmask.min.js"></script>
-  <!-- Select2 -->
   <script src="<?php echo base_url() ?>assets/plugins/select2/js/select2.full.min.js"></script>
-  <!-- jQuery Knob Chart -->
   <script src="<?php echo base_url() ?>assets/plugins/jquery-knob/jquery.knob.min.js"></script>
-  <!-- daterangepicker -->
   <script src="<?php echo base_url() ?>assets/plugins/moment/moment.min.js"></script>
   <script src="<?php echo base_url() ?>assets/plugins/daterangepicker/daterangepicker.js"></script>
-  <!-- Tempusdominus Bootstrap 4 -->
   <script src="<?php echo base_url() ?>assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-  <!-- DataTables  & Plugins -->
   <script src="<?php echo base_url() ?>assets/plugins/datatables/jquery.dataTables.min.js"></script>
   <script src="<?php echo base_url() ?>assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
   <script src="<?php echo base_url() ?>assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
@@ -319,8 +369,6 @@
   <script src="<?php echo base_url() ?>assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
   <script src="<?php echo base_url() ?>assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
   <script src="<?php echo base_url() ?>assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-  <!-- table -->
-
   <script>
     $(function() {
       $("#example1").DataTable({
@@ -329,53 +377,23 @@
         "autoWidth": false,
         "buttons": ["pdf", "print", "excel"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+      $('.select2').select2()
+      $('.select2bs4').select2({
+        theme: 'bootstrap4'
+      })
+      $('#reservation').daterangepicker({
+        format: 'L'
+      })
     });
 
     function closePopup() {
       document.getElementById('popupOverlay').style.visibility = 'hidden';
     }
-  </script>
-  <script>
-    $(function() {
-      $("#example2").DataTable({
-        "responsive": true,
-        "lengthChange": false,
-        "autoWidth": false,
-        "buttons": ["pdf", "print"]
-      }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
-    });
-  </script>
-
-  <!-- untuk dashboard -->
-  <script>
-    // The Calender
     $('#calendar').datetimepicker({
       format: 'L',
       inline: true
     })
-  </script>
-  <!-- untuk laporan -->
-  <script>
-    $(function() {
-      //Initialize Select2 Elements
-      $('.select2').select2()
 
-      //Initialize Select2 Elements
-      $('.select2bs4').select2({
-        theme: 'bootstrap4'
-      })
-
-      //Date range picker
-      $('#reservation').daterangepicker({
-        format: 'L'
-      })
-    })
-  </script>
-
-
-
-
-  <script>
     function logout() {
       let timerInterval;
       Swal.fire({
@@ -407,7 +425,6 @@
     let ws = new WebSocket("wss://absiwebsocket.pepri.site");
 
     function loadList(penerima) {
-      // Tambahkan parameter penerima ke URL
       fetch(`<?= base_url('Profile/notif'); ?>?penerima=${penerima}`)
         .then(response => response.json())
         .then(data => {
@@ -424,40 +441,28 @@
             <i class="fas fa-comments"></i>
             <span class="desk">Chat</span>
         <span class="notification ${notif > 0 ? '' : 'd-none'}">${notif}</span> </a>`;
-      chatList.innerHTML = messageHtml; // Overwrite to ensure accurate display
+      chatList.innerHTML = messageHtml;
     }
 
     function hideChatButton() {
       const chatButton = document.getElementById('chat_notif');
       chatButton.style.display = 'none';
     }
-
-    // Penanganan pesan dari WebSocket
     ws.onmessage = function(event) {
       let data = JSON.parse(event.data);
       loadList(data.penerima);
     };
-
-    // Penanganan kesalahan WebSocket
     ws.onerror = function(error) {
       console.error('WebSocket Error:', error);
     };
-
-    // Penanganan saat WebSocket ditutup
     ws.onclose = function() {
       console.log('WebSocket connection closed');
     };
-
-    // Memuat list notifikasi saat halaman dimuat
     window.onload = function() {
-      // Pastikan penerima dikirim dengan benar saat halaman dimuat
       let penerima = <?= $this->session->userdata('id') ?>;
       loadList(penerima);
     };
   </script>
-
-
-
 </body>
 
 </html>

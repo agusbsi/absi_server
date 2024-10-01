@@ -1,35 +1,20 @@
 <!-- Small boxes (Stat box) -->
 <section class="content">
   <div class="container-fluid">
-    <div class="card card-success card-outline">
-      <div class="card-header">
-        <h3 class="card-title">
-          <i class="fas fa-bullhorn"></i>
-          <?php
-          date_default_timezone_set("Asia/Jakarta");
-          $b = time();
-          $hour = date("G", $b);
-          if ($hour >= 0 && $hour <= 11) {
-            echo "Selamat Pagi";
-          } elseif ($hour >= 12 && $hour <= 14) {
-            echo "Selamat Siang ";
-          } elseif ($hour >= 15 && $hour <= 17) {
-            echo "Selamat Sore ";
-          } elseif ($hour >= 17 && $hour <= 18) {
-            echo "Selamat Petang ";
-          } elseif ($hour >= 19 && $hour <= 23) {
-            echo "Selamat Malam ";
-          }
-
-          ?>,
-        </h3>
-      </div>
+    <div class="card card-primary card-outline">
       <div class="card-body">
-        <h4>
-          <strong> <?= $this->session->userdata('nama_user') ?> !</strong>
-        </h4>
-        <br>
-        ini merupakan aplikasi konsinyasi berbasis online dari Globalindo Group.
+        <div class="row">
+          <div class="col-lg-4">
+            <img src="<?= base_url('assets/img/saran.svg') ?>" alt="dashboard" class="img-dashboard">
+          </div>
+          <div class="col-lg-8">
+            <div class="konten text-left">
+              <h2>Hallo.. <?= $this->session->userdata('nama_user') ?>,</h2>
+              <p>Selamat datang di Dahboard <a href="#">Tim Operasional</a> <br>
+                anda bisa menggunakan aplikasi ABSI ini untuk mempermudah pekerjaan anda.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- box master -->

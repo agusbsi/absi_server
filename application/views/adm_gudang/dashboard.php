@@ -1,6 +1,22 @@
 <!-- Small boxes (Stat box) -->
 <section class="content">
   <div class="container-fluid">
+    <div class="card card-primary card-outline">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-4">
+            <img src="<?= base_url('assets/img/saran.svg') ?>" alt="dashboard" class="img-dashboard">
+          </div>
+          <div class="col-lg-8">
+            <div class="konten text-left">
+              <h2>Hallo.. <?= $this->session->userdata('nama_user') ?>,</h2>
+              <p>Selamat datang di Dahboard <a href="#">Admin Gudang.</a> <br>
+                anda bisa menggunakan aplikasi ABSI ini untuk mempermudah pekerjaan anda.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <?php foreach ($box as $info_box) : ?>
         <div class="col-md-6">

@@ -1,4 +1,20 @@
 <section class="content">
+  <div class="card card-primary card-outline">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-lg-4">
+          <img src="<?= base_url('assets/img/saran.svg') ?>" alt="dashboard" class="img-dashboard">
+        </div>
+        <div class="col-lg-8">
+          <div class="konten text-left">
+            <h2>Hallo.. <?= $this->session->userdata('nama_user') ?>,</h2>
+            <p>Selamat datang di Dahboard <a href="#">Supervisor</a> <br>
+              anda bisa menggunakan aplikasi ABSI ini untuk mempermudah pekerjaan anda.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-12 col-sm-6 col-md-3">
       <div class="info-box mb-3">
@@ -81,72 +97,6 @@
       <!-- /.info-box -->
     </div>
     <!-- /.col -->
-  </div>
-  <div class="row">
-    <div class="col-md-8">
-      <div class="card card-danger card-outline" style="height: 95%;">
-        <div class="card-header">
-          <h3 class="card-title">
-            <i class="fas fa-bullhorn"></i>
-            <?php
-            date_default_timezone_set("Asia/Jakarta");
-            $b = time();
-            $hour = date("G", $b);
-            if ($hour >= 0 && $hour <= 11) {
-              echo "Selamat Pagi";
-            } elseif ($hour >= 12 && $hour <= 14) {
-              echo "Selamat Siang ";
-            } elseif ($hour >= 15 && $hour <= 17) {
-              echo "Selamat Sore ";
-            } elseif ($hour >= 17 && $hour <= 18) {
-              echo "Selamat Petang ";
-            } elseif ($hour >= 19 && $hour <= 23) {
-              echo "Selamat Malam ";
-            }
-
-            ?>,
-          </h3>
-        </div>
-        <div class="card-body">
-          <h4>
-            <strong> <?= $this->session->userdata('nama_user') ?> !</strong>
-          </h4> <br>
-          <strong>INI HALAMAN SUPERVISOR !</strong>
-        </div>
-        <div class="card-footer text-right">
-          <a href="#" class=" text-secondary">ABSI</a>
-        </div>
-        <!-- /.card -->
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card bg-gradient-success">
-        <div class="card-header border-0">
-
-          <h3 class="card-title">
-            <i class="far fa-calendar-alt"></i>
-            Calendar
-          </h3>
-          <!-- tools card -->
-          <div class="card-tools">
-            <!-- button with a dropdown -->
-            <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
-              <i class="fas fa-minus"></i>
-            </button>
-            <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          <!-- /. tools -->
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body pt-0">
-          <!--The calendar -->
-          <div id="calendar" style="width: 100%;"></div>
-        </div>
-        <!-- /.card-body -->
-      </div>
-    </div>
   </div>
   <div class="callout callout-danger">
     <p> Data Transaksi Tahun : <b><?= date('Y') ?></b> </p>
