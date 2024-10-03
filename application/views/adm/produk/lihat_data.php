@@ -39,7 +39,7 @@
               </div>
             </div>
             <hr>
-            <table id="example2" class="table table-bordered table-striped">
+            <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
                   <th rowspan="2" style="width:3%">No</th>
