@@ -232,9 +232,9 @@
                 <p class="detail-title">Batas PO</p>
                 <p class="detail-description"><?= $toko->status_ssr == 1 ? 'AKTIF' : 'NON-AKTIF' ?></p>
                 <p class="detail-title">SSR Toko</p>
-                <p class="detail-description"><?= $toko->ssr ?> X <small>( dari stok saat ini )</small></p>
+                <p class="detail-description"><?= $toko->ssr ?> X <small>( Dari Total barang keluar bulan kemarin )</small></p>
                 <p class="detail-title">Max PO</p>
-                <p class="detail-description"><?= $toko->max_po ?> % <small>( Dari Total barang keluar minggu / bulan kemarin )</small></p>
+                <p class="detail-description"><?= $toko->max_po ?> % <small>( Dari Total barang keluar bulan kemarin )</small></p>
                 <p class="detail-title">Min Pengiriman</p>
                 <p class="detail-description">Rp -</p>
                 <p class="detail-title">Periode</p>
