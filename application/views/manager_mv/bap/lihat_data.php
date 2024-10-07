@@ -39,7 +39,7 @@
                    <td><?= date('d F Y', strtotime($dd->created_at)) ?></td>
                    <td>
                      <?php
-                      if ($dd->status == 1) { ?>
+                      if ($dd->status == 1 && $this->session->userdata('role') == 6) { ?>
                        <a type="button" class="btn btn-success btn-sm" href="<?= base_url('sup/Bap/detail_p/' . $dd->id) ?>" name="btn_detail"> Proses <i class="fa fa-arrow-right"></i></a>
                      <?php } else { ?>
                        <a type="button" class="btn btn-primary btn-sm" href="<?= base_url('sup/Bap/detail_p/' . $dd->id) ?>" name="btn_detail"><i class="fa fa-eye" aria-hidden="true"></i> Detail</a>

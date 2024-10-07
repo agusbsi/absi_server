@@ -156,7 +156,7 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
           </p>
         </a>
       </li>
-      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok' || $title == 'Stok per Toko') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
@@ -178,6 +178,14 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
               <i class="far fa-circle nav-icon"></i>
               <p>
                 Per Customer
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Stok/s_toko') ?>" class="nav-link <?= ($title == 'Stok per Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Per Toko
               </p>
             </a>
           </li>

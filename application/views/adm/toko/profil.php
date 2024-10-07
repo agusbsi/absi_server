@@ -226,28 +226,25 @@
                 <strong>Purchase Order ( PO )</strong>
               </div>
               <div class="card-body">
+                <p class="detail-title">Tipe Pengajuan</p>
+                <p class="detail-description">MANUAL</p>
+                <hr>
                 <p class="detail-title">Batas PO</p>
                 <p class="detail-description"><?= $toko->status_ssr == 1 ? 'AKTIF' : 'NON-AKTIF' ?></p>
                 <p class="detail-title">SSR Toko</p>
                 <p class="detail-description"><?= $toko->ssr ?> X <small>( dari stok saat ini )</small></p>
                 <p class="detail-title">Max PO</p>
-                <p class="detail-description"><?= $toko->max_po ?> % <small>( Dari Total Penjualan bulan kemarin )</small></p>
+                <p class="detail-description"><?= $toko->max_po ?> % <small>( Dari Total barang keluar minggu / bulan kemarin )</small></p>
+                <p class="detail-title">Min Pengiriman</p>
+                <p class="detail-description">Rp -</p>
+                <p class="detail-title">Periode</p>
+                <p class="detail-description">-</p>
 
                 <button class="btn_edit" data-toggle="modal" data-target="#modal_po"
                   data-id_toko_po="<?= $toko->id; ?>"
                   data-batas_po="<?= $toko->status_ssr; ?>"
                   data-ssr="<?= $toko->ssr; ?>"
                   data-max_po="<?= $toko->max_po; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card card-outline card-info">
-              <div class="card-header">
-                <strong>PO Otomatis</strong>
-              </div>
-              <div class="card-body">
-                <p class="detail-title">Coming Soon ...</p>
               </div>
             </div>
           </div>
@@ -741,6 +738,8 @@
           </button>
         </div>
         <div class="modal-body">
+          <small>Info : Fitur PO otomatis sedang dalam pengembangan.</small>
+          <hr>
           <div class="form-grou mb-1p">
             <strong>Batas PO</strong>
             <select class="form-control form-control-sm select2" id="batas_po" name="batas_po" required>

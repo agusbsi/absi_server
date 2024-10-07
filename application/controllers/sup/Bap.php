@@ -7,10 +7,8 @@ class Bap extends CI_Controller
   function __construct()
   {
     parent::__construct();
-    $role = $this->session->userdata('role');
-    if ($role != "6") {
-      tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
-      redirect(base_url(''));
+    if ($this->session->userdata('status') != 'login') {
+      redirect(base_url());
     }
   }
 

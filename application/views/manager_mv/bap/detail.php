@@ -86,7 +86,7 @@
               <small>Jika Proses BAP ini disetujui, secara otomatis akan memperbarui Stok.</small>
               <hr>
 
-              <?php if ($bap->status == 1) { ?>
+              <?php if ($bap->status == 1 && $this->session->userdata('role') == 6) { ?>
                 <div class="form-group">
                   <label for="Catatan Leader:">Catatan MV : *</label>
                   <textarea name="catatan_mv" class="form-control form-control-sm" placeholder="Masukan catatan ....." required></textarea>
@@ -112,7 +112,7 @@
               <hr>
               <div class="row no-print">
                 <div class="col-12">
-                  <?php if ($bap->status == 1) { ?>
+                  <?php if ($bap->status == 1 && $this->session->userdata('role') == 6) { ?>
                     <button type="submit" class="btn btn-sm btn-primary float-right" id="btn_kirim"><i class="fas fa-save"></i> Simpan</button>
                     <a href="<?= base_url('sup/Bap') ?>" class="btn btn-sm btn-danger float-right mr-2"> <i class="fas fa-times-circle"></i> Close</a>
                   <?php } else { ?>

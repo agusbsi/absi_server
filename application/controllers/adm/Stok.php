@@ -89,6 +89,97 @@ class Stok extends CI_Controller
     $data['jual'] = $this->db->query("SELECT SUM(jml_jual) as total from vw_penjualan where tahun = '$thn' AND bulan = '$bln' ")->row();
     $this->template->load('template/template', 'adm/stok/customer', $data);
   }
+  public function s_toko()
+  {
+    $data['title'] = 'Stok per Toko';
+    $data['toko'] = $this->db->query("SELECT * from tb_toko order by id desc")->result();
+    $this->template->load('template/template', 'adm/stok/stok_toko', $data);
+  }
+  function list_ajax_artikel($toko)
+  {
+    $hasil = $this->db->query("SELECT tp.* from tb_stok ts
+    join tb_produk tp on ts.id_produk = tp.id
+    where ts.id_toko = ?", $toko)->result();
+    header('Content-Type: application/json');
+    echo json_encode($hasil);
+  }
+  public function cari_stoktoko()
+  {
+    $id_toko = $this->input->get('id_toko');
+    $id_artikel = $this->input->get('id_artikel');
+    $tanggal = $this->input->get('tanggal');
+    $bln = date('m', strtotime($tanggal));
+    $thn = date('Y', strtotime($tanggal));
+
+    // Tentukan artikel dan query tambahan berdasarkan apakah semua artikel atau satu artikel dipilih
+    if ($id_artikel == 'all') {
+      $artikel = '( Semua Artikel )';
+      $artikel_condition = '';
+      $params = [$tanggal, $id_toko, $tanggal, $id_toko, $tanggal, $id_toko, $tanggal, $id_toko, $tanggal, $id_toko, $id_toko, $bln, $thn];
+    } else {
+      $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
+      $artikel = '<strong>' . $summary->kode . '</strong></br>' . $summary->nama_produk;
+      $artikel_condition = 'AND tsh.id_produk = ?';
+      $params = [$tanggal, $id_toko, $tanggal, $id_toko, $tanggal, $id_toko, $tanggal, $id_toko, $tanggal, $id_toko, $id_toko, $id_artikel, $bln, $thn];
+    }
+    $query = "
+        SELECT 
+            tpp.nama_produk, tpp.kode, tpp.satuan, tsh.stok_awal, 
+            COALESCE(SUM(tpd.qty), 0) as jual, COALESCE(SUM(trd.qty_retur), 0) as retur, 
+            COALESCE(SUM(mk.qty_mk), 0) as mutasi_keluar, COALESCE(SUM(mm.qty_mk), 0) as mutasi_masuk, 
+            COALESCE(SUM(tpk.qty_terima), 0) as terima
+        FROM tb_stok_histori tsh
+        LEFT JOIN (
+            SELECT tpd.id_produk, SUM(tpd.qty) as qty
+            FROM tb_penjualan_detail tpd
+            JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+            WHERE DATE(tp.tanggal_penjualan) = ? AND tp.id_toko = ?
+            GROUP BY tpd.id_produk
+        ) tpd ON tsh.id_produk = tpd.id_produk
+        LEFT JOIN (
+            SELECT trd.id_produk, SUM(trd.qty_terima) as qty_retur
+            FROM tb_retur_detail trd
+            JOIN tb_retur tr ON trd.id_retur = tr.id
+            WHERE DATE(tr.updated_at) = ? AND tr.id_toko = ?
+            GROUP BY trd.id_produk
+        ) trd ON tsh.id_produk = trd.id_produk
+        LEFT JOIN (
+            SELECT tmd.id_produk, SUM(tmd.qty_terima) as qty_mk
+            FROM tb_mutasi_detail tmd
+            JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
+            WHERE DATE(tm.updated_at) = ? AND tm.id_toko_asal = ?
+            GROUP BY tmd.id_produk
+        ) mk ON tsh.id_produk = mk.id_produk
+        LEFT JOIN (
+            SELECT tmd.id_produk, SUM(tmd.qty_terima) as qty_mk
+            FROM tb_mutasi_detail tmd
+            JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
+            WHERE DATE(tm.updated_at) = ? AND tm.id_toko_tujuan = ?
+            GROUP BY tmd.id_produk
+        ) mm ON tsh.id_produk = mm.id_produk
+        LEFT JOIN (
+            SELECT tpd.id_produk, SUM(tpd.qty_diterima) as qty_terima
+            FROM tb_pengiriman_detail tpd
+            JOIN tb_pengiriman tp ON tpd.id_pengiriman = tp.id
+            WHERE DATE(tp.updated_at) = ? AND tp.id_toko = ?
+            GROUP BY tpd.id_produk
+        ) tpk ON tsh.id_produk = tpk.id_produk
+        JOIN tb_produk tpp ON tsh.id_produk = tpp.id
+        WHERE tsh.id_toko = ? $artikel_condition
+        AND MONTH(tsh.tanggal) = ? AND YEAR(tsh.tanggal) = ?
+        GROUP BY tsh.id_produk
+        ORDER BY tsh.id DESC";
+    $hasil_data = $this->db->query($query, $params)->result();
+    $toko = $this->db->get_where('tb_toko', ['id' => $id_toko])->row();
+    $data = [
+      'toko' => $toko->nama_toko,
+      'artikel' => $artikel,
+      'tanggal' => date('d M Y', strtotime($tanggal)),
+      'tabel_data' => $hasil_data
+    ];
+    echo json_encode($data);
+  }
+
   public function detail_toko($id)
   {
     $data['title'] = 'Stok Customer';

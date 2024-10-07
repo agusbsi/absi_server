@@ -168,7 +168,7 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 0")->nu
         </a>
       </li>
       <li class="nav-header">Laporan</li>
-      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok' || $title == 'Stok per Toko') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
@@ -190,6 +190,14 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 0")->nu
               <i class="far fa-circle nav-icon"></i>
               <p>
                 Per Customer
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Stok/s_toko') ?>" class="nav-link <?= ($title == 'Stok per Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Per Toko
               </p>
             </a>
           </li>
@@ -286,6 +294,12 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 0")->nu
           <p>
             Mutasi
           </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('sup/Bap') ?>" class="nav-link <?= ($title == 'Bap') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-envelope"></i>
+          <p>B.A.P</p>
         </a>
       </li>
       <li class="nav-header">Akun</li>
