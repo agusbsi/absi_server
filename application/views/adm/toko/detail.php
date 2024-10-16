@@ -324,9 +324,8 @@
             <div class="card-footer">
               <?php if ($toko->status_pengajuan == 3 && $this->session->userdata('role') == 1) { ?>
                 <button type="submit" class="btn btn-success float-right btn-sm" id="btn-kirim"><i class="fas fa-save"></i> Simpan</button>
-              <?php } else { ?>
-                <a href="<?= base_url('adm/Toko/fpo/' . $toko->id_pengajuan) ?>" target="_blank" class="btn btn-default float-right btn-sm mr-3 <?= $toko->status_pengajuan != 4 ? 'disabled' : '' ?>"><i class="fas fa-print"></i> Print FPO</a>
               <?php } ?>
+              <a href="<?= base_url('adm/Toko/fpo/' . $toko->id_pengajuan) ?>" target="_blank" class="btn btn-default float-right btn-sm mr-3 <?= $toko->status_pengajuan != 4 ? 'disabled' : '' ?>"><i class="fas fa-print"></i> Print FPO</a>
               <a href="<?= base_url('adm/Toko/pengajuanToko') ?>" class="btn btn-danger float-right mr-3 btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
             </div>
           </div>
