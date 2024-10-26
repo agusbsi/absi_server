@@ -51,6 +51,7 @@ class Retur extends CI_Controller
   {
     $catatan = $this->input->post('catatan_leader');
     $action = $this->input->post('tindakan');
+    $tgl_jemput = $this->input->post('tgl_jemput');
     $id_retur = $this->input->post('id_retur');
     $leader = $this->session->userdata('nama_user');
     $pt = $this->session->userdata('pt');
@@ -58,7 +59,7 @@ class Retur extends CI_Controller
     $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
 
     // Update status retur
-    $data = array('status' => $status);
+    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput);
     $where = array('id' => $id_retur);
     $this->db->update('tb_retur', $data, $where);
 
@@ -73,12 +74,17 @@ class Retur extends CI_Controller
     if ($action == "1") {
       $hp = $this->db->select('no_telp')
         ->from('tb_user')
-        ->where('role', 9)
+        ->where('role', 17)
+        ->where('status', 1)
         ->get()
         ->row();
-      $phone = $hp->no_telp;
-      $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu dicek, silahkan kunjungi s.id/absi-app";
-      kirim_wa($phone, $message);
+      if ($hp) {
+        $phone = $hp->no_telp;
+        $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu dicek, silahkan kunjungi s.id/absi-app";
+        kirim_wa($phone, $message);
+      } else {
+        log_message('error', 'User tidak ditemukan.');
+      }
     }
     tampil_alert('success', 'BERHASIL', 'Pengajuan Retur berhasil di' . $aksi);
     redirect(base_url('leader/Retur'));

@@ -1,8 +1,5 @@
 <?php
-$Permintaan = $this->db->query("SELECT id FROM tb_permintaan WHERE status = '1'")->num_rows();
-$Selisih = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '3'")->num_rows();
-$Pengiriman = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '0'")->num_rows();
-$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '2'")->num_rows();
+$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
 $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_rows();
 ?>
 <!-- Sidebar -->
@@ -11,7 +8,7 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
   <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
       <li class="nav-item">
-        <a href="<?= base_url('adm_mv/dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
+        <a href="<?= base_url('mng_ops/Dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
           <i class="nav-icon fas fa-tachometer-alt"></i>
           <p>
             Dashboard
@@ -20,10 +17,50 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
       </li>
       <li class="nav-header">Master Data</li>
       <li class="nav-item">
-        <a href="<?= base_url('adm_mv/barang') ?>" class="nav-link <?= ($title == 'Master Barang') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-boxes"></i>
+        <a href="<?= base_url('mng_ops/Dashboard/artikel') ?>" class="nav-link <?= ($title == 'Artikel') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-box"></i>
           <p>
             Artikel
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('mng_ops/Dashboard/customer') ?>" class="nav-link <?= ($title == 'Kelola Customer') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-hotel"></i>
+          <p>
+            Customer
+          </p>
+        </a>
+      </li>
+      <li class="nav-item <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-store"></i>
+          <p>
+            Toko
+            <i class="right fas fa-angle-left"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('adm/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Toko Aktif</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Toko/toko_tutup') ?>" class="nav-link <?= ($title == 'List Toko Tutup') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Toko Tutup
+              </p>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('mng_ops/Dashboard/user') ?>" class="nav-link <?= ($title == 'user') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-users"></i>
+          <p>
+            Leader & SPG
           </p>
         </a>
       </li>
@@ -35,52 +72,67 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
           </p>
         </a>
       </li>
+      <li class="nav-header">Modul Utama</li>
       <li class="nav-item">
-        <a href="<?= base_url('adm_mv/toko') ?>" class="nav-link <?= ($title == 'Master Toko') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-store"></i>
-          <p>
-            Toko / Cabang
-          </p>
-        </a>
-      </li>
-      <li class="nav-header">Menu Utama</li>
-      <li class="nav-item">
-        <a href="<?= base_url('sup/permintaan') ?>" class="nav-link <?= ($title == 'Permintaan Barang') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-file-alt"></i>
           <p>
             Permintaan
-            <?php if ($Permintaan == 0) { ?>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('adm/Pengiriman') ?>" class="nav-link <?= ($title == 'Pengiriman Barang') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-truck"></i>
+          <p>
+            Pengiriman
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('mng_ops/Retur') ?>" class="nav-link <?= ($title == 'Retur Barang') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-exchange-alt"></i>
+          <p>
+            Retur
+            <?php if ($Retur == 0) { ?>
             <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Permintaan ?></span>
+              <span class="right badge badge-danger"><?= $Retur ?></span>
             <?php } ?>
           </p>
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('sup/Pengiriman') ?>" class="nav-link <?= ($title == 'Pengiriman Barang') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-truck"></i>
+        <a href="<?= base_url('mng_ops/Mutasi') ?>" class="nav-link <?= ($title == 'Mutasi Barang') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-copy"></i>
           <p>
-            Pengiriman
-            <?php if ($Pengiriman == 0) { ?>
+            Mutasi
+            <?php if ($Mutasi == 0) { ?>
             <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Pengiriman ?></span>
+              <span class="right badge badge-danger"><?= $Mutasi ?></span>
             <?php } ?>
           </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('sup/Bap') ?>" class="nav-link <?= ($title == 'Bap') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-envelope"></i>
+          <p>B.A.P</p>
         </a>
       </li>
       <li class="nav-item">
         <a href="<?= base_url('sup/Penjualan') ?>" class="nav-link <?= ($title == 'Transaksi Penjualan') ? "active" : "" ?>">
           <i class="nav-icon fas fa-shopping-cart"></i>
           <p>
-            Penjualan
+            Transaksi Penjualan
           </p>
         </a>
       </li>
+
       <li class="nav-item">
-        <a href="<?= base_url('adm/Retur') ?>" class="nav-link <?= ($title == 'Retur Barang') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-exchange-alt"></i>
+        <a href="<?= base_url('hrd/Aset/list_aset') ?>" class="nav-link <?= ($title == 'Management Aset') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-cog"></i>
           <p>
-            Retur
+            Kelola Aset Toko
           </p>
         </a>
       </li>
@@ -88,7 +140,7 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
         <a href="#" class="nav-link <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "active" : "" ?>">
           <i class="nav-icon fas fa-file"></i>
           <p>
-            Management SO Toko
+            Kelola SO Toko
             <i class="right fas fa-angle-left"></i>
           </p>
         </a>
@@ -109,8 +161,16 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
           </li>
         </ul>
       </li>
+      <li class="nav-item">
+        <a href="<?= base_url('mng_ops/Dashboard/adjust_stok') ?>" class="nav-link <?= ($title == 'Adjustment Stok') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-window-restore"></i>
+          <p>
+            Adjustment Stok
+          </p>
+        </a>
+      </li>
       <li class="nav-header">Laporan</li>
-      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok' || $title == 'Stok per Toko') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
@@ -136,6 +196,14 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
             </a>
           </li>
           <li class="nav-item">
+            <a href="<?= base_url('adm/Stok/s_toko') ?>" class="nav-link <?= ($title == 'Stok per Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Per Toko
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="nav-link <?= ($title == 'Kartu Stok') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
               <p>
@@ -146,8 +214,8 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
 
         </ul>
       </li>
-      <li class="nav-item <?= ($title == 'Penjualan Artikel' || $title == 'Penjualan Toko' || $title == 'Penjualan Customer' || $title == 'Penjualan Periode') ? "menu-open" : "" ?>">
-        <a href="#" class="nav-link <?= ($title == 'Penjualan Artikel' || $title == 'Penjualan Toko' || $title == 'Penjualan Customer' || $title == 'Penjualan Periode') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Penjualan Artikel' || $title == 'Penjualan Toko' || $title == 'Penjualan Customer' || $title == 'Penjualan Periode' || $title == 'Penjualan Area') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Penjualan Artikel' || $title == 'Penjualan Toko' || $title == 'Penjualan Customer' || $title == 'Penjualan Periode' || $title == 'Penjualan Area') ? "active" : "" ?>">
           <i class="nav-icon fas fa-cart-plus"></i>
           <p>
             Penjualan
@@ -180,6 +248,14 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
             </a>
           </li>
           <li class="nav-item">
+            <a href="<?= base_url('adm/Penjualan/lap_area') ?>" class="nav-link <?= ($title == 'Penjualan Area') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Per Area
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="<?= base_url('adm/Penjualan/lap_periode') ?>" class="nav-link <?= ($title == 'Penjualan Periode') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
               <p>
@@ -189,15 +265,6 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
           </li>
 
         </ul>
-      </li>
-      <li class="nav-header">Integrasi Easy Accounting</li>
-      <li class="nav-item">
-        <a href="<?= base_url('template/Sales_Invoice') ?>" class="nav-link <?= ($title == 'Sales Invoice') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-shopping-cart"></i>
-          <p>
-            Sales Invoice
-          </p>
-        </a>
       </li>
       <li class="nav-header">Akun</li>
       <li class="nav-item">

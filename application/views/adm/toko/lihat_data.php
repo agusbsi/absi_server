@@ -37,7 +37,10 @@
                     <td>
                       <small>
                         <strong><?= $t->nama_toko ?></strong> <br>
-                        <?= jenis_toko($t->jenis_toko) ?>
+                        <?= jenis_toko($t->jenis_toko) ?> <br>
+                        <?php if (DATE('m-Y', strtotime($t->created_at)) == DATE('m-Y')) { ?>
+                          <span class="right badge badge-danger">Toko Baru</span>
+                        <?php } ?>
                       </small>
                     </td>
                     <td>

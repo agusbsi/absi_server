@@ -7,7 +7,7 @@ class Dashboard extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != "14" && $role != 11 && $role != "15" && $role != "5" && $role != "1" && $role != "10") {
+    if ($role != "14" && $role != 11 && $role != "15" && $role != "5" && $role != "1" && $role != "10" && $role != "17") {
       tampil_alert('error', 'DI TOLAK !', 'Silahkan login kembali');
       redirect(base_url(''));
     }
@@ -17,72 +17,52 @@ class Dashboard extends CI_Controller
   {
     $data['title'] = 'Dashboard';
     $data['box'] = $this->box();
-    // Dapatkan bulan dan tahun saat ini
-    $currentMonth = date('m');
-    $currentYear = date('Y');
-    // Query SQL untuk mengambil total permintaan dan pengiriman
-    $query = "SELECT 
-    (SELECT COUNT(id) FROM tb_permintaan WHERE MONTH(created_at) = $currentMonth AND YEAR(created_at) = $currentYear) AS t_minta,
-    (SELECT COUNT(id) FROM tb_pengiriman WHERE MONTH(created_at) = $currentMonth AND YEAR(created_at) = $currentYear) AS t_kirim,
-    (SELECT COUNT(id) FROM tb_retur WHERE MONTH(created_at) = $currentMonth AND YEAR(created_at) = $currentYear) AS t_retur,
-    (SELECT COUNT(id) FROM tb_penjualan WHERE MONTH(tanggal_penjualan) = $currentMonth AND YEAR(created_at) = $currentYear) AS t_jual";
-    // Jalankan query SQL
-    $result = $this->db->query($query)->row();
-    // Simpan hasil dalam variabel data
-    $data['t_minta'] = $result->t_minta;
-    $data['t_kirim'] = $result->t_kirim;
-    $data['t_retur'] = $result->t_retur;
-    $data['t_jual'] = $result->t_jual;
-    // 5 top toko
-    $data['toko_aktif'] = $this->db->query("SELECT tk.*, tu.nama_user, COUNT(tp.id_toko) as total 
-    FROM tb_toko tk
-    JOIN tb_penjualan tp ON tk.id = tp.id_toko
-    LEFT JOIN tb_user_toko tut ON tk.id = tut.id_toko
-    LEFT JOIN tb_user tu ON tut.id_user = tu.id
-    WHERE MONTH(tp.tanggal_penjualan) = $currentMonth AND YEAR(tp.tanggal_penjualan) = $currentYear
-    GROUP BY tk.id, tu.nama_user
-    ORDER BY total DESC
-    LIMIT 5")->result();
+    $bln = date('m');
+    $thn = date('Y');
+    // total permintaan
+    $data['t_minta'] = $this->db->query("SELECT sum(tpd.qty_acc) as total FROM tb_permintaan_detail tpd
+    join tb_permintaan tp on tpd.id_permintaan = tp.id
+    where tp.status >= 2 AND tp.status != 5 AND tpd.status = 1 AND MONTH(tp.created_at) = $bln AND YEAR(tp.created_at) = $thn")->row();
+    // total Pengiriman
+    $data['t_kirim'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_pengiriman_detail tpd
+    join tb_pengiriman tp on tpd.id_pengiriman = tp.id
+    where MONTH(tp.created_at) = $bln AND YEAR(tp.created_at) = $thn")->row();
+    // Total Penjualan
+    $data['t_jual'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_penjualan_detail tpd
+      join tb_penjualan tp on tpd.id_penjualan = tp.id
+      where MONTH(tp.tanggal_penjualan) = $bln AND YEAR(tp.tanggal_penjualan) = $thn")->row();
+    // retur
+    $data['t_retur'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_retur_detail tpd
+      join tb_retur tr on tpd.id_retur = tr.id
+      where tr.status >= 2 AND tr.status <= 4  AND MONTH(tr.created_at) = $bln AND YEAR(tr.created_at) = $thn")->row();
 
     $this->template->load('template/template', 'manager_ops/dashboard', $data);
   }
   // fungsi box
   public function box()
   {
-    $box = [
-
-      [
-        'box'         => 'bg-info',
-        'total'       => $this->db->query("SELECT count(id) as total from tb_toko where  status = 1")->row()->total,
-        'title'       => 'Toko Aktif',
-        'link'        => 'mng_ops/Dashboard/toko/',
-        'icon'        => 'fas fa-store'
-      ],
-      [
-        'box'         => 'bg-warning',
-        'total'       =>  $this->db->query("SELECT count(id) as total from tb_produk where  status = 1")->row()->total,
-        'title'       => 'Jenis Artikel',
-        'link'        => 'mng_ops/Dashboard/artikel/',
-        'icon'        => 'fas fa-cube'
-      ],
-      [
-        'box'         => 'bg-info',
-        'total'       =>  $this->db->query("SELECT count(id) as total from tb_user where role = 3 and  status = 1")->row()->total,
-        'title'       => 'Total Leader',
-        'link'        => 'mng_ops/Dashboard/user',
-        'icon'        => 'fas fa-users'
-      ],
-      [
-        'box'         => 'bg-success',
-        'total'       =>  $this->db->query("SELECT count(id) as total from tb_user where role = 4 and  status = 1")->row()->total,
-        'title'       => 'Total SPG',
-        'link'        => 'mng_ops/Dashboard/user',
-        'icon'        => 'fas fa-users'
-      ]
-
+    $queries = [
+      ['bg-primary', 'SELECT count(id) as total from tb_toko where status = 1', 'Toko Aktif', 'adm/Toko/', 'fas fa-store'],
+      ['bg-primary', 'SELECT count(id) as total from tb_toko where status = 0', 'Toko Tutup', 'adm/Toko/toko_tutup', 'fas fa-store-slash'],
+      ['bg-primary', 'SELECT count(id) as total from tb_customer', 'Customer', 'mng_ops/Dashboard', 'fas fa-building'],
+      ['bg-primary', 'SELECT count(id) as total from tb_produk where status != 0', 'Artikel', 'adm/Produk/', 'fas fa-cube'],
+      ['bg-primary', 'SELECT count(id) as total from tb_user where (role = 4 or role = 3) and status = 1', 'User', 'mng_ops/Dashboard/user', 'fas fa-users'],
+      ['bg-primary', 'SELECT count(id) as total from tb_aset_master', 'Jenis Aset', 'hrd/Aset/list_aset', 'fas fa-layer-group'],
+      ['bg-primary', 'SELECT sum(ts.qty) as total FROM tb_stok ts JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1', 'Stok Semua Toko', 'adm/Stok', 'fas fa-chart-pie'],
+      ['bg-primary', 'SELECT SUM(stok) as total FROM tb_produk where status = 1', 'Stok Gudang Prepedan', 'adm/Stok/stok_gudang', 'fas fa-cubes'],
     ];
-    $info_box = json_decode(json_encode($box), FALSE);
-    return $info_box;
+
+    $box = array_map(function ($query) {
+      return [
+        'box'   => $query[0],
+        'total' => $this->db->query($query[1])->row()->total,
+        'title' => $query[2],
+        'link'  => $query[3],
+        'icon'  => $query[4]
+      ];
+    }, $queries);
+
+    return json_decode(json_encode($box), FALSE);
   }
   // list artikel
   public function artikel()

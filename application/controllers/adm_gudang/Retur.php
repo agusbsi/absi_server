@@ -98,11 +98,12 @@ class Retur extends CI_Controller
   // print SPPR
   public function sppr($no_retur)
   {
-    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tl.ttd as ttd_leader, tu.no_telp, mv.ttd as ttd_mv,mm.ttd as ttd_mm,mv.nama_user as nama_mv, mm.nama_user as nama_mm,kg.ttd as ttd_kgudang, kg.nama_user as nama_kg from tb_retur tr
+    $data['r'] = $this->db->query("SELECT tr.*, tt.nama_toko, tu.nama_user as spg, tl.nama_user as leader, tl.ttd as ttd_leader, tu.no_telp, mv.ttd as ttd_mv,mm.ttd as ttd_mm,mv.nama_user as nama_mv, mm.nama_user as nama_mm,kg.ttd as ttd_kgudang, kg.nama_user as nama_kg, mo.ttd as ttd_mo, mo.nama_user as nama_mo from tb_retur tr
     JOIN tb_toko tt on tr.id_toko = tt.id
     JOIN tb_user tu on tt.id_spg = tu.id
     JOIN tb_user tl on tt.id_leader = tl.id
     LEFT JOIN tb_user mv on tr.id_mv = mv.id
+    LEFT JOIN tb_user mo on tr.id_opr = mo.id
     LEFT JOIN tb_user mm on tr.id_mm = mm.id
     LEFT JOIN tb_user kg on tr.id_kgudang = kg.id
     where tr.id = '$no_retur'")->row();

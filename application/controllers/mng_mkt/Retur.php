@@ -72,7 +72,7 @@ class Retur extends CI_Controller
     $mm = $this->session->userdata('nama_user');
     $pt = $this->session->userdata('pt');
     $id_mm = $this->session->userdata('id');
-    $status = $action == "1" ? "2" : "5";
+    $status = $action == "1" ? "3" : "5";
     $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
 
     // Update status retur
@@ -92,6 +92,7 @@ class Retur extends CI_Controller
       $hp = $this->db->select('no_telp')
         ->from('tb_user')
         ->where_in('role', array(6, 8))
+        ->where('status', 1)
         ->get()
         ->result();
       foreach ($hp as $h) {

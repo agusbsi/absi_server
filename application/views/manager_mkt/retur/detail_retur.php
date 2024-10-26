@@ -123,7 +123,7 @@
                             <?php endforeach ?>
                         </div>
                         <hr>
-                        <?php if ($retur->status == 1) { ?>
+                        <?php if ($retur->status == 2) { ?>
                             <form action="<?= base_url('mng_mkt/Retur/tindakan') ?>" method="post" id="form_approve">
                                 <strong>Catatan MM:</strong>
                                 <textarea name="catatan_mm" rows="3" class="form-control form-control-sm" required></textarea>

@@ -2,7 +2,8 @@
 $id = $this->session->userdata('id');
 $Artikel = $this->db->query("SELECT id FROM tb_stok WHERE status = '2'")->num_rows();
 $Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '0'")->num_rows();
-$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
+$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '2'")->num_rows();
+$Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '6'")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">
@@ -109,6 +110,18 @@ $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_row
             <?php if ($Retur == 0) { ?>
             <?php } else { ?>
               <span class="right badge badge-danger"><?= $Retur ?></span>
+            <?php } ?>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('mng_mkt/Mutasi') ?>" class="nav-link <?= ($title == 'Mutasi Barang') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-copy"></i>
+          <p>
+            Mutasi
+            <?php if ($Mutasi == 0) { ?>
+            <?php } else { ?>
+              <span class="right badge badge-danger"><?= $Mutasi ?></span>
             <?php } ?>
           </p>
         </a>

@@ -8,7 +8,7 @@ class Mutasi extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != "3" && $role != "6" && $role != "1") {
+    if ($role != "3" && $role != "9" && $role != "17" && $role != "1") {
       tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }
@@ -146,7 +146,7 @@ class Mutasi extends CI_Controller
     );
     $this->db->insert('tb_mutasi_histori', $histori);
     $this->db->trans_complete();
-    $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6 and status = 1")->result_array();
+    $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 17 and status = 1")->result_array();
     $message = "Ada pengajuan Mutasi baru ( " . $no_mutasi . " - " . $pt . " ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
     foreach ($phones as $phone) {
       $number = $phone['no_telp'];
@@ -218,12 +218,15 @@ class Mutasi extends CI_Controller
   {
     $data['title'] = 'Surat Perintah Pengambilan retur Konsinyasi';
     $data['mutasi'] = $this->db->query("SELECT tm.*,tu.nama_user as leader, tu.ttd as ttd_leader,
-    mv.ttd as ttd_mv, mv.nama_user as nama_mv,
+    mv.ttd as ttd_mv, mv.nama_user as nama_mv,opr.ttd as ttd_opr, opr.nama_user as nama_opr,
+    mm.ttd as ttd_mm, mm.nama_user as nama_mm,
     tt.nama_toko as asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan from tb_mutasi tm
       join tb_toko tt on tm.id_toko_asal = tt.id
       join tb_toko tk on tm.id_toko_tujuan = tk.id
       join tb_user tu on tm.id_user = tu.id
       LEFT JOIN tb_user mv on tm.id_mv = mv.id
+      LEFT JOIN tb_user opr on tm.id_opr = opr.id
+      LEFT JOIN tb_user mm on tm.id_mm = mm.id
       where tm.id = '$mutasi'")->row();
     $data['detail_mutasi']  = $this->db->query("SELECT tmd.*, tp.nama_produk, tp.kode, tp.satuan from tb_mutasi_detail tmd
       join tb_produk tp on tmd.id_produk = tp.id

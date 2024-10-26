@@ -5,6 +5,11 @@
         <h3 class="card-title"><i class="fas fa-exchange-alt"></i> Data Retur</h3>
       </div>
       <div class="card-body">
+        <div class="alert alert-success alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <i class="icon fas fa-info"></i>
+          <small>Info : Proses verifikasi Retur sekarang berpindah ke manager operasional dan manager marketing. </small>
+        </div>
         <label>Filter Pencarian :</label>
         <div class="row">
           <div class="col-md-3">
@@ -16,8 +21,8 @@
           <div class="col-md-2">
             <select id="search_status" class="form-control form-control-sm">
               <option value="">Semua status</option>
-              <option value="1">Proses Verifikasi (MM)</option>
-              <option value="2">Proses Verifikasi (MV)</option>
+              <option value="1">Proses Verifikasi (OPR)</option>
+              <option value="2">Proses Verifikasi (MM)</option>
               <option value="3">Disetujui</option>
               <option value="7">Proses Pengambilan</option>
               <option value="4">Selesai</option>

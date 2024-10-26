@@ -136,9 +136,9 @@ function status_retur($id)
     if ($id == 0) {
         echo "<span class='badge badge-warning'>Proses Verifikasi (Leader)</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-warning'>Proses Verifikasi (MM)</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (OPR)</span>";
     } elseif ($id == 2) {
-        echo "<span class='badge badge-warning'>Proses Verifikasi (MV)</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (MM)</span>";
     } elseif ($id == 3) {
         echo "<span class='badge badge-primary'>Disetujui</span>";
     } elseif ($id == 7) {
@@ -150,9 +150,9 @@ function status_retur($id)
     } elseif ($id == 6) {
         echo "<span class='badge badge-warning'>Menunggu Penjemputan Gudang!</span>";
     } elseif ($id == 10) {
-        echo "<span class='badge badge-warning'>Proses Verifikasi (MM)</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (OPR)</span>";
     } elseif ($id == 11) {
-        echo "<span class='badge badge-warning'>Proses Verifikasi (MV)</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (MM)</span>";
     } elseif ($id == 12) {
         echo "<span class='badge badge-warning'>Proses Verifikasi (Direksi)</span>";
     } elseif ($id == 13) {
@@ -230,15 +230,15 @@ function kategori_bap($id)
 function status_mutasi($id)
 {
     if ($id == 0) {
-        echo "<span class='badge badge-warning'>Menunggu disetujui MV.</span>";
+        echo "<span class='badge badge-warning'>Proses Verifikasi (OPR)</span>";
+    } elseif ($id == 6) {
+        echo "<span class='badge badge-warning'>Proses Verifikasi (MM)</span>";
     } elseif ($id == 1) {
-        echo "<span class='badge badge-info'>Disetujui,Proses Mutasi.</span>";
+        echo "<span class='badge badge-info'>Disetujui, Proses Transfer</span>";
     } elseif ($id == 2) {
-        echo "<span class='badge badge-success'>selesai.</span>";
+        echo "<span class='badge badge-success'>Selesai</span>";
     } elseif ($id == 3) {
-        echo "<span class='badge badge-danger'>Ditolak.</span>";
-    } elseif ($id == 4) {
-        echo "<span class='badge badge-warning'>Proses BAP</span>";
+        echo "<span class='badge badge-danger'>Ditolak</span>";
     } elseif ($id == 5) {
         echo "<span class='badge badge-success'>selesai Perbaikan</span>";
     }

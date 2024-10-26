@@ -10,7 +10,7 @@
           <div class="col-lg-8">
             <div class="konten text-left">
               <h2>Hallo.. <?= $this->session->userdata('nama_user') ?>,</h2>
-              <p>Selamat datang di Dahboard <a href="#">Tim Operasional</a> <br>
+              <p>Selamat datang di Dahboard <a href="#"><?= ($this->session->userdata('role') == 17) ? 'Manager Operasional' : 'Staff Operasional' ?></a> <br>
                 anda bisa menggunakan aplikasi ABSI ini untuk mempermudah pekerjaan anda.</p>
             </div>
           </div>
@@ -23,14 +23,8 @@
         <div class="col-lg-3 col-6">
           <div class="small-box <?= $info_box->box ?>">
             <div class="inner">
-
               <h3 class="count">
-                <?php if (($info_box->total) == 0) {
-                  echo "kosong";
-                } else {
-                  echo $info_box->total;
-                }
-                ?>
+                <?= ($info_box->total == 0) ? "Kosong" : number_format($info_box->total) ?>
               </h3>
               <p><?= $info_box->title; ?></p>
             </div>
@@ -44,187 +38,75 @@
           </div>
         </div>
       <?php endforeach; ?>
-
+    </div>
+    <div class="callout callout-danger">
+      <p> Data Transaksi Bulan ini ( <b><?= date('M-Y') ?></b> )</p>
     </div>
     <!-- box transaksi -->
     <div class="row">
-      <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box bg-gradient-info">
+      <div class="col-md-6">
+        <div class="info-box bg-gradient-warning">
           <span class="info-box-icon"><i class="fas fa-list-alt"></i></span>
 
           <div class="info-box-content">
-            <span class="info-box-text">Permintaan Bulan ini</span>
-            <span class="info-box-number">
-              <?php if (empty($t_minta)) {
-                echo "Kosong";
-              } else {
-                echo $t_minta;
-              } ?>
-            </span>
-
+            <span class="info-box-text">Data Permintaan</span>
+            <strong><?= ($t_minta->total == 0) ? "Kosong" : number_format($t_minta->total) . " Artikel" ?></strong>
             <div class="progress">
               <div class="progress-bar" style="width: 100%"></div>
             </div>
-            <span class="progress-description">
-              <a href="<?= base_url('mng_ops/Dashboard/permintaan') ?>" class=" text-white text-right">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </span>
           </div>
           <!-- /.info-box-content -->
         </div>
         <!-- /.info-box -->
       </div>
       <!-- /.col -->
-      <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box bg-gradient-success">
+      <div class="col-md-6">
+        <div class="info-box bg-gradient-info">
           <span class="info-box-icon"><i class="fas fa-truck"></i></span>
 
           <div class="info-box-content">
-            <span class="info-box-text">Pengiriman Bulan ini</span>
-            <span class="info-box-number">
-              <?php if (empty($t_kirim)) {
-                echo "Kosong";
-              } else {
-                echo $t_kirim;
-              } ?>
-            </span>
-
+            <span class="info-box-text">Data Pengiriman</span>
+            <strong><?= ($t_kirim->total == 0) ? "Kosong" : number_format($t_kirim->total) . " Artikel" ?></strong>
             <div class="progress">
               <div class="progress-bar" style="width: 100%"></div>
             </div>
-            <span class="progress-description">
-              <a href="<?= base_url('mng_ops/Dashboard/pengiriman') ?>" class=" text-white text-right">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </span>
           </div>
           <!-- /.info-box-content -->
         </div>
         <!-- /.info-box -->
       </div>
       <!-- /.col -->
-      <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box bg-gradient-warning">
+      <div class="col-md-6">
+        <div class="info-box bg-gradient-success">
           <span class="info-box-icon"><i class="fas fa-cart-plus"></i></span>
 
           <div class="info-box-content">
-            <span class="info-box-text">Penjualan Bulan ini</span>
-            <span class="info-box-number">
-              <?php if (empty($t_jual)) {
-                echo "Kosong";
-              } else {
-                echo $t_jual;
-              } ?>
-            </span>
-
+            <span class="info-box-text">Data Penjualan</span>
+            <strong><?= ($t_jual->total == 0) ? "Kosong" : number_format($t_jual->total) . " Artikel" ?></strong>
             <div class="progress">
               <div class="progress-bar" style="width: 100%"></div>
             </div>
-            <span class="progress-description">
-              <a href="<?= base_url('mng_mkt/Penjualan') ?>" class=" text-white text-right">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </span>
           </div>
           <!-- /.info-box-content -->
         </div>
         <!-- /.info-box -->
       </div>
       <!-- /.col -->
-      <div class="col-md-3 col-sm-6 col-12">
+      <div class="col-md-6">
         <div class="info-box bg-gradient-danger">
           <span class="info-box-icon"><i class="fas fa-exchange-alt"></i></span>
-
           <div class="info-box-content">
-            <span class="info-box-text">Retur Bulan ini</span>
-            <span class="info-box-number">
-              <?php if (empty($t_retur)) {
-                echo "Kosong";
-              } else {
-                echo $t_retur;
-              } ?>
-            </span>
-
+            <span class="info-box-text">Data Retur</span>
+            <strong><?= ($t_retur->total == 0) ? "Kosong" : number_format($t_retur->total) . " Artikel" ?></strong>
             <div class="progress">
               <div class="progress-bar" style="width: 100%"></div>
             </div>
-            <span class="progress-description">
-              <a href="<?= base_url('mng_ops/Dashboard/retur') ?>" class=" text-white text-right">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </span>
           </div>
           <!-- /.info-box-content -->
         </div>
         <!-- /.info-box -->
       </div>
-      <!-- /.col -->
     </div>
-    <div class="row">
-      <div class="col-md-8">
-        <!-- toko teratas -->
-        <div class="card card-info">
-          <div class="card-header">
-            <h3 class="card-title"> 5 TOP TOKO - Penjualan terbanyak</h3>
-
-          </div>
-          <!-- /.card-header -->
-          <div class="card-body p-0">
-            <ul class="products-list product-list-in-card pl-2 pr-2">
-              <?php if (is_array($toko_aktif)) { ?>
-                <?php
-                foreach ($toko_aktif as $dd) :
-                ?>
-                  <li class="item">
-                    <div class="product-img">
-                      <i class="fas fa-store"></i>
-                    </div>
-                    <div class="product-info">
-                      <a href="javascript:void(0)" class="product-title"><?= $dd->nama_toko ?>
-                        <span class="badge badge-warning float-right"><?= $dd->total ?> Transaksi</span></a>
-                      <span class="product-description">
-                        <?= $dd->nama_user ?>
-                      </span>
-                    </div>
-                  </li>
-                  <!-- /.item -->
-                <?php endforeach; ?>
-              <?php  } else { ?>
-                <span> Data Kosong</span>
-              <?php } ?>
-            </ul>
-          </div>
-        </div>
-        <!-- /.card -->
-        <!-- end toko -->
-
-      </div>
-      <div class="col-md-4">
-        <!-- isi Calender -->
-        <!-- Calendar -->
-        <div class="card bg-gradient-success">
-          <div class="card-header border-0">
-
-            <h3 class="card-title">
-              <i class="far fa-calendar-alt"></i>
-              Calendar
-            </h3>
-            <!-- tools card -->
-            <div class="card-tools">
-              <!-- button with a dropdown -->
-              <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-              <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <!-- /. tools -->
-          </div>
-          <!-- /.card-header -->
-          <div class="card-body pt-0">
-            <!--The calendar -->
-            <div id="calendar" style="width: 100%"></div>
-          </div>
-          <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
-      </div>
-    </div>
-
   </div>
 </section>
 <!-- jQuery -->

@@ -146,7 +146,9 @@
     <?php } ?>
     <div class="judul_toko">
       <h5><i class="fas fa-store"></i> <?= $toko->nama_toko ?></h5>
-      <button class="btn_edit" data-toggle="modal" data-target="#modal_toko" data-id="<?= $toko->id; ?>" data-toko="<?= $toko->nama_toko; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+      <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
+        <button class="btn_edit" data-toggle="modal" data-target="#modal_toko" data-id="<?= $toko->id; ?>" data-toko="<?= $toko->nama_toko; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+      <?php } ?>
     </div>
     <div class="row">
       <div class="col-md-5">
@@ -156,7 +158,9 @@
           <?php } else { ?>
             <img src="<?php echo base_url('assets/img/toko/' . $toko->foto_toko . "?" . time()) ?>" alt="Foto toko">
           <?php } ?>
-          <button class="btn_edit" data-toggle="modal" data-target="#modal_foto" data-id="<?= $toko->id; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+          <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
+            <button class="btn_edit" data-toggle="modal" data-target="#modal_foto" data-id="<?= $toko->id; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+          <?php } ?>
         </div>
         <div class="card card-outline card-info">
           <div class="card-header">
@@ -188,7 +192,10 @@
               data-provinsi="<?= $toko->id_provinsi; ?>"
               data-kabupaten="<?= $toko->id_kab; ?>"
               data-kecamatan="<?= $toko->id_kec; ?>"
-              data-alamat="<?= $toko->alamat; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+              data-alamat="<?= $toko->alamat; ?>">
+              <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
+                <i class="fas fa-edit"></i> <span>Ubah</span></button>
+          <?php } ?>
           </div>
         </div>
       </div>
@@ -210,13 +217,15 @@
                 <p class="detail-description">Rp <?= number_format($toko->target) ?></p>
                 <p class="detail-title">Tipe Harga</p>
                 <p class="detail-description"><?= $toko->het == 1 ? 'HET JAWA' : 'HET INDOBARAT' ?></p>
-                <button class="btn_edit" data-toggle="modal" data-target="#modal_pengaturan"
-                  data-id_toko_pengaturan="<?= $toko->id; ?>"
-                  data-gudang="<?= $toko->gudang; ?>"
-                  data-tgl_so="<?= $toko->tgl_so; ?>"
-                  data-margin="<?= $toko->diskon; ?>"
-                  data-target_toko="<?= $toko->target; ?>"
-                  data-het="<?= $toko->het; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+                <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
+                  <button class="btn_edit" data-toggle="modal" data-target="#modal_pengaturan"
+                    data-id_toko_pengaturan="<?= $toko->id; ?>"
+                    data-gudang="<?= $toko->gudang; ?>"
+                    data-tgl_so="<?= $toko->tgl_so; ?>"
+                    data-margin="<?= $toko->diskon; ?>"
+                    data-target_toko="<?= $toko->target; ?>"
+                    data-het="<?= $toko->het; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+                <?php } ?>
               </div>
             </div>
           </div>
@@ -239,12 +248,13 @@
                 <p class="detail-description">Rp -</p>
                 <p class="detail-title">Periode</p>
                 <p class="detail-description">-</p>
-
-                <button class="btn_edit" data-toggle="modal" data-target="#modal_po"
-                  data-id_toko_po="<?= $toko->id; ?>"
-                  data-batas_po="<?= $toko->status_ssr; ?>"
-                  data-ssr="<?= $toko->ssr; ?>"
-                  data-max_po="<?= $toko->max_po; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+                <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
+                  <button class="btn_edit" data-toggle="modal" data-target="#modal_po"
+                    data-id_toko_po="<?= $toko->id; ?>"
+                    data-batas_po="<?= $toko->status_ssr; ?>"
+                    data-ssr="<?= $toko->ssr; ?>"
+                    data-max_po="<?= $toko->max_po; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+                <?php } ?>
               </div>
             </div>
           </div>
@@ -260,11 +270,13 @@
                 <p class="detail-description"><?= $toko->id_leader == 0 ? "Belum di kaitkan " : $toko->leader ?></p>
                 <p class="detail-title">SPG / SPB</p>
                 <p class="detail-description"><?= $toko->id_spg == 0 ? "Belum di kaitkan " : $toko->spg ?></p>
-                <button class="btn_edit" data-toggle="modal" data-target="#modal_marketing"
-                  data-id_toko_marketing="<?= $toko->id; ?>"
-                  data-spv="<?= $toko->id_spv; ?>"
-                  data-leader="<?= $toko->id_leader; ?>"
-                  data-spg="<?= $toko->id_spg; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+                <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
+                  <button class="btn_edit" data-toggle="modal" data-target="#modal_marketing"
+                    data-id_toko_marketing="<?= $toko->id; ?>"
+                    data-spv="<?= $toko->id_spv; ?>"
+                    data-leader="<?= $toko->id_leader; ?>"
+                    data-spg="<?= $toko->id_spg; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+                <?php } ?>
               </div>
             </div>
             <button type="button" class="btn btn-outline-info btn-block btn-sm" id="btnHistori" data-id="<?= $toko->id ?>"><i class="fas fa-feather"></i> Histori Pengajuan </button>

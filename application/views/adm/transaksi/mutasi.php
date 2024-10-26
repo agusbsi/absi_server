@@ -57,6 +57,12 @@
             <h3 class="card-title"><i class="fas fa-copy"></i> <?= $title ?></h3>
           </div>
           <div class="card-body">
+            <div class="alert alert-success alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+              <i class="icon fas fa-info"></i>
+              <small>Info : Proses verifikasi Mutasi sekarang berpindah ke manager operasional dan manager marketing. </small>
+            </div>
+            <hr>
             <form action="<?= base_url('adm/Mutasi') ?>" method="post" id="form_cari">
               <div class="row">
                 <div class="col-md-5">

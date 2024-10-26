@@ -274,18 +274,18 @@
                     Diverifikasi Oleh, <br>
                     <div class="area-signature">
                       <div class="signature-placeholder">
+                        <?php if (!empty($r->ttd_mo)) { ?>
+                          <img src="<?= base_url('assets/img/ttd/' . $r->ttd_mo) . '?t=' . time(); ?>">
+                        <?php } ?>
+                        <div class="signature-name"><?= $r->nama_mo ?></div>
+                        <div class="signature-title">Manager Operasional</div>
+                      </div>
+                      <div class="signature-placeholder">
                         <?php if (!empty($r->ttd_mm)) { ?>
                           <img src="<?= base_url('assets/img/ttd/' . $r->ttd_mm) . '?t=' . time(); ?>">
                         <?php } ?>
                         <div class="signature-name"><?= $r->nama_mm ?></div>
                         <div class="signature-title">Manager Marketing</div>
-                      </div>
-                      <div class="signature-placeholder">
-                        <?php if (!empty($r->ttd_mv)) { ?>
-                          <img src="<?= base_url('assets/img/ttd/' . $r->ttd_mv) . '?t=' . time(); ?>">
-                        <?php } ?>
-                        <div class="signature-name"><?= $r->nama_mv ?></div>
-                        <div class="signature-title">Marketing Verifikasi</div>
                       </div>
                     </div>
                   </div>

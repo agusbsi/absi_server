@@ -18,7 +18,7 @@
           <!-- /.card-tools -->
         </div>
         <!-- /.card-header -->
-        <div class="card-body p-1">
+        <div class="card-body">
           <div class="row">
             <div class="col-md-12">
               <a href="<?= base_url('leader/mutasi/add') ?>" class="btn btn-success btn-sm float-right mb-3">

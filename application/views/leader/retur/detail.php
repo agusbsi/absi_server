@@ -130,7 +130,11 @@
             <hr>
             <?php if ($retur->status == 0) { ?>
               <form action="<?= base_url('leader/Retur/tindakan') ?>" method="post" id="form_approve">
-                <strong>Catatan leader:</strong>
+                <div class="form-group">
+                  <label for="">Tgl Jemput *</label>
+                  <input type="date" name="tgl_jemput" class="form-control form-control-sm" value="<?= date('Y-m-d', strtotime($retur->tgl_jemput)) ?>" required>
+                </div>
+                <strong>Catatan leader: *</strong>
                 <textarea name="catatan_leader" id="catatan-leader" rows="3" class="form-control form-control-sm" required></textarea>
                 <input type="hidden" name="id_retur" value="<?= $retur->id ?>">
                 <small>* harus di isi.</small>

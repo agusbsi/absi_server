@@ -47,7 +47,7 @@
                 </td>
                 <td>
                   <?php
-                  if ($data->status == 1) {
+                  if ($data->status == 2) {
                   ?>
                     <a type="button" class="btn btn-success btn-sm" href="<?= base_url('mng_mkt/retur/detail_retur/' . $data->id) ?>" name="btn_proses">Proses <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                   <?php } else { ?>

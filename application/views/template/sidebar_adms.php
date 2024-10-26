@@ -2,9 +2,7 @@
 $Permintaan = $this->db->query("SELECT id FROM tb_permintaan WHERE status = '1'")->num_rows();
 $Selisih = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '3'")->num_rows();
 $Pengiriman = $this->db->query("SELECT id FROM tb_pengiriman WHERE status = '0'")->num_rows();
-$Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '2'")->num_rows();
 $Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '1'")->num_rows();
-$Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_rows();
 $Bap = $this->db->query("SELECT * FROM tb_bap 
   JOIN tb_toko ON tb_bap.id_toko = tb_toko.id 
   JOIN tb_user ON tb_user.id = tb_toko.id_leader 
@@ -123,14 +121,10 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('sup/retur') ?>" class="nav-link <?= ($title == 'Retur Barang') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Retur') ?>" class="nav-link <?= ($title == 'Retur Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-exchange-alt"></i>
           <p>
             Retur
-            <?php if ($Retur == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Retur ?></span>
-            <?php } ?>
           </p>
         </a>
       </li>
@@ -159,14 +153,10 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?= base_url('sup/Mutasi') ?>" class="nav-link <?= ($title == 'Mutasi Barang') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Mutasi') ?>" class="nav-link <?= ($title == 'Mutasi Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-copy"></i>
           <p>
-            Mutasi Barang
-            <?php if ($Mutasi == 0) { ?>
-            <?php } else { ?>
-              <span class="right badge badge-danger"><?= $Mutasi ?></span>
-            <?php } ?>
+            Mutasi
           </p>
         </a>
       </li>

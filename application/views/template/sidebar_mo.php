@@ -28,11 +28,29 @@
           </p>
         </a>
       </li>
-      <li class="nav-item">
-        <a href="<?= base_url('mng_ops/Dashboard/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Toko' || $title == 'List Toko Tutup' || $title == 'Pengajuan Toko') ? "active" : "" ?>">
           <i class="nav-icon fas fa-store"></i>
-          <p>Toko </p>
+          <p>
+            Toko
+            <i class="right fas fa-angle-left"></i>
+          </p>
         </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('adm/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Toko Aktif</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/Toko/toko_tutup') ?>" class="nav-link <?= ($title == 'List Toko Tutup') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Toko Tutup
+              </p>
+            </a>
+          </li>
+        </ul>
       </li>
       <li class="nav-item">
         <a href="<?= base_url('mng_ops/Dashboard/user') ?>" class="nav-link <?= ($title == 'user') ? "active" : "" ?>">
@@ -42,7 +60,14 @@
           </p>
         </a>
       </li>
-
+      <li class="nav-item">
+        <a href="<?= base_url('adm/Stok/stok_gudang') ?>" class="nav-link <?= ($title == 'Stok Gudang') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-warehouse"></i>
+          <p>
+            Stok Gudang
+          </p>
+        </a>
+      </li>
       <li class="nav-header">Modul Utama</li>
       <li class="nav-item">
         <a href="<?= base_url('adm/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan Barang') ? "active" : "" ?>">
