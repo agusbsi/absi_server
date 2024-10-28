@@ -8,7 +8,7 @@ class Aset extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != "7" && $role != "11" && $role != "1" && $role != "14" && $role != "15") {
+    if ($role != "7" && $role != "11" && $role != "1" && $role != "14" && $role != "15" && $role != "17") {
       tampil_alert('error', 'DI TOLAK !', 'Silahkan login kembali');
       redirect(base_url(''));
     }
