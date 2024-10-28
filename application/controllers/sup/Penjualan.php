@@ -8,7 +8,7 @@ class Penjualan extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != "6" && $role != 1 && $role != 14 && $role != 10 && $role != "8") {
+    if ($role != "6" && $role != 1 && $role != 14 && $role != 10 && $role != "8" && $role != "17") {
       tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
     }
