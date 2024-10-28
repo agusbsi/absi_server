@@ -47,14 +47,20 @@ class Mutasi extends CI_Controller
   // fungsi terima barang
   public function terima()
   {
-    $username = $this->session->userdata('username');
+    $username = $this->session->userdata('nama_user');
     $id_toko = $this->session->userdata('id_toko');
     $id_toko_asal = $this->input->post('id_toko_asal');
+    $catatan = $this->input->post('catatan');
     $id_mutasi = $this->input->post('id_mutasi');
     $id_produk = $this->input->post('id_produk');
     $qty_terima = $this->input->post('qty_terima');
+    $unique_id = $this->input->post('unique_id');
     $list = count($id_produk);
-
+    if ($this->db->get_where('tb_mutasi', array('id_unik' => $unique_id))->num_rows() > 0) {
+      tampil_alert('info', 'INTERNET ANDA LEMOT', 'Data penerimaan mutasi sedang di proses dan tetap akan disimpan.');
+      redirect(base_url('spg/Mutasi'));
+      return;
+    }
     $this->db->trans_start();
 
     for ($i = 0; $i < $list; $i++) {
@@ -134,9 +140,16 @@ class Mutasi extends CI_Controller
     $list_mutasi = array(
       'status' => 2,
       'updated_at' => date('Y-m-d H:i:s'),
+      'id_unik' => $unique_id
     );
     $this->db->update('tb_mutasi', $list_mutasi, $where);
-
+    $histori = array(
+      'id_mutasi' => $id_mutasi,
+      'aksi' => 'Dibuat oleh : ',
+      'pembuat' => $username,
+      'catatan' => $catatan
+    );
+    $this->db->insert('tb_mutasi_histori', $histori);
     $this->db->trans_complete();
 
     if ($this->db->trans_status() === FALSE) {

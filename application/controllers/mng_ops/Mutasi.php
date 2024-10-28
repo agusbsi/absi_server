@@ -75,7 +75,7 @@ class Mutasi extends CI_Controller
     if ($tindakan == 1) {
       $where = array('id' => $id_mutasi);
       $data = array(
-        'status' => 1,
+        'status' => 6,
         'id_opr' => $id_mv,
         'catatan_mv' => $catatan
       );
@@ -86,7 +86,7 @@ class Mutasi extends CI_Controller
         $d_qty        = $qty[$i];
         $data_detail = array(
           'qty' => $d_qty,
-          'status' => 6
+          'status' => 1
         );
         $this->db->where('id', $d_id_detail);
         $this->db->update('tb_mutasi_detail', $data_detail);

@@ -160,7 +160,7 @@
               <button type="submit" class="btn btn-success float-right btn-sm" id="btn_simpan" style="margin-right: 5px;"><i class="fas fa-save"></i> Simpan </button>
             </div>
           <?php } else { ?>
-            <a href="<?= base_url('leader/Mutasi/mutasi_print/' . $mutasi->id) ?>" target="_blank" class="btn btn-default float-right btn-sm" style="margin-right: 5px;" title="Print Surat Jalan">
+            <a href="<?= base_url('leader/Mutasi/mutasi_print/' . $mutasi->id) ?>" target="_blank" class="btn btn-default float-right btn-sm <?= ($mutasi->status != 6) ? '' : 'disabled' ?>" style="margin-right: 5px;" title="Print Surat Jalan">
               <i class="fas fa-print"></i> Print
             </a>
             <a href="<?= base_url('mng_ops/Mutasi') ?>" class="btn btn-danger float-right btn-sm" style="margin-right: 5px;"><i class="fas fa-times-circle"></i> Close </a>

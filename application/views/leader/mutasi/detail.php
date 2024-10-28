@@ -59,14 +59,14 @@
                         <td><?= $d->kode ?></td>
                         <td><small><?= $d->nama_produk ?></small></td>
                         <td class="text-center"><?= $d->qty ?></td>
-                        <td class="text-center"><?= ($mutasi->status <= 1) ? '<small>Belum diterima</small>' : $d->qty_terima ?></td>
-                        <td class="text-center <?= ($d->qty != $d->qty_terima && $mutasi->status > 1) ? 'bg-warning' : '' ?>"><?= ($mutasi->status <= 1) ? '<small>Belum diterima</small>' : $d->qty_terima - $d->qty ?></td>
+                        <td class="text-center"><?= ($mutasi->status != 2) ? '<small>Belum diterima</small>' : $d->qty_terima ?></td>
+                        <td class="text-center <?= ($d->qty != $d->qty_terima && $mutasi->status != 2) ? 'bg-warning' : '' ?>"><?= ($mutasi->status != 2) ? '<small>Belum diterima</small>' : $d->qty_terima - $d->qty ?></td>
                         <td class="text-center"><?= ($d->status == 2) ? $d->qty_update : '<small>Tidak ada</small>' ?></td>
                       </tr>
                     <?php
                       $total += $d->qty;
                       $total_t += $d->qty_terima;
-                      $total_s += ($mutasi->status <= 1) ? 0 : $d->qty_terima - $d->qty;
+                      $total_s += ($mutasi->status != 2) ? 0 : $d->qty_terima - $d->qty;
                     endforeach;
                     ?>
                   </tbody>
@@ -119,7 +119,7 @@
               <div class="col-12">
                 <button onclick="goBack()" class="btn btn-danger btn-sm float-right"> <i class="fas fa-arrow-left"></i> Kembali</button>
                 <a href="<?= base_url('leader/Mutasi/edit/' . $mutasi->id) ?>" class="btn btn-sm btn-warning float-right <?= ($mutasi->status == "0") ? '' : 'd-none'; ?>" title="Edit Mutasi" style="margin-right: 3px;"><i class="fa fa-edit"></i> Edit</a>
-                <a href="<?= base_url('leader/Mutasi/bap/' . $mutasi->id) ?>" class="btn btn-sm btn-warning float-right <?= ($mutasi->status == "0" || $mutasi->status == "1" || $mutasi->status == "4" || $mutasi->status == "5") ? 'd-none' : ''; ?>" title="Ajukan Perbaikan Data Mutasi" style="margin-right: 3px;"><i class="fa fa-reply"></i> BAP</a>
+                <!-- <a href="<?= base_url('leader/Mutasi/bap/' . $mutasi->id) ?>" class="btn btn-sm btn-warning float-right <?= ($mutasi->status == "0" || $mutasi->status == "1" || $mutasi->status == "4" || $mutasi->status == "5") ? 'd-none' : ''; ?>" title="Ajukan Perbaikan Data Mutasi" style="margin-right: 3px;"><i class="fa fa-reply"></i> BAP</a> -->
                 <a href="<?= base_url('leader/Mutasi/mutasi_print/' . $mutasi->id) ?>" target="_blank" class="btn btn-default btn-sm float-right <?= ($mutasi->status != "1") ? 'disabled' : ''; ?>" style="margin-right: 5px;">
                   <i class="fas fa-print"></i> Print </a>
               </div>

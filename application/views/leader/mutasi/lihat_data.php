@@ -58,8 +58,8 @@
                   <td>
                     <button type="button" class="btn btn-sm btn-danger float-right  <?= ($data->status != "0") ? 'disabled' : 'btn_hapus'; ?>" data-id="<?= $data->id ?>" title="Hapus Mutasi" style="margin-right: 3px;"><i class="fa fa-trash"></i></button>
                     <a type="button" class="btn btn-sm btn-default float-right <?= ($data->status != "1") ? 'disabled' : ''; ?>" title="Print Surat Jalan." target="_blank" href="<?= base_url('leader/Mutasi/mutasi_print/' . $data->id) ?>" style="margin-right: 3px;"><i class="fa fa-print" aria-hidden="true"></i></a>
-                    <a href="<?= base_url('leader/Mutasi/edit/' . $data->id) ?>" class="btn btn-sm btn-warning float-right <?= ($data->status == "0") ? '' : 'd-none'; ?>" title="Edit Mutasi" style="margin-right: 3px;"><i class="fa fa-edit"></i></a>
-                    <a href="<?= base_url('leader/Mutasi/bap/' . $data->id) ?>" class="btn btn-sm btn-warning float-right <?= ($data->status == "0" || $data->status == "1" || $data->status == "4" || $data->status == "5") ? 'd-none' : ''; ?>" title="Ajukan BAP Mutasi" style="margin-right: 3px;"><i class="fa fa-reply"></i></a>
+                    <!-- <a href="<?= base_url('leader/Mutasi/edit/' . $data->id) ?>" class="btn btn-sm btn-warning float-right <?= ($data->status == "0") ? '' : 'd-none'; ?>" title="Edit Mutasi" style="margin-right: 3px;"><i class="fa fa-edit"></i></a>
+                    <a href="<?= base_url('leader/Mutasi/bap/' . $data->id) ?>" class="btn btn-sm btn-warning float-right <?= ($data->status == "0" || $data->status == "1" || $data->status == "4" || $data->status == "5") ? 'd-none' : ''; ?>" title="Ajukan BAP Mutasi" style="margin-right: 3px;"><i class="fa fa-reply"></i></a> -->
                     <a href="<?= base_url('leader/Mutasi/detail/' . $data->id) ?>" class="btn btn-sm btn-info float-right " title="Detail Mutasi" style="margin-right: 3px;"><i class="fa fa-eye"></i></a>
                   </td>
                 </tr>

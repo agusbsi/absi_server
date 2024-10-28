@@ -1,3 +1,63 @@
+<style>
+  .product-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgb(109, 112, 129, 0.4);
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 5px;
+    border: 1px solid rgb(0, 123, 255);
+  }
+
+  .product-header {
+    padding: 8px;
+    background-color: rgb(0, 123, 255);
+    display: flex;
+    align-items: center;
+  }
+
+  .product-number {
+    background-color: white;
+    color: #007BFF;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    margin-right: 12px;
+  }
+
+  .product-code {
+    font-size: 16px;
+    color: white;
+  }
+
+  .product-details {
+    color: #343A40;
+    padding: 8px;
+  }
+
+  .product-name {
+    font-size: 13px;
+    margin-bottom: 7px;
+  }
+
+  .product-quantity {
+    display: flex;
+    font-size: 13px;
+    justify-content: space-between;
+  }
+
+  .quantity-input {
+    background-color: white;
+    border: 1px solid #6D7081;
+    padding: 4px 8px;
+    border-radius: 10px;
+    width: 80px;
+  }
+</style>
 <section class="content">
   <div class="container-fluid">
     <div class="col-md-12">
@@ -14,6 +74,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <label>No Mutasi :</label>
+                  <input type="hidden" name="unique_id" value="<?= uniqid() ?>">
                   <input type="text" class="form-control form-control-sm id_mutasi" name="id_mutasi" value="<?= $mutasi->id ?>" readonly>
                 </div>
                 <div class="form-group">
@@ -50,50 +111,43 @@
               </div>
             </div>
             <hr>
-            <table class="table table-bordered table-striped table responsive">
-              <thead>
-                <tr class="text-center">
-                  <th rowspan="2">No</th>
-                  <th rowspan="2">Artikel</th>
-                  <th colspan="2">Jumlah</th>
-                </tr>
-                <tr class="text-center">
-                  <th>Kirim</th>
-                  <th style="width: 110px">Terima</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                $no = 0;
-                $total = 0;
-                foreach ($detail_mutasi as $d) {
-                  $no++;
-                ?>
-                  <tr>
-                    <td class="text-center">
-                      <?= $no ?>
-                    </td>
-                    <td>
-                      <small>
-                        <strong><?= $d->kode ?></strong> <br>
-                        <?= $d->nama_produk ?>
-                      </small>
+            <?php
+            $no = 0;
+            $total = 0;
+            foreach ($detail_mutasi as $d) {
+              $no++;
+            ?>
+              <div class="product-card">
+                <div class="product-header">
+                  <div class="product-number"><?= $no ?></div>
+                  <div class="product-code"><?= $d->kode ?></div>
+                </div>
+                <div class="product-details">
+                  <div class="product-name"><?= $d->nama_produk ?></div>
+                  <div class="product-quantity">
+                    <div>
+                      <span>Qty Kirim :</span>
+                      <p><?= $d->qty ?></p>
+                    </div>
+                    <div>
+                      <span>Qty Terima :</span> <br>
                       <input type="hidden" name="id_produk[]" value="<?= $d->id_produk ?>">
-                    </td>
-                    <td class="text-center">
-                      <?= $d->qty ?>
                       <input type="hidden" name="qty[]" value="<?= $d->qty ?>">
-                    </td>
-                    <td>
-                      <input type="number" class="form-control form-control-sm" name="qty_terima[]" min="0" max="<?= $d->qty ?>" required>
-                    </td>
-                  </tr>
-                <?php
-                }
-                ?>
-              </tbody>
-            </table>
+                      <input type="number" class="form-control form-control-sm quantity-input" name="qty_terima[]" min="0" max="<?= $d->qty ?>" required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <?php
+            }
+            ?>
+            <hr>
+            <div class="form-group">
+              <label for="">Catatan :</label>
+              <textarea name="catatan" class="form-control form-control-sm" placeholder="catatan jika ada.."></textarea>
+            </div>
           </div>
+
           <div class="card-footer">
             <button type="submit" class="btn btn-sm btn-success btn_terima float-right"> <i class="fas fa-save"></i> Terima</button>
             <a href="<?= base_url('spg/Mutasi') ?>" class="btn btn-sm btn-danger mr-2  float-right"> <i class="fas fa-times-circle"></i> Close</a>

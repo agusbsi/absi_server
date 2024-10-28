@@ -220,9 +220,12 @@ class Mutasi extends CI_Controller
     $data['mutasi'] = $this->db->query("SELECT tm.*,tu.nama_user as leader, tu.ttd as ttd_leader,
     mv.ttd as ttd_mv, mv.nama_user as nama_mv,opr.ttd as ttd_opr, opr.nama_user as nama_opr,
     mm.ttd as ttd_mm, mm.nama_user as nama_mm,
-    tt.nama_toko as asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan from tb_mutasi tm
+    tt.nama_toko as asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan, tst.nama_user as spg_asal, tst.no_telp as telp_asal,
+    tsk.nama_user as spg_tujuan, tsk.no_telp as telp_tujuan from tb_mutasi tm
       join tb_toko tt on tm.id_toko_asal = tt.id
+      join tb_user tst on tt.id_spg = tst.id
       join tb_toko tk on tm.id_toko_tujuan = tk.id
+      join tb_user tsk on tk.id_spg = tsk.id
       join tb_user tu on tm.id_user = tu.id
       LEFT JOIN tb_user mv on tm.id_mv = mv.id
       LEFT JOIN tb_user opr on tm.id_opr = opr.id
