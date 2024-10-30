@@ -125,7 +125,8 @@
           confirmButtonText: 'Yakin'
         }).then((result) => {
           if (result.isConfirmed) {
-            $('#form_terima').submit(); // Ini untuk submit form setelah konfirmasi
+            $('#form_terima').submit();
+            $('.btn_terima').prop('disabled', true);
           }
         })
       } else {
