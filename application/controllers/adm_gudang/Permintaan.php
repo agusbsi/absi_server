@@ -49,6 +49,7 @@ class Permintaan extends CI_Controller
   {
     $name_user = $this->session->userdata('nama_user');
     $id_po_all = $this->input->post('id_po_all');
+    $no_transfer = $this->input->post('no_transfer');
     $tanggal = $this->input->post('tanggal_all');
 
     // Create a new Spreadsheet instance
@@ -69,34 +70,57 @@ class Permintaan extends CI_Controller
 
     $row = 2; // Start from the second row
 
+    // Buat array untuk menampung jumlah qty berdasarkan kode produk
+    $products = [];
+
+    // Looping setiap ID PO
     foreach ($id_po_all as $id_po) {
-      $query = $this->db->query("SELECT tpd.*, tp.kode,tp.satuan from tb_permintaan_detail tpd
-          join tb_produk tp on tpd.id_produk = tp.id
-          WHERE tpd.id_permintaan = '$id_po'");
-      $kirim = $this->db->query("SELECT tp.*, tt.nama_toko from tb_permintaan tp
-      join tb_toko tt on tp.id_toko = tt.id 
-      where tp.id = '$id_po'")->row();
+      $query = $this->db->query("
+        SELECT SUM(tpd.qty) as jmlBarang, tp.kode, tp.satuan 
+        FROM tb_permintaan_detail tpd
+        JOIN tb_produk tp ON tpd.id_produk = tp.id
+        WHERE tpd.id_permintaan = '$id_po'
+        GROUP BY tp.id
+    ");
+
       if ($query->num_rows() > 0) {
         $detail = $query->result();
-        $tanggalkirim = new DateTime($tanggal);
-        $tanggalkirimFormat = $tanggalkirim->format('d/m/Y');
 
         foreach ($detail as $data) {
-          // Set values for each row
-          $worksheet->setCellValue('A' . $row, $id_po);
-          $worksheet->setCellValue('B' . $row, $tanggalkirimFormat);
-          $worksheet->setCellValue('C' . $row, "Konsinyasi Pasifik (" . $kirim->nama_toko . ") ");
-          $worksheet->setCellValue('D' . $row, "91 GUD. PREPEDAN");
-          $worksheet->setCellValue('E' . $row, "51.4 GUD. KONSI PASIFIK");
-          $worksheet->setCellValue('F' . $row, "SJ Konsinyasi");
-          $worksheet->setCellValue('G' . $row, $data->kode);
-          $worksheet->setCellValue('H' . $row, $data->qty);
-          $worksheet->setCellValue('I' . $row, $data->satuan);
-          $worksheet->setCellValue('J' . $row, $name_user);
-          $row++;
+          // Jika produk dengan kode yang sama sudah ada di array, tambahkan qty-nya
+          if (isset($products[$data->kode])) {
+            $products[$data->kode]['jmlBarang'] += $data->jmlBarang;
+          } else {
+            // Jika belum, masukkan produk baru ke dalam array
+            $products[$data->kode] = [
+              'kode' => $data->kode,
+              'jmlBarang' => $data->jmlBarang,
+              'satuan' => $data->satuan,
+            ];
+          }
         }
       }
     }
+
+    // Setelah semua qty dijumlahkan, format tanggal dan mulai mengisi spreadsheet
+    $tanggalkirim = new DateTime($tanggal);
+    $tanggalkirimFormat = $tanggalkirim->format('d/m/Y');
+
+    // Looping untuk mengisi spreadsheet berdasarkan produk yang sudah dijumlahkan
+    foreach ($products as $product) {
+      $worksheet->setCellValue('A' . $row, $no_transfer);
+      $worksheet->setCellValue('B' . $row, $tanggalkirimFormat);
+      $worksheet->setCellValue('C' . $row, "Konsinyasi Pasifik");
+      $worksheet->setCellValue('D' . $row, "91 GUD. PREPEDAN");
+      $worksheet->setCellValue('E' . $row, "51.4 GUD. KONSI PASIFIK");
+      $worksheet->setCellValue('F' . $row, "SJ Konsinyasi");
+      $worksheet->setCellValue('G' . $row, $product['kode']);
+      $worksheet->setCellValue('H' . $row, $product['jmlBarang']);
+      $worksheet->setCellValue('I' . $row, $product['satuan']);
+      $worksheet->setCellValue('J' . $row, $name_user);
+      $row++;
+    }
+
 
     // Create Excel writer
     $writer = new Xlsx($spreadsheet);

@@ -15,7 +15,7 @@
                      <label for="">Integrasi Easy</label>
                      <div class="row">
                        <div class="col-md-6">
-                         <button type="button" data-toggle="modal" data-target="#modal-export-packing" class="btn btn-warning btn-block btn-sm btn_export_packing" title="Export packing"><i class="fa fa-file-export"></i> Export Packing List</button>
+                         <button type="button" data-toggle="modal" data-target="#modal-export-packing" class="btn btn-warning btn-block btn-sm btn_export_packing" title="Export packing"><i class="fa fa-file-export"></i> Export & Print Packing List</button>
                        </div>
                        <div class="col-md-6">
                          <button type="button" data-toggle="modal" data-target="#modal-export-all" class="btn btn-warning btn-block btn-sm btn_export_all" title="Export DO"><i class="fa fa-file-export"></i> Export BPB (on Progress)</button>
@@ -93,10 +93,13 @@
                <div class="row">
                  <div class="col-md-4">
                    <div class="form-group">
+                     <label for="file">No Transfer</label>
+                     <input type="text" name="no_transfer" class="form-control form-control-sm" placeholder="No transfer ..." required>
+                   </div>
+                   <div class="form-group">
                      <label for="file">Tanggal</label>
                      <input type="date" name="tanggal_all" class="form-control form-control-sm" required>
                    </div>
-                   <br>
                    <br>
                    <hr>
                    <div class="text-center">
@@ -152,6 +155,9 @@
            <div class="modal-footer justify-content-end">
              <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
                <li class="fas fa-times-circle"></li> Close
+             </button>
+             <button type="button" class="btn btn-default btn-sm " title="print Packing List">
+               <li class="fas fa-print"></li> Print (on Progress)
              </button>
              <button type="submit" class="btn btn-primary btn-sm " id="export-button-packing">
                <li class="fas fa-file-export"></li> Export
@@ -216,10 +222,11 @@
          const checkedCount = document.querySelectorAll('.checkbox-item:checked').length;
          const checkboxes = document.querySelectorAll('.checkbox-item');
          var tanggal = $('[name="tanggal_all"]').val();
-         if (tanggal == "") {
+         var no_transfer = $('[name="no_transfer"]').val();
+         if (tanggal == "" || no_transfer == "") {
            Swal.fire(
              'BELUM LENGKAP',
-             'Tanggal tidak boleh kosong.',
+             'No Transfer & Tanggal tidak boleh kosong.',
              'info'
            );
          } else if (checkedCount === 0) {
