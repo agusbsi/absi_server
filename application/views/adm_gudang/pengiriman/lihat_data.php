@@ -53,7 +53,7 @@
     <div class="card card-info ">
       <div class="card-header">
         <h3 class="card-title">
-          <li class="fas fa-truck"></li> Data Pengiriman
+          <li class="fas fa-truck"></li> Pengiriman
         </h3>
         <div class="card-tools">
         </div>
@@ -63,14 +63,7 @@
       <div class="card-body">
         <form action="<?= base_url('adm_gudang/Pengiriman') ?>" method="post" id="form_cari">
           <div class="row">
-            <div class="col-md-3">
-              <div class="form-group">
-                <label for="">Modul Export ke Easy</label> <br>
-                <button type="button" data-toggle="modal" data-target="#modal-export-all" class="btn btn-warning btn-block btn-sm btn_export_all" title="Export ke Easy"><i class="fa fa-file-export"></i> Export Multiple PO</button>
-              </div>
-            </div>
-            <div class="col-md-1"></div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <div class="form-group">
                 <label>Kategori</label>
                 <?php if (empty($kat)) { ?>
@@ -81,7 +74,7 @@
 
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <div class="form-group">
                 <label for="">Range Tanggal</label>
                 <?php if (empty($tgl)) { ?>
@@ -98,6 +91,12 @@
               <?php } else { ?>
                 <button class="btn btn-info btn-sm mt-2" id="btn_cari"><i class="fas fa-search"></i> Cari Data</button>
               <?php } ?>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="">Integrasi Easy</label> <br>
+                <button type="button" data-toggle="modal" data-target="#modal-export-all" class="btn btn-warning btn-block btn-sm btn_export_all" title="Export DO"><i class="fa fa-file-export"></i> Export DO</button>
+              </div>
             </div>
           </div>
         </form>
@@ -156,7 +155,7 @@
   </div>
 </section>
 <div class="modal fade" id="modal-export-all">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-warning">
         <h4 class="modal-title">

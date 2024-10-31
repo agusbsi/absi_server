@@ -1,5 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+require_once FCPATH . 'vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Permintaan extends CI_Controller
 {
@@ -40,6 +44,68 @@ class Permintaan extends CI_Controller
     where tpd.id_permintaan = '$no_permintaan' AND tpd.qty != 0 ")->result();
 
     $this->template->load('template/template', 'adm_gudang/permintaan/detail', $data);
+  }
+  public function export_ea_all()
+  {
+    $name_user = $this->session->userdata('nama_user');
+    $id_po_all = $this->input->post('id_po_all');
+    $tanggal = $this->input->post('tanggal_all');
+
+    // Create a new Spreadsheet instance
+    $spreadsheet = new Spreadsheet();
+    $worksheet = $spreadsheet->getActiveSheet();
+    $worksheet->setTitle('Export Packing List');
+    $worksheet->getStyle('A1:J1')->getFont()->setBold(true);
+    $worksheet->setCellValue('A1', 'No. Transfer');
+    $worksheet->setCellValue('B1', 'Tanggal');
+    $worksheet->setCellValue('C1', 'Deskripsi');
+    $worksheet->setCellValue('D1', 'Gudang Asal');
+    $worksheet->setCellValue('E1', 'Gudang Tujuan');
+    $worksheet->setCellValue('F1', 'Template');
+    $worksheet->setCellValue('G1', 'No. Barang');
+    $worksheet->setCellValue('H1', 'Kuantitas');
+    $worksheet->setCellValue('I1', 'Unit');
+    $worksheet->setCellValue('J1', 'User');
+
+    $row = 2; // Start from the second row
+
+    foreach ($id_po_all as $id_po) {
+      $query = $this->db->query("SELECT tpd.*, tp.kode,tp.satuan from tb_permintaan_detail tpd
+          join tb_produk tp on tpd.id_produk = tp.id
+          WHERE tpd.id_permintaan = '$id_po'");
+      $kirim = $this->db->query("SELECT tp.*, tt.nama_toko from tb_permintaan tp
+      join tb_toko tt on tp.id_toko = tt.id 
+      where tp.id = '$id_po'")->row();
+      if ($query->num_rows() > 0) {
+        $detail = $query->result();
+        $tanggalkirim = new DateTime($tanggal);
+        $tanggalkirimFormat = $tanggalkirim->format('d/m/Y');
+
+        foreach ($detail as $data) {
+          // Set values for each row
+          $worksheet->setCellValue('A' . $row, $id_po);
+          $worksheet->setCellValue('B' . $row, $tanggalkirimFormat);
+          $worksheet->setCellValue('C' . $row, "Konsinyasi Pasifik (" . $kirim->nama_toko . ") ");
+          $worksheet->setCellValue('D' . $row, "91 GUD. PREPEDAN");
+          $worksheet->setCellValue('E' . $row, "51.4 GUD. KONSI PASIFIK");
+          $worksheet->setCellValue('F' . $row, "SJ Konsinyasi");
+          $worksheet->setCellValue('G' . $row, $data->kode);
+          $worksheet->setCellValue('H' . $row, $data->qty);
+          $worksheet->setCellValue('I' . $row, $data->satuan);
+          $worksheet->setCellValue('J' . $row, $name_user);
+          $row++;
+        }
+      }
+    }
+
+    // Create Excel writer
+    $writer = new Xlsx($spreadsheet);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="Export_Packing_List.xlsx"');
+
+    ob_end_clean();
+    $writer->save('php://output');
+    exit();
   }
   // proses approve data terpending
   public function kirim()
