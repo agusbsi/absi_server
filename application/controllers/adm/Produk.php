@@ -49,6 +49,7 @@ class Produk extends CI_Controller
     $nama     = $this->input->post('nama');
     $satuan   = $this->input->post('satuan');
     $packing   = $this->input->post('packing');
+    $brand   = $this->input->post('brand');
     $deskripsi = $this->input->post('deskripsi');
     $harga1 = $this->input->post('harga_jawa');
     $harga2 = $this->input->post('harga_indo');
@@ -58,6 +59,7 @@ class Produk extends CI_Controller
       'nama_produk' => $nama,
       'satuan'    => $satuan,
       'packing'    => $packing,
+      'brand'    => $brand,
       'deskripsi' => $deskripsi,
       'harga_jawa' => preg_replace('/[^0-9]/', '', $harga1),
       'harga_indobarat' => preg_replace('/[^0-9]/', '', $harga2),
@@ -86,6 +88,7 @@ class Produk extends CI_Controller
     $nama = $this->input->post('nama_produk');
     $satuan = $this->input->post('satuan');
     $packing = $this->input->post('packing');
+    $brand = $this->input->post('brand');
     $harga_jawa = preg_replace('/[^0-9]/', '', $this->input->post('harga_jawa'));
     $harga_indo = preg_replace('/[^0-9]/', '', $this->input->post('harga_indo'));
     $sp = preg_replace('/[^0-9]/', '', $this->input->post('sp'));
@@ -104,6 +107,7 @@ class Produk extends CI_Controller
       'nama_produk' => $nama,
       'satuan' => $satuan,
       'packing' => $packing,
+      'brand' => $brand,
       'status' => $status,
       'harga_jawa' => $harga_jawa,
       'harga_indobarat' => $harga_indo,
@@ -158,7 +162,7 @@ class Produk extends CI_Controller
       $spreadsheet = new Spreadsheet();
       $worksheet = $spreadsheet->getActiveSheet();
       $worksheet->setTitle('Template_Artikel');
-      $worksheet->getStyle('A1:G1')->getFont()->setBold(true);
+      $worksheet->getStyle('A1:H1')->getFont()->setBold(true);
       $worksheet->getStyle('A1')
         ->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
@@ -171,6 +175,7 @@ class Produk extends CI_Controller
       $worksheet->setCellValue('E1', 'HET INDOBARAT');
       $worksheet->setCellValue('F1', 'SP');
       $worksheet->setCellValue('G1', 'MIN PACKING');
+      $worksheet->setCellValue('H1', 'BRAND');
       $row = 2;
       $no = 1;
       foreach ($detail as $data) {
@@ -181,10 +186,11 @@ class Produk extends CI_Controller
         $worksheet->setCellValue('E' . $row, $data->harga_indobarat);
         $worksheet->setCellValue('F' . $row, $data->sp);
         $worksheet->setCellValue('G' . $row, $data->packing);
+        $worksheet->setCellValue('H' . $row, $data->brand);
         $row++;
         $no++;
       }
-      $range = 'A1:G' . ($row - 1);
+      $range = 'A1:H' . ($row - 1);
       $tableStyle = $worksheet->getStyle($range);
       $tableStyle->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
       $writer = new Xlsx($spreadsheet);
@@ -220,8 +226,8 @@ class Produk extends CI_Controller
         $het_indobarat = isset($rows[$i][4]) ? intval($rows[$i][4]) : 0;
         $sp = isset($rows[$i][5]) ? intval($rows[$i][5]) : 0;
         $packing = isset($rows[$i][6]) ? intval($rows[$i][6]) : 0;
+        $brand = isset($rows[$i][7]) ? trim($rows[$i][7]) : '';
 
-        // Validate required columns
         if (empty($kode) || empty($nama_produk) || empty($satuan)) {
           tampil_alert('warning', 'DATA KOSONG', 'Data pada baris ' . ($i + 1) . ' memiliki kolom yang kosong, tidak akan disimpan.');
           continue;
@@ -239,6 +245,7 @@ class Produk extends CI_Controller
             'nama_produk' => $nama_produk,
             'satuan' => $satuan,
             'packing' => $packing,
+            'brand' => $brand,
             'harga_jawa' => $het_jawa,
             'harga_indobarat' => $het_indobarat,
             'sp' => $sp,
@@ -254,6 +261,7 @@ class Produk extends CI_Controller
             'nama_produk' => $nama_produk,
             'satuan' => $satuan,
             'packing' => $packing,
+            'brand' => $brand,
             'harga_jawa' => $het_jawa,
             'harga_indobarat' => $het_indobarat,
             'sp' => $sp,

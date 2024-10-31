@@ -7,22 +7,35 @@
   tr {
     font-size: 14px;
   }
+
+  .menu-button {
+    display: none;
+    transition: transform 0.3s ease;
+    transform: translateX(100%);
+  }
+
+  tr:hover .menu-button {
+    display: inline-block;
+    transform: translateX(0);
+  }
+
+  tr:hover .menu-status {
+    display: none;
+  }
+
+  tr:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
 </style>
-<!-- Main content -->
 <section class="content">
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-
-        <!-- /.card -->
-
         <div class="card card-info">
           <div class="card-header">
             <h3 class="card-title"> <i class="fas fa-cube"></i> Data Artikel</h3>
           </div>
-          <!-- /.card-header -->
           <div class="card-body">
-
             <div class="row">
               <div class="col-md-6"></div>
               <div class="col-md-6 text-right">
@@ -35,20 +48,20 @@
                 <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-tambah"><i class="fas fa-plus"></i>
                   Tambah Artikel
                 </button>
-
               </div>
             </div>
             <hr>
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th rowspan="2" style="width:3%">No</th>
+                  <th rowspan="2">No</th>
                   <th rowspan="2" style="width:14%" class="text-center">Kode</th>
                   <th rowspan="2" class="text-center">Nama Artikel</th>
                   <th rowspan="2">Satuan</th>
+                  <th rowspan="2">Brand</th>
                   <th rowspan="2">Min-Pack</th>
                   <th colspan="3" class="text-center">HET</th>
-                  <th rowspan="2" style="width:10%" class="text-center">Menu</th>
+                  <th rowspan="2" style="width:10%">Status</th>
                 </tr>
                 <tr>
                   <th class="text-center">Jawa</th>
@@ -57,66 +70,40 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <?php if (is_array($list_data)) { ?>
-                    <?php
-                    $no = 0;
-                    foreach ($list_data as $dd) :
-                      $no++; ?>
-                      <td><?= $no ?></td>
-                      <td>
-                        <b><?= $dd->kode ?></b>
-                        <br>
+                <?php
+                $no = 0;
+                foreach ($list_data as $dd) :
+                  $no++; ?>
+                  <tr>
+                    <td><?= $no ?></td>
+                    <td><b><?= $dd->kode ?></b></td>
+                    <td><?= $dd->nama_produk ?></td>
+                    <td><?= $dd->satuan ?></td>
+                    <td><?= $dd->brand ?></td>
+                    <td><?= $dd->packing ?></td>
+                    <td class="text-right">Rp <?= number_format($dd->harga_jawa) ?></td>
+                    <td class="text-right">Rp <?= number_format($dd->harga_indobarat) ?></td>
+                    <td class="text-right">Rp <?= number_format($dd->sp) ?></td>
+                    <td>
+                      <div class="menu-status">
                         <?= status_artikel($dd->status) ?>
-                      </td>
-                      <td>
-                        <?= $dd->nama_produk ?>
-                      </td>
-                      <td><?= $dd->satuan ?></td>
-                      <td><?= $dd->packing ?></td>
-                      <td class="text-right">
-                        Rp <?= number_format($dd->harga_jawa) ?>
-                      </td>
-                      <td class="text-right">
-                        Rp <?= number_format($dd->harga_indobarat) ?>
-                      </td>
-                      <td class="text-right">
-                        Rp <?= number_format($dd->sp) ?>
-                      </td>
-
-                      <td>
-                        <?php if ($dd->status == 2) { ?>
-                          <a href="<?= base_url('adm/Produk/reject/' . $dd->id) ?>" class="btn btn-danger btn-sm">
-                            <li class="fas fa-times-circle"></li> reject
-                          </a>
-                          <a href="<?= base_url('adm/Produk/approve/' . $dd->id) ?>" class="btn btn-success btn-sm">
-                            <li class="fas fa-check-circle"></li> Approve
-                          </a>
-                        <?php } else { ?>
-                          <button class="btn btn-warning btn-edit btn-sm" data-toggle="modal" data-target="#editModal" data-id="<?= $dd->id; ?>" data-kode="<?= $dd->kode; ?>" data-status="<?= $dd->status; ?>" data-packing="<?= $dd->packing; ?>" data-nama_produk="<?= $dd->nama_produk; ?>" data-harga1="<?= $dd->harga_jawa; ?>" data-harga2="<?= $dd->harga_indobarat; ?>" data-satuan="<?= $dd->satuan; ?>" data-sp="<?= $dd->sp; ?>">
-                            <i class="fas fa-edit"></i></button>
-                          <a type="button" class="btn btn-danger btn-hapus btn-sm" href="<?= base_url('adm/produk/hapus/' . $dd->id) ?>" title="Nonaktif artikel"><i class="fa fa-minus-circle" aria-hidden="true"></i></a>
-                        <?php } ?>
-                      </td>
-                </tr>
-              <?php endforeach; ?>
-            <?php } ?>
-
+                      </div>
+                      <div class="menu-button">
+                        <button class="btn btn-warning btn-edit btn-sm menu-button" data-toggle="modal" data-target="#editModal" data-id="<?= $dd->id; ?>" data-kode="<?= $dd->kode; ?>" data-status="<?= $dd->status; ?>" data-packing="<?= $dd->packing; ?>" data-brand="<?= $dd->brand; ?>" data-nama_produk="<?= $dd->nama_produk; ?>" data-harga1="<?= $dd->harga_jawa; ?>" data-harga2="<?= $dd->harga_indobarat; ?>" data-satuan="<?= $dd->satuan; ?>" data-sp="<?= $dd->sp; ?>">
+                          <i class="fas fa-edit"></i></button>
+                        <a type="button" class="btn btn-danger btn-hapus btn-sm menu-button" href="<?= base_url('adm/produk/hapus/' . $dd->id) ?>" title="Nonaktif artikel"><i class="fa fa-minus-circle" aria-hidden="true"></i></a>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               </tbody>
-
             </table>
           </div>
-          <!-- /.card-body -->
         </div>
-        <!-- /.card -->
       </div>
-      <!-- /.col -->
     </div>
-    <!-- /.row -->
   </div>
-  <!-- /.container-fluid -->
 </section>
-<!-- modal tambah data -->
 <div class="modal fade" id="modal-tambah">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -127,7 +114,6 @@
         </button>
       </div>
       <div class="modal-body">
-        <!-- isi konten -->
         <form method="POST" action="<?= base_url('adm/produk/proses_tambah') ?>">
           <div class="form-group mb-1">
             <label for="kode">Kode Artikel</label>
@@ -149,6 +135,10 @@
             </select>
           </div>
           <div class="form-group mb-1">
+            <label>Brand</label>
+            <input type="text" class="form-control form-control-sm" name="brand" placeholder="Brand Produk...">
+          </div>
+          <div class="form-group mb-1">
             <label>Min-Packing</label>
             <input type="number" class="form-control form-control-sm" name="packing" placeholder="0" required>
           </div>
@@ -164,9 +154,6 @@
             <label>SP</label>
             <input type="text" class="form-control form-control-sm" id="sp_add" name="sp" placeholder="Rp 0..." required>
           </div>
-
-
-          <!-- end konten -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
@@ -178,11 +165,8 @@
       </div>
       </form>
     </div>
-    <!-- /.modal-content -->
   </div>
-  <!-- /.modal-dialog -->
 </div>
-<!-- Modal Edit Product-->
 
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -215,6 +199,10 @@
             </select>
           </div>
           <div class="form-group mb-1">
+            <label>Brand</label>
+            <input type="text" class="form-control form-control-sm" id="brand_edit" name="brand">
+          </div>
+          <div class="form-group mb-1">
             <label>Min-Packing</label>
             <input type="number" class="form-control form-control-sm" id="packing_edit" name="packing" placeholder="0" required>
           </div>
@@ -230,7 +218,6 @@
             <label>SP</label>
             <input type="text" class="form-control form-control-sm sp" id="sp_edit" name="sp" required>
           </div>
-
           <div class="form-group mb-1">
             <label>Status</label>
             <select class="form-control form-control-sm" name="status" id="status_edit" required>
@@ -238,9 +225,6 @@
               <option value="0">Tidak Aktif</option>
             </select>
           </div>
-
-
-
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
@@ -251,15 +235,11 @@
             <i class="fas fa-edit"></i> Update
           </button>
         </div>
-
       </div>
     </form>
   </div>
 </div>
 
-<!-- End Modal Edit Product-->
-<!-- end modal -->
-<!-- modal tambah data -->
 <div class="modal fade" id="modal-import">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -272,63 +252,54 @@
         </button>
       </div>
       <div class="modal-body">
-        <!-- isi konten -->
         <form method="post" enctype="multipart/form-data" action="<?php echo base_url('adm/Produk/import_artikel'); ?>">
           <div class="form-group">
             <label for="file">File Upload</label>
             <input type="file" name="file" class="form-control" id="exampleInputFile" accept=".xlsx,.xls" required>
           </div>
-          <!-- end konten -->
       </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
           <li class="fas fa-times-circle"></li> Cancel
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary btn-sm">
           <li class="fas fa-save"></li> Simpan
         </button>
       </div>
       </form>
     </div>
-    <!-- /.modal-content -->
   </div>
-  <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
-
 <script>
   $(document).ready(function() {
     $('#jawa_add, #indo_add, #sp_add,#jawa_edit, #indo_edit, #sp_edit').on('keyup', function() {
-      var angka = $(this).val().replace(/[Rp.,]/g, ''); // Hilangkan karakter 'Rp', '.' dan ',' dari nilai input
-      var rupiah = formatRupiah(angka); // Ubah nilai menjadi format rupiah
-      $(this).val(rupiah); // Set nilai input menjadi format rupiah
+      var angka = $(this).val().replace(/[Rp.,]/g, '');
+      var rupiah = formatRupiah(angka);
+      $(this).val(rupiah);
     });
-    // get Edit Product
     $('.btn-edit').on('click', function() {
-      // get data from button edit
       const id = $(this).data('id');
       const kode = $(this).data('kode');
       const nama_produk = $(this).data('nama_produk');
       const deskripsi = $(this).data('deskripsi');
       const satuan = $(this).data('satuan');
       const packing = $(this).data('packing');
+      const brand = $(this).data('brand');
       const harga1 = $(this).data('harga1');
       const harga2 = $(this).data('harga2');
       const status = $(this).data('status');
       const sp = $(this).data('sp');
-
-      // Set data to Form Edit
       $('.id').val(id);
       $('.nama_produk').val(nama_produk);
       $('.kode').val(kode);
       $('#satuan_edit').val(satuan).trigger('change');
       $('#status_edit').val(status).trigger('change');
       $('#packing_edit').val(packing);
+      $('#brand_edit').val(brand);
       $('.deskripsi').val(deskripsi);
       $('.harga1').val(harga1);
       $('.harga2').val(harga2);
       $('.sp').val(sp);
-      // Call Modal Edit
       $('#editModal').modal('show');
     });
   })
