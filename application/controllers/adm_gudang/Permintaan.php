@@ -48,7 +48,7 @@ class Permintaan extends CI_Controller
   public function export_ea_all()
   {
     $name_user = $this->session->userdata('nama_user');
-    $id_po_all = $this->input->post('id_po_all');
+    $id_po_all = $this->input->post('id_po_all'); // Asumsikan ini array berisi nomor PO dalam bentuk string
     $no_transfer = $this->input->post('no_transfer');
     $tanggal = $this->input->post('tanggal_all');
 
@@ -70,57 +70,36 @@ class Permintaan extends CI_Controller
 
     $row = 2; // Start from the second row
 
-    // Buat array untuk menampung jumlah qty berdasarkan kode produk
-    $products = [];
+    // Gabungkan semua id_po_all menjadi string untuk digunakan dalam query IN, dengan tambahan tanda kutip tunggal
+    $id_po_all_str = implode(",", array_map(function ($po) {
+      return "'" . $this->db->escape_str($po) . "'"; // Escaping string untuk mencegah SQL Injection
+    }, $id_po_all));
 
-    // Looping setiap ID PO
-    foreach ($id_po_all as $id_po) {
-      $query = $this->db->query("
-        SELECT SUM(tpd.qty) as jmlBarang, tp.kode, tp.satuan 
-        FROM tb_permintaan_detail tpd
-        JOIN tb_produk tp ON tpd.id_produk = tp.id
-        WHERE tpd.id_permintaan = '$id_po'
-        GROUP BY tp.id
-    ");
+    // Query untuk mengambil dan menjumlahkan qty dari produk yang sama dari semua PO
+    $query = $this->db->query("
+          SELECT tp.kode, tp.satuan, SUM(tpd.qty_acc) AS jmlBarang
+          FROM tb_permintaan_detail tpd
+          JOIN tb_produk tp ON tpd.id_produk = tp.id
+          WHERE tpd.id_permintaan IN ($id_po_all_str)
+          GROUP BY tpd.id_produk
+      ");
 
-      if ($query->num_rows() > 0) {
-        $detail = $query->result();
+    $tanggalkirim = (new DateTime($tanggal))->format('d/m/Y');
 
-        foreach ($detail as $data) {
-          // Jika produk dengan kode yang sama sudah ada di array, tambahkan qty-nya
-          if (isset($products[$data->kode])) {
-            $products[$data->kode]['jmlBarang'] += $data->jmlBarang;
-          } else {
-            // Jika belum, masukkan produk baru ke dalam array
-            $products[$data->kode] = [
-              'kode' => $data->kode,
-              'jmlBarang' => $data->jmlBarang,
-              'satuan' => $data->satuan,
-            ];
-          }
-        }
-      }
-    }
-
-    // Setelah semua qty dijumlahkan, format tanggal dan mulai mengisi spreadsheet
-    $tanggalkirim = new DateTime($tanggal);
-    $tanggalkirimFormat = $tanggalkirim->format('d/m/Y');
-
-    // Looping untuk mengisi spreadsheet berdasarkan produk yang sudah dijumlahkan
-    foreach ($products as $product) {
+    // Looping hasil query dan langsung mengisi spreadsheet
+    foreach ($query->result() as $product) {
       $worksheet->setCellValue('A' . $row, $no_transfer);
-      $worksheet->setCellValue('B' . $row, $tanggalkirimFormat);
+      $worksheet->setCellValue('B' . $row, $tanggalkirim);
       $worksheet->setCellValue('C' . $row, "Konsinyasi Pasifik");
       $worksheet->setCellValue('D' . $row, "91 GUD. PREPEDAN");
       $worksheet->setCellValue('E' . $row, "51.4 GUD. KONSI PASIFIK");
       $worksheet->setCellValue('F' . $row, "SJ Konsinyasi");
-      $worksheet->setCellValue('G' . $row, $product['kode']);
-      $worksheet->setCellValue('H' . $row, $product['jmlBarang']);
-      $worksheet->setCellValue('I' . $row, $product['satuan']);
+      $worksheet->setCellValue('G' . $row, $product->kode);
+      $worksheet->setCellValue('H' . $row, $product->jmlBarang);
+      $worksheet->setCellValue('I' . $row, $product->satuan);
       $worksheet->setCellValue('J' . $row, $name_user);
       $row++;
     }
-
 
     // Create Excel writer
     $writer = new Xlsx($spreadsheet);
@@ -131,6 +110,8 @@ class Permintaan extends CI_Controller
     $writer->save('php://output');
     exit();
   }
+
+
   // proses approve data terpending
   public function kirim()
   {
