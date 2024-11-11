@@ -13,7 +13,7 @@ class So extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    $allowed_roles = [1, 2, 3, 6, 8, 9, 10, 11, 14, 15];
+    $allowed_roles = [1, 2, 3, 6, 8, 9, 10, 11, 14, 15, 17];
     if (!in_array($role, $allowed_roles)) {
       tampil_alert('error', 'DI TOLAK!', 'Anda tidak punya akses untuk halaman ini.!');
       redirect(base_url(''));
