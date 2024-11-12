@@ -113,8 +113,11 @@
         <?php } ?>
         <?php
         $no = 0;
+        $total_jumlah = 0; // Variabel untuk menyimpan total jumlah
         foreach ($this->cart->contents() as $d) {
-          $no++; ?>
+          $no++;
+          $total_jumlah += $d['qty']; // Tambahkan jumlah item ke total
+        ?>
           <div class="box">
             <div class="box-header">
               <p><?= $no ?></p>
@@ -134,6 +137,12 @@
             </div>
           </div>
         <?php } ?>
+
+        <!-- Menampilkan Total Jumlah di luar loop -->
+        <div class="total-jumlah">
+          <strong>Total : <?= $total_jumlah ?></strong>
+        </div>
+
         <hr>
         <table class="table table-bordered table-striped">
           <tr>
@@ -340,7 +349,8 @@
           $('#satuan').text(data.satuan);
           $('#detail_produk').css('display', 'block');
         } else {
-          $('#detail_produk').html('<p>Detail produk tidak ditemukan.</p>');
+          $('#detail_produk').css('display', 'none');
+          alert('Produk tidak ditemukan.');
         }
         $('#list_suggestions').css('display', 'none');
         $('#txt_cari').val('');
