@@ -74,7 +74,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <label>No Mutasi :</label>
-                  <input type="hidden" name="unique_id" value="<?= uniqid() ?>">
+                  <input type="hidden" name="unique_id" value="<?= $unique_id ?>">
                   <input type="text" class="form-control form-control-sm id_mutasi" name="id_mutasi" value="<?= $mutasi->id ?>" readonly>
                 </div>
                 <div class="form-group">
@@ -188,6 +188,7 @@
         }).then((result) => {
           if (result.isConfirmed) {
             $('#form_mutasi').submit(); // Ini untuk submit form setelah konfirmasi
+            $('.btn_terima').prop('disabled', true);
           }
         })
       } else {

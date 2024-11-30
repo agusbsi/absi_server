@@ -34,6 +34,21 @@ class Mutasi extends CI_Controller
   {
     $id_toko = $this->session->userdata('id_toko');
     $data['title'] = 'Mutasi Barang';
+    // Cek apakah unique_id sudah ada di mutasi
+    $cek_mutasi = $this->db->query("SELECT * FROM tb_mutasi WHERE id = ?", [$mutasi])->row();
+
+    if (!$cek_mutasi) {
+      tampil_alert('info', 'NOT FOUND', 'Halaman tidak ditemukan, kembali ke beranda');
+      redirect(base_url('spg/Dashboard'));
+    }
+    // Jika unique_id belum ada, buat dan simpan ke database
+    if (empty($cek_mutasi->id_unik)) {
+      $unique_id = uniqid();
+      $this->db->update('tb_mutasi', ['id_unik' => $unique_id], ['id' => $mutasi]);
+      $cek_mutasi->id_unik = $unique_id;
+    }
+
+    $data['unique_id'] = $cek_mutasi->id_unik;
     $data['mutasi'] = $this->db->query("SELECT tm.*,tu.nama_user as leader, tt.nama_toko as asal,tt.id as toko_asal, tk.nama_toko as tujuan, tt.alamat as alamat_asal, tk.alamat as alamat_tujuan from tb_mutasi tm
       join tb_toko tt on tm.id_toko_asal = tt.id
       join tb_toko tk on tm.id_toko_tujuan = tk.id
@@ -56,8 +71,9 @@ class Mutasi extends CI_Controller
     $qty_terima = $this->input->post('qty_terima');
     $unique_id = $this->input->post('unique_id');
     $list = count($id_produk);
-    if ($this->db->get_where('tb_mutasi', array('id_unik' => $unique_id))->num_rows() > 0) {
-      tampil_alert('info', 'INTERNET ANDA LEMOT', 'Data penerimaan mutasi sedang di proses dan tetap akan disimpan.');
+    $exists = $this->db->get_where('tb_mutasi', ['id_unik' => $unique_id])->row();
+    if ($exists && $exists->status == 2) { // Status 2 
+      tampil_alert('info', 'INTERNET ANDA LEMOT', 'Data penerimaan mutasi ini sudah diproses sebelumnya.');
       redirect(base_url('spg/Mutasi'));
       return;
     }

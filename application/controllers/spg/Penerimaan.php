@@ -29,12 +29,35 @@ class Penerimaan extends CI_Controller
   public function terima($no_penerimaan)
   {
     $data['title'] = 'Penerimaan Barang';
-    $data['terima'] = $this->db->query("SELECT * from tb_pengiriman where id = '$no_penerimaan'")->row();
-    $data['detail'] = $this->db->query("SELECT tpd.*, tp.kode, tp.nama_produk, tp.satuan from tb_pengiriman_detail tpd
-    join tb_produk tp on tpd.id_produk = tp.id
-    where tpd.id_pengiriman = '$no_penerimaan' AND tpd.qty != 0 order by tp.kode ASC")->result();
+
+    // Cek apakah unique_id sudah ada di tb_pengiriman
+    $pengiriman = $this->db->query("SELECT * FROM tb_pengiriman WHERE id = ?", [$no_penerimaan])->row();
+
+    if (!$pengiriman) {
+      tampil_alert('info', 'NOT FOUND', 'Halaman tidak ditemukan, kembali ke beranda');
+      redirect(base_url('spg/Dashboard'));
+    }
+
+    // Jika unique_id belum ada, buat dan simpan ke database
+    if (empty($pengiriman->id_unik)) {
+      $unique_id = uniqid();
+      $this->db->update('tb_pengiriman', ['id_unik' => $unique_id], ['id' => $no_penerimaan]);
+      $pengiriman->id_unik = $unique_id;
+    }
+
+    $data['unique_id'] = $pengiriman->id_unik;
+    $data['terima'] = $pengiriman;
+
+    $data['detail'] = $this->db->query("
+        SELECT tpd.*, tp.kode, tp.nama_produk, tp.satuan 
+        FROM tb_pengiriman_detail tpd
+        JOIN tb_produk tp ON tpd.id_produk = tp.id
+        WHERE tpd.id_pengiriman = ? AND tpd.qty != 0
+        ORDER BY tp.kode ASC", [$no_penerimaan])->result();
+
     $this->template->load('template/template', 'spg/penerimaan/terima', $data);
   }
+
   public function detail($no_penerimaan)
   {
     $data['title'] = 'Penerimaan Barang';
@@ -65,9 +88,9 @@ class Penerimaan extends CI_Controller
     $spg = $this->db->query("SELECT nama_user from tb_user where id ='$id_penerima'")->row()->nama_user;
     $nilai = count($id_produk);
     $selisih = 0;
-
-    if ($this->db->get_where('tb_pengiriman', array('id_unik' => $unique_id))->num_rows() > 0) {
-      tampil_alert('info', 'INTERNET ANDA LEMOT', 'Data penerimaan Artikel sedang di proses dan tetap akan disimpan.');
+    $exists = $this->db->get_where('tb_pengiriman', ['id_unik' => $unique_id])->row();
+    if ($exists && ($exists->status == 2 || $exists->status == 3)) { // Status 2 / 3 = sudah diterima / selisih
+      tampil_alert('info', 'INTERNET ANDA LEMOT', 'Data penerimaan ini sudah diproses sebelumnya.');
       redirect(base_url('spg/Penerimaan'));
       return;
     }

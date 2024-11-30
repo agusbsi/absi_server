@@ -44,12 +44,16 @@
         <table class="table responsive table-bordered table-striped">
           <thead>
             <tr class="text-center">
-              <th style="width:5%">#</th>
-              <th>Artikel</th>
-              <th style="width:5%">Satuan</th>
-              <th>foto</th>
-              <th>Jumlah</th>
-              <th>Keterangan</th>
+              <th rowspan="2" style="width:5%">#</th>
+              <th rowspan="2">Artikel</th>
+              <th rowspan="2" style="width:5%">Satuan</th>
+              <th rowspan="2">foto</th>
+              <th colspan="2">Jumlah Retur</th>
+              <th rowspan="2">Keterangan</th>
+            </tr>
+            <tr class="text-center">
+              <th>Kirim</th>
+              <th>Terima</th>
             </tr>
           </thead>
           <tbody>
@@ -57,6 +61,7 @@
             <?php
             $no = 0;
             $total_qty = 0;
+            $total_terima = 0;
             foreach ($detail_retur as $d) {
               $no++;
             ?>
@@ -73,6 +78,7 @@
                   <img class="img-artikel" src="<?= base_url('assets/img/retur/' . $d->foto) ?>" alt="retur">
                 </td>
                 <td class="text-center"><?= $d->qty ?></td>
+                <td class="text-center"><?= $d->qty_terima ?></td>
                 <td>
                   <small>
                     <strong><?= $d->keterangan ?></strong> <br>
@@ -82,6 +88,7 @@
               </tr>
             <?php
               $total_qty += $d->qty;
+              $total_terima += $d->qty_terima;
             }
             ?>
           </tbody>
@@ -89,6 +96,7 @@
             <tr>
               <td colspan="4" class="text-right">Total :</td>
               <td class="text-center"> <strong><?= $total_qty ?></strong> </td>
+              <td class="text-center"> <strong><?= $total_terima ?></strong> </td>
             </tr>
           </tfoot>
         </table>
