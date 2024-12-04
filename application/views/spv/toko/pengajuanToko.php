@@ -112,13 +112,11 @@
       <div class="modal-body">
         <span class="badge badge-info"><i class="fas fa-info"></i> Noted:</span>
         <br>
-        Dalam pengajuan tutup toko ada beberapa point yang harus di diperhatikan, sebagai berikut :
+        Dalam pengajuan tutup toko akan melalui beberapa verifikasi sebagai berikut :
         <hr>
-        <li><small>Pastikan SPG sudah input data penjualan terbaru hingga tgl : <strong><?= date('d M Y') ?></strong>.</small></li>
-        <li><small>Anda di haruskan Update ASET Toko (* jika ada aset di toko tersebut).</small></li>
-        <li><small>Anda di haruskan mengisi jumlah semua artikel yang akan di Retur.</small></li>
-        <li><small>Proses pengajuan ini akan diverifikasi oleh : Manager Marketing, Marketing Verifikasi, Direksi.</small></li>
-        <li><small>Proses Selesai apabila tim gudang telah menerima barang retur dan input data ke absi.</small></li>
+        <li><small>Verifikasi Manager Maketing</small></li>
+        <li><small>Verifikasi Marketing Verifikasi</small></li>
+        <li><small>Verifikasi Direksi</small></li>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>

@@ -43,7 +43,7 @@ class Toko extends CI_Controller
   {
     $data['title'] = 'List Toko Tutup';
     $data['toko_tutup'] = $this->db->query("SELECT * from tb_toko
-    where status = 0 order by id desc")->result();
+    where status = 0 OR status = 6 order by id desc")->result();
     $this->template->load('template/template', 'manager_mv/toko/toko_tutup', $data);
   }
   public function toko_tutup_d($id)
@@ -85,8 +85,6 @@ class Toko extends CI_Controller
     $data = array('status' => $status, 'id_mv' => $id_mv);
     $where = array('id' => $id_pengajuan);
     $this->db->update('tb_pengajuan_toko', $data, $where);
-    $dataRetur = array('tgl_jemput' => $tgl_jemput, 'id_mv' => $id_mv);
-    $this->db->update('tb_retur', $dataRetur, array('id' => $id_retur));
     // Insert history retur
     $histori = array(
       'id_retur' => $id_retur,

@@ -198,7 +198,7 @@ class Toko extends CI_Controller
   {
     $data['title'] = 'List Toko Tutup';
     $data['toko_tutup'] = $this->db->query("SELECT * from tb_toko
-    where status = 0 order by id desc")->result();
+    where status = 0 OR status = 6 order by id desc")->result();
     $this->template->load('template/template', 'adm/toko/toko_tutup', $data);
   }
   public function toko_tutup_d($id)
@@ -242,10 +242,6 @@ class Toko extends CI_Controller
     $status = $action == "4" ? "13" : "16";
     $aksi = $action == "4" ? 'Disetujui' : 'Ditolak';
     $this->db->trans_start();
-    // Update status retur
-    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput);
-    $where = array('id' => $id_retur);
-    $this->db->update('tb_retur', $data, $where);
     // Insert history retur
     $histori = array(
       'id_retur' => $id_retur,
@@ -259,17 +255,11 @@ class Toko extends CI_Controller
       $dataPengajuan = array('status' => 4, 'id_direksi' => $id_direksi);
       $wherePengajuan = array('id' => $id_pengajuan);
       $this->db->update('tb_pengajuan_toko', $dataPengajuan, $wherePengajuan);
-      $this->db->update('tb_toko', array('status' => 0), array('id' => $id_toko));
-      $hp = $this->db->select('no_telp')
-        ->from('tb_user')
-        ->where('role', 16)
-        ->get()
-        ->result();
-      foreach ($hp as $h) {
-        $phone = $h->no_telp;
-        $message = "Anda memiliki pengajuan Retur Tutup Toko ($get_toko - $pt) yang perlu di proses, silahkan kunjungi s.id/absi-app";
-        kirim_wa($phone, $message);
-      }
+      $this->db->update('tb_toko', array('status' => 6), array('id' => $id_toko));
+      // pesan ke pembuat
+      $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$pembuat'")->row()->no_telp;
+      $message = "Pengajuan Tutup Toko ( " . $get_toko . " - " . $pt . " ) anda Di setujui, silahkan kunjungi s.id/absi-app";
+      kirim_wa($phones, $message);
     } else {
       $dataPengajuan = array('status' => 5, 'id_direksi' => $id_direksi);
       $wherePengajuan = array('id' => $id_pengajuan);
@@ -885,5 +875,20 @@ class Toko extends CI_Controller
     join tb_user dir on tpt.id_direksi = dir.id
     WHERE tpt.id = '$id'")->row();
     $this->load->view('adm/toko/fpo', $data);
+  }
+  public function fpo_tutup($id)
+  {
+    $cek = $this->db->query("SELECT * from tb_pengajuan_toko where id = '$id'")->row();
+    $id_retur = $cek->id_retur;
+    $data['catatan'] = $this->db->query("SELECT catatan_h from tb_retur_histori where id_retur = '$id_retur' ORDER BY id asc LIMIT 1")->row()->catatan_h;
+    $data['r'] = $this->db->query("SELECT tpt.*,spv.nama_user as nama_spv, spv.ttd as ttd_spv, mm.nama_user as nama_mm, mm.ttd as ttd_mm,
+    dir.nama_user as nama_dir, dir.ttd as ttd_dir, tt.*, ts.nama_user as spg FROM tb_pengajuan_toko tpt
+    JOIN tb_toko tt on tpt.id_toko = tt.id
+    left join tb_user ts on tt.id_spg = ts.id
+    join tb_user spv on tpt.id_pembuat = spv.id
+    join tb_user mm on tpt.id_mm = mm.id
+    join tb_user dir on tpt.id_direksi = dir.id
+    WHERE tpt.id = '$id'")->row();
+    $this->load->view('adm/toko/fpo_tutup', $data);
   }
 }

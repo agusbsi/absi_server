@@ -11,19 +11,13 @@
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <div class="form-group">
                   <label for="">No. Pengajuan</label> <br>
                   <h5><?= $retur->nomor ?></h5>
                 </div>
               </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                  <label for="">No. Retur</label> <br>
-                  <h5><?= $retur->id_retur ?></h5>
-                </div>
-              </div>
-              <div class="col-md-4">
+              <div class="col-md-5">
                 <label for="">Nama Toko</label> <br>
                 <small>
                   <strong><?= $retur->nama_toko ?></strong> <br>
@@ -33,8 +27,8 @@
               <div class="col-md-2">
                 <label for="">Tanggal</label> <br>
                 <small>
-                  Dibuat : <?= date('d M Y', strtotime($retur->created_at)) ?> <br>
-                  Penjemputan : <?= date('d M Y', strtotime($retur->tgl_jemput)) ?>
+                  dibuat : <?= date('d M Y', strtotime($retur->created_at)) ?> <br>
+                  tutup : <?= date('d M Y', strtotime($retur->tgl_jemput)) ?>
                 </small>
               </div>
               <div class="col-md-2">
@@ -45,91 +39,45 @@
               </div>
             </div>
             <hr>
-            #List Aset
+            # List Artikel
             <hr>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Aset</th>
-                  <th>Jumlah</th>
-                  <th>Keterangan</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                if (empty($aset)) {
-                  echo "<tr><td colspan='4' class='text-center'>DATA ASET KOSONG</td></tr>";
-                } else {
+            <div style="max-height: 300px; overflow-y: auto;">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr class="text-center">
+                    <th>No</th>
+                    <th>Barang</th>
+                    <th>Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
                   $no = 0;
-                  foreach ($aset as $t) :
+                  $total = 0;
+                  foreach ($artikel as $t) :
                     $no++
-                ?>
+                  ?>
                     <tr>
                       <td class="text-center"><?= $no ?></td>
                       <td>
                         <small>
                           <strong><?= $t->kode ?></strong> <br>
-                          <?= $t->aset ?>
+                          <?= $t->nama_produk ?>
                         </small>
                       </td>
                       <td class="text-center"><?= $t->qty ?></td>
-                      <td>
-                        <small><?= $t->keterangan ?></small>
-                      </td>
                     </tr>
-                <?php
+                  <?php
+                    $total += $t->qty;
                   endforeach;
-                }
-                ?>
-              </tbody>
-            </table>
-            <hr>
-            # List Artikel
-            <hr>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr class="text-center">
-                  <th>No</th>
-                  <th>Kode</th>
-                  <th>Artikel</th>
-                  <th>Jumlah</th>
-                  <th>Diterima gudang</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                $no = 0;
-                $total = 0;
-                $total_a = 0;
-                foreach ($artikel as $t) :
-                  $no++
-                ?>
+                  ?>
                   <tr>
-                    <td class="text-center"><?= $no ?></td>
-                    <td>
-                      <small>
-                        <strong><?= $t->kode ?></strong>
-                      </small>
-                    </td>
-                    <td>
-                      <small><?= $t->nama_produk ?></small>
-                    </td>
-                    <td class="text-center"><?= $t->qty ?></td>
-                    <td class="text-center <?= $retur->status_retur == 15 && $t->qty_terima != $t->qty ? 'bg-danger' : '' ?>"><?= $retur->status_retur == 15 ? $t->qty_terima : 'Belum' ?></td>
+                    <td colspan="2" class="text-right">Total :</td>
+                    <td class="text-center"><?= $total ?></td>
                   </tr>
-                <?php
-                  $total += $t->qty;
-                  $total_a += $t->qty_terima;
-                endforeach;
-                ?>
-                <tr>
-                  <td colspan="3" class="text-right">Total :</td>
-                  <td class="text-center"><?= $total ?></td>
-                  <td class="text-center"><?= $retur->status_retur == 15 ? $total_a : 'Belum' ?></td>
-                </tr>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
             <hr>
             # Proses Pengajuan :
             <hr>
@@ -157,10 +105,6 @@
             <hr>
             <?php if ($retur->status == 1) { ?>
               <form action="<?= base_url('sup/Toko/tindakan') ?>" method="post" id="form_approve">
-                <div class="form-group">
-                  <label for="">Tgl Jemput</label>
-                  <input type="date" name="tgl_jemput" class="form-control form-control-sm" value="<?= date('Y-m-d', strtotime($retur->tgl_jemput)) ?>" required>
-                </div>
                 <strong>Catatan MV:</strong>
                 <textarea name="catatan_mv" rows="3" class="form-control form-control-sm" required></textarea>
                 <input type="hidden" name="id_pengajuan" value="<?= $retur->id ?>">
@@ -186,7 +130,7 @@
             <?php } else { ?>
               <div class="row no-print">
                 <div class="col-12">
-                  <a class="btn btn-default btn-sm float-right mr-2 <?= $retur->status_retur == 14 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('adm_gudang/retur/sppr_toko/' . $retur->id_retur) ?>"><i class="fas fa-print"></i> Sppr</a>
+                  <a class="btn btn-default btn-sm float-right mr-2 <?= $retur->status_retur == 14 ? '' : 'disabled' ?>" target="_blank" href="<?= base_url('adm_gudang/retur/sppr_toko/' . $retur->id_retur) ?>"><i class="fas fa-print"></i> FPO </a>
                   <a href="<?= base_url('sup/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
                     <i class="fas fa-arrow-left"></i> Kembali </a>
                 </div>

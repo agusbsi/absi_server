@@ -179,6 +179,8 @@ function status_toko($id)
         echo "<span class='badge badge-warning'>Proses Pengajuan</span>";
     } elseif ($id == 5) {
         echo "<span class='badge badge-danger'>Di Tolak !</span>";
+    } elseif ($id == 6) {
+        echo "<span class='badge badge-warning'>Proses tutup</span>";
     } else {
         echo "<span class='badge badge-danger'>Error!</span>";
     }

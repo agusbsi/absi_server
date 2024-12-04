@@ -113,7 +113,7 @@ class Toko extends CI_Controller
     $id = $this->session->userdata('id');
     $data['title'] = 'List Toko Tutup';
     $data['toko_tutup'] = $this->db->query("SELECT * from tb_toko
-    where status = 0 AND $where = '$id' order by id desc")->result();
+    where (status = 0 OR status = 6) AND $where = '$id' order by id desc")->result();
     $this->template->load('template/template', 'spv/toko/toko_tutup', $data);
   }
   public function getdataRetur()
@@ -196,29 +196,22 @@ class Toko extends CI_Controller
     $nama           = $this->session->userdata('nama_user');
     $pt             = $this->session->userdata('pt');
     $no_retur       = $this->M_spg->kode_retur();
-    $id_aset        = $this->input->post('id_aset');
-    $qty_aset       = $this->input->post('qty_aset');
-    $keterangan     = $this->input->post('keterangan');
     $id_produk      = $this->input->post('id_produk');
     $qty_retur      = $this->input->post('qty_retur');
-    $jml            = count($id_aset);
     $jml_produk     = count($id_produk);
     // ambil nama toko
     $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
     $this->db->trans_start();
-    $asetData = [];
-    for ($i = 0; $i < $jml; $i++) {
-      $asetData[] = array(
-        'id_aset' => $id_aset[$i],
-        'id_retur' => $no_retur,
-        'qty' => $qty_aset[$i],
-        'keterangan' => $keterangan[$i],
-      );
-    }
-
-    if (!empty($asetData)) {
-      $this->db->insert_batch('tb_retur_aset', $asetData);
-    }
+    // simpan ke tabel retur
+    $dataRetur = array(
+      'id'          => $no_retur,
+      'id_toko'     => $id_toko,
+      'id_user'     => $id_spv,
+      'status'      => 10,
+      'tgl_jemput'  => $tgl_tarik,
+      'catatan'     => $catatan,
+    );
+    $this->db->insert('tb_retur', $dataRetur);
     //  cek jumlah id_produk
     $artikelData = [];
     for ($a = 0; $a < $jml_produk; $a++) {
@@ -231,16 +224,7 @@ class Toko extends CI_Controller
     if (!empty($artikelData)) {
       $this->db->insert_batch('tb_retur_detail', $artikelData);
     }
-    // simpan ke tabel retur
-    $dataRetur = array(
-      'id'          => $no_retur,
-      'id_toko'     => $id_toko,
-      'id_user'     => $id_spv,
-      'status'      => 10,
-      'tgl_jemput'  => $tgl_tarik,
-      'catatan'     => $catatan,
-    );
-    $this->db->insert('tb_retur', $dataRetur);
+
     // Insert history retur
     $histori = array(
       'id_retur' => $no_retur,
