@@ -172,29 +172,48 @@ class Retur extends CI_Controller
   // fungsi terima barang dr toko tutup
   public function terimBarang()
   {
-    $gudang = $this->session->userdata('nama_user');
+    $username = $this->session->userdata('username');
     $id_retur = $this->input->post('id_retur');
     $id_toko = $this->input->post('id_toko');
     $catatan = $this->input->post('catatan');
     $qty_terima = $this->input->post('qty_input');
     $id_produk = $this->input->post('id_produk');
+    $nilai = count($id_produk);
     $this->db->trans_start();
-    // Cek jumlah aset
-    $jumlah_produk = count($id_produk);
 
-    // Loop melalui setiap produk
-    for ($i = 0; $i < $jumlah_produk; $i++) {
+    for ($i = 0; $i < $nilai; $i++) {
       $d_id_produk = $id_produk[$i];
-      $d_qty_terima = $qty_terima[$i];
-
-      // Buat array data dan where untuk update
-      $data = array('qty_terima' => $d_qty_terima);
-      $where = array('id_retur' => $id_retur, 'id_produk' => $d_id_produk);
-      // update ke tb_stok
-
-      // Lakukan update pada tabel tb_retur_detail
-      $this->db->update('tb_retur_detail', $data, $where);
-      $this->db->query("UPDATE tb_stok set updated_at = now(), qty = (qty - '$d_qty_terima') where id_produk = '$d_id_produk' and id_toko = '$id_toko'");
+      $d_qty_input = (float)$qty_terima[$i];
+      $d_catatan = $catatan[$i];
+      $data_detail = [
+        'qty_terima' => $d_qty_input,
+        'catatan_gudang' => $d_catatan,
+      ];
+      $where_detail = [
+        'id_produk' => $d_id_produk,
+        'id_retur' => $id_retur,
+      ];
+      $this->db->update('tb_retur_detail', $data_detail, $where_detail);
+      $stok_awal_query = $this->db->get_where('tb_stok', ['id_produk' => $d_id_produk, 'id_toko' => $id_toko]);
+      if ($stok_awal_query->num_rows() > 0) {
+        $stok_awal = (float)$stok_awal_query->row()->qty;
+        $this->db->set('updated_at', 'NOW()', FALSE);
+        $this->db->set('qty', 'qty - ' . $d_qty_input, FALSE);
+        $this->db->where('id_produk', $d_id_produk);
+        $this->db->where('id_toko', $id_toko);
+        $this->db->update('tb_stok');
+        $kartu = [
+          'no_doc' => $id_retur,
+          'id_produk' => $d_id_produk,
+          'id_toko' => $id_toko,
+          'keluar' => $d_qty_input,
+          'stok' => $stok_awal,
+          'sisa' => $stok_awal - $d_qty_input,
+          'keterangan' => 'Retur Barang tutup toko',
+          'pembuat' => $username,
+        ];
+        $this->db->insert('tb_kartu_stok', $kartu);
+      }
     }
 
     // Update lainnya dan redireksi
@@ -210,12 +229,11 @@ class Retur extends CI_Controller
     $histori = array(
       'id_retur' => $id_retur,
       'aksi' => 'Diterima oleh : ',
-      'pembuat' => $gudang,
+      'pembuat' => $username,
       'catatan_h' => $catatan
     );
     $this->db->insert('tb_retur_histori', $histori);
     $this->db->trans_complete();
-    // Tampilkan alert dan redirect
     tampil_alert('success', 'Berhasil', 'Data retur berhasil diterima');
     redirect(base_url('adm_gudang/retur/detail/' . $id_retur));
   }
@@ -242,10 +260,8 @@ class Retur extends CI_Controller
 
     for ($i = 0; $i < $nilai; $i++) {
       $d_id_produk = $id_produk[$i];
-      $d_qty_input = (float)$qty_input[$i]; // Ensure the value is treated as a float
+      $d_qty_input = (float)$qty_input[$i];
       $d_catatan = $catatan[$i];
-
-      // Update tb_retur_detail
       $data_detail = [
         'qty_terima' => $d_qty_input,
         'catatan_gudang' => $d_catatan,
@@ -255,20 +271,14 @@ class Retur extends CI_Controller
         'id_retur' => $id_retur,
       ];
       $this->db->update('tb_retur_detail', $data_detail, $where_detail);
-
-      // Fetch initial stock
       $stok_awal_query = $this->db->get_where('tb_stok', ['id_produk' => $d_id_produk, 'id_toko' => $id_toko]);
       if ($stok_awal_query->num_rows() > 0) {
         $stok_awal = (float)$stok_awal_query->row()->qty;
-
-        // Update stock in tb_stok
         $this->db->set('updated_at', 'NOW()', FALSE);
         $this->db->set('qty', 'qty - ' . $d_qty_input, FALSE);
         $this->db->where('id_produk', $d_id_produk);
         $this->db->where('id_toko', $id_toko);
         $this->db->update('tb_stok');
-
-        // Prepare data for tb_kartu_stok
         $kartu = [
           'no_doc' => $id_retur,
           'id_produk' => $d_id_produk,
