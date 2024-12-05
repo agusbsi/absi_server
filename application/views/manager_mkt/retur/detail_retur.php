@@ -72,7 +72,40 @@
                                         <td><?= $d->satuan ?></td>
                                         <td><?= $d->qty ?></td>
                                         <td>
-                                            <img class="img-artikel" src="<?= base_url('assets/img/retur/' . $d->foto) ?>" alt="retur">
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-primary btn-sm"
+                                                data-toggle="modal"
+                                                data-target="#modalGambar<?= $d->id; ?>">
+                                                <i class="fas fa-image"></i>
+                                                Lihat
+                                            </button>
+                                            <div
+                                                class="modal fade"
+                                                id="modalGambar<?= $d->id; ?>"
+                                                tabindex="-1"
+                                                aria-labelledby="modalLabel<?= $d->id; ?>"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="modalLabel<?= $d->id; ?>">Gambar Produk Retur</h5>
+                                                            <button
+                                                                type="button"
+                                                                class="btn-close"
+                                                                data-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-center">
+                                                            <!-- Gambar -->
+                                                            <img
+                                                                src="<?= base_url('assets/img/retur/' . $d->foto); ?>"
+                                                                alt="retur"
+                                                                class="img-fluid">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>
                                             <small>

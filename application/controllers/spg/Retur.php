@@ -85,32 +85,55 @@ class Retur extends CI_Controller
     $no_retur = $this->M_spg->kode_retur();
     $produk = $this->M_produk->get_by_id($id);
 
-    // upload foto
+    // Upload foto
     $file_name = str_replace('-', '', $produk->id . $no_retur);
-    $config['upload_path'] = './assets/img/retur/';
+    $config['upload_path'] = 'assets/img/retur/';
     $config['allowed_types'] = 'jpg|jpeg|png';
     $config['file_name'] = $file_name;
     $config['overwrite'] = true;
 
-    $this->load->library('image_lib', $config);
-    $this->image_lib->resize();
-    $this->upload->initialize($config);
+    $this->load->library('upload');
+    $this->upload->initialize($config); // Inisialisasi ulang sebelum upload
 
     // Cek apakah ada unggahan foto
     if (isset($_FILES['foto_retur']) && $_FILES['foto_retur']['error'] != UPLOAD_ERR_NO_FILE) {
-      $this->upload->do_upload('foto_retur');
-      $gbr = $this->upload->data();
-      $foto_retur = $gbr['file_name'];
+      if ($this->upload->do_upload('foto_retur')) {
+        // Ambil data file yang diunggah
+        $gbr = $this->upload->data();
+        $foto_retur = $gbr['file_name'];
+
+        // Kompres gambar
+        $config_resize['image_library'] = 'gd2';
+        $config_resize['source_image'] = 'assets/img/retur/' . $foto_retur;
+        $config_resize['create_thumb'] = false;
+        $config_resize['maintain_ratio'] = true;
+        $config_resize['width'] = 800; // Lebar maksimum
+        $config_resize['height'] = 800; // Tinggi maksimum
+        $config_resize['quality'] = '80%'; // Kualitas kompresi
+
+        $this->load->library('image_lib');
+        $this->image_lib->initialize($config_resize); // Inisialisasi ulang konfigurasi resize
+        if (!$this->image_lib->resize()) {
+          echo 'Resize Error: ' . $this->image_lib->display_errors();
+        }
+        $this->image_lib->clear();
+      } else {
+        // Jika upload gagal
+        echo 'Upload Error: ' . $this->upload->display_errors();
+        $foto_retur = '';
+      }
     } else {
       $foto_retur = '';
     }
+
+    // Masukkan ke keranjang
     $data = array(
-      'id'      => $id,
-      'qty'     => $qty,
-      'price'   => "",
-      'name'    => $produk->id,
+      'id' => $id,
+      'qty' => $qty,
+      'price' => "",
+      'name' => $produk->id,
       'options' => $produk->kode,
-      'sj'      => $kirim,
+      'sj' => $kirim,
       'keterangan' => array(
         'status' => $keterangan,
         'catatan' => $catatan,
@@ -123,6 +146,8 @@ class Retur extends CI_Controller
     $this->session->set_userdata('cart', 'Retur');
     redirect(base_url('spg/retur/tambah_retur'));
   }
+
+
 
   public function hapus_cart($id)
   {
@@ -182,33 +207,63 @@ class Retur extends CI_Controller
     $id_toko = $this->session->userdata('id_toko');
     $id_user = $this->session->userdata('id');
     $no_retur = $this->M_spg->kode_retur();
-    $config['upload_path'] = './assets/img/retur/lampiran/';
-    $config['allowed_types'] = 'pdf|doc|docx|jpg|jpeg|png';
-    $config['max_size'] = 10048;
+
+    $config['upload_path'] = 'assets/img/retur/lampiran/';
+    $config['allowed_types'] = 'jpg|jpeg|png';
+    $config['max_size'] = 10048; // Maksimal ukuran file
     $config['overwrite'] = true;
+
     $this->load->library('upload', $config);
+    $this->load->library('image_lib');
+
     $upload_data_lampiran = null;
     $upload_data_foto_packing = null;
     $lampiran = "";
     $packing = "";
-    // Upload 'lampiran' file
-    $config['file_name'] = "lampiran_" . $no_retur; // Nama file sesuai pola
+
+    // Upload dan kompres 'lampiran'
+    $config['file_name'] = "lampiran_" . $no_retur;
     $this->upload->initialize($config);
     if ($this->upload->do_upload('lampiran')) {
       $upload_data_lampiran = $this->upload->data();
       $lampiran = $upload_data_lampiran['file_name'];
+
+      // Kompres gambar lampiran
+      $config_resize['image_library'] = 'gd2';
+      $config_resize['source_image'] = 'assets/img/retur/lampiran/' . $lampiran;
+      $config_resize['maintain_ratio'] = true;
+      $config_resize['width'] = 800;
+      $config_resize['height'] = 800;
+      $config_resize['quality'] = '80%';
+
+      $this->image_lib->initialize($config_resize);
+      if (!$this->image_lib->resize()) {
+        echo 'Resize Error (Lampiran): ' . $this->image_lib->display_errors();
+      }
+      $this->image_lib->clear();
     } else {
       $error = $this->upload->display_errors();
     }
-    // Upload 'foto_packing' file
-    $config['file_name'] = "packing_" . $no_retur; // Nama file sesuai pola
+
+    // Upload dan kompres 'foto_packing'
+    $config['file_name'] = "packing_" . $no_retur;
     $this->upload->initialize($config);
     if ($this->upload->do_upload('foto_packing')) {
       $upload_data_foto_packing = $this->upload->data();
       $packing = $upload_data_foto_packing['file_name'];
+
+      // Kompres gambar foto_packing
+      $config_resize['source_image'] = 'assets/img/retur/lampiran/' . $packing;
+      $this->image_lib->initialize($config_resize);
+      if (!$this->image_lib->resize()) {
+        echo 'Resize Error (Foto Packing): ' . $this->image_lib->display_errors();
+      }
+      $this->image_lib->clear();
     } else {
       $error = $this->upload->display_errors();
     }
+
+    // Data retur
     $tgl_jemput = $this->input->post('tgl_jemput');
     $data_retur = array(
       'id' => $no_retur,
@@ -216,8 +271,10 @@ class Retur extends CI_Controller
       'id_user' => $id_user,
       'lampiran' => $lampiran,
       'foto_packing' => $packing,
-      'tgl_jemput'  => $tgl_jemput
+      'tgl_jemput' => $tgl_jemput
     );
+
+    // Simpan data ke database
     $this->db->trans_start();
     $this->db->insert('tb_retur', $data_retur);
     $data_cart = $this->cart->contents();
@@ -232,6 +289,8 @@ class Retur extends CI_Controller
       );
       $this->db->insert('tb_retur_detail', $data);
     }
+
+    // Simpan histori retur
     $spg_query = $this->db->query("SELECT nama_user FROM tb_user WHERE id = '$id_user'");
     $spg_row = $spg_query->row();
     $spg = $spg_row ? $spg_row->nama_user : 'Tanpa Nama';
@@ -241,9 +300,12 @@ class Retur extends CI_Controller
       'pembuat' => $spg,
     );
     $this->db->insert('tb_retur_histori', $histori);
+
+    // Finalisasi transaksi
     $this->db->trans_complete();
     $this->cart->destroy();
 
+    // Kirim notifikasi WhatsApp
     $got_lead = $this->db->query("SELECT id_leader FROM tb_toko WHERE id = '$id_toko' AND id_spg = '$id_user'")->row();
     $id_lead = $got_lead->id_leader;
     $hp = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$id_lead'")->row();
@@ -251,9 +313,11 @@ class Retur extends CI_Controller
     $pt = $this->session->userdata('pt');
     $message = "$spg : Mengajukan Retur Barang ($no_retur) di $pt yang perlu approve, silahkan kunjungi s.id/absi-app";
     kirim_wa($phone, $message);
+
     tampil_alert('success', 'Berhasil', 'Data berhasil disimpan !');
     redirect(base_url('spg/Retur'));
   }
+
   public function resi()
   {
     $this->form_validation->set_rules('no_retur', 'Nomor Retur', 'required');

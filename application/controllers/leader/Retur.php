@@ -72,18 +72,19 @@ class Retur extends CI_Controller
     );
     $this->db->insert('tb_retur_histori', $histori);
     if ($action == "1") {
-      $hp = $this->db->select('no_telp')
-        ->from('tb_user')
-        ->where('role', 17)
-        ->where('status', 1)
-        ->get()
-        ->row();
-      if ($hp) {
-        $phone = $hp->no_telp;
-        $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu dicek, silahkan kunjungi s.id/absi-app";
-        kirim_wa($phone, $message);
-      } else {
-        log_message('error', 'User tidak ditemukan.');
+      // Kirim notifikasi WA
+      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 17 AND status = 1")->result_array();
+      $message = "Anda memiliki 1 Retur Barang baru ( " . $id_retur . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
+
+      foreach ($phones as $phone) {
+        $number = $phone['no_telp'];
+        $hp = substr($number, 0, 1);
+
+        if ($hp == '0') {
+          $number = '62' . substr($number, 1);
+        }
+
+        kirim_wa($number, $message);
       }
     }
     tampil_alert('success', 'BERHASIL', 'Pengajuan Retur berhasil di' . $aksi);
