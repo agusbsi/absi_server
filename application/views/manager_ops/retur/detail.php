@@ -75,40 +75,44 @@
                     <td><?= $d->qty ?></td>
                     <td><?= $retur->status != 4 ? '-' : $d->qty_terima ?></td>
                     <td>
-                      <button
-                        type="button"
-                        class="btn btn-outline-primary btn-sm"
-                        data-toggle="modal"
-                        data-target="#modalGambar<?= $d->id; ?>">
-                        <i class="fas fa-image"></i>
-                        Lihat
-                      </button>
-                      <div
-                        class="modal fade"
-                        id="modalGambar<?= $d->id; ?>"
-                        tabindex="-1"
-                        aria-labelledby="modalLabel<?= $d->id; ?>"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="modalLabel<?= $d->id; ?>">Gambar Produk Retur</h5>
-                              <button
-                                type="button"
-                                class="btn-close"
-                                data-dismiss="modal"
-                                aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body text-center">
-                              <!-- Gambar -->
-                              <img
-                                src="<?= base_url('assets/img/retur/' . $d->foto); ?>"
-                                alt="retur"
-                                class="img-fluid">
+                      <?php if ($retur->status == 4 || $retur->status == 15 || $retur->status == 5) {
+                        echo "-";
+                      } else { ?>
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary btn-sm"
+                          data-toggle="modal"
+                          data-target="#modalGambar<?= $d->id; ?>">
+                          <i class="fas fa-image"></i>
+                          Lihat
+                        </button>
+                        <div
+                          class="modal fade"
+                          id="modalGambar<?= $d->id; ?>"
+                          tabindex="-1"
+                          aria-labelledby="modalLabel<?= $d->id; ?>"
+                          aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel<?= $d->id; ?>">Gambar Produk Retur</h5>
+                                <button
+                                  type="button"
+                                  class="btn-close"
+                                  data-dismiss="modal"
+                                  aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body text-center">
+                                <!-- Gambar -->
+                                <img
+                                  src="<?= base_url('assets/img/retur/' . $d->foto); ?>"
+                                  alt="retur"
+                                  class="img-fluid">
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      <?php } ?>
                     </td>
                     <td>
                       <small>
