@@ -275,7 +275,87 @@ class Stok extends CI_Controller
   public function adjust_stok()
   {
     $data['title'] = 'Adjustment Stok';
+    $data['list'] = $this->db->query("SELECT ta.*, tt.nama_toko from tb_adjust_stok ta
+    JOIN tb_so ts ON ta.id_so = ts.id
+    JOIN tb_toko tt ON ts.id_toko = tt.id 
+    WHERE ta.status = ?", [1])->result();
     $this->template->load('template/template', 'adm/stok/adjust_tampil', $data);
+  }
+  public function export_adjust()
+  {
+    $name_user = $this->session->userdata('nama_user');
+    $id_kirim_all = $this->input->post('id_kirim_all');
+    $gudang = $this->input->post('gudang');
+    $deskripsi = $this->input->post('deskripsi');
+
+    // Create a new Spreadsheet instance
+    $spreadsheet = new Spreadsheet();
+    $worksheet = $spreadsheet->getActiveSheet();
+    $worksheet->setTitle('Export Adjust Stok');
+    $worksheet->getStyle('A1:M1')->getFont()->setBold(true);
+    $worksheet->setCellValue('A1', 'No. Penyesuaian');
+    $worksheet->setCellValue('B1', 'Tanggal');
+    $worksheet->setCellValue('C1', 'Akun Penyesuaian');
+    $worksheet->setCellValue('D1', 'Deskripsi');
+    $worksheet->setCellValue('E1', 'Tipe');
+    $worksheet->setCellValue('F1', 'Pengguna');
+    $worksheet->setCellValue('G1', 'Template');
+    $worksheet->setCellValue('H1', 'Nomor Barang');
+    $worksheet->setCellValue('I1', 'Kuantitas');
+    $worksheet->setCellValue('J1', 'Nilai');
+    $worksheet->setCellValue('K1', 'Gudang');
+    $worksheet->setCellValue('L1', 'Departemen');
+    $worksheet->setCellValue('M1', 'Proyek');
+
+    $row = 2; // Start from the second row
+
+    foreach ($id_kirim_all as $id_adj) {
+      $query = $this->db->query("SELECT tpd.*, tp.kode,tp.satuan from tb_adjust_detail tpd
+          join tb_produk tp on tpd.id_produk = tp.id
+          WHERE tpd.id_adjust = '$id_adj'");
+      $adjust = $this->db->query("SELECT ta.*, tt.nama_toko, ts.tgl_so from tb_adjust_stok ta
+      JOIN tb_so ts ON ta.id_so = ts.id
+      join tb_toko tt on ts.id_toko = tt.id 
+      where ta.id = '$id_adj'")->row();
+      if ($gudang == "VISTA") {
+        $gudangTujuan = "51.1 GUD. KONSINYASI";
+      } else if ($gudang == "TOKO") {
+        $gudangTujuan = $adjust->nama_toko;
+      }
+
+      if ($query->num_rows() > 0) {
+        $detail = $query->result();
+        $tanggalkirim = new DateTime($adjust->tgl_so);
+        $tanggalkirimFormat = $tanggalkirim->format('d/m/Y');
+
+        foreach ($detail as $data) {
+          // Set values for each row
+          $worksheet->setCellValue('A' . $row, $adjust->nomor);
+          $worksheet->setCellValue('B' . $row, $tanggalkirimFormat);
+          $worksheet->setCellValue('C' . $row, "310001");
+          $worksheet->setCellValue('D' . $row, $deskripsi);
+          $worksheet->setCellValue('E' . $row, "PENJUMLAHAN");
+          $worksheet->setCellValue('F' . $row, $name_user);
+          $worksheet->setCellValue('G' . $row, "Inventory Adjustment");
+          $worksheet->setCellValue('H' . $row, $data->kode);
+          $worksheet->setCellValue('I' . $row, $data->hasil_so);
+          $worksheet->setCellValue('J' . $row, "0");
+          $worksheet->setCellValue('K' . $row, $gudangTujuan);
+          $worksheet->setCellValue('L' . $row, "Non Department");
+          $worksheet->setCellValue('M' . $row, "Non Project");
+          $row++;
+        }
+      }
+    }
+
+    // Create Excel writer
+    $writer = new Xlsx($spreadsheet);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="Export_adjustment.xlsx"');
+
+    ob_end_clean();
+    $writer->save('php://output');
+    exit();
   }
   public function get_adjust_stok()
   {

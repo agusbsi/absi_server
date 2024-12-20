@@ -132,7 +132,7 @@
                             </div>
                         <?php endforeach ?>
                     </div>
-                    <?php if ($row->status == 0) { ?>
+                    <?php if ($row->status == 0 && $this->session->userdata('role') == 1) { ?>
                         <div class="form-group">
                             <label for=""> Catatan anda *</label>
                             <textarea name="catatan" cols="3" class="form-control form-control-sm" placeholder="..." required></textarea>
@@ -149,7 +149,7 @@
                 </div>
                 <div class="card-footer text-right">
                     <a href="<?= base_url('adm/Stok/adjust_stok') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> kembali</a>
-                    <?php if ($row->status == 0) { ?>
+                    <?php if ($row->status == 0 && $this->session->userdata('role') == 1) { ?>
                         <button type="submit" class="btn btn-success btn-sm" id="btn-kirim"><i class="fas fa-save"></i> Simpan</button>
                     <?php } ?>
                 </div>
