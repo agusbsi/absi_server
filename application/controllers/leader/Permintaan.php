@@ -82,20 +82,19 @@ class Permintaan extends CI_Controller
 
       $this->db->update('tb_permintaan', $setuju, array('id' => $id_minta));
 
-      // Loop melalui item permintaan
+      // Siapkan data untuk update_batch
+      $data_details = [];
       for ($i = 0; $i < $jumlah; $i++) {
-        $id_detail = $id[$i];
-        $d_qty = $qty_acc[$i];
-
-        $data_detail = array(
-          'qty' => $d_qty,
+        $data_details[] = array(
+          'id' => $id[$i], // Primary key column
+          'qty' => $qty_acc[$i],
           'status' => 1
         );
-
-        $this->db->update('tb_permintaan_detail', $data_detail, array('id' => $id_detail));
-        $aksi = "Disetujui TL : ";
       }
 
+      // Batch update tb_permintaan_detail
+      $this->db->update_batch('tb_permintaan_detail', $data_details, 'id');
+      $aksi = "Disetujui TL : ";
       // Kirim notifikasi WA
       $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6 AND status = 1")->result_array();
       $message = "Anda memiliki 1 PO Barang baru ( " . $id_minta . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
@@ -116,11 +115,9 @@ class Permintaan extends CI_Controller
         'status' => '5',
         'updated_at' => date('Y-m-d H:i:s')
       );
-
       $this->db->update('tb_permintaan', $tolak, array('id' => $id_minta));
       $aksi = "Ditolak TL : ";
     }
-
     // Insert histori
     $histori = array(
       'id_po' => $id_minta,
@@ -128,13 +125,8 @@ class Permintaan extends CI_Controller
       'pembuat' => $leader,
       'catatan' => $catatan_leader
     );
-
     $this->db->insert('tb_po_histori', $histori);
-
-    // Selesaikan transaksi
     $this->db->trans_complete();
-
-    // Tampilkan pesan sukses
     tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil diproses!');
     redirect(base_url('leader/Permintaan'));
   }
