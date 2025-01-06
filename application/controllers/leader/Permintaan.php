@@ -96,19 +96,19 @@ class Permintaan extends CI_Controller
       $this->db->update_batch('tb_permintaan_detail', $data_details, 'id');
       $aksi = "Disetujui TL : ";
       // Kirim notifikasi WA
-      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6 AND status = 1")->result_array();
-      $message = "Anda memiliki 1 PO Barang baru ( " . $id_minta . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
+      // $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 6 AND status = 1")->result_array();
+      // $message = "Anda memiliki 1 PO Barang baru ( " . $id_minta . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
 
-      foreach ($phones as $phone) {
-        $number = $phone['no_telp'];
-        $hp = substr($number, 0, 1);
+      // foreach ($phones as $phone) {
+      //   $number = $phone['no_telp'];
+      //   $hp = substr($number, 0, 1);
 
-        if ($hp == '0') {
-          $number = '62' . substr($number, 1);
-        }
+      //   if ($hp == '0') {
+      //     $number = '62' . substr($number, 1);
+      //   }
 
-        kirim_wa($number, $message);
-      }
+      //   kirim_wa($number, $message);
+      // }
     } else {
       // Tolak permintaan
       $tolak = array(
