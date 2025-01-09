@@ -45,6 +45,8 @@ class So extends CI_Controller
   // riwayat so
   public function riwayat_so()
   {
+    tampil_alert('info', 'Maintenance', 'Fitur Riwayat laporan SO sedang di perbarui, dan akan tampil pada tgl 15 januari 2025.');
+    redirect(base_url('sup/So'));
     $data['title'] = 'Histori SO';
     $id = $this->session->userdata('id');
     $role = $this->session->userdata('role');
@@ -65,8 +67,8 @@ class So extends CI_Controller
 
   public function riwayat_so_toko($id_toko, $id_so)
   {
-    tampil_alert('info', 'Maintenance', 'Fitur Laporan SO sedang di perbarui dan akan tampil pada tgl 11 Januari 2025.');
-    redirect(base_url('sup/So'));
+    // tampil_alert('info', 'Maintenance', 'Fitur Laporan SO sedang di perbarui dan akan tampil pada tgl 11 Januari 2025.');
+    // redirect(base_url('sup/So'));
     $data['title'] = 'Detail SO';
     $cek = $this->db->query("SELECT * FROM tb_so where id = ?", array($id_so))->row();
     if ($cek->status == 1) {
@@ -242,24 +244,21 @@ class So extends CI_Controller
       $row = 4;
       $no = 1;
       foreach ($detail as $d) {
-        $stok_akhir = $d->qty_awal - $d->jml_jual_buat;
-        $akhir = $d->qty_awal + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
-        $awal = $stok_akhir - $d->jml_terima - $d->mutasi_masuk  + $d->jml_retur + $d->jml_jual + $d->mutasi_keluar;
-        $selisih = ($d->hasil_so + $d->qty_jual) - $akhir;
-        $selisih_update = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
+        $stok_akhir = $d->qty_awal + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
+        $selisih = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
 
         $worksheet->setCellValue('A' . $row, $no);
         $worksheet->setCellValue('B' . $row, $d->kode);
-        $worksheet->setCellValue('C' . $row, DATE_FORMAT(new DateTime($toko->created_at), 'Y-m') <= '2024-05' ? $d->qty_awal : $awal);
+        $worksheet->setCellValue('C' . $row, $d->qty_awal);
         $worksheet->setCellValue('D' . $row, $d->jml_terima);
         $worksheet->setCellValue('E' . $row, $d->mutasi_masuk);
         $worksheet->setCellValue('F' . $row, $d->jml_retur);
         $worksheet->setCellValue('G' . $row, $d->jml_jual);
         $worksheet->setCellValue('H' . $row, $d->mutasi_keluar);
-        $worksheet->setCellValue('I' . $row, DATE_FORMAT(new DateTime($toko->created_at), 'Y-m') <= '2024-05' ? $akhir : $stok_akhir);
+        $worksheet->setCellValue('I' . $row, $stok_akhir);
         $worksheet->setCellValue('J' . $row, $d->hasil_so);
         $worksheet->setCellValue('K' . $row, $d->qty_jual);
-        $worksheet->setCellValue('L' . $row, DATE_FORMAT(new DateTime($toko->created_at), 'Y-m') <= '2024-05' ? $selisih : $selisih_update);
+        $worksheet->setCellValue('L' . $row, $selisih);
         $row++;
         $no++;
       }

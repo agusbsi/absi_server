@@ -85,25 +85,19 @@
                       <?php
                       $no = 0;
                       $t_awal = 0;
-                      $t_awal_update = 0;
                       $terima = 0;
                       $mutasiMasuk = 0;
                       $retur = 0;
                       $jual = 0;
                       $mutasi = 0;
                       $hasil = 0;
-                      $hasil_akhir = 0;
-                      $hasil_akhir_update = 0;
+                      $t_akhir = 0;
                       $t_selisih = 0;
-                      $t_selisih_update = 0;
                       $nextJual = 0;
                       foreach ($detail_so as $d) {
                         $no++;
-                        $stok_akhir = $d->qty_awal - $d->jml_jual_buat;
-                        $akhir = $d->qty_awal + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
-                        $awal = $stok_akhir - $d->jml_terima - $d->mutasi_masuk  + $d->jml_retur + $d->jml_jual + $d->mutasi_keluar;
-                        $selisih = ($d->hasil_so + $d->qty_jual) - $akhir;
-                        $selisih_update = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
+                        $stok_akhir = $d->qty_awal + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
+                        $selisih = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
                       ?>
                         <tr>
                           <td class="text-center"><?= $no ?></td>
@@ -115,20 +109,16 @@
                               <input type="hidden" name="hasil_so[]" value="<?= $d->hasil_so ?>">
                             </small>
                           </td>
-                          <td class="text-center"><strong><?= DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $d->qty_awal : $awal ?></strong></td>
+                          <td class="text-center"><strong><?= $d->qty_awal ?></strong></td>
                           <td class="text-center"><?= $d->jml_terima  ?></td>
                           <td class="text-center"><?= $d->mutasi_masuk ?></td>
                           <td class="text-center"><?= $d->jml_retur ?></td>
                           <td class="text-center"><?= $d->jml_jual ?></td>
                           <td class="text-center"><?= $d->mutasi_keluar ?></td>
-                          <td class="text-center"><strong><?= DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $akhir : $stok_akhir ?></strong></td>
+                          <td class="text-center"><strong><?= $stok_akhir ?></strong></td>
                           <td class="text-center"><strong><?= $d->hasil_so ?></strong></td>
                           <td class="text-center"><small><?= $d->qty_jual ?></small></td>
-                          <?php if (DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05') { ?>
-                            <td class="text-center"><strong><span class="btn btn-sm btn-<?= ($selisih < 0) ? 'danger' : '' ?>"><?= $selisih ?></span></strong> </td>
-                          <?php } else { ?>
-                            <td class="text-center"><strong><span class="btn btn-sm btn-<?= ($selisih_update < 0) ? 'danger' : '' ?>"><?= $selisih_update ?></span></strong> </td>
-                          <?php } ?>
+                          <td class="text-center"><strong><span class="btn btn-sm btn-<?= ($selisih < 0) ? 'danger' : '' ?>"><?= $selisih ?></span></strong> </td>
                         </tr>
                       <?php
                         $terima += $d->jml_terima;
@@ -138,11 +128,8 @@
                         $mutasi += $d->mutasi_keluar;
                         $hasil += $d->hasil_so;
                         $t_awal += $d->qty_awal;
-                        $t_awal_update += $awal;
-                        $hasil_akhir += $akhir;
-                        $hasil_akhir_update += $stok_akhir;
+                        $t_akhir += $stok_akhir;
                         $t_selisih += $selisih;
-                        $t_selisih_update += $selisih_update;
                         $nextJual += $d->qty_jual;
                       }
                       ?>
@@ -150,20 +137,16 @@
                     <tfoot>
                       <tr>
                         <td colspan="2" align="right"> <strong>Total :</strong> </td>
-                        <td class="text-center"><strong><?= number_format(DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $t_awal : $t_awal_update); ?></strong></td>
+                        <td class="text-center"><strong><?= number_format($t_awal) ?></strong></td>
                         <td class="text-center"><strong><?= number_format($terima); ?></strong></td>
                         <td class="text-center"><strong><?= number_format($mutasiMasuk); ?></strong></td>
                         <td class="text-center"><strong><?= number_format($retur); ?></strong></td>
                         <td class="text-center"><strong><?= number_format($jual); ?></strong></td>
                         <td class="text-center"><strong><?= number_format($mutasi); ?></strong></td>
-                        <td class="text-center"><strong><?= number_format(DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05' ? $hasil_akhir : $hasil_akhir_update); ?></strong></td>
+                        <td class="text-center"><strong><?= number_format($t_akhir); ?></strong></td>
                         <td class="text-center"><strong><?= number_format($hasil); ?></strong></td>
                         <td class="text-center"><strong><?= number_format($nextJual); ?></strong></td>
-                        <?php if (DATE_FORMAT(new DateTime($SO->created_at), 'Y-m') <= '2024-05') { ?>
-                          <td class="text-center"><strong><span class="btn btn-sm btn-<?= ($t_selisih < 0) ? 'danger' : '' ?>"><?= number_format($t_selisih); ?></span></strong></td>
-                        <?php } else { ?>
-                          <td class="text-center"><strong><span class="btn btn-sm btn-<?= ($t_selisih_update < 0) ? 'danger' : '' ?>"><?= number_format($t_selisih_update); ?></span></strong></td>
-                        <?php } ?>
+                        <td class="text-center"><strong><span class="btn btn-sm btn-<?= ($t_selisih < 0) ? 'danger' : '' ?>"><?= number_format($t_selisih); ?></span></strong></td>
                       </tr>
                     </tfoot>
                   </table>
