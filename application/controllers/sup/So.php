@@ -67,8 +67,8 @@ class So extends CI_Controller
 
   public function riwayat_so_toko($id_toko, $id_so)
   {
-    tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
-    redirect(base_url('sup/So'));
+    // tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
+    // redirect(base_url('sup/So'));
     $data['title'] = 'Detail SO';
     $cek = $this->db->query("SELECT * FROM tb_so where id = ?", array($id_so))->row();
     if ($cek->status == 1) {
@@ -76,26 +76,64 @@ class So extends CI_Controller
       redirect('sup/So');
       return;
     }
+    // cari data so bulan kemarin
+    $bulan_kemarin = date('Y-m', strtotime('first day of last month'));
+    $kemarin = $this->db->query("SELECT id,tgl_so FROM tb_so WHERE DATE_FORMAT(created_at, '%Y-%m') = ? AND id_toko = ?", [$bulan_kemarin, $id_toko])->row();
+    $so_kemarin = $kemarin->id;
+    $tgl_kemarin = $kemarin->tgl_so;
+
     $data['SO']  = $this->db->query("SELECT ts.*, tt.nama_toko from tb_so ts 
     join tb_toko tt on ts.id_toko = tt.id
     where ts.id_toko = '$id_toko' and ts.id = '$id_so'")->row();
+
+    // data so bulan ini
     $tgl_so = $this->db->query("SELECT tgl_so FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_so;
-    $query = "SELECT ts.id_produk, COALESCE(nj.qty, 0) as qty_jual,tp.kode,tsd.hasil_so,tsd.qty_awal, COALESCE(vt.jml_terima, 0) AS jml_terima,COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,COALESCE(vp.jml_jual, 0) AS jml_jual,COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,COALESCE(vr.jml_retur, 0) AS jml_retur,COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar FROM tb_stok ts
+    $query = "SELECT ts.id_produk,tp.kode,tsd.hasil_so,
+    tsd.qty_awal,
+    COALESCE(tsd_kemarin.qty_awal,0) as qty_awal_kemarin,
+    COALESCE(nj.qty, 0) as qty_jual,
+    COALESCE(vt.jml_terima, 0) AS jml_terima,
+    COALESCE(vt_kemarin.jml_terima, 0) AS jml_terima_kemarin,
+    COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,
+    COALESCE(vm_kemarin.jml_mutasi, 0) AS mutasi_masuk_kemarin,
+    COALESCE(vp.jml_jual, 0) AS jml_jual,
+    COALESCE(vp_kemarin.jml_jual, 0) AS jml_jual_kemarin,
+    COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,
+    COALESCE(vr.jml_retur, 0) AS jml_retur,
+    COALESCE(vr_kemarin.jml_retur, 0) AS jml_retur_kemarin,
+    COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar,
+    COALESCE(vk_kemarin.jml_mutasi, 0) AS mutasi_keluar_kemarin FROM tb_stok ts
+
     LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
         GROUP BY 
             id_produk ) vt ON vt.id_produk = ts.id_produk
+    LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+        GROUP BY 
+            id_produk ) vt_kemarin ON vt_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
         GROUP BY 
             id_produk ) vm ON vm.id_produk = ts.id_produk
+    LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+        GROUP BY 
+            id_produk ) vm_kemarin ON vm_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
         GROUP BY 
             id_produk ) vp ON vp.id_produk = ts.id_produk
+    LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan WHERE id_toko = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+        GROUP BY 
+            id_produk ) vp_kemarin ON vp_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 0 MONTH))
@@ -106,24 +144,74 @@ class So extends CI_Controller
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
         GROUP BY 
             id_produk ) vr ON vr.id_produk = ts.id_produk
+    LEFT JOIN (SELECT  id_produk, jml_retur FROM vw_retur WHERE id_toko = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+        GROUP BY 
+            id_produk ) vr_kemarin ON vr_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
             AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
         GROUP BY 
             id_produk ) vk ON vk.id_produk = ts.id_produk
+    LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+        GROUP BY 
+            id_produk ) vk_kemarin ON vk_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
     JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
     WHERE tpp.id_toko = ?
     AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
     GROUP BY tpdd.id_produk ) nj ON nj.id_produk = ts.id_produk
-
     JOIN tb_produk tp ON ts.id_produk = tp.id
-    LEFT JOIN tb_so_detail tsd on tsd.id_produk = ts.id_produk
-    WHERE ts.id_toko = ? AND tsd.id_so = ?
-
+    LEFT JOIN tb_so_detail tsd ON tsd.id_produk = ts.id_produk AND tsd.id_so = ?
+    LEFT JOIN tb_so_detail tsd_kemarin ON tsd_kemarin.id_produk = ts.id_produk AND tsd_kemarin.id_so = ?
+    WHERE ts.id_toko = ?
     GROUP BY ts.id_produk ORDER BY tp.kode ASC";
 
-    $data['detail_so'] = $this->db->query($query, array($id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $tgl_so, $tgl_so, $id_toko, $id_so))->result();
+    $data['detail_so'] = $this->db->query($query, array(
+      $id_toko,
+      $tgl_so,
+      $tgl_so,
+      $id_toko,
+      $tgl_kemarin,
+      $tgl_kemarin,
+      $id_toko,
+      $tgl_so,
+      $tgl_so,
+      $id_toko,
+      $tgl_kemarin,
+      $tgl_kemarin,
+      $id_toko,
+      $tgl_so,
+      $tgl_so,
+      $id_toko,
+      $tgl_kemarin,
+      $tgl_kemarin,
+      $id_toko,
+      $tgl_so,
+      $tgl_so,
+      $id_toko,
+      $tgl_so,
+      $tgl_so,
+      $id_toko,
+      $tgl_kemarin,
+      $tgl_kemarin,
+      $id_toko,
+      $tgl_so,
+      $tgl_so,
+      $id_toko,
+      $tgl_kemarin,
+      $tgl_kemarin,
+      $id_toko,
+      $tgl_so,
+      $tgl_so,
+      $id_so,
+      $so_kemarin,
+      $id_toko
+    ))->result();
+
     $data['cek_adjust'] = $this->db->query("SELECT * FROM tb_adjust_stok WHERE id_so = ?", array($id_so))->num_rows();
     $this->template->load('template/template', 'manager_mv/stokopname/detail_so_toko', $data);
   }

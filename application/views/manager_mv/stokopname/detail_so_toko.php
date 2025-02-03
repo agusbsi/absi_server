@@ -96,7 +96,8 @@
                       $nextJual = 0;
                       foreach ($detail_so as $d) {
                         $no++;
-                        $stok_akhir = $d->qty_awal + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
+                        $stok_akhir_kemarin = $d->qty_awal_kemarin + $d->jml_terima_kemarin + $d->mutasi_masuk_kemarin  - $d->jml_retur_kemarin - $d->jml_jual_kemarin - $d->mutasi_keluar_kemarin;
+                        $stok_akhir = $stok_akhir_kemarin + $d->jml_terima + $d->mutasi_masuk  - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
                         $selisih = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
                       ?>
                         <tr>
@@ -109,7 +110,7 @@
                               <input type="hidden" name="hasil_so[]" value="<?= $d->hasil_so ?>">
                             </small>
                           </td>
-                          <td class="text-center"><strong><?= $d->qty_awal ?></strong></td>
+                          <td class="text-center"><strong><?= $stok_akhir_kemarin ?></strong></td>
                           <td class="text-center"><?= $d->jml_terima  ?></td>
                           <td class="text-center"><?= $d->mutasi_masuk ?></td>
                           <td class="text-center"><?= $d->jml_retur ?></td>
@@ -166,7 +167,7 @@
                     <button type="button" class="btn btn-info btn-sm float-right mr-2 " data-toggle="modal" data-target="#exampleModalCenter" <?= (date('m', strtotime($SO->created_at)) != date('m')) || ($cek_adjust > 0) ? 'disabled' : '' ?>><i class="fa fa-paper-plane"></i> Adjust Stok</button>
                     <a href="#" class="btn btn-warning btn-sm float-right mr-2" id="btn_resetSO" data-so="<?= $SO->id ?>" <?= date('m', strtotime($SO->created_at)) == date('m') ? '' : 'disabled' ?>><i class="fa fa-share"></i> Reset & SO ulang</a>
                   <?php } ?>
-                  <a href="<?= base_url('sup/So/unduh_so/' . $SO->id) ?>" class="btn btn-success btn-sm float-right mr-2 "><i class="fa fa-download"></i> Unduh Excel</a>
+                  <!-- <a href="<?= base_url('sup/So/unduh_so/' . $SO->id) ?>" class="btn btn-success btn-sm float-right mr-2 "><i class="fa fa-download"></i> Unduh Excel</a> -->
                   <button onclick="goBack()" class="btn btn-danger btn-sm float-right mr-2"> <i class="fas fa-arrow-left"></i> Kembali</button>
                 </div>
               </div>
