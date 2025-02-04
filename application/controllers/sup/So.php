@@ -45,11 +45,12 @@ class So extends CI_Controller
   // riwayat so
   public function riwayat_so()
   {
-    tampil_alert('info', 'Maintenance', 'Fitur Riwayat laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
-    redirect(base_url('sup/So'));
+    // tampil_alert('info', 'Maintenance', 'Fitur Riwayat laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
+    // redirect(base_url('sup/So'));
     $data['title'] = 'Histori SO';
     $id = $this->session->userdata('id');
     $role = $this->session->userdata('role');
+
     if ($role == 2) {
       $query = "AND id_spv = '$id'";
     } else if ($role == 3) {
@@ -57,11 +58,23 @@ class So extends CI_Controller
     } else {
       $query = "";
     }
+
     $thisMonth = date('Y-m-d', strtotime('first day of this month'));
-    $data['list_so'] = $this->db->query(" SELECT ts.*, DATE_FORMAT(DATE_SUB(ts.created_at, INTERVAL 1 MONTH), '%M %Y') AS periode, tt.nama_toko, ts.created_at as dibuat from tb_so ts
-    join tb_toko tt on ts.id_toko = tt.id
-    WHERE ts.created_at < '$thisMonth' $query
-    ORDER BY ts.created_at DESC")->result();
+    $december2024 = '2024-12-31';
+
+    $data['list_so'] = $this->db->query("
+        SELECT ts.*, 
+               DATE_FORMAT(DATE_SUB(ts.created_at, INTERVAL 1 MONTH), '%M %Y') AS periode, 
+               tt.nama_toko, 
+               ts.created_at as dibuat 
+        FROM tb_so ts
+        JOIN tb_toko tt ON ts.id_toko = tt.id
+        WHERE ts.created_at < '$thisMonth' 
+              AND ts.created_at > '$december2024' 
+              $query
+        ORDER BY ts.created_at DESC
+    ")->result();
+
     $this->template->load('template/template', 'manager_mv/stokopname/riwayat_so', $data);
   }
 
@@ -77,7 +90,8 @@ class So extends CI_Controller
       return;
     }
     // cari data so bulan kemarin
-    $bulan_kemarin = date('Y-m', strtotime('first day of last month'));
+    $tgl_so_sekarang = $cek->created_at;
+    $bulan_kemarin = date('Y-m', strtotime('first day of last month', strtotime($tgl_so_sekarang)));
     $kemarin = $this->db->query("SELECT id,tgl_so FROM tb_so WHERE DATE_FORMAT(created_at, '%Y-%m') = ? AND id_toko = ?", [$bulan_kemarin, $id_toko])->row();
     $so_kemarin = $kemarin->id;
     $tgl_kemarin = $kemarin->tgl_so;
@@ -91,7 +105,9 @@ class So extends CI_Controller
     $query = "SELECT ts.id_produk,tp.kode,tsd.hasil_so,
     tsd.qty_awal,
     COALESCE(tsd_kemarin.qty_awal,0) as qty_awal_kemarin,
+    COALESCE(tsd_kemarin.hasil_so,0) as hasil_so_kemarin,
     COALESCE(nj.qty, 0) as qty_jual,
+    COALESCE(nj_kemarin.qty, 0) as qty_jual_kemarin,
     COALESCE(vt.jml_terima, 0) AS jml_terima,
     COALESCE(vt_kemarin.jml_terima, 0) AS jml_terima_kemarin,
     COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,
@@ -164,8 +180,16 @@ class So extends CI_Controller
     WHERE tpp.id_toko = ?
     AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
     GROUP BY tpdd.id_produk ) nj ON nj.id_produk = ts.id_produk
+
+    LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
+    JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+    WHERE tpp.id_toko = ?
+    AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+    GROUP BY tpdd.id_produk ) nj_kemarin ON nj_kemarin.id_produk = ts.id_produk
+
     JOIN tb_produk tp ON ts.id_produk = tp.id
     LEFT JOIN tb_so_detail tsd ON tsd.id_produk = ts.id_produk AND tsd.id_so = ?
+
     LEFT JOIN tb_so_detail tsd_kemarin ON tsd_kemarin.id_produk = ts.id_produk AND tsd_kemarin.id_so = ?
     WHERE ts.id_toko = ?
     GROUP BY ts.id_produk ORDER BY tp.kode ASC";
@@ -207,6 +231,9 @@ class So extends CI_Controller
       $id_toko,
       $tgl_so,
       $tgl_so,
+      $id_toko,
+      $tgl_kemarin,
+      $tgl_kemarin,
       $id_so,
       $so_kemarin,
       $id_toko

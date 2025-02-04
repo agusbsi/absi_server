@@ -15,6 +15,11 @@
                  </div>
                </div>
                <div class="card-body">
+                 <div class="alert alert-success alert-dismissible">
+                   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                   <i class="icon fas fa-check"></i>
+                   <small> Riwayat SO hanya menampilkan data mulai Periode Desember 2024 hingga sekarang. </small>
+                 </div>
                  <table id="example1" class="table table-bordered table-striped">
                    <thead>
                      <tr class="text-center">
