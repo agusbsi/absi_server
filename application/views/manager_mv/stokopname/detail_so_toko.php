@@ -112,21 +112,22 @@
                         $no++;
 
                         // Cek apakah bulan kemarin adalah January 2025
-                        $isJanuary2025 = ($bulan_kemarin == "January 2025");
+                        $isDec2024 = ($bulan_kemarin == "December 2024");
 
-                        if ($isJanuary2025) {
-                          $stok_akhir_kemarin = $d->qty_awal + $d->jml_terima_kemarin + $d->mutasi_masuk_kemarin -
-                            $d->jml_retur_kemarin - $d->jml_jual_kemarin - $d->mutasi_keluar_kemarin;
+                        if ($isDec2024) {
+                          $stok_awal_fix = $d->qty_awal;
                         } else {
-                          $stok_akhir_kemarin = $d->qty_awal;
+                          $stok_awal_fix = $d->qty_awal + $d->jml_terima_kemarin + $d->mutasi_masuk_kemarin -
+                            $d->jml_retur_kemarin - $d->jml_jual_kemarin - $d->mutasi_keluar_kemarin;
                         }
 
                         // Hitung stok akhir
-                        $stok_akhir = $stok_akhir_kemarin + $d->jml_terima + $d->mutasi_masuk -
+                        $stok_akhir = $stok_awal_fix + $d->jml_terima + $d->mutasi_masuk -
                           $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
 
                         // Hitung selisih
                         $selisih = ($d->hasil_so + $d->qty_jual) - $stok_akhir;
+                        $selisih_kemarin = ($d->hasil_so_kemarin + $d->qty_jual_kemarin) - $stok_akhir;
                       ?>
                         <tr>
                           <td class="text-center"><?= $no ?></td>
@@ -135,24 +136,25 @@
                               <strong><?= $d->kode ?></strong>
                               <input type="hidden" name="id_produk[]" value="<?= $d->id_produk ?>">
                               <input type="hidden" name="qty_sistem[]" value="<?= $stok_akhir ?>">
-                              <input type="hidden" name="hasil_so[]" value="<?= $isJanuary2025 ? $d->hasil_so_kemarin : $d->hasil_so ?>">
+                              <input type="hidden" name="hasil_so[]" value="<?= $isDec2024 ? $d->hasil_so_kemarin : $d->hasil_so ?>">
                             </small>
                           </td>
-                          <td class="text-center"><strong><?= $stok_akhir_kemarin ?></strong></td>
-                          <td class="text-center"><?= $isJanuary2025 ? $d->jml_terima_kemarin : $d->jml_terima ?></td>
-                          <td class="text-center"><?= $isJanuary2025 ? $d->mutasi_masuk_kemarin : $d->mutasi_masuk ?></td>
-                          <td class="text-center"><?= $isJanuary2025 ? $d->jml_retur_kemarin : $d->jml_retur ?></td>
-                          <td class="text-center"><?= $isJanuary2025 ? $d->jml_jual_kemarin : $d->jml_jual ?></td>
-                          <td class="text-center"><?= $isJanuary2025 ? $d->mutasi_keluar_kemarin : $d->mutasi_keluar ?></td>
-                          <td class="text-center"><strong><?= $isJanuary2025 ? $stok_akhir_kemarin : $stok_akhir ?></strong></td>
-                          <td class="text-center"><strong><?= $isJanuary2025 ? $d->hasil_so_kemarin : $d->hasil_so ?></strong></td>
-                          <td class="text-center"><small><?= $isJanuary2025 ? $d->qty_jual_kemarin : $d->qty_jual ?></small></td>
+                          <td class="text-center"><strong><?= $stok_awal_fix ?></strong></td>
+                          <td class="text-center"><?= $isDec2024 ? $d->jml_terima_kemarin : $d->jml_terima ?></td>
+                          <td class="text-center"><?= $isDec2024 ? $d->mutasi_masuk_kemarin : $d->mutasi_masuk ?></td>
+                          <td class="text-center"><?= $isDec2024 ? $d->jml_retur_kemarin : $d->jml_retur ?></td>
+                          <td class="text-center"><?= $isDec2024 ? $d->jml_jual_kemarin : $d->jml_jual ?></td>
+                          <td class="text-center"><?= $isDec2024 ? $d->mutasi_keluar_kemarin : $d->mutasi_keluar ?></td>
+                          <td class="text-center"><strong><?= $isDec2024 ? $stok_akhir : $stok_akhir ?></strong></td>
+                          <td class="text-center"><strong><?= $isDec2024 ? $d->hasil_so_kemarin : $d->hasil_so ?></strong></td>
+                          <td class="text-center"><small><?= $isDec2024 ? $d->qty_jual_kemarin : $d->qty_jual ?></small></td>
                           <td class="text-center">
                             <strong>
-                              <span class="btn btn-sm btn-<?= ($selisih < 0) ? 'danger' : 'success' ?>">
-                                <?= $selisih ?>
+                              <span class="btn btn-sm btn-<?= ($isDec2024 ? ($selisih_kemarin < 0 ? 'danger' : 'success') : ($selisih < 0 ? 'danger' : 'success')) ?>">
+                                <?= $isDec2024 ? $selisih_kemarin : $selisih ?>
                               </span>
                             </strong>
+
                           </td>
                         </tr>
                       <?php
@@ -163,7 +165,7 @@
                         $retur += $d->jml_retur;
                         $mutasi += $d->mutasi_keluar;
                         $hasil += $d->hasil_so;
-                        $t_awal += $stok_akhir_kemarin;
+                        $t_awal += $stok_awal_fix;
                         $t_akhir += $stok_akhir;
                         $t_selisih += $selisih;
                         $nextJual += $d->qty_jual;
