@@ -60,15 +60,24 @@
               <!-- Table row -->
               <div class="row">
                 <div class="col-12 table-responsive">
+                  <?php
+                  // Ambil bulan kemarin dari tanggal SO
+                  $bln_kemarin = date('Y-m', strtotime('-1 month', strtotime($SO->tgl_so)));
+                  $bulan_awal = date('01 M Y', strtotime($bln_kemarin));
+                  $bulan_akhir = date('t M Y', strtotime($bln_kemarin));
+                  ?>
+
                   <table class="table table-striped">
                     <thead>
                       <tr>
                         <th class="text-center" rowspan="2"><small><b>No</b></small></th>
                         <th class="text-center" rowspan="2"><small><b>Kode Artikel</b></small></th>
-                        <th class="text-center" rowspan="2"><small><b>Stok Awal</b></small></th>
+                        <th class="text-center" rowspan="2"><small><b>Stok Awal</b> </br>
+                            <?= $bulan_awal ?></small></th>
                         <th colspan="2" class="text-center">Barang Masuk</th>
                         <th colspan="3" class="text-center">Barang Keluar</th>
-                        <th class="text-center" rowspan="2"><small><b>Stok Akhir</b></small></th>
+                        <th class="text-center" rowspan="2"><small><b>Stok Akhir</b></br>
+                            <?= $bulan_akhir ?></small></th>
                         <th class="text-center" rowspan="2"><small><b>( SO SPG ) <br> Stok Fisik</b></small></th>
                         <th class="text-center" rowspan="2"><small><b>Penjualan <br> (<?= date('M-Y', strtotime($SO->tgl_so)) ?>) <br> 01 s/d <?= date('d', strtotime($SO->tgl_so)) ?></b></small></th>
                         <th class="text-center" rowspan="2"><small><b>Selisih</b></small></th>
