@@ -91,6 +91,8 @@ class Stok extends CI_Controller
   }
   public function s_toko()
   {
+    tampil_alert('info', 'Maintenance', 'Fitur laporan Stok per toko sedang di perbarui, silahkan coba lagi nanti.');
+    redirect(base_url('adm/Dashboard'));
     $data['title'] = 'Stok per Toko';
     $data['toko'] = $this->db->query("SELECT * from tb_toko order by id desc")->result();
     $this->template->load('template/template', 'adm/stok/stok_toko', $data);
