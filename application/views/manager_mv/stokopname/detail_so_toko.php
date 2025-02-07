@@ -136,22 +136,22 @@
                               <strong><?= $d->kode ?></strong>
                               <input type="hidden" name="id_produk[]" value="<?= $d->id_produk ?>">
                               <input type="hidden" name="qty_sistem[]" value="<?= $stok_akhir ?>">
-                              <input type="hidden" name="hasil_so[]" value="<?= $isDec2024 ? $d->hasil_so_kemarin : $d->hasil_so ?>">
+                              <input type="hidden" name="hasil_so[]" value="<?= $d->hasil_so ?>">
                             </small>
                           </td>
                           <td class="text-center"><strong><?= $stok_awal_fix ?></strong></td>
-                          <td class="text-center"><?= $isDec2024 ? $d->jml_terima_kemarin : $d->jml_terima ?></td>
-                          <td class="text-center"><?= $isDec2024 ? $d->mutasi_masuk_kemarin : $d->mutasi_masuk ?></td>
-                          <td class="text-center"><?= $isDec2024 ? $d->jml_retur_kemarin : $d->jml_retur ?></td>
-                          <td class="text-center"><?= $isDec2024 ? $d->jml_jual_kemarin : $d->jml_jual ?></td>
-                          <td class="text-center"><?= $isDec2024 ? $d->mutasi_keluar_kemarin : $d->mutasi_keluar ?></td>
-                          <td class="text-center"><strong><?= $isDec2024 ? $stok_akhir : $stok_akhir ?></strong></td>
-                          <td class="text-center"><strong><?= $isDec2024 ? $d->hasil_so_kemarin : $d->hasil_so ?></strong></td>
-                          <td class="text-center"><small><?= $isDec2024 ? $d->qty_jual_kemarin : $d->qty_jual ?></small></td>
+                          <td class="text-center"><?= $d->jml_terima ?></td>
+                          <td class="text-center"><?= $d->mutasi_masuk ?></td>
+                          <td class="text-center"><?= $d->jml_retur ?></td>
+                          <td class="text-center"><?= $d->jml_jual ?></td>
+                          <td class="text-center"><?= $d->mutasi_keluar ?></td>
+                          <td class="text-center"><strong><?= $stok_akhir ?></strong></td>
+                          <td class="text-center"><strong><?= $d->hasil_so ?></strong></td>
+                          <td class="text-center"><small><?= $d->qty_jual ?></small></td>
                           <td class="text-center">
                             <strong>
-                              <span class="btn btn-sm btn-<?= ($isDec2024 ? ($selisih_kemarin < 0 ? 'danger' : 'success') : ($selisih < 0 ? 'danger' : 'success')) ?>">
-                                <?= $isDec2024 ? $selisih_kemarin : $selisih ?>
+                              <span class="btn btn-sm btn-<?= ($selisih < 0 ? 'danger' : 'success') ?>">
+                                <?= $selisih ?>
                               </span>
                             </strong>
 
