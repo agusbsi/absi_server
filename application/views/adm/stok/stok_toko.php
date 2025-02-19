@@ -304,7 +304,7 @@
             <td><small>${item.kode}</small></td>
             <td><small>${item.nama_produk}</small></td>
             <td><small>${item.satuan}</small></td>
-            <td class="text-center">${stok}</td>
+            <td class="text-center"> ${stok}</td>
             <td class="text-center">${data.tanggal}</td>
         `;
       tableBody.appendChild(row);
