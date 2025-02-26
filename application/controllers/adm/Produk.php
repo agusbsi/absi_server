@@ -41,6 +41,38 @@ class Produk extends CI_Controller
     redirect('adm/Produk');
   }
 
+  public function update_status()
+  {
+    header('Content-Type: application/json');
+
+    // Ambil data dari request
+    $json_data = json_decode(file_get_contents('php://input'), true);
+
+    if (!isset($json_data['ids']) || !isset($json_data['status'])) {
+      http_response_code(400);
+      echo json_encode(['status' => 'error', 'message' => 'Data tidak valid']);
+      die();
+    }
+
+    $ids = $json_data['ids']; // Array ID produk
+    $status = $json_data['status']; // 1 = aktif, 0 = nonaktif
+
+    // Perbarui status di database
+    $this->db->where_in('id', $ids);
+    $update = $this->db->update('tb_produk', [
+      'status' => $status,
+      'deleted_at' => ($status == 0 ? date('Y-m-d H:i:s') : NULL)
+    ]);
+
+    if ($update) {
+      echo json_encode(['status' => 'success', 'message' => 'Status berhasil diperbarui']);
+    } else {
+      http_response_code(500);
+      echo json_encode(['status' => 'error', 'message' => 'Gagal memperbarui status']);
+    }
+    die();
+  }
+
   // fungsi tambah produk
   public function proses_tambah()
   {

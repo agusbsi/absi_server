@@ -37,7 +37,10 @@
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col-md-6"></div>
+              <div class="col-md-6">
+                <button type="button" id="toggleAktif" class="btn btn-sm btn-primary" style="display: none; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> AKTIFKAN</button>
+                <button type="button" id="toggleNonAktif" class="btn btn-sm btn-danger" style="display: none; margin-bottom: 10px;"><i class="fas fa-ban"></i> NON AKTIFKAN</button>
+              </div>
               <div class="col-md-6 text-right">
                 <a href="<?= base_url('adm/Produk/template_artikel') ?>" class="btn btn-warning btn-sm"><i class="fas fa-download"></i>
                   Download template
@@ -54,8 +57,8 @@
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th rowspan="2">No</th>
-                  <th rowspan="2" style="width:14%" class="text-center">Kode</th>
+                  <th rowspan="2"><input type="checkbox" id="checkAll"></th>
+                  <th rowspan="2" style="width:10%" class="text-center">Kode</th>
                   <th rowspan="2" class="text-center">Nama Artikel</th>
                   <th rowspan="2">Satuan</th>
                   <th rowspan="2">Brand</th>
@@ -75,7 +78,7 @@
                 foreach ($list_data as $dd) :
                   $no++; ?>
                   <tr>
-                    <td><?= $no ?></td>
+                    <td><input type="checkbox" class="rowCheck" value="<?= $dd->id ?>"></td>
                     <td><b><?= $dd->kode ?></b></td>
                     <td><?= $dd->nama_produk ?></td>
                     <td><?= $dd->satuan ?></td>
@@ -89,9 +92,9 @@
                         <?= status_artikel($dd->status) ?>
                       </div>
                       <div class="menu-button">
-                        <button class="btn btn-warning btn-edit btn-sm menu-button" data-toggle="modal" data-target="#editModal" data-id="<?= $dd->id; ?>" data-kode="<?= $dd->kode; ?>" data-status="<?= $dd->status; ?>" data-packing="<?= $dd->packing; ?>" data-brand="<?= $dd->brand; ?>" data-nama_produk="<?= $dd->nama_produk; ?>" data-harga1="<?= $dd->harga_jawa; ?>" data-harga2="<?= $dd->harga_indobarat; ?>" data-satuan="<?= $dd->satuan; ?>" data-sp="<?= $dd->sp; ?>">
+                        <button class="btn btn-warning btn-edit btn-sm" data-toggle="modal" data-target="#editModal" data-id="<?= $dd->id; ?>" data-kode="<?= $dd->kode; ?>" data-status="<?= $dd->status; ?>" data-packing="<?= $dd->packing; ?>" data-brand="<?= $dd->brand; ?>" data-nama_produk="<?= $dd->nama_produk; ?>" data-harga1="<?= $dd->harga_jawa; ?>" data-harga2="<?= $dd->harga_indobarat; ?>" data-satuan="<?= $dd->satuan; ?>" data-sp="<?= $dd->sp; ?>">
                           <i class="fas fa-edit"></i></button>
-                        <a type="button" class="btn btn-danger btn-hapus btn-sm menu-button" href="<?= base_url('adm/produk/hapus/' . $dd->id) ?>" title="Nonaktif artikel"><i class="fa fa-minus-circle" aria-hidden="true"></i></a>
+                        <a type="button" class="btn btn-danger btn-hapus btn-sm" href="<?= base_url('adm/produk/hapus/' . $dd->id) ?>" title="Nonaktif artikel"><i class="fa fa-minus-circle" aria-hidden="true"></i></a>
                       </div>
                     </td>
                   </tr>
@@ -270,6 +273,26 @@
     </div>
   </div>
 </div>
+<!-- Modal Konfirmasi -->
+<div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Konfirmasi Perubahan Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        <button type="button" id="confirmAction" class="btn btn-primary">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   $(document).ready(function() {
     $('#jawa_add, #indo_add, #sp_add,#jawa_edit, #indo_edit, #sp_edit').on('keyup', function() {
@@ -320,4 +343,72 @@
     rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
     return "Rp " + rupiah;
   }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const checkAll = document.getElementById("checkAll");
+    const rowChecks = document.querySelectorAll(".rowCheck");
+    const toggleAktifBtn = document.getElementById("toggleAktif");
+    const toggleNonAktifBtn = document.getElementById("toggleNonAktif");
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmMessage = document.getElementById("confirmMessage");
+    const confirmAction = document.getElementById("confirmAction");
+    let selectedIds = [];
+    let actionType = "";
+
+    checkAll.addEventListener("change", function() {
+      rowChecks.forEach(checkbox => checkbox.checked = checkAll.checked);
+      updateToggleButtons();
+    });
+
+    rowChecks.forEach(checkbox => {
+      checkbox.addEventListener("change", function() {
+        updateToggleButtons();
+      });
+    });
+
+    function updateToggleButtons() {
+      let anyChecked = Array.from(rowChecks).some(checkbox => checkbox.checked);
+      toggleAktifBtn.style.display = anyChecked ? "inline-block" : "none";
+      toggleNonAktifBtn.style.display = anyChecked ? "inline-block" : "none";
+    }
+
+    [toggleAktifBtn, toggleNonAktifBtn].forEach(button => {
+      button.addEventListener("click", function() {
+        selectedIds = Array.from(rowChecks)
+          .filter(checkbox => checkbox.checked)
+          .map(checkbox => checkbox.value);
+
+        if (selectedIds.length > 0) {
+          actionType = this.id === "toggleAktif" ? "aktifkan" : "nonaktifkan";
+          confirmMessage.textContent = `Apakah Anda yakin ingin ${actionType} artikel : ${selectedIds.length} yang tercheklist ?`;
+          $("#confirmModal").modal("show");
+        }
+      });
+    });
+
+    confirmAction.addEventListener("click", function() {
+      fetch("<?= base_url('adm/produk/update_status') ?>", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ids: selectedIds,
+            status: actionType === "aktifkan" ? 1 : 0
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          $("#confirmModal").modal("hide"); // Modal ditutup setelah request sukses
+          location.reload();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("Terjadi kesalahan, coba lagi.");
+        });
+    });
+
+  });
 </script>
