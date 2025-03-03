@@ -39,7 +39,7 @@
                 </td>
                 <td class="text-center">
                   <a class="btn btn-primary btn-sm" href="<?= base_url('spg/Penjualan/detail/') . $row->id ?>" title="Lihat Detail"><i class="fa fa-eye"></i></a>
-                  <a class="btn btn-danger btn-sm btn_delete <?= date('m Y', strtotime($row->created_at)) != date('m Y') ? 'disabled' : '' ?>" href="#" data-id="<?= $row->id ?>" title="Hapus"><i class="fa fa-trash"></i></a>
+                  <!-- <a class="btn btn-danger btn-sm btn_delete <?= date('m Y', strtotime($row->created_at)) != date('m Y') ? 'disabled' : '' ?>" href="#" data-id="<?= $row->id ?>" title="Hapus"><i class="fa fa-trash"></i></a> -->
                 </td>
               </tr>
             <?php } ?>

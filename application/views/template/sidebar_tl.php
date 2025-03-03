@@ -100,6 +100,14 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
         </a>
       </li>
       <li class="nav-item">
+        <a href="<?= base_url('leader/Pengiriman') ?>" class="nav-link <?= ($title == 'Pengiriman') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-truck"></i>
+          <p>
+            Pengiriman
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="<?= base_url('leader/Mutasi') ?>" class="nav-link <?= ($title == 'Mutasi Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-copy"></i>
           <p>

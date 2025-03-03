@@ -45,8 +45,8 @@ class So extends CI_Controller
   // riwayat so
   public function riwayat_so()
   {
-    // tampil_alert('info', 'Maintenance', 'Fitur Riwayat laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
-    // redirect(base_url('sup/So'));
+    tampil_alert('info', 'Maintenance', 'Fitur Riwayat laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
+    redirect(base_url('sup/So'));
     $data['title'] = 'Histori SO';
     $id = $this->session->userdata('id');
     $role = $this->session->userdata('role');
