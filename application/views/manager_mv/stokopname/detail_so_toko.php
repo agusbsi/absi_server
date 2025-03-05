@@ -117,8 +117,7 @@
                         if ($isDec2024) {
                           $stok_awal_fix = $d->qty_awal;
                         } else {
-                          $stok_awal_fix = $d->qty_awal + $d->jml_terima_kemarin + $d->mutasi_masuk_kemarin -
-                            $d->jml_retur_kemarin - $d->jml_jual_kemarin - $d->mutasi_keluar_kemarin;
+                          $stok_awal_fix = $d->qty_awal_kemarin;
                         }
 
                         // Hitung stok akhir
@@ -203,7 +202,7 @@
                   <?php
                   $role = $this->session->userdata('role');
                   if ($role == 14) { ?>
-                    <button type="button" class="btn btn-info btn-sm float-right mr-2 " data-toggle="modal" data-target="#exampleModalCenter" <?= (date('m', strtotime($SO->created_at)) != date('m')) || ($cek_adjust > 0) ? 'disabled' : '' ?>><i class="fa fa-paper-plane"></i> Adjust Stok</button>
+                    <!-- <button type="button" class="btn btn-info btn-sm float-right mr-2 " data-toggle="modal" data-target="#exampleModalCenter" <?= (date('m', strtotime($SO->created_at)) != date('m')) || ($cek_adjust > 0) ? 'disabled' : '' ?>><i class="fa fa-paper-plane"></i> Adjust Stok</button> -->
                     <a href="#" class="btn btn-warning btn-sm float-right mr-2" id="btn_resetSO" data-so="<?= $SO->id ?>" <?= date('m', strtotime($SO->created_at)) == date('m') ? '' : 'disabled' ?>><i class="fa fa-share"></i> Reset & SO ulang</a>
                   <?php } ?>
                   <!-- <a href="<?= base_url('sup/So/unduh_so/' . $SO->id) ?>" class="btn btn-success btn-sm float-right mr-2 "><i class="fa fa-download"></i> Unduh Excel</a> -->
