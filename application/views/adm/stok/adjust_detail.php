@@ -152,6 +152,9 @@
                     <?php if ($row->status == 0 && $this->session->userdata('role') == 1) { ?>
                         <button type="submit" class="btn btn-success btn-sm" id="btn-kirim"><i class="fas fa-save"></i> Simpan</button>
                     <?php } ?>
+                    <?php if ($row->status == 1 && $this->session->userdata('role') == 1) { ?>
+                        <button type="button" class="btn btn-warning btn-sm" id="btn-restore"><i class="fas fa-reply"></i> Restore</button>
+                    <?php } ?>
                 </div>
             </div>
         </form>
@@ -199,4 +202,50 @@
             }
         })
     })
+    $('#btn-restore').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Apakah anda yakin restore?',
+            text: "Data stok awal akan dikembalikan ke stok sistem sebelumnya.",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Batal',
+            confirmButtonText: 'Yakin'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let formData = $('#form_proses').serialize(); // Mengambil semua data dari form
+
+                // Tampilkan loading sebelum proses dimulai
+                Swal.fire({
+                    title: 'Memproses...',
+                    text: 'Silakan tunggu, sedang merestore data.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.post('<?= base_url('adm/Stok/adjust_restore') ?>', formData, function(response) {
+                    // Tutup loading dan tampilkan notifikasi sukses
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: 'Data telah di-restore.',
+                        icon: 'success'
+                    }).then(() => {
+                        location.reload(); // Reload halaman setelah sukses
+                    });
+                }).fail(function() {
+                    // Tutup loading dan tampilkan notifikasi gagal
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: 'Terjadi kesalahan saat merestore data.',
+                        icon: 'error'
+                    });
+                });
+            }
+        });
+    });
 </script>

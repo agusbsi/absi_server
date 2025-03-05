@@ -526,6 +526,108 @@ class Stok extends CI_Controller
     }
     redirect(base_url('adm/Stok/adjust_detail/' . $id_adjust));
   }
+  public function adjust_restore()
+  {
+    $pengguna = $this->session->userdata('nama_user');
+    $id_adjust = $this->input->post('id_adjust', true);
+    $id_so = $this->input->post('id_so', true);
+    $id_toko = $this->input->post('id_toko', true);
+    $id_produk = $this->input->post('id_produk', true);
+    $stok_akhir = $this->input->post('stok_akhir', true);
+
+    // Validasi awal
+    if (empty($id_adjust) || empty($id_so) || empty($id_toko) || empty($id_produk)) {
+      $this->session->set_flashdata('error', 'Data tidak lengkap untuk proses restore.');
+      redirect('adm/Stok/adjust_stok');
+      return;
+    }
+
+    $jml = count($id_produk);
+
+    // Ambil tanggal stock opname
+    $tgl_so = $this->db->query("SELECT tgl_so FROM tb_so WHERE id = ?", array($id_so))->row_array()['tgl_so'] ?? null;
+    if (!$tgl_so) {
+      $this->session->set_flashdata('error', 'Data stok opname tidak ditemukan.');
+      redirect('adm/Stok/adjust_stok');
+      return;
+    }
+
+    $this->db->trans_start(); // Mulai transaksi
+
+    for ($i = 0; $i < $jml; $i++) {
+      $id_produk[$i] = intval($id_produk[$i]);
+      $stok_akhir[$i] = intval($stok_akhir[$i]);
+
+      $query_params = [$id_toko, $tgl_so, $id_produk[$i]];
+      $terima = $this->db->query("SELECT SUM(tpd.qty_diterima) AS total_qty  FROM tb_pengiriman_detail tpd
+      JOIN tb_pengiriman tp 
+          ON tpd.id_pengiriman = tp.id
+      WHERE 
+          tp.id_toko = ?
+          AND tp.updated_at BETWEEN '2024-12-01' AND ? 
+            AND tpd.id_produk = ?", $query_params)->row_array()['total_qty'] ?? 0;
+      $jual = $this->db->query("SELECT SUM(tpd.qty) AS total_qty FROM tb_penjualan_detail tpd
+      JOIN tb_penjualan tp 
+          ON tpd.id_penjualan = tp.id
+      WHERE 
+          tp.id_toko = ? 
+          AND tp.tanggal_penjualan BETWEEN '2024-12-01' AND ?
+            AND tpd.id_produk = ?", $query_params)->row_array()['total_qty'] ?? 0;
+      $mutasi_keluar = $this->db->query("SELECT SUM(tpd.qty_terima) AS total_qty FROM tb_mutasi_detail tpd
+      JOIN tb_mutasi tp 
+          ON tpd.id_mutasi = tp.id
+      WHERE 
+          tp.id_toko_asal = ? AND tp.status = 2
+          AND tp.updated_at BETWEEN '2024-12-01' AND ?
+            AND tpd.id_produk = ?", $query_params)->row_array()['total_qty'] ?? 0;
+      $mutasi_masuk = $this->db->query("SELECT SUM(tpd.qty_terima) AS total_qty FROM tb_mutasi_detail tpd
+      JOIN tb_mutasi tp 
+          ON tpd.id_mutasi = tp.id
+      WHERE 
+          tp.id_toko_tujuan = ? AND tp.status = 2
+          AND tp.updated_at BETWEEN '2024-12-01' AND ?
+            AND tpd.id_produk = ?", $query_params)->row_array()['total_qty'] ?? 0;
+      $retur = $this->db->query("SELECT SUM(tpd.qty_terima) AS total_qty FROM tb_retur_detail tpd
+      JOIN tb_retur tp 
+          ON tpd.id_retur = tp.id
+      WHERE 
+          tp.id_toko = ? AND tp.status >= 2 AND tp.status <= 4
+          AND tp.updated_at BETWEEN '2024-12-01' AND ?
+            AND tpd.id_produk = ?", $query_params)->row_array()['total_qty'] ?? 0;
+      $nextJual = $this->db->query("SELECT SUM(tpdd.qty) AS total_qty FROM tb_penjualan_detail tpdd
+      JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+      WHERE tpp.id_toko = ?
+      AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+            AND tpdd.id_produk = ?", [$id_toko, $tgl_so, $tgl_so, $id_produk[$i]])->row_array()['total_qty'] ?? 0;
+      // Hitung stok awal
+      $qty_awal = $stok_akhir[$i] - $terima - $mutasi_masuk + $jual + $mutasi_keluar + $retur - $nextJual;
+
+      // Update stok awal di tabel tb_stok
+      $this->db->set('qty_awal', $qty_awal)
+        ->where('id_produk', $id_produk[$i])
+        ->where('id_toko', $id_toko)
+        ->update('tb_stok');
+    }
+
+    // Insert histori adjustment
+    $this->db->insert('tb_adjust_histori', [
+      'id_adjust' => $id_adjust,
+      'aksi' => 'Direstore Oleh :',
+      'pembuat' => $pengguna,
+      'catatan' => 'Restore Data Adjust Stok.'
+    ]);
+
+    $this->db->trans_complete(); // Selesaikan transaksi
+
+    if ($this->db->trans_status() === FALSE) {
+      tampil_alert('error', 'Gagal', 'Terjadi kesalahan, data tidak tersimpan.');
+    } else {
+      tampil_alert('success', 'Berhasil', 'Proses Restore data berhasil..');
+    }
+
+    redirect('adm/Stok/adjust_stok');
+  }
+
   public function stok_gudang()
   {
     $data['title'] = 'Stok Gudang';
