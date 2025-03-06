@@ -127,14 +127,14 @@ class So extends CI_Controller
         GROUP BY 
             id_produk ) vt ON vt.id_produk = ts.id_produk
     LEFT JOIN (SELECT 
-        tpd.id_produk, 
-        SUM(tpd.qty_diterima) AS jml_terima 
+    tpd.id_produk, 
+    SUM(tpd.qty_diterima) AS jml_terima 
       FROM tb_pengiriman_detail tpd
-      JOIN tb_pengiriman tp 
+        JOIN tb_pengiriman tp 
           ON tpd.id_pengiriman = tp.id
       WHERE 
-          tp.id_toko = ?
-          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY)
+    tp.id_toko = ?
+    AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
       GROUP BY tpd.id_produk) vt_kemarin ON vt_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -149,7 +149,7 @@ class So extends CI_Controller
           ON tpd.id_mutasi = tp.id
       WHERE 
           tp.id_toko_tujuan = ? AND tp.status = 2
-          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY)
+          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
       GROUP BY tpd.id_produk) vm_kemarin ON vm_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -164,7 +164,7 @@ class So extends CI_Controller
           ON tpd.id_penjualan = tp.id
       WHERE 
           tp.id_toko = ? 
-          AND tp.tanggal_penjualan BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY)
+          AND tp.tanggal_penjualan BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
       GROUP BY tpd.id_produk) vp_kemarin ON vp_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
@@ -184,7 +184,7 @@ class So extends CI_Controller
           ON tpd.id_retur = tp.id
       WHERE 
           tp.id_toko = ? AND tp.status >= 2 AND tp.status <= 4
-          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY)
+          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
       GROUP BY tpd.id_produk) vr_kemarin ON vr_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = ?
             AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
@@ -199,7 +199,7 @@ class So extends CI_Controller
           ON tpd.id_mutasi = tp.id
       WHERE 
           tp.id_toko_asal = ? AND tp.status = 2
-          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY)
+          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
       GROUP BY tpd.id_produk) vk_kemarin ON vk_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
       JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
