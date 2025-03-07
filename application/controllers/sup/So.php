@@ -105,7 +105,7 @@ class So extends CI_Controller
     $tgl_so_sebelumnya = $this->db->query("SELECT DATE_SUB(tgl_so, INTERVAL 1 MONTH) AS tgl_sebelumnya FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_sebelumnya;
     $query = "SELECT ts.id_produk,tp.kode,tsd.hasil_so,
     ts.qty_awal,
-    COALESCE(ts.qty_awal + COALESCE(nj_kemarin.qty, 0) + COALESCE(vt_kemarin.jml_terima, 0) + COALESCE(vm_kemarin.jml_mutasi, 0) - COALESCE(vp_kemarin.jml_jual, 0) - COALESCE(vr_kemarin.jml_retur, 0) - COALESCE(vk_kemarin.jml_mutasi, 0)  ,0) as qty_awal_kemarin,
+    COALESCE(ts.qty_awal + COALESCE(vt_kemarin.jml_terima, 0) + COALESCE(vm_kemarin.jml_mutasi, 0) - COALESCE(vp_kemarin.jml_jual, 0) - COALESCE(vr_kemarin.jml_retur, 0) - COALESCE(vk_kemarin.jml_mutasi, 0)  ,0) as qty_awal_kemarin,
     COALESCE(tsd_kemarin.hasil_so,0) as hasil_so_kemarin,
     COALESCE(nj.qty, 0) as qty_jual,
     COALESCE(nj_kemarin.qty, 0) as qty_jual_kemarin,
