@@ -106,7 +106,7 @@
                         <strong> Keterangan :</strong> <br>
                         <li>Proses ini membutuhkan verifikasi Direksi.</li>
                         <li>Ketika sudah disetujui maka sistem akan memperbarui stok & stok awal sesuai dengan hasil so SPG berdasarkan tanggal SO.</li>
-                        <li>Jika pengajuan ini tidak di proses selama 10 hari, secara otomatis di batalkan oleh sistem.</li>
+                        <li>Jika pengajuan ini tidak di proses selama 2 hari, secara otomatis di batalkan oleh sistem.</li>
                     </small>
                     <hr>
                     <small><strong># Proses Pengajuan :</strong></small>
@@ -153,7 +153,8 @@
                         <button type="submit" class="btn btn-success btn-sm" id="btn-kirim"><i class="fas fa-save"></i> Simpan</button>
                     <?php } ?>
                     <?php if ($row->status == 1 && $this->session->userdata('role') == 1) { ?>
-                        <button type="button" class="btn btn-warning btn-sm" id="btn-restore"><i class="fas fa-reply"></i> Restore</button>
+                        <!-- <button type="button" class="btn btn-warning btn-sm" id="btn-restore"><i class="fas fa-reply"></i> Restore</button> -->
+                        -
                     <?php } ?>
                 </div>
             </div>

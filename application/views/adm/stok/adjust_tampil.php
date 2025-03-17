@@ -257,7 +257,7 @@
         document.querySelectorAll('.waktu').forEach((element) => {
             const waktuData = element.getAttribute('data-waktu');
             const waktuSo = new Date(waktuData).getTime();
-            const targetTime = waktuSo + (10 * 24 * 60 * 60 * 1000);
+            const targetTime = waktuSo + (2 * 24 * 60 * 60 * 1000);
             const now = new Date().getTime();
             const distance = targetTime - now;
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));

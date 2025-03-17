@@ -262,7 +262,9 @@ class So extends CI_Controller
       $id_toko
     ))->result();
 
-    $data['cek_adjust'] = $this->db->query("SELECT * FROM tb_adjust_stok WHERE id_so = ?", array($id_so))->num_rows();
+    $adjust = $this->db->query("SELECT * FROM tb_adjust_stok WHERE id_so = ?", array($id_so));
+    $data['cek_adjust'] = $adjust->num_rows();
+    $data['adjust'] = $adjust->row();
     $this->template->load('template/template', 'manager_mv/stokopname/detail_so_toko', $data);
   }
   public function reset_so()

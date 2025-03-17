@@ -491,7 +491,6 @@ class Stok extends CI_Controller
         $cek_stok = $this->db->query("SELECT qty from tb_stok where id_toko = ? AND id_produk = ?", array($id_toko, $id_produk[$i]))->row();
         $stok_sistem = $cek_stok->qty ?? 0;
         $this->db->set('qty', $hasil_so[$i] + $terima + $mutasi_masuk - $jual - $mutasi_keluar - $retur)
-          ->set('qty_awal', $hasil_so[$i])
           ->where('id_produk', $id_produk[$i])
           ->where('id_toko', $id_toko)
           ->update('tb_stok');
@@ -506,6 +505,8 @@ class Stok extends CI_Controller
         ];
       }
       $this->db->insert_batch('tb_kartu_stok', $kartu_data);
+      // update status adjust di tb
+      $this->db->update('tb_toko', ['status_adjust' => '1', 'id_adjust' => $id_adjust], ['id' => $id_toko]);
     } else {
       $aksi = "Ditolak Oleh :";
     }

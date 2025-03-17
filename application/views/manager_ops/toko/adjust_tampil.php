@@ -119,7 +119,7 @@
         document.querySelectorAll('.waktu').forEach((element) => {
             const waktuData = element.getAttribute('data-waktu'); // Ambil atribut data-waktu
             const waktuSo = new Date(waktuData).getTime(); // Konversi ke waktu dalam milidetik
-            const targetTime = waktuSo + (10 * 24 * 60 * 60 * 1000); // Tambahkan 10 hari ke waktu awal
+            const targetTime = waktuSo + (2 * 24 * 60 * 60 * 1000); // Tambahkan 10 hari ke waktu awal
             const now = new Date().getTime(); // Waktu saat ini dalam milidetik
             const distance = targetTime - now; // Hitung selisih antara targetTime dan waktu sekarang
 

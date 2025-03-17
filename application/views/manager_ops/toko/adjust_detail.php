@@ -99,7 +99,7 @@
                     <strong> Keterangan :</strong> <br>
                     <li>Proses ini membutuhkan verifikasi Direksi.</li>
                     <li>Ketika sudah disetujui maka sistem akan memperbarui stok & stok awal sesuai dengan hasil so SPG berdasarkan tanggal SO.</li>
-                    <li>Jika pengajuan ini tidak di proses selama 10 hari, secara otomatis di batalkan oleh sistem.</li>
+                    <li>Jika pengajuan ini tidak di proses selama 2 hari, secara otomatis di batalkan oleh sistem.</li>
                 </small>
                 <hr>
                 <small><strong># Proses Pengajuan :</strong></small>

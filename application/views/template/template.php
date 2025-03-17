@@ -288,12 +288,12 @@
       </ul>
       <span class="pt"><?= $this->session->userdata('pt') ? $this->session->userdata('pt') : '' ?></span>
       <ul class="navbar-nav ml-auto mr-3 mb-1">
-        <div class="chat-button" id="chat_notif">
+        <!-- <div class="chat-button" id="chat_notif">
           <a href="<?= base_url('Profile/chat') ?>">
             <i class="fas fa-comments"></i>
             <span class="desk">Chat</span>
           </a>
-        </div>
+        </div> -->
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             <?php if (!empty($foto)) { ?>
@@ -318,7 +318,7 @@
       </ul>
     </nav>
     <aside class="main-sidebar sidebar-dark-primary elevation-4 no-print">
-      <a href="#" class="brand-link">
+      <a href="<?= base_url('') ?>" class="brand-link">
         <img src="<?= base_url() ?>assets/img/app/logo_a.png" alt="ABSI" class="brand-image">
         <span class="brand-text font-weight-light"><img src="<?= base_url() ?>assets/img/app/logo_b.png" class="brand-logo" style="width:40%;" alt="ABSI"></span>
       </a>
@@ -421,7 +421,7 @@
       })
     }
   </script>
-  <script>
+  <!-- <script>
     let ws = new WebSocket("wss://absiwebsocket.pepri.site");
 
     function loadList(penerima) {
@@ -462,7 +462,7 @@
       let penerima = <?= $this->session->userdata('id') ?>;
       loadList(penerima);
     };
-  </script>
+  </script> -->
 </body>
 
 </html>

@@ -50,6 +50,13 @@
                 </div>
               </div>
             </div>
+            <?php if (!empty($adjust)) { ?>
+              <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <i class="icon fas fa-info"></i>
+                Laporan SO ini sudah pernah di Adjust dengan nomor : <strong><?= $adjust ? $adjust->nomor : "-" ?></strong>
+              </div>
+            <?php } ?>
             <div class="invoice p-3 mb-3">
               <!-- title row -->
               <div class="row">
@@ -202,7 +209,7 @@
                   <?php
                   $role = $this->session->userdata('role');
                   if ($role == 14) { ?>
-                    <!-- <button type="button" class="btn btn-info btn-sm float-right mr-2 " data-toggle="modal" data-target="#exampleModalCenter" <?= (date('m', strtotime($SO->created_at)) != date('m')) || ($cek_adjust > 0) ? 'disabled' : '' ?>><i class="fa fa-paper-plane"></i> Adjust Stok</button> -->
+                    <button type="button" class="btn btn-info btn-sm float-right mr-2 " data-toggle="modal" data-target="#exampleModalCenter" <?= (date('m', strtotime($SO->created_at)) != date('m')) || ($cek_adjust > 0) ? 'disabled' : '' ?>><i class="fa fa-paper-plane"></i> Adjust Stok</button>
                     <a href="#" class="btn btn-warning btn-sm float-right mr-2" id="btn_resetSO" data-so="<?= $SO->id ?>" <?= date('m', strtotime($SO->created_at)) == date('m') ? '' : 'disabled' ?>><i class="fa fa-share"></i> Reset & SO ulang</a>
                   <?php } ?>
                   <!-- <a href="<?= base_url('sup/So/unduh_so/' . $SO->id) ?>" class="btn btn-success btn-sm float-right mr-2 "><i class="fa fa-download"></i> Unduh Excel</a> -->
