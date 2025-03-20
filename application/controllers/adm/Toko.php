@@ -891,4 +891,48 @@ class Toko extends CI_Controller
     WHERE tpt.id = '$id'")->row();
     $this->load->view('adm/toko/fpo_tutup', $data);
   }
+  // import Stok
+  public function update_nama()
+  {
+    $this->db->trans_start();
+    $total_updated = 0;
+
+    if (!empty($_FILES['file_excel']['name'])) {
+      $file = $_FILES['file_excel']['tmp_name'];
+      $spreadsheet = IOFactory::load($file);
+      $sheet = $spreadsheet->getActiveSheet();
+      $data = $sheet->toArray();
+
+      $this->load->database();
+
+      foreach ($data as $key => $row) {
+        if ($key == 0) continue; // Skip header
+
+        $toko_lama = trim($row[1]);
+        $toko_baru = trim($row[2]);
+
+        if (!empty($toko_lama) && !empty($toko_baru)) {
+          $this->db->where('nama_toko', $toko_lama);
+          $this->db->update('tb_toko', ['nama_toko' => $toko_baru]);
+
+          if ($this->db->affected_rows() > 0) {
+            $total_updated++;
+          }
+        }
+      }
+
+      $this->db->trans_complete();
+
+      if ($this->db->trans_status() === FALSE) {
+        $this->db->trans_rollback();
+        tampil_alert('error', 'GAGAL', 'Gagal Import Data.');
+      } else {
+        $this->db->trans_commit();
+        tampil_alert('success', 'Berhasil', "DATA BERHASIL DI IMPORT. Total: $total_updated");
+      }
+    } else {
+      tampil_alert('error', 'GAGAL', 'Gagal mengunggah file!');
+    }
+    redirect('adm/Toko');
+  }
 }

@@ -10,6 +10,7 @@
             <div class="row">
               <div class="col-md-6"></div>
               <div class="col-md-6 text-right">
+                <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modalUpdate">Update Nama Toko</button>
                 <a href="<?= base_url('adm/Toko/unduhExcel') ?>" class="btn btn-warning btn-sm"><i class="fas fa-download"></i> Unduh Excel </a>
                 <button type="button" class="btn btn-success btn-sm <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-store"></i> Tambah Toko</button>
               </div>
@@ -76,6 +77,21 @@
   </div>
   </div>
 </section>
+<div class="modal fade" id="modalUpdate">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-success">
+        <h5 class="modal-title">
+          Update nama Toko
+        </h5>
+      </div>
+      <form action="<?= base_url('adm/Toko/update_nama'); ?>" method="post" enctype="multipart/form-data">
+        <input type="file" name="file_excel" required>
+        <button type="submit">Upload</button>
+      </form>
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="modal-tambah">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
