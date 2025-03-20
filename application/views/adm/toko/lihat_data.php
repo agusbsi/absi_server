@@ -10,7 +10,7 @@
             <div class="row">
               <div class="col-md-6"></div>
               <div class="col-md-6 text-right">
-                <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modalUpdate">Update Nama Toko</button>
+                <!-- <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modalUpdate">Update Nama Toko</button> -->
                 <a href="<?= base_url('adm/Toko/unduhExcel') ?>" class="btn btn-warning btn-sm"><i class="fas fa-download"></i> Unduh Excel </a>
                 <button type="button" class="btn btn-success btn-sm <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-store"></i> Tambah Toko</button>
               </div>
