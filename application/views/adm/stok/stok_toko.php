@@ -112,6 +112,7 @@
                 <th>Satuan</th>
                 <th>Stok</th>
                 <th>Tanggal</th>
+                <th>Nama Toko</th>
               </tr>
             </thead>
             <tbody id="dataTableBody">
@@ -172,7 +173,7 @@
 
   function downloadExcel() {
     var wb = XLSX.utils.book_new();
-    var header = ["No", "Kode", "Artikel", "Satuan", "Stok", "Tanggal"];
+    var header = ["No", "Kode", "Artikel", "Satuan", "Stok", "Tanggal", "Nama Toko"];
     var sheetData = [];
     var toko = document.getElementById('toko').innerHTML;
     sheetData.push(header);
@@ -306,6 +307,7 @@
             <td><small>${item.satuan}</small></td>
             <td class="text-center"> ${stok}</td>
             <td class="text-center">${data.tanggal}</td>
+            <td class="text-center text-sm">${data.toko}</td>
         `;
       tableBody.appendChild(row);
       var qty = parseInt(stok, 10);
