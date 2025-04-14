@@ -80,8 +80,8 @@ class So extends CI_Controller
 
   public function riwayat_so_toko($id_toko, $id_so)
   {
-    // tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
-    // redirect(base_url('sup/So'));
+    tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
+    redirect(base_url('sup/So'));
     $data['title'] = 'Detail SO';
     $cek = $this->db->query("SELECT * FROM tb_so where id = ?", array($id_so))->row();
     if ($cek->status == 1) {
