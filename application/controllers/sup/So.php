@@ -104,6 +104,7 @@ class So extends CI_Controller
     $tgl_so_sebelumnya = $this->db->query("SELECT DATE_SUB(tgl_so, INTERVAL 1 MONTH) AS tgl_sebelumnya FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_sebelumnya;
     //cek status adjust
     $cek_toko = $this->db->query("SELECT * FROM tb_toko where id = ?", array($id_toko))->row();
+    $cek_adjustmen = null;
     if ($cek_toko->status_adjust == 1) {
       $periode = date('Y-m', strtotime('-1 month', strtotime($cek->created_at)));
       $cek_adjustmen = $this->db->query("SELECT tas.id as id_adjust,ts.id_toko,ts.created_at as periode FROM tb_adjust_stok tas
