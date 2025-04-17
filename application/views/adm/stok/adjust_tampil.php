@@ -45,6 +45,7 @@
                                 <th>No Pengajuan</th>
                                 <th>Nama Toko</th>
                                 <th class="text-center">Status</th>
+                                <th class="text-center">Diajukan</th>
                                 <th class="text-center">Waktu</th>
                                 <th class="text-center">Menu</th>
                             </tr>
@@ -178,7 +179,13 @@
                 {
                     "data": null,
                     "render": function(data, type, row) {
-                        return '<small><strong>' + row.id_so + '</strong></br>' + row.nama_toko + '</small>';
+                        return `
+            <small>
+                <strong>${row.id_so}</strong><br>
+                <strong>Tgl SO : ${row.tgl_so}</strong><br>
+                ${row.nama_toko}
+            </small>
+        `;
                     }
                 },
                 {
@@ -186,6 +193,22 @@
                     "className": "text-center",
                     "render": function(data, type, row) {
                         return adjustStatus(data);
+                    }
+                },
+                {
+                    "data": "created_at",
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        if (!data) return '-';
+
+                        const date = new Date(data);
+                        const options = {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        };
+
+                        return date.toLocaleDateString('id-ID', options);
                     }
                 },
                 {

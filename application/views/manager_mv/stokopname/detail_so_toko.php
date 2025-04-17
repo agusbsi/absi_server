@@ -124,7 +124,11 @@
                         if ($isDec2024) {
                           $stok_awal_fix = $d->qty_awal;
                         } else {
-                          $stok_awal_fix = $d->qty_awal_kemarin;
+                          if ($toko_adjust === "true") {
+                            $stok_awal_fix = $d->stok_adjust;
+                          } else {
+                            $stok_awal_fix = $d->qty_awal_kemarin;
+                          }
                         }
 
                         // Hitung stok akhir

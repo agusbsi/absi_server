@@ -80,8 +80,8 @@ class So extends CI_Controller
 
   public function riwayat_so_toko($id_toko, $id_so)
   {
-    tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
-    redirect(base_url('sup/So'));
+    // tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
+    // redirect(base_url('sup/So'));
     $data['title'] = 'Detail SO';
     $cek = $this->db->query("SELECT * FROM tb_so where id = ?", array($id_so))->row();
     if ($cek->status == 1) {
@@ -99,12 +99,168 @@ class So extends CI_Controller
     $data['SO']  = $this->db->query("SELECT ts.*, tt.nama_toko from tb_so ts 
     join tb_toko tt on ts.id_toko = tt.id
     where ts.id_toko = '$id_toko' and ts.id = '$id_so'")->row();
-
     // data so bulan ini
     $tgl_so = $this->db->query("SELECT tgl_so FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_so;
     $tgl_so_sebelumnya = $this->db->query("SELECT DATE_SUB(tgl_so, INTERVAL 1 MONTH) AS tgl_sebelumnya FROM tb_so WHERE id = ?", array($id_so))->row()->tgl_sebelumnya;
+    //cek status adjust
+    $cek_toko = $this->db->query("SELECT * FROM tb_toko where id = ?", array($id_toko))->row();
+    if ($cek_toko->status_adjust == 1) {
+      $periode = date('Y-m', strtotime('-1 month', strtotime($cek->created_at)));
+      $cek_adjustmen = $this->db->query("SELECT tas.id as id_adjust,ts.id_toko,ts.created_at as periode FROM tb_adjust_stok tas
+       JOIN tb_so ts ON tas.id_so = ts.id
+       where ts.id_toko = ? AND DATE_FORMAT(ts.created_at, '%Y-%m') = ? AND tas.status = 1", array($id_toko, $periode))->row();
+      if ($cek_adjustmen) {
+        $select_adjust = "ts.qty_awal,COALESCE(adj.hasil_so,0) as stok_adjust,";
+        $where_adjust = [
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $cek_adjustmen->id_adjust,
+          $id_so,
+          $so_kemarin,
+          $id_toko
+        ];
+        $query_adjust = "LEFT JOIN (SELECT  id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = ?
+         GROUP BY 
+             id_produk ) adj ON adj.id_produk = ts.id_produk";
+      } else {
+        $select_adjust = "ts.qty_awal,COALESCE(adj.hasil_so,0) as stok_adjust,";
+        $query_adjust = "LEFT JOIN (SELECT  id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = ?
+         GROUP BY 
+             id_produk ) adj ON adj.id_produk = ts.id_produk";
+        $where_adjust = [
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $id_toko,
+          $tgl_so,
+          $tgl_so,
+          $id_toko,
+          $tgl_so_sebelumnya,
+          $tgl_so_sebelumnya,
+          $cek_toko->id_adjust,
+          $id_so,
+          $so_kemarin,
+          $id_toko
+        ];
+      }
+    } else {
+      $select_adjust = "ts.qty_awal,";
+      $query_adjust = "";
+      $where_adjust = [
+        $id_toko,
+        $tgl_so,
+        $tgl_so,
+        $id_toko,
+        $tgl_so_sebelumnya,
+        $tgl_so_sebelumnya,
+        $id_toko,
+        $tgl_so,
+        $tgl_so,
+        $id_toko,
+        $tgl_so_sebelumnya,
+        $tgl_so_sebelumnya,
+        $id_toko,
+        $tgl_so,
+        $tgl_so,
+        $id_toko,
+        $tgl_so_sebelumnya,
+        $tgl_so_sebelumnya,
+        $id_toko,
+        $tgl_so,
+        $tgl_so,
+        $id_toko,
+        $tgl_so,
+        $tgl_so,
+        $id_toko,
+        $tgl_so_sebelumnya,
+        $tgl_so_sebelumnya,
+        $id_toko,
+        $tgl_so,
+        $tgl_so,
+        $id_toko,
+        $tgl_so_sebelumnya,
+        $tgl_so_sebelumnya,
+        $id_toko,
+        $tgl_so,
+        $tgl_so,
+        $id_toko,
+        $tgl_so_sebelumnya,
+        $tgl_so_sebelumnya,
+        $id_so,
+        $so_kemarin,
+        $id_toko
+      ];
+    }
+
     $query = "SELECT ts.id_produk,tp.kode,tsd.hasil_so,
-    ts.qty_awal,
+    $select_adjust
     COALESCE(ts.qty_awal + COALESCE(vt_kemarin.jml_terima, 0) + COALESCE(vm_kemarin.jml_mutasi, 0) - COALESCE(vp_kemarin.jml_jual, 0) - COALESCE(vr_kemarin.jml_retur, 0) - COALESCE(vk_kemarin.jml_mutasi, 0)  ,0) as qty_awal_kemarin,
     COALESCE(tsd_kemarin.hasil_so,0) as hasil_so_kemarin,
     COALESCE(nj.qty, 0) as qty_jual,
@@ -211,60 +367,19 @@ class So extends CI_Controller
       WHERE tpp.id_toko = ?
       AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
       GROUP BY tpdd.id_produk ) nj_kemarin ON nj_kemarin.id_produk = ts.id_produk
+      $query_adjust
     JOIN tb_produk tp ON ts.id_produk = tp.id
     LEFT JOIN tb_so_detail tsd ON tsd.id_produk = ts.id_produk AND tsd.id_so = ?
     LEFT JOIN tb_so_detail tsd_kemarin ON tsd_kemarin.id_produk = ts.id_produk AND tsd_kemarin.id_so = ?
       WHERE ts.id_toko = ?
       GROUP BY ts.id_produk ORDER BY tp.kode ASC";
 
-    $data['detail_so'] = $this->db->query($query, array(
-      $id_toko,
-      $tgl_so,
-      $tgl_so,
-      $id_toko,
-      $tgl_so_sebelumnya,
-      $tgl_so_sebelumnya,
-      $id_toko,
-      $tgl_so,
-      $tgl_so,
-      $id_toko,
-      $tgl_so_sebelumnya,
-      $tgl_so_sebelumnya,
-      $id_toko,
-      $tgl_so,
-      $tgl_so,
-      $id_toko,
-      $tgl_so_sebelumnya,
-      $tgl_so_sebelumnya,
-      $id_toko,
-      $tgl_so,
-      $tgl_so,
-      $id_toko,
-      $tgl_so,
-      $tgl_so,
-      $id_toko,
-      $tgl_so_sebelumnya,
-      $tgl_so_sebelumnya,
-      $id_toko,
-      $tgl_so,
-      $tgl_so,
-      $id_toko,
-      $tgl_so_sebelumnya,
-      $tgl_so_sebelumnya,
-      $id_toko,
-      $tgl_so,
-      $tgl_so,
-      $id_toko,
-      $tgl_so_sebelumnya,
-      $tgl_so_sebelumnya,
-      $id_so,
-      $so_kemarin,
-      $id_toko
-    ))->result();
+    $data['detail_so'] = $this->db->query($query, $where_adjust)->result();
 
     $adjust = $this->db->query("SELECT * FROM tb_adjust_stok WHERE id_so = ?", array($id_so));
     $data['cek_adjust'] = $adjust->num_rows();
     $data['adjust'] = $adjust->row();
+    $data['toko_adjust'] = $cek_adjustmen ? "true" : "false";
     $this->template->load('template/template', 'manager_mv/stokopname/detail_so_toko', $data);
   }
   public function reset_so()

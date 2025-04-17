@@ -374,7 +374,7 @@ class Stok extends CI_Controller
   public function get_adjust_stok()
   {
     $request = $this->input->post(null, true);
-    $column_order = ['tas.id', 'tas.nomor', 'tt.nama_toko', 'tas.status', 'tas.created_at'];
+    $column_order = ['tas.id', 'tas.nomor', 'tt.nama_toko', 'ts.tgl_so', 'tas.status', 'tas.created_at'];
     $search_value = $request['search']['value'] ?? '';
     $start = filter_var($request['start'], FILTER_VALIDATE_INT) ?: 0;
     $length = filter_var($request['length'], FILTER_VALIDATE_INT) ?: 10;
@@ -383,7 +383,7 @@ class Stok extends CI_Controller
       ->join('tb_so ts', 'tas.id_so = ts.id')
       ->join('tb_toko tt', 'ts.id_toko = tt.id');
     $total_data = $this->db->count_all_results();
-    $this->db->select(['tas.*', 'tt.nama_toko'])
+    $this->db->select(['tas.*', 'tt.nama_toko', 'ts.tgl_so'])
       ->from('tb_adjust_stok tas')
       ->join('tb_so ts', 'tas.id_so = ts.id')
       ->join('tb_toko tt', 'ts.id_toko = tt.id');
@@ -412,6 +412,7 @@ class Stok extends CI_Controller
         'nomor' => html_escape($row->nomor),
         'nama_toko' => html_escape($row->nama_toko),
         'id_so' => html_escape($row->id_so),
+        'tgl_so' => html_escape($row->tgl_so),
         'status' => $row->status,
         'created_at' => $row->created_at,
         'id' => $row->id
