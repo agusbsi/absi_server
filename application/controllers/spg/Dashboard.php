@@ -37,7 +37,10 @@ class Dashboard extends CI_Controller
   {
     $id_toko = $this->session->userdata('id_toko');
     $data['title'] = 'Toko spg';
-    $data['toko'] = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
+    $data['toko'] = $this->db->query("SELECT tt.*, tl.nama_user as leader, ts.nama_user as spg from tb_toko tt
+    LEFT join tb_user tl ON tl.id = tt.id_leader
+    LEFT join tb_user ts ON ts.id = tt.id_spg
+    where tt.id = '$id_toko'")->row();
     $data['stok_produk'] = $this->M_spg->get_stok_produk($id_toko);
     $this->template->load('template/template', 'spg/toko/lihat_data', $data);
   }

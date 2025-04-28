@@ -40,13 +40,13 @@
             <ul class="list-group list-group-flush">
               <li class="list-group-item  align-items-center p-2">
                 <div>
-                  <strong>Agus s</strong><br>
-                  <small class="text-muted">Team Leader</small>
+                  <strong>Team Leader</strong><br>
+                  <small class="text-muted"><?= $toko->leader ? $toko->leader : 'Belum ada' ?></small>
                 </div>
                 <hr>
                 <div>
-                  <strong>Janward</strong><br>
-                  <small class="text-muted">SPG</small>
+                  <strong>SPG</strong><br>
+                  <small class="text-muted"><?= $toko->spg ? $toko->spg : 'Belum ada' ?></small>
                 </div>
               </li>
             </ul>
