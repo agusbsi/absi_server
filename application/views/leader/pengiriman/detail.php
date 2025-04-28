@@ -52,6 +52,12 @@
                 </tbody>
               </table>
               <hr>
+              <?php
+              if ($po->status == 1) { ?>
+                <div class="alert alert-danger mt-3" role="alert">
+                  <strong>Alert:</strong> <br> Infokan ke SPG untuk segera input penerimaan PO.
+                </div>
+              <?php } ?>
             </div>
             <a href="<?= base_url('leader/Pengiriman') ?>" class="btn btn-sm btn-danger float-right"><i class="fas fa-times-circle"></i> Tutup</a>
             <br>

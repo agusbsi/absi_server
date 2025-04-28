@@ -31,8 +31,13 @@
         <div class="card card-info">
           <div class="card-header">
             <h3 class="card-title">
-              <li class="fas fa-users"></li> List SPG yang dikelola
+              <li class="fas fa-users"></li> List SPG
             </h3>
+            <div class="card-tools">
+              <a href="<?= base_url('leader/Dashboard') ?>" type="button" class="btn btn-tool">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
           </div>
           <!-- /.card-header -->
           <div class="card-body">

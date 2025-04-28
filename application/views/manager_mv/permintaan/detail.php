@@ -154,7 +154,7 @@
       </div>
       <div class="card-footer">
         <a href="<?= base_url('sup/Permintaan') ?>" class="btn btn-danger btn-sm float-right" title="Tutup"><i class="fas fa-times-circle"></i> Tutup</a>
-        <button class="btn btn-warning btn-sm float-right mr-1 <?= $permintaan->status == 2 ? '' : 'd-none' ?>" data-id="<?= $permintaan->id ?>" id="btn_edit" title="Edit PO"><i class="fas fa-edit"></i> Edit</button>
+        <!-- <button class="btn btn-warning btn-sm float-right mr-1 <?= $permintaan->status == 2 ? '' : 'd-none' ?>" data-id="<?= $permintaan->id ?>" id="btn_edit" title="Edit PO"><i class="fas fa-edit"></i> Edit</button> -->
       </div>
     </div>
   </div>

@@ -4,7 +4,12 @@
       <div class="col-12">
         <div class="card card-info ">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> List Toko yang anda kelola</b> </h3>
+            <h3 class="card-title"><i class="fas fa-store"></i> Toko Aktif</b> </h3>
+            <div class="card-tools">
+              <a href="<?= base_url('leader/Dashboard') ?>" type="button" class="btn btn-tool">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
           </div>
           <div class="card-body">
             <form action="<?= base_url('spg/Aset/simpan'); ?>" method="post">

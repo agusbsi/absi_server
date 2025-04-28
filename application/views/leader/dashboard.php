@@ -1,4 +1,109 @@
-<!-- Small boxes (Stat box) -->
+<style>
+  /* menu livin */
+  .menu-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .menu-item a {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Notif Badge */
+  .notif {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ed2938;
+    color: #fff;
+    border-radius: 50%;
+    padding: 4px 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 1;
+    text-align: center;
+    box-shadow: 0 0 0 2px #fff;
+    animation: bounce 1.5s infinite;
+  }
+
+  @keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+      transform: translateY(0);
+    }
+
+    40% {
+      transform: translateY(-6px);
+    }
+
+    60% {
+      transform: translateY(-3px);
+    }
+  }
+
+  .menu-item i {
+    font-size: 30px;
+    margin-bottom: 5px;
+    background-color: rgb(238, 242, 248);
+    color: #007bff;
+    padding: 12px 16px;
+    border-radius: 25%;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .menu-item a:hover i {
+    color: #28a745;
+    background-color: rgb(214, 248, 222);
+    transform: scale(1.1);
+  }
+
+  .menu-item span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 4px;
+  }
+
+  .judul-menu {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
+
+<?php
+$id = $this->session->userdata('id');
+$Permintaan = $this->db->query("SELECT * FROM tb_permintaan JOIN tb_toko ON tb_permintaan.id_toko = tb_toko.id JOIN tb_user ON tb_user.id = tb_toko.id_leader WHERE tb_permintaan.status = '0' AND tb_toko.id_leader ='$id'")->num_rows();
+$Retur = $this->db->query("SELECT * FROM tb_retur JOIN tb_toko ON tb_retur.id_toko = tb_toko.id JOIN tb_user ON tb_user.id = tb_toko.id_leader WHERE tb_retur.status = '0' AND tb_toko.id_leader ='$id'")->num_rows();
+$Bap = $this->db->query("SELECT * FROM tb_bap 
+  JOIN tb_toko ON tb_bap.id_toko = tb_toko.id 
+  JOIN tb_user ON tb_user.id = tb_toko.id_leader 
+  WHERE tb_bap.status = '0' AND tb_toko.id_leader ='$id'")->num_rows();
+$kirim = $this->db->query("SELECT tp.id FROM tb_pengiriman tp
+  JOIN tb_toko tt ON tp.id_toko = tt.id 
+  JOIN tb_user tu ON tu.id = tt.id_leader 
+  WHERE tp.status = '1' AND tt.id_leader ='$id'")->num_rows();
+?>
 <section class="content">
   <div class="card card-primary card-outline">
     <div class="card-body">
@@ -16,123 +121,98 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-6">
-      <div class="info-box bg-info">
-        <span class="info-box-icon"><i class="fas fa-store"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Total Toko</span>
-          <span class="info-box-number">
-            <?php if ($t_toko->total == 0) {
-              echo "Kosong";
-            } else {
-              echo $t_toko->total;
-            } ?>
-          </span>
+  <div class="card card-primary card-outline">
+    <div class="card-header">
+      Menu Utama
+    </div>
+    <div class="card-body">
+      <div class="menu-container">
+        <div class="menu-item">
+          <a href="<?= base_url('leader/toko') ?>"><i class="fas fa-store"></i></a>
+          <span>Toko Aktif</span>
         </div>
-        <a href="<?= base_url('leader/Toko') ?>" class=" text-right">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+        <div class="menu-item">
+          <a href="<?= base_url('spv/Toko/toko_tutup') ?>"><i class="fas fa-store-slash"></i></a>
+          <span>Toko Tutup</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('leader/spg') ?>"><i class="fas fa-users"></i></a>
+          <span>SPG</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('adm/Stok/stok_gudang') ?>"><i class="fas fa-warehouse"></i></a>
+          <span>Stok Gudang</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('leader/permintaan') ?>">
+            <?php if ($Permintaan != 0) { ?>
+              <div class="notif">
+                <?= $Permintaan; ?>
+              </div>
+            <?php } ?>
+            <i class="fas fa-file-alt"></i>
+          </a>
+          <span>PO</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('leader/pengiriman') ?>">
+            <?php if ($kirim != 0) { ?>
+              <div class="notif">
+                <?= $kirim; ?>
+              </div>
+            <?php } ?>
+            <i class="fas fa-truck"></i>
+          </a>
+          <span>Pengiriman</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('leader/retur') ?>">
+            <?php if ($Retur != 0) { ?>
+              <div class="notif">
+                <?= $Retur; ?>
+              </div>
+            <?php } ?>
+            <i class="fas fa-exchange-alt"></i>
+          </a>
+          <span>Retur</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('leader/Mutasi') ?>">
+            <i class="fas fa-copy"></i>
+          </a>
+          <span>Mutasi</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('leader/Bap') ?>">
+            <?php if ($Bap != 0) { ?>
+              <div class="notif">
+                <?= $Bap; ?>
+              </div>
+            <?php } ?>
+            <i class="fas fa-envelope"></i>
+          </a>
+          <span>BAP</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('sup/So') ?>"><i class="fas fa-folder"></i></a>
+          <span>SO SPG</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('sup/So/Riwayat_so') ?>"><i class="fas fa-folder-open"></i></a>
+          <span>Riwayat SO</span>
+        </div>
+
+        <div class="menu-item">
+          <a href="<?= base_url('leader/Penjualan/lap_toko') ?>"><i class="fas fa-cart-plus"></i></a>
+          <span>Lap Penjualan</span>
+        </div>
+
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="info-box bg-primary">
-        <span class="info-box-icon"><i class="fas fa-users"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Total SPG</span>
-          <span class="info-box-number">
-            <?php if ($t_user == 0) {
-              echo "Kosong";
-            } else {
-              echo $t_user;
-            } ?>
-          </span>
-        </div>
-        <a href="<?= base_url('leader/Spg') ?>" class=" text-right">Lihat <i class="fas fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-  </div>
-  <div class="callout callout-danger">
-    <p> Data Transaksi bulan : <b><?= date('M-Y') ?></b> </p>
-  </div>
-  <div class="row">
-    <div class="col-md-4">
-      <div class="small-box bg-danger">
-        <div class="inner">
-          <h3 style="font-size:70px;">
-            <?= ($t_stok->total == 0) ? "Kosong" : number_format($t_stok->total) ?>
-          </h3>
-          <p>Stok</p>
-        </div>
-        <div class="icon">
-          <i class="fa fa-chart-pie"></i>
-        </div>
-        <a href="#" class="small-box-footer">
-          semua toko
-        </a>
-      </div>
-    </div>
-    <div class="col-md-8">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="info-box bg-gradient-warning">
-            <span class="info-box-icon"><i class="fas fa-list-alt"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Data Permintaan</span>
-              <strong><?= ($t_minta->total == 0) ? "Kosong" : number_format($t_minta->total) . " Artikel" ?></strong>
-              <div class="progress">
-                <div class="progress-bar" style="width: 100%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="info-box bg-gradient-info">
-            <span class="info-box-icon"><i class="fas fa-truck"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Data Pengiriman</span>
-              <strong><?= ($t_kirim->total == 0) ? "Kosong" : number_format($t_kirim->total) . " Artikel" ?></strong>
-              <div class="progress">
-                <div class="progress-bar" style="width: 100%"></div>
-              </div>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="info-box bg-gradient-success">
-            <span class="info-box-icon"><i class="fas fa-cart-plus"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Data Penjualan</span>
-              <strong><?= ($t_jual->total == 0) ? "Kosong" : number_format($t_jual->total) . " Artikel" ?></strong>
-              <div class="progress">
-                <div class="progress-bar" style="width: 100%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="info-box bg-gradient-danger">
-            <span class="info-box-icon"><i class="fas fa-exchange-alt"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Data Retur</span>
-              <strong><?= ($t_retur->total == 0) ? "Kosong" : number_format($t_retur->total) . " Artikel" ?></strong>
-              <div class="progress">
-                <div class="progress-bar" style="width: 100%"></div>
-              </div>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="callout callout-danger">
-    <p> Data Transaksi Tahun : <b><?= date('Y') ?></b> </p>
   </div>
   <div class="card card-success">
     <div class="card-header">
-      <h3 class="card-title">Transaksi Semua Toko Yang Anda Kelola</h3>
+      <h3 class="card-title">Transaksi Semua Toko ( <?= date('Y') ?> )</h3>
     </div>
     <div class="card-body">
       <div class="chart">

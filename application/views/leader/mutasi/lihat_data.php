@@ -14,6 +14,9 @@
             <li class="fas fa-box"></li> Data Mutasi Barang
           </h3>
           <div class="card-tools">
+            <a href="<?= base_url('leader/Dashboard') ?>" type="button" class="btn btn-tool">
+              <i class="fas fa-times"></i>
+            </a>
           </div>
           <!-- /.card-tools -->
         </div>

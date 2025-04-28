@@ -11,6 +11,11 @@
             <h3 class="card-title">
               <li class="fas fa-exchange-alt"></li> Data Retur Barang
             </h3>
+            <div class="card-tools">
+              <a href="<?= base_url('leader/Dashboard') ?>" type="button" class="btn btn-tool">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
           </div>
           <!-- /.card-header -->
           <div class="card-body">

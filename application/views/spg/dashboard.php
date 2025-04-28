@@ -88,14 +88,18 @@
 
   .notif {
     position: absolute;
-    top: -10px;
-    right: -6px;
+    top: -8px;
+    right: -8px;
     background-color: #ed2938;
     color: #fff;
     border-radius: 50%;
-    padding: 3px 4px;
-    font-size: 0.8rem;
+    padding: 4px 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 1;
     text-align: center;
+    box-shadow: 0 0 0 2px #fff;
+    animation: bounce 1.5s infinite;
   }
 
   .menu-item i {
@@ -160,63 +164,10 @@
     </div>
   <?php } ?>
   <div class="judul-menu">Menu Utama</div>
-  <!-- <div class="areaMenu">
-    <a href="<?= base_url('spg/permintaan') ?>" class="cardMenu">
-      <i class="fas fa-file-alt"></i>
-      <strong>PO Artikel</strong>
-    </a>
-    <a href="<?= base_url('spg/Penerimaan') ?>" class="cardMenu">
-      <?php if ($terima != 0) { ?>
-        <div class="notif">
-          <?= $terima; ?>
-        </div>
-      <?php } ?>
-      <i class="fas fa-check-circle"></i>
-      <strong> Terima PO</strong>
-    </a>
-    <a href="<?= base_url('spg/penjualan') ?>" class="cardMenu">
-      <i class="fas fa-cart-plus"></i>
-      <strong>Penjualan</strong>
-    </a>
-    <a href="<?= base_url('spg/Dashboard/toko_spg/' . $this->session->userdata('id_toko')) ?>" class="cardMenu">
-      <i class="fas fa-cube"></i>
-      <strong>Stok</strong>
-    </a>
-    <a href="<?= base_url('spg/retur') ?>" class="cardMenu">
-      <i class="fas fa-exchange-alt"></i>
-      <strong>Retur Artikel</strong>
-    </a>
-    <a href="<?= base_url('spg/Mutasi') ?>" class="cardMenu">
-      <?php if ($mutasi != 0) { ?>
-        <div class="notif">
-          <?= $mutasi; ?>
-        </div>
-      <?php } ?>
-      <i class="fas fa-copy"></i>
-      <strong>Terima Mutasi</strong>
-    </a>
-    <a href="<?= base_url('spg/Aset') ?>" class="cardMenu">
-      <i class="fas fa-dolly"></i>
-      <strong>Update Aset</strong>
-    </a>
-    <a href="<?= base_url('spg/Stok_opname') ?>" class="cardMenu">
-      <i class="fas fa-chart-pie"></i>
-      <strong>SO Artikel</strong>
-    </a>
-    <a href="<?= base_url('spg/Bap') ?>" class="cardMenu">
-      <?php if ($bap != 0) { ?>
-        <div class="notif">
-          <?= $bap; ?>
-        </div>
-      <?php } ?>
-      <i class="fas fa-envelope"></i>
-      <strong>BAP</strong>
-    </a>
-  </div> -->
   <div class="menu-container">
     <div class="menu-item">
       <a href="<?= base_url('spg/permintaan') ?>"><i class="fas fa-file-alt"></i></a>
-      <span>PO Artikel</span>
+      <span>PO</span>
     </div>
     <div class="menu-item">
       <a href="<?= base_url('spg/Penerimaan') ?>">
@@ -239,7 +190,7 @@
     </div>
     <div class="menu-item">
       <a href="<?= base_url('spg/retur') ?>"><i class="fas fa-exchange-alt"></i></a>
-      <span>Retur Artikel</span>
+      <span>Retur</span>
     </div>
     <div class="menu-item">
       <a href="<?= base_url('spg/Mutasi') ?>">
@@ -258,7 +209,7 @@
     </div>
     <div class="menu-item">
       <a href="<?= base_url('spg/Stok_opname') ?>"><i class="fas fa-chart-pie"></i></a>
-      <span>SO Artikel</span>
+      <span>SO</span>
     </div>
     <div class="menu-item">
       <a href="<?= base_url('spg/Bap') ?>">

@@ -29,7 +29,7 @@
                         <th>No</th>
                         <th>Artikel</th>
                         <th>Stok</th>
-                        <th class="text-center" style="width: 100px;">Qty</th>
+                        <th class="text-center" style="width: 100px;">Qty *</th>
                         <th class="text-center"> Keterangan</th>
                         <th class="text-center">Menu</th>
                       </tr>
@@ -69,7 +69,7 @@
                           </td>
                           <td class="text-center"><?= $d->keterangan; ?></td>
                           <td class="text-center">
-                            <button class="btn btn-danger btn-delete btn-sm" type="button" data-id="<?= $d->id ?>"><i class="far fa-trash-alt"></i></button>
+                            <a type="button" class="text-danger btn-delete" data-id="<?= $d->id ?>" title="Hapus Barang?"><i class="far fa-trash-alt"></i></a>
                           </td>
                         </tr>
                       <?php
@@ -81,9 +81,12 @@
                   </table>
                   <hr>
                   <div class="form-group">
-                    <label for="">Catatan Leader</label>
-                    <textarea name="catatan_leader" class="form-control form-control-sm" rows="3" required placeholder="Data sudah di cek dengan benar..."></textarea>
+                    <label for="">Catatan *</label>
+                    <textarea name="catatan_leader" class="form-control form-control-sm" rows="3" required placeholder="Catatan untuk tim gudang..."></textarea>
                     <small>* Harus di isi</small>
+                  </div>
+                  <div class="alert alert-info mt-3" role="alert">
+                    <strong>Informasi Penting:</strong> <br> Untuk pengajuan PO (Purchase Order) saat ini, proses verifikasi oleh MV tidak lagi dilakukan. Pengajuan PO akan langsung diteruskan ke gudang untuk diproses lebih lanjut.
                   </div>
                   <div class="form-group">
                     <strong>Tindakan</strong>

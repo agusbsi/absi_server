@@ -31,7 +31,7 @@
                      <th>#</th>
                      <th style="width: 13%;">Nomor PO</th>
                      <th style="width: 27%;">Nama Toko</th>
-                     <th>Catatan MV</th>
+                     <th>Catatan Leader</th>
                      <th>Tanggal</th>
                      <th style="width: 10%;">Menu</th>
                    </tr>

@@ -4,7 +4,12 @@
       <div class="col-12">
         <div class="card card-danger ">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> List Toko Tutup</b> </h3>
+            <h3 class="card-title"><i class="fas fa-store"></i> Toko Tutup</b> </h3>
+            <div class="card-tools">
+              <a href="<?= base_url($this->session->userdata('role') == '3' ? 'leader/Dashboard' : 'spv/Dashboard') ?>" type="button" class="btn btn-tool">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
           </div>
           <div class="card-body">
             <div class="alert alert-success alert-dismissible">

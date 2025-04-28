@@ -124,7 +124,7 @@
                                             <b>Perhatian :</b>
                                             <li>Proses pembuatan DO / Pengiriman artikel tidak perlu menunggu approve MV lagi.</li>
                                             <li>Jika ada artikel yang kosong, silahkan input dengan jumlah 0 (nol).</li>
-                                            <li>Jika Total pengiriman masih minor dan perlu tambah artikel baru, silahkan hubungi mv untuk edit data.</li>
+                                            <li>Jika Total pengiriman masih minor dan perlu tambah artikel baru, silahkan hubungi Team Leader untuk edit data.</li>
                                             <li>Sebelum di simpan, pastikan data sudah benar. karena jika sudah di simpan maka data tidak bisa di perbarui lagi.</li>
                                             <hr>
                                             <div class="form-group">
