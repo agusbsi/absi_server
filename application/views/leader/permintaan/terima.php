@@ -82,12 +82,10 @@
                   <hr>
                   <div class="form-group">
                     <label for="">Catatan *</label>
-                    <textarea name="catatan_leader" class="form-control form-control-sm" rows="3" required placeholder="Catatan untuk tim gudang..."></textarea>
+                    <textarea name="catatan_leader" class="form-control form-control-sm" rows="3" required placeholder="Catatan ..."></textarea>
                     <small>* Harus di isi</small>
                   </div>
-                  <div class="alert alert-info mt-3" role="alert">
-                    <strong>Informasi Penting:</strong> <br> Untuk pengajuan PO (Purchase Order) saat ini, proses verifikasi oleh MV tidak lagi dilakukan. Pengajuan PO akan langsung diteruskan ke gudang untuk diproses lebih lanjut.
-                  </div>
+
                   <div class="form-group">
                     <strong>Tindakan</strong>
                     <select name="tindakan" class="form-control form-control-sm" required>

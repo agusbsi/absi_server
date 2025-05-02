@@ -76,8 +76,7 @@ class Permintaan extends CI_Controller
     if ($tindakan == 1) {
       // Update tb_permintaan
       $setuju = array(
-        'status' => '2',
-        'keterangan' => $catatan_leader,
+        'status' => '1',
         'updated_at' => date('Y-m-d H:i:s')
       );
 
@@ -89,7 +88,6 @@ class Permintaan extends CI_Controller
         $data_details[] = array(
           'id' => $id[$i],
           'qty' => $qty_acc[$i],
-          'qty_acc' => $qty_acc[$i],
           'status' => 1
         );
       }
@@ -99,11 +97,11 @@ class Permintaan extends CI_Controller
       $aksi = "Disetujui TL : ";
       // Ambil nomor telepon user dengan sekali query
       $phones = $this->db->select('no_telp')
-        ->where(['role' => 5, 'status' => 1])
+        ->where_in('role', [6, 8])
+        ->where('status', 1)
         ->get('tb_user')
         ->result_array();
-
-      $message = "Anda memiliki PO Barang ( $id - $pt ) yang perlu disiapkan silahkan kunjungi s.id/absi-app";
+      $message = "Anda memiliki PO Barang ( $id - $pt ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
 
       foreach ($phones as $phone) {
         $number = $phone['no_telp'];
