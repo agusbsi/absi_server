@@ -21,15 +21,7 @@ class Stok extends CI_Controller
   public function index()
   {
     $data['title'] = 'Stok Artikel';
-    $query = "SELECT tp.*, COALESCE(SUM(ts.qty), 0) as stok
-          FROM tb_produk tp
-          LEFT JOIN tb_stok ts ON tp.id = ts.id_produk
-          JOIN tb_toko tt on ts.id_toko = tt.id
-          WHERE tp.status = 1 AND tt.status = 1
-          GROUP BY tp.id
-          ORDER BY tp.kode ASC";
-    $data['list_data'] = $this->db->query($query)->result();
-    $data['artikel'] = $this->db->query("SELECT count(id) as total from tb_produk where status = 1 ")->row();
+    $data['artikel'] = $this->db->query("SELECT * from tb_produk ")->result();
     $data['stok'] = $this->db->query("SELECT sum(ts.qty) as total FROM tb_stok ts
     JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1 ")->row();
     $this->template->load('template/template', 'adm/stok/index', $data);
@@ -104,6 +96,83 @@ class Stok extends CI_Controller
     where ts.id_toko = ?", $toko)->result();
     header('Content-Type: application/json');
     echo json_encode($hasil);
+  }
+  public function cari_stokartikel()
+  {
+    $id_artikel = $this->input->get('id_artikel');
+    $tanggal = $this->input->get('tanggal');
+    $start_date = "2024-12-01";
+    $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
+    $artikel = '<strong>' . $summary->kode . '</strong></br>' . $summary->nama_produk;
+    $params = [$start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $id_artikel];
+
+    $query = "
+          SELECT 
+    tt.nama_toko, tsh.qty_awal AS stok_awal, 
+    COALESCE(tpd.qty, 0) AS jual, 
+    COALESCE(trd.qty_retur, 0) AS retur, 
+    COALESCE(mk.qty_mk, 0) AS mutasi_keluar, 
+    COALESCE(mm.qty_mk, 0) AS mutasi_masuk, 
+    COALESCE(tpk.qty_terima, 0) AS terima,
+    (tsh.qty_awal 
+        + COALESCE(tpd.qty, 0) 
+        - COALESCE(trd.qty_retur, 0) 
+        + COALESCE(mk.qty_mk, 0) 
+        - COALESCE(mm.qty_mk, 0) 
+        - COALESCE(tpk.qty_terima, 0)
+    ) AS stok_akhir
+FROM tb_stok tsh
+LEFT JOIN (
+    SELECT tp.id_toko, tpd.id_produk, SUM(tpd.qty) AS qty
+    FROM tb_penjualan_detail tpd
+    JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+    WHERE DATE(tp.tanggal_penjualan) BETWEEN ? AND ?
+    GROUP BY tp.id_toko, tpd.id_produk
+) tpd ON tsh.id_produk = tpd.id_produk AND tsh.id_toko = tpd.id_toko
+LEFT JOIN (
+    SELECT tr.id_toko, trd.id_produk, SUM(trd.qty_terima) AS qty_retur
+    FROM tb_retur_detail trd
+    JOIN tb_retur tr ON trd.id_retur = tr.id
+    WHERE DATE(tr.updated_at) BETWEEN ? AND ?
+    GROUP BY tr.id_toko, trd.id_produk
+) trd ON tsh.id_produk = trd.id_produk AND tsh.id_toko = trd.id_toko
+LEFT JOIN (
+    SELECT tm.id_toko_asal AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
+    FROM tb_mutasi_detail tmd
+    JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
+    WHERE DATE(tm.updated_at) BETWEEN ? AND ?
+    GROUP BY tm.id_toko_asal, tmd.id_produk
+) mk ON tsh.id_produk = mk.id_produk AND tsh.id_toko = mk.id_toko
+LEFT JOIN (
+    SELECT tm.id_toko_tujuan AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
+    FROM tb_mutasi_detail tmd
+    JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
+    WHERE DATE(tm.updated_at) BETWEEN ? AND ?
+    GROUP BY tm.id_toko_tujuan, tmd.id_produk
+) mm ON tsh.id_produk = mm.id_produk AND tsh.id_toko = mm.id_toko
+LEFT JOIN (
+    SELECT tp.id_toko, tpd.id_produk, SUM(tpd.qty_diterima) AS qty_terima
+    FROM tb_pengiriman_detail tpd
+    JOIN tb_pengiriman tp ON tpd.id_pengiriman = tp.id
+    WHERE DATE(tp.updated_at) BETWEEN ? AND ?
+    GROUP BY tp.id_toko, tpd.id_produk
+) tpk ON tsh.id_produk = tpk.id_produk AND tsh.id_toko = tpk.id_toko
+JOIN tb_toko tt ON tsh.id_toko = tt.id
+WHERE tsh.id_produk = ? 
+GROUP BY tsh.id_toko, tsh.qty_awal, tt.nama_toko, tpd.qty, trd.qty_retur, mk.qty_mk, mm.qty_mk, tpk.qty_terima
+ORDER BY tt.nama_toko ASC
+";
+
+    $hasil_data = $this->db->query($query, $params)->result();
+
+    $data = [
+      'toko' => "Semua Toko",
+      'artikel' => $artikel,
+      'tanggal' => date('d M Y', strtotime($tanggal)),
+      'tabel_data' => $hasil_data
+    ];
+
+    echo json_encode($data);
   }
   public function cari_stoktoko()
   {

@@ -101,7 +101,7 @@ class Permintaan extends CI_Controller
         ->where('status', 1)
         ->get('tb_user')
         ->result_array();
-      $message = "Anda memiliki PO Barang ( $id - $pt ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
+      $message = "Anda memiliki PO Barang ( $pt ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
 
       foreach ($phones as $phone) {
         $number = $phone['no_telp'];
