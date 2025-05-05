@@ -80,8 +80,8 @@ class So extends CI_Controller
 
   public function riwayat_so_toko($id_toko, $id_so)
   {
-    // tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
-    // redirect(base_url('sup/So'));
+    tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
+    redirect(base_url('sup/So'));
     $data['title'] = 'Detail SO';
     $cek = $this->db->query("SELECT * FROM tb_so where id = ?", array($id_so))->row();
     if ($cek->status == 1) {
@@ -92,10 +92,24 @@ class So extends CI_Controller
     // cari data so bulan kemarin
     $tgl_so_sekarang = $cek->created_at;
     $bulan_kemarin = date('Y-m', strtotime('first day of last month', strtotime($tgl_so_sekarang)));
+
+    // Query untuk mengambil data
     $kemarin = $this->db->query("SELECT id,tgl_so FROM tb_so WHERE DATE_FORMAT(created_at, '%Y-%m') = ? AND id_toko = ?", [$bulan_kemarin, $id_toko])->row();
-    $so_kemarin = $kemarin->id;
-    $tgl_kemarin = $kemarin->tgl_so;
-    $bulan_kemarin = (int) date('m', strtotime($tgl_kemarin));
+
+    // Cek apakah hasil query ada
+    if ($kemarin) {
+      $so_kemarin = $kemarin->id;
+      $tgl_kemarin = $kemarin->tgl_so;
+      $bulan_kemarin = (int) date('m', strtotime($tgl_kemarin));
+    } else {
+      // Jika tidak ada data, lakukan sesuatu (misalnya beri nilai default atau tampilkan pesan)
+      $so_kemarin = null;
+      $tgl_kemarin = null;
+      $bulan_kemarin = null;
+      // Anda bisa menampilkan pesan atau log untuk mengetahui bahwa data tidak ditemukan
+      log_message('error', 'Data SO bulan kemarin tidak ditemukan untuk toko ID ' . $id_toko);
+    }
+
     $data['SO']  = $this->db->query("SELECT ts.*, tt.nama_toko from tb_so ts 
     join tb_toko tt on ts.id_toko = tt.id
     where ts.id_toko = '$id_toko' and ts.id = '$id_so'")->row();
