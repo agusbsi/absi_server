@@ -22,13 +22,13 @@
                                 <b><?= !empty($data->nama_produk) ? $data->kode . ' </b> <br>  ' . $data->nama_produk  : 'DATA STOK KOSONG' ?>
                             </div>
                             <hr>
-                            <p class="float-right mr-3">Tanggal Cetak : <?= date('d-M-Y') ?></p>
                             <table class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th style="width:3%">#</th>
                                         <th class="text-center">Nama Toko</th>
                                         <th class="text-center">Total Stok</th>
+                                        <th class="text-center">Tanggal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -42,15 +42,17 @@
                                             <tr>
                                                 <td><?= $no ?></td>
                                                 <td><?= $dd->nama_toko ?></td>
-                                                <td class="text-center"><?= $dd->qty ?></td>
+                                                <td class="text-center"><?= $dd->stok_akhir ?></td>
+                                                <td class="text-center"><?= $tanggal ?></td>
                                             </tr>
                                         <?php
-                                            $total += $dd->qty; // Perbaiki penggunaan variabel
+                                            $total += $dd->stok_akhir; // Perbaiki penggunaan variabel
                                         endforeach;
                                         ?>
                                         <tr>
                                             <td colspan="2" class="text-right">Total</td>
                                             <td class="text-center"><b><?= $total ?></b></td>
+                                            <td></td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

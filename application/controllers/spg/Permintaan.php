@@ -156,17 +156,35 @@ class Permintaan extends CI_Controller
     $this->db->insert('tb_po_histori', $histori);
     $this->db->trans_complete();
     $this->cart->destroy();
-    $toko_query = $this->db->query("SELECT id_leader, nama_toko FROM tb_toko WHERE id = '$id_toko'");
-    $toko_row = $toko_query->row();
-    $leader = $toko_row ? $toko_row->id_leader : null;
-    $namaToko = $toko_row ? $toko_row->nama_toko : 'Tanpa Nama';
-    $hp_query = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$leader'");
-    $hp_row = $hp_query->row();
-    $hp = $hp_row ? $hp_row->no_telp : '080';
+    $toko_query = $this->db->query("SELECT id_leader, nama_toko FROM tb_toko WHERE id = '$id_toko'")->row();
+    $leader = $toko_query ? $toko_query->id_leader : null;
+    $namaToko = $toko_query ? $toko_query->nama_toko : 'Tanpa Nama';
+    if ($leader) {
+      // Ambil nomor telepon dari tabel tb_user
+      $phones = $this->db->select('no_telp')
+        ->where('id', $leader)
+        ->get('tb_user')
+        ->result_array();
 
-    $message = "$spg : Mengajukan PO Barang ($id_permintaan) untuk toko: $namaToko - $pt yang perlu approve, silahkan kunjungi s.id/absi-app";
-    kirim_wa($hp, $message);
+      // Jika ada nomor telepon, kirim pesan
+      if (!empty($phones)) {
+        $message = "$spg : Mengajukan PO Barang ($id_permintaan) untuk toko: $namaToko - $pt yang perlu approve, silahkan kunjungi s.id/absi-app";
 
+        foreach ($phones as $phone) {
+          if (isset($phone['no_telp'])) {
+            $number = $phone['no_telp'];
+            // Ubah nomor telepon jika dimulai dengan '0'
+            if (substr($number, 0, 1) == '0') {
+              $number = '62' . substr($number, 1);
+            }
+            // Kirim pesan
+            kirim_wa($number, $message);
+          }
+        }
+      }
+    }
+
+    // Tampilkan alert sukses jika data berhasil disimpan
     tampil_alert('success', 'Berhasil', 'Data berhasil disimpan !');
     redirect(base_url('spg/Permintaan'));
   }

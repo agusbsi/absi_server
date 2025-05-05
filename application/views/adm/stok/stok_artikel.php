@@ -46,7 +46,7 @@
         <div class="card card-info card-outline cari">
             <div class="card-header">
                 <h3 class="card-title">
-                    <li class="fas fa-cubes"></li> Laporan stok Artikel
+                    <li class="fas fa-cubes"></li> Laporan stok per Artikel
                 </h3>
             </div>
             <div class="card-body">
@@ -56,7 +56,6 @@
                             <label for="">artikel :</label>
                             <select name="id_artikel" class="form-control form-control-sm select2" id="id_artikel" required>
                                 <option value="">- Pilih Artikel -</option>
-                                <option value="all"> Semua Artikel </option>
                                 <?php foreach ($artikel as $t) : ?>
                                     <option value="<?= $t->id ?>"><?= $t->kode ?></option>
                                 <?php endforeach ?>
@@ -99,18 +98,17 @@
         <div class="card card-success card-outline hasil d-none">
             <div class="card-body">
                 <div id="printableArea">
-                    <div class="text-center"> <strong>- Laporan stok Artikel -</strong></div>
+                    <div class="text-center"> <strong>- Laporan stok per artikel -</strong></div>
                     <hr>
                     <p class="text-center" id="artikel"></p>
                     <table class="table table-bordered">
                         <thead>
                             <tr class="text-center">
                                 <th>No</th>
-                                <th>Kode</th>
-                                <th>Deskripsi</th>
+                                <th>Nama Toko</th>
                                 <th>Stok</th>
                                 <th>Tanggal</th>
-                                <th>Menu</th>
+                                <th>Nama artikel</th>
                             </tr>
                         </thead>
                         <tbody id="dataTableBody">
@@ -152,7 +150,7 @@
 
     function downloadExcel() {
         var wb = XLSX.utils.book_new();
-        var header = ["No", "Kode", "Deskripsi", "Stok", "Tanggal"];
+        var header = ["No", "Nama Toko", "Stok", "Tanggal", "Nama artikel"];
         var sheetData = [];
         var artikel = document.getElementById('artikel').innerHTML;
         sheetData.push(header);
@@ -272,7 +270,6 @@
         $('.hasil').removeClass('d-none');
         // Update the table
         var tableBody = document.getElementById('dataTableBody');
-        var tanggal = document.getElementById('tanggal').value;
         var totalstok = 0;
         tableBody.innerHTML = '';
         data.tabel_data.forEach((item, index) => {
@@ -280,19 +277,23 @@
             var stok = parseInt(item.stok_awal) - parseInt(item.jual) - parseInt(item.retur) - parseInt(item.mutasi_keluar) + parseInt(item.mutasi_masuk) + parseInt(item.terima);
             row.innerHTML = `
             <td class="text-center"><small>${index + 1}</small></td>
-            <td><small>${item.kode}</small></td>
-            <td><small>${item.deskripsi}</small></td>
+            <td><small>${item.nama_toko}</small></td>
             <td class="text-center"> ${stok}</td>
             <td class="text-center">${data.tanggal}</td>
-            <td class="text-center">
-               <a class="btn btn-sm btn-primary" href="<?= base_url() ?>adm/Stok/detail/${item.id_artikel}/${tanggal}">Detail</a>
-            </td>`;
+            <td class="text-center text-sm">${data.artikel}</td>
+        `;
             tableBody.appendChild(row);
             var qty = parseInt(stok, 10);
             if (!isNaN(qty)) {
                 totalstok += qty;
             }
         });
+
+        var totalRow = document.createElement('tr');
+        totalRow.innerHTML = `
+    <td colspan="2" class="text-right"><strong>Total : </strong></td>
+    <td class="text-center">${totalstok}</td>`;
+        tableBody.appendChild(totalRow);
     }
 
     function printDiv(divName) {
