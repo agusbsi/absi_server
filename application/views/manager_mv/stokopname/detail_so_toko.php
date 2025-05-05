@@ -125,7 +125,11 @@
                           $stok_awal_fix = $d->qty_awal;
                         } else {
                           if ($toko_adjust === "true") {
-                            $stok_awal_fix = $d->stok_adjust;
+                            if ($cek_adjustmen === "true") {
+                              $stok_awal_fix = $d->stok_adjust;
+                            } else {
+                              $stok_awal_fix = $d->stok_adjust + $d->jml_terima_kemarin + $d->mutasi_masuk_kemarin - $d->jml_jual_kemarin - $d->jml_retur_kemarin - $d->mutasi_keluar_kemarin;
+                            }
                           } else {
                             $stok_awal_fix = $d->qty_awal_kemarin;
                           }

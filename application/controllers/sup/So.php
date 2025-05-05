@@ -80,8 +80,8 @@ class So extends CI_Controller
 
   public function riwayat_so_toko($id_toko, $id_so)
   {
-    tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
-    redirect(base_url('sup/So'));
+    // tampil_alert('info', 'Maintenance', 'Fitur laporan SO sedang di perbarui, mohon di tunggu dan coba sesaat lagi.');
+    // redirect(base_url('sup/So'));
     $data['title'] = 'Detail SO';
     $cek = $this->db->query("SELECT * FROM tb_so where id = ?", array($id_so))->row();
     if ($cek->status == 1) {
@@ -106,8 +106,6 @@ class So extends CI_Controller
       $so_kemarin = null;
       $tgl_kemarin = null;
       $bulan_kemarin = null;
-      // Anda bisa menampilkan pesan atau log untuk mengetahui bahwa data tidak ditemukan
-      log_message('error', 'Data SO bulan kemarin tidak ditemukan untuk toko ID ' . $id_toko);
     }
 
     $data['SO']  = $this->db->query("SELECT ts.*, tt.nama_toko from tb_so ts 
@@ -119,6 +117,7 @@ class So extends CI_Controller
     //cek status adjust
     $cek_toko = $this->db->query("SELECT * FROM tb_toko where id = ?", array($id_toko))->row();
     $cek_adjustmen = null;
+    $awal_tahun = "2024-12-01";
     if ($cek_toko->status_adjust == 1) {
       $periode = date('Y-m', strtotime('-1 month', strtotime($cek->created_at)));
       $cek_adjustmen = $this->db->query("SELECT tas.id as id_adjust,ts.id_toko,ts.created_at as periode FROM tb_adjust_stok tas
@@ -171,14 +170,198 @@ class So extends CI_Controller
           $so_kemarin,
           $id_toko
         ];
-        $query_adjust = "LEFT JOIN (SELECT  id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = ?
+        $query_adjust = "
+              LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vt ON vt.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+          tpd.id_produk, 
+          SUM(tpd.qty_diterima) AS jml_terima 
+            FROM tb_pengiriman_detail tpd
+              JOIN tb_pengiriman tp 
+                ON tpd.id_pengiriman = tp.id
+            WHERE 
+          tp.id_toko = ?
+          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vt_kemarin ON vt_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vm ON vm.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+              tpd.id_produk, 
+              SUM(tpd.qty_terima) AS jml_mutasi 
+            FROM tb_mutasi_detail tpd
+            JOIN tb_mutasi tp 
+                ON tpd.id_mutasi = tp.id
+            WHERE 
+                tp.id_toko_tujuan = ? AND tp.status = 2
+                AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vm_kemarin ON vm_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan WHERE id_toko = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vp ON vp.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+              tpd.id_produk, 
+              SUM(tpd.qty) AS jml_jual 
+            FROM tb_penjualan_detail tpd
+            JOIN tb_penjualan tp 
+                ON tpd.id_penjualan = tp.id
+            WHERE 
+                tp.id_toko = ? 
+                AND tp.tanggal_penjualan BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vp_kemarin ON vp_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 0 MONTH))
+              GROUP BY 
+                  id_produk ) vpb ON vpb.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_retur FROM vw_retur WHERE id_toko = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vr ON vr.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+              tpd.id_produk, 
+              SUM(tpd.qty_terima) AS jml_retur 
+            FROM tb_retur_detail tpd
+            JOIN tb_retur tp 
+                ON tpd.id_retur = tp.id
+            WHERE 
+                tp.id_toko = ? AND tp.status >= 2 AND tp.status <= 4
+                AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vr_kemarin ON vr_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vk ON vk.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+                tpd.id_produk, 
+                SUM(tpd.qty_terima) AS jml_mutasi 
+            FROM tb_mutasi_detail tpd
+            JOIN tb_mutasi tp 
+                ON tpd.id_mutasi = tp.id
+            WHERE 
+                tp.id_toko_asal = ? AND tp.status = 2
+                AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vk_kemarin ON vk_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
+            JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+            WHERE tpp.id_toko = ?
+            AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+            GROUP BY tpdd.id_produk ) nj ON nj.id_produk = ts.id_produk
+          LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
+            JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+            WHERE tpp.id_toko = ?
+            AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+            GROUP BY tpdd.id_produk ) nj_kemarin ON nj_kemarin.id_produk = ts.id_produk
+        LEFT JOIN (SELECT  id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = ?
          GROUP BY 
              id_produk ) adj ON adj.id_produk = ts.id_produk";
       } else {
+        $cari_awal_tahun = $this->db->query("SELECT created_at from tb_adjust_stok where id = ?", [$cek_toko->id_adjust])->row()->created_at;
+        $awal_tahun = date('Y-m-01', strtotime($cari_awal_tahun));
         $select_adjust = "ts.qty_awal,COALESCE(adj.hasil_so,0) as stok_adjust,";
-        $query_adjust = "LEFT JOIN (SELECT  id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = ?
-         GROUP BY 
-             id_produk ) adj ON adj.id_produk = ts.id_produk";
+        $query_adjust = "
+          LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
+              AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+              AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+          GROUP BY 
+              id_produk ) vt ON vt.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+          tpd.id_produk, 
+          SUM(tpd.qty_diterima) AS jml_terima 
+            FROM tb_pengiriman_detail tpd
+              JOIN tb_pengiriman tp 
+                ON tpd.id_pengiriman = tp.id
+            WHERE 
+          tp.id_toko = ?
+          AND tp.updated_at BETWEEN DATE('$awal_tahun') AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vt_kemarin ON vt_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vm ON vm.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+              tpd.id_produk, 
+              SUM(tpd.qty_terima) AS jml_mutasi 
+            FROM tb_mutasi_detail tpd
+            JOIN tb_mutasi tp 
+                ON tpd.id_mutasi = tp.id
+            WHERE 
+                tp.id_toko_tujuan = ? AND tp.status = 2
+                AND tp.updated_at BETWEEN DATE('$awal_tahun') AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vm_kemarin ON vm_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan WHERE id_toko = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vp ON vp.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+              tpd.id_produk, 
+              SUM(tpd.qty) AS jml_jual 
+            FROM tb_penjualan_detail tpd
+            JOIN tb_penjualan tp 
+                ON tpd.id_penjualan = tp.id
+            WHERE 
+                tp.id_toko = ? 
+                AND tp.tanggal_penjualan BETWEEN DATE('$awal_tahun') AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vp_kemarin ON vp_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 0 MONTH))
+              GROUP BY 
+                  id_produk ) vpb ON vpb.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_retur FROM vw_retur WHERE id_toko = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vr ON vr.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+              tpd.id_produk, 
+              SUM(tpd.qty_terima) AS jml_retur 
+            FROM tb_retur_detail tpd
+            JOIN tb_retur tp 
+                ON tpd.id_retur = tp.id
+            WHERE 
+                tp.id_toko = ? AND tp.status >= 2 AND tp.status <= 4
+                AND tp.updated_at BETWEEN DATE('$awal_tahun') AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vr_kemarin ON vr_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = ?
+                  AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                  AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+              GROUP BY 
+                  id_produk ) vk ON vk.id_produk = ts.id_produk
+          LEFT JOIN (SELECT 
+                tpd.id_produk, 
+                SUM(tpd.qty_terima) AS jml_mutasi 
+            FROM tb_mutasi_detail tpd
+            JOIN tb_mutasi tp 
+                ON tpd.id_mutasi = tp.id
+            WHERE 
+                tp.id_toko_asal = ? AND tp.status = 2
+                AND tp.updated_at BETWEEN DATE('$awal_tahun') AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+            GROUP BY tpd.id_produk) vk_kemarin ON vk_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
+            JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+            WHERE tpp.id_toko = ?
+            AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+            GROUP BY tpdd.id_produk ) nj ON nj.id_produk = ts.id_produk
+          LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
+            JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+            WHERE tpp.id_toko = ?
+            AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+            GROUP BY tpdd.id_produk ) nj_kemarin ON nj_kemarin.id_produk = ts.id_produk
+          LEFT JOIN (SELECT  id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = ?
+          GROUP BY 
+              id_produk ) adj ON adj.id_produk = ts.id_produk";
         $where_adjust = [
           $id_toko,
           $tgl_so,
@@ -227,7 +410,96 @@ class So extends CI_Controller
       }
     } else {
       $select_adjust = "ts.qty_awal,";
-      $query_adjust = "";
+      $query_adjust = "LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
+            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+        GROUP BY 
+            id_produk ) vt ON vt.id_produk = ts.id_produk
+        LEFT JOIN (SELECT 
+        tpd.id_produk, 
+        SUM(tpd.qty_diterima) AS jml_terima 
+          FROM tb_pengiriman_detail tpd
+            JOIN tb_pengiriman tp 
+              ON tpd.id_pengiriman = tp.id
+          WHERE 
+        tp.id_toko = ?
+        AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+          GROUP BY tpd.id_produk) vt_kemarin ON vt_kemarin.id_produk = ts.id_produk
+        LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = ?
+                AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+            GROUP BY 
+                id_produk ) vm ON vm.id_produk = ts.id_produk
+        LEFT JOIN (SELECT 
+            tpd.id_produk, 
+            SUM(tpd.qty_terima) AS jml_mutasi 
+          FROM tb_mutasi_detail tpd
+          JOIN tb_mutasi tp 
+              ON tpd.id_mutasi = tp.id
+          WHERE 
+              tp.id_toko_tujuan = ? AND tp.status = 2
+              AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+          GROUP BY tpd.id_produk) vm_kemarin ON vm_kemarin.id_produk = ts.id_produk
+        LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan WHERE id_toko = ?
+                AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+            GROUP BY 
+                id_produk ) vp ON vp.id_produk = ts.id_produk
+        LEFT JOIN (SELECT 
+            tpd.id_produk, 
+            SUM(tpd.qty) AS jml_jual 
+          FROM tb_penjualan_detail tpd
+          JOIN tb_penjualan tp 
+              ON tpd.id_penjualan = tp.id
+          WHERE 
+              tp.id_toko = ? 
+              AND tp.tanggal_penjualan BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+          GROUP BY tpd.id_produk) vp_kemarin ON vp_kemarin.id_produk = ts.id_produk
+        LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
+                AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
+                AND bulan = MONTH(DATE_SUB(?, INTERVAL 0 MONTH))
+            GROUP BY 
+                id_produk ) vpb ON vpb.id_produk = ts.id_produk
+        LEFT JOIN (SELECT  id_produk, jml_retur FROM vw_retur WHERE id_toko = ?
+                AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+            GROUP BY 
+                id_produk ) vr ON vr.id_produk = ts.id_produk
+        LEFT JOIN (SELECT 
+            tpd.id_produk, 
+            SUM(tpd.qty_terima) AS jml_retur 
+          FROM tb_retur_detail tpd
+          JOIN tb_retur tp 
+              ON tpd.id_retur = tp.id
+          WHERE 
+              tp.id_toko = ? AND tp.status >= 2 AND tp.status <= 4
+              AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+          GROUP BY tpd.id_produk) vr_kemarin ON vr_kemarin.id_produk = ts.id_produk
+        LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = ?
+                AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
+                AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
+            GROUP BY 
+                id_produk ) vk ON vk.id_produk = ts.id_produk
+        LEFT JOIN (SELECT 
+              tpd.id_produk, 
+              SUM(tpd.qty_terima) AS jml_mutasi 
+          FROM tb_mutasi_detail tpd
+          JOIN tb_mutasi tp 
+              ON tpd.id_mutasi = tp.id
+          WHERE 
+              tp.id_toko_asal = ? AND tp.status = 2
+              AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
+          GROUP BY tpd.id_produk) vk_kemarin ON vk_kemarin.id_produk = ts.id_produk
+        LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
+          JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+          WHERE tpp.id_toko = ?
+          AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+          GROUP BY tpdd.id_produk ) nj ON nj.id_produk = ts.id_produk
+        LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
+          JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
+          WHERE tpp.id_toko = ?
+          AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
+          GROUP BY tpdd.id_produk ) nj_kemarin ON nj_kemarin.id_produk = ts.id_produk";
       $where_adjust = [
         $id_toko,
         $tgl_so,
@@ -291,98 +563,7 @@ class So extends CI_Controller
     COALESCE(vr_kemarin.jml_retur, 0) AS jml_retur_kemarin,
     COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar,
     COALESCE(vk_kemarin.jml_mutasi, 0) AS mutasi_keluar_kemarin FROM tb_stok ts
-
-    LEFT JOIN (SELECT  id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = ?
-            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
-            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
-        GROUP BY 
-            id_produk ) vt ON vt.id_produk = ts.id_produk
-    LEFT JOIN (SELECT 
-    tpd.id_produk, 
-    SUM(tpd.qty_diterima) AS jml_terima 
-      FROM tb_pengiriman_detail tpd
-        JOIN tb_pengiriman tp 
-          ON tpd.id_pengiriman = tp.id
-      WHERE 
-    tp.id_toko = ?
-    AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
-      GROUP BY tpd.id_produk) vt_kemarin ON vt_kemarin.id_produk = ts.id_produk
-    LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = ?
-            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
-            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
-        GROUP BY 
-            id_produk ) vm ON vm.id_produk = ts.id_produk
-    LEFT JOIN (SELECT 
-        tpd.id_produk, 
-        SUM(tpd.qty_terima) AS jml_mutasi 
-      FROM tb_mutasi_detail tpd
-      JOIN tb_mutasi tp 
-          ON tpd.id_mutasi = tp.id
-      WHERE 
-          tp.id_toko_tujuan = ? AND tp.status = 2
-          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
-      GROUP BY tpd.id_produk) vm_kemarin ON vm_kemarin.id_produk = ts.id_produk
-    LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan WHERE id_toko = ?
-            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
-            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
-        GROUP BY 
-            id_produk ) vp ON vp.id_produk = ts.id_produk
-    LEFT JOIN (SELECT 
-        tpd.id_produk, 
-        SUM(tpd.qty) AS jml_jual 
-      FROM tb_penjualan_detail tpd
-      JOIN tb_penjualan tp 
-          ON tpd.id_penjualan = tp.id
-      WHERE 
-          tp.id_toko = ? 
-          AND tp.tanggal_penjualan BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
-      GROUP BY tpd.id_produk) vp_kemarin ON vp_kemarin.id_produk = ts.id_produk
-    LEFT JOIN (SELECT  id_produk, jml_jual FROM vw_penjualan_buat WHERE id_toko = ?
-            AND tahun = YEAR(DATE_SUB(?, INTERVAL 0 MONTH))
-            AND bulan = MONTH(DATE_SUB(?, INTERVAL 0 MONTH))
-        GROUP BY 
-            id_produk ) vpb ON vpb.id_produk = ts.id_produk
-    LEFT JOIN (SELECT  id_produk, jml_retur FROM vw_retur WHERE id_toko = ?
-            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
-            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
-        GROUP BY 
-            id_produk ) vr ON vr.id_produk = ts.id_produk
-    LEFT JOIN (SELECT 
-        tpd.id_produk, 
-        SUM(tpd.qty_terima) AS jml_retur 
-      FROM tb_retur_detail tpd
-      JOIN tb_retur tp 
-          ON tpd.id_retur = tp.id
-      WHERE 
-          tp.id_toko = ? AND tp.status >= 2 AND tp.status <= 4
-          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
-      GROUP BY tpd.id_produk) vr_kemarin ON vr_kemarin.id_produk = ts.id_produk
-    LEFT JOIN (SELECT  id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = ?
-            AND tahun = YEAR(DATE_SUB(?, INTERVAL 1 MONTH))
-            AND bulan = MONTH(DATE_SUB(?, INTERVAL 1 MONTH))
-        GROUP BY 
-            id_produk ) vk ON vk.id_produk = ts.id_produk
-    LEFT JOIN (SELECT 
-          tpd.id_produk, 
-          SUM(tpd.qty_terima) AS jml_mutasi 
-      FROM tb_mutasi_detail tpd
-      JOIN tb_mutasi tp 
-          ON tpd.id_mutasi = tp.id
-      WHERE 
-          tp.id_toko_asal = ? AND tp.status = 2
-          AND tp.updated_at BETWEEN '2024-12-01' AND DATE_SUB(?, INTERVAL DAYOFMONTH(?) DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND
-      GROUP BY tpd.id_produk) vk_kemarin ON vk_kemarin.id_produk = ts.id_produk
-    LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
-      JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
-      WHERE tpp.id_toko = ?
-      AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
-      GROUP BY tpdd.id_produk ) nj ON nj.id_produk = ts.id_produk
-    LEFT JOIN (SELECT sum(tpdd.qty) as qty, tpdd.id_produk FROM tb_penjualan_detail tpdd
-      JOIN tb_penjualan tpp ON tpdd.id_penjualan = tpp.id
-      WHERE tpp.id_toko = ?
-      AND tpp.tanggal_penjualan BETWEEN DATE_FORMAT(?, '%Y-%m-01 00:00:00') AND ?
-      GROUP BY tpdd.id_produk ) nj_kemarin ON nj_kemarin.id_produk = ts.id_produk
-      $query_adjust
+    $query_adjust
     JOIN tb_produk tp ON ts.id_produk = tp.id
     LEFT JOIN tb_so_detail tsd ON tsd.id_produk = ts.id_produk AND tsd.id_so = ?
     LEFT JOIN tb_so_detail tsd_kemarin ON tsd_kemarin.id_produk = ts.id_produk AND tsd_kemarin.id_so = ?
@@ -394,7 +575,8 @@ class So extends CI_Controller
     $adjust = $this->db->query("SELECT * FROM tb_adjust_stok WHERE id_so = ?", array($id_so));
     $data['cek_adjust'] = $adjust->num_rows();
     $data['adjust'] = $adjust->row();
-    $data['toko_adjust'] = $cek_adjustmen ? "true" : "false";
+    $data['toko_adjust'] = $cek_toko->status_adjust == 1 ? "true" : "false";
+    $data['cek_adjustmen'] = $cek_adjustmen ? "true" : "false";
     $this->template->load('template/template', 'manager_mv/stokopname/detail_so_toko', $data);
   }
   public function reset_so()
