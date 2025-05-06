@@ -103,23 +103,6 @@ class Permintaan extends CI_Controller
       $this->db->update_batch('tb_permintaan_detail', $data_details, 'id');
 
       $status_aksi = "Disetujui TL : ";
-
-      // Kirim WA ke user dengan role 6 dan 8
-      $user_tujuan = $this->db->select('no_telp')
-        ->where_in('role', [6, 8])
-        ->where('status', 1)
-        ->get('tb_user')
-        ->result_array();
-
-      $pesan_wa = "Anda memiliki PO Barang ( $nama_perusahaan ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
-
-      foreach ($user_tujuan as $u) {
-        $nomor = $u['no_telp'];
-        if (substr($nomor, 0, 1) === '0') {
-          $nomor = '62' . substr($nomor, 1);
-        }
-        kirim_wa($nomor, $pesan_wa);
-      }
     } else {
       // Tolak permintaan
       $this->db->update('tb_permintaan', [
@@ -140,15 +123,36 @@ class Permintaan extends CI_Controller
 
     $this->db->trans_complete();
 
-    // Periksa status transaksi
+    // Cek status transaksi database
     if ($this->db->trans_status() === FALSE) {
       tampil_alert('error', 'GAGAL', 'Terjadi kesalahan saat memproses data.');
-    } else {
-      tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil diproses!');
+      redirect(base_url('leader/Permintaan'));
+      return;
     }
 
+    // Kirim WA hanya jika tindakan == 1
+    if ($tindakan == 1) {
+      $user_tujuan = $this->db->select('no_telp')
+        ->where_in('role', [6, 8])
+        ->where('status', 1)
+        ->get('tb_user')
+        ->result_array();
+
+      $pesan_wa = "Anda memiliki PO Barang ( $nama_perusahaan ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
+
+      foreach ($user_tujuan as $u) {
+        $nomor = $u['no_telp'];
+        if (substr($nomor, 0, 1) === '0') {
+          $nomor = '62' . substr($nomor, 1);
+        }
+        kirim_wa($nomor, $pesan_wa);
+      }
+    }
+
+    tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil diproses!');
     redirect(base_url('leader/Permintaan'));
   }
+
 
   public function edit($po)
   {
