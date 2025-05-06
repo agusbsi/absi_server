@@ -129,26 +129,6 @@ class Permintaan extends CI_Controller
       redirect(base_url('leader/Permintaan'));
       return;
     }
-
-    // Kirim WA hanya jika tindakan == 1
-    if ($tindakan == 1) {
-      $user_tujuan = $this->db->select('no_telp')
-        ->where_in('role', [6, 8])
-        ->where('status', 1)
-        ->get('tb_user')
-        ->result_array();
-
-      $pesan_wa = "Anda memiliki PO Barang ( $nama_perusahaan ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
-
-      foreach ($user_tujuan as $u) {
-        $nomor = $u['no_telp'];
-        if (substr($nomor, 0, 1) === '0') {
-          $nomor = '62' . substr($nomor, 1);
-        }
-        kirim_wa($nomor, $pesan_wa);
-      }
-    }
-
     tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil diproses!');
     redirect(base_url('leader/Permintaan'));
   }
