@@ -51,6 +51,7 @@
     </div>
 </section>
 <script>
+    const currentUserRole = <?= $this->session->userdata('role') ?>;
     $(document).ready(function() {
         $('#tabel_baru').DataTable({
             "processing": true,
@@ -83,7 +84,7 @@
                     "className": "text-center",
                     "render": function(data, type, row) {
                         if (row.status == 0) {
-                            return '<div class="waktu" data-waktu="' + data + '"></div>';
+                            return '<span class="waktu text-nowrap" data-waktu="' + data + '">' + data + '</span>';
                         } else {
                             return '-';
                         }
@@ -93,9 +94,14 @@
                     "data": "id",
                     "className": "text-center",
                     "render": function(data, type, row) {
-                        return '<a href="<?= base_url('mng_ops/Dashboard/adjust_detail/') ?>' + data + '" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+                        if (currentUserRole == 17 && row.status == 0) {
+                            return '<a href="<?= base_url('mng_ops/Dashboard/adjust_detail/') ?>' + data + '" class="btn btn-sm btn-success"><i class="fas fa-spinner fa-spin"></i> Proses</a>';
+                        } else {
+                            return '<a href="<?= base_url('mng_ops/Dashboard/adjust_detail/') ?>' + data + '" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+                        }
                     }
                 }
+
             ],
             "order": []
         });
@@ -103,11 +109,13 @@
 
     function adjustStatus(id) {
         if (id == 0) {
-            return "<small><span class='badge badge-warning'>Proses Verifikasi</span></small>";
+            return "<small><span class='badge badge-warning'>Di Proses Manager OPR</span></small>";
         } else if (id == 1) {
             return "<small><span class='badge badge-success'>Disetujui</span></small>";
         } else if (id == 2) {
             return "<small><span class='badge badge-danger'>Ditolak</span></small>";
+        } else if (id == 4) {
+            return "<small><span class='badge badge-warning'>Di Proses Direksi</span></small>";
         } else {
             return "<small><span class='badge badge-danger'>Dicancel</span></small>";
         }

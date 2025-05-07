@@ -208,11 +208,13 @@ function status_aset($id)
 function status_adjust($id)
 {
     if ($id == 0) {
-        echo "<span class='badge badge-warning'>Proses Verifikasi</span>";
+        echo "<span class='badge badge-warning'>Di Proses Manager OPR</span>";
     } elseif ($id == 1) {
         echo "<span class='badge badge-success'>Disetujui</span>";
     } elseif ($id == 2) {
         echo "<span class='badge badge-danger'>Ditolak</span>";
+    } elseif ($id == 4) {
+        echo "<span class='badge badge-warning'>Di Proses Direksi</span>";
     } else {
         echo "<span class='badge badge-danger'>Dicancel</span>";
     }

@@ -1,6 +1,7 @@
 <?php
 $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
 $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_rows();
+$adj = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = '0'")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">
@@ -166,6 +167,10 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
           <i class="nav-icon fas fa-window-restore"></i>
           <p>
             Adjustment Stok
+            <?php if ($adj == 0) { ?>
+            <?php } else { ?>
+              <span class="right badge badge-danger"><?= $adj ?></span>
+            <?php } ?>
           </p>
         </a>
       </li>

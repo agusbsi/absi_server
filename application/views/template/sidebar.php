@@ -3,7 +3,7 @@ $id = $this->session->userdata('id');
 $Artikel = $this->db->query("SELECT id FROM tb_produk WHERE status = '2'")->num_rows();
 $Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '3'")->num_rows();
 $Retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '1'")->num_rows();
-$adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 0")->num_rows();
+$adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 4")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">

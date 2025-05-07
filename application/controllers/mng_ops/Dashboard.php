@@ -267,6 +267,7 @@ class Dashboard extends CI_Controller
   }
   public function adjust_save()
   {
+    $this->load->library('upload');
     $pengguna = $this->session->userdata('nama_user');
     $no_so = $this->input->post('no_so', true);
     $get_toko = $this->input->post('toko', true);
@@ -276,13 +277,39 @@ class Dashboard extends CI_Controller
     $catatan = $this->input->post('catatan', true);
     $pt = $this->session->userdata('pt');
 
+    $config['upload_path'] = './assets/img/adj/';
+    $config['allowed_types'] = 'jpg|jpeg|png|pdf';
+    $config['max_size'] = 9048;
+    $config['file_name'] = 'berkas_' . time();
+
+    if (!is_dir($config['upload_path'])) {
+      mkdir($config['upload_path'], 0777, true);
+    }
+
+    $this->upload->initialize($config);
+    $uploaded_file = null;
+
+    if (!$this->upload->do_upload('bukti')) {
+      tampil_alert('error', 'Gagal Upload', "Gagal upload gambar, cek ukuran file,pastikan di bawah 10 mb.");
+      redirect(base_url('mng_ops/Dashboard/adjust'));
+      return;
+    } else {
+      $uploaded_file = $this->upload->data('file_name');
+    }
+
     $jml = count($id_produk);
     $this->db->trans_start();
 
     // Insert ke tb_adjust_stok
     $cek = $this->db->query("SELECT MAX(no_urut) as urut FROM tb_adjust_stok")->row();
     $urut = isset($cek->urut) ? $cek->urut + 1 : 1;
-    $this->db->insert('tb_adjust_stok', ['id_so' => $no_so, 'no_urut' => $urut, 'nomor' => 'AD-' . date('Y') . '-' . date('n') . '-' . $urut]);
+    $data_adjust = [
+      'id_so' => $no_so,
+      'no_urut' => $urut,
+      'nomor' => 'AD-' . date('Y') . '-' . date('n') . '-' . $urut,
+      'berkas' => $uploaded_file
+    ];
+    $this->db->insert('tb_adjust_stok', $data_adjust);
     $id_adjust = $this->db->insert_id();
 
     // Insert batch ke tb_adjust_detail
@@ -309,12 +336,13 @@ class Dashboard extends CI_Controller
     $this->db->trans_complete();
 
     if ($this->db->trans_status() === FALSE) {
-      tampil_alert('eror', 'Gagal', 'Terjadi kesalahan, data tidak tersimpan.');
+      tampil_alert('error', 'Gagal', 'Terjadi kesalahan, data tidak tersimpan.');
     } else {
       tampil_alert('success', 'Berhasil', 'Data Adjustment Stok berhasil diajukan.');
+
       $hp = $this->db->select('no_telp')
         ->from('tb_user')
-        ->where('role', 1)
+        ->where('role', 17)
         ->where('status', 1)
         ->get()
         ->result();
@@ -325,6 +353,48 @@ class Dashboard extends CI_Controller
       }
     }
 
+    redirect(base_url('mng_ops/Dashboard/adjust_detail/' . $id_adjust));
+  }
+  public function approve_adjust()
+  {
+    $pengguna = $this->session->userdata('nama_user');
+    $pt = $this->session->userdata('pt');
+    $id_adjust = $this->input->post('id_adjust', true);
+    $catatan = $this->input->post('catatan', true);
+    $keputusan = $this->input->post('keputusan', true);
+    $this->db->trans_start();
+    if ($keputusan == 4) {
+      $aksi = "Diverifikasi Oleh :";
+    } else {
+      $aksi = "Ditolak Oleh :";
+    }
+    $this->db->update('tb_adjust_stok', ['status' => $keputusan], ['id' => $id_adjust]);
+    $this->db->insert('tb_adjust_histori', [
+      'id_adjust' => $id_adjust,
+      'aksi' => $aksi,
+      'pembuat' => $pengguna,
+      'catatan' => $catatan
+    ]);
+
+    $this->db->trans_complete();
+    if ($this->db->trans_status() === FALSE) {
+      tampil_alert('error', 'Gagal', 'Terjadi kesalahan, data tidak tersimpan.');
+    } else {
+      tampil_alert('success', 'Berhasil', 'Data Adjustment Stok berhasil proses.');
+      if ($keputusan == 4) {
+        $hp = $this->db->select('no_telp')
+          ->from('tb_user')
+          ->where('role', 1)
+          ->where('status', 1)
+          ->get()
+          ->result();
+        foreach ($hp as $h) {
+          $phone = $h->no_telp;
+          $message = "Anda memiliki 1 Pengajuan Adjustment Stok ( $pt ) yang perlu di cek, silahkan kunjungi s.id/absi-app";
+          kirim_wa($phone, $message);
+        }
+      }
+    }
     redirect(base_url('mng_ops/Dashboard/adjust_detail/' . $id_adjust));
   }
 }

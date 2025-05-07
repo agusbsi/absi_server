@@ -215,8 +215,8 @@
                     "data": "created_at",
                     "className": "text-center",
                     "render": function(data, type, row) {
-                        if (row.status == 0) {
-                            return '<div class="waktu" data-waktu="' + data + '"></div>';
+                        if (row.status == 4) {
+                            return '<span class="waktu text-nowrap" data-waktu="' + data + '">' + data + '</span>';
                         } else {
                             return '-';
                         }
@@ -229,7 +229,7 @@
                         const baseUrl = "<?= base_url('adm/Stok/adjust_detail/') ?>"; // Mendapatkan base URL
                         const role = <?= $this->session->userdata('role'); ?>; // Mendapatkan role dari sesi PHP
 
-                        if (row.status == 0 && role == 1) {
+                        if (row.status == 4 && role == 1) {
                             return '<a href="' + baseUrl + data + '" class="btn btn-sm btn-success"><i class="fas fa-paper-plane"></i> Proses</a>';
                         } else {
                             return '<a href="' + baseUrl + data + '" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
@@ -265,11 +265,13 @@
 
     function adjustStatus(id) {
         if (id == 0) {
-            return "<small><span class='badge badge-warning'>Proses Verifikasi</span></small>";
+            return "<small><span class='badge badge-warning'>Di Proses Manager OPR</span></small>";
         } else if (id == 1) {
             return "<small><span class='badge badge-success'>Disetujui</span></small>";
         } else if (id == 2) {
             return "<small><span class='badge badge-danger'>Ditolak</span></small>";
+        } else if (id == 4) {
+            return "<small><span class='badge badge-warning'>Di Proses Direksi</span></small>";
         } else {
             return "<small><span class='badge badge-danger'>Dicancel</span></small>";
         }

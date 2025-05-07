@@ -429,7 +429,7 @@ class Stok extends CI_Controller
     $data['list'] = $this->db->query("SELECT ta.*, tt.nama_toko from tb_adjust_stok ta
     JOIN tb_so ts ON ta.id_so = ts.id
     JOIN tb_toko tt ON ts.id_toko = tt.id 
-    WHERE ta.status = ?", [1])->result();
+    WHERE ta.status = ?", [4])->result();
     $this->template->load('template/template', 'adm/stok/adjust_tampil', $data);
   }
   public function export_adjust()
@@ -537,7 +537,7 @@ class Stok extends CI_Controller
       $column_dir = $request['order'][0]['dir'];
       $this->db->order_by($column_order[$column_index], $column_dir);
     } else {
-      $this->db->order_by('tas.status', 'asc');
+      // $this->db->order_by('tas.status', 'asc');
       $this->db->order_by('tas.id', 'desc');
     }
     $query = $this->db->get()->result();

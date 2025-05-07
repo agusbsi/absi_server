@@ -102,6 +102,27 @@
                         </tbody>
                     </table>
                     <hr>
+                    <div class="form-group">
+                        <strong>Berkas yang di Upload:</strong><br>
+                        <?php if ($row->berkas): ?>
+                            <?php
+                            $file_ext = pathinfo($row->berkas, PATHINFO_EXTENSION);
+                            $file_url = base_url('assets/img/adj/' . $row->berkas);
+                            ?>
+                            <?php if (in_array(strtolower($file_ext), ['jpg', 'jpeg', 'png'])): ?>
+                                <img src="<?= $file_url ?>" alt="Bukti Gambar" class="img-fluid img-thumbnail" style="max-height: 500px;">
+                            <?php elseif (strtolower($file_ext) === 'pdf'): ?>
+                                <a href="<?= $file_url ?>" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-file-pdf"></i> Lihat PDF
+                                </a>
+                            <?php else: ?>
+                                <p class="text-danger">Format file tidak didukung.</p>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <small class="text-muted">Tidak ada file yang diunggah.</small>
+                        <?php endif; ?>
+                    </div>
+                    <hr>
                     <small>
                         <strong> Keterangan :</strong> <br>
                         <li>Proses ini membutuhkan verifikasi Direksi.</li>
@@ -132,7 +153,7 @@
                             </div>
                         <?php endforeach ?>
                     </div>
-                    <?php if ($row->status == 0 && $this->session->userdata('role') == 1) { ?>
+                    <?php if ($row->status == 4 && $this->session->userdata('role') == 1) { ?>
                         <div class="form-group">
                             <label for=""> Catatan anda *</label>
                             <textarea name="catatan" cols="3" class="form-control form-control-sm" placeholder="..." required></textarea>
@@ -149,7 +170,7 @@
                 </div>
                 <div class="card-footer text-right">
                     <a href="<?= base_url('adm/Stok/adjust_stok') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> kembali</a>
-                    <?php if ($row->status == 0 && $this->session->userdata('role') == 1) { ?>
+                    <?php if ($row->status == 4 && $this->session->userdata('role') == 1) { ?>
                         <button type="submit" class="btn btn-success btn-sm" id="btn-kirim"><i class="fas fa-save"></i> Simpan</button>
                     <?php } ?>
                     <?php if ($row->status == 1 && $this->session->userdata('role') == 1) { ?>

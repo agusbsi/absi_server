@@ -13,7 +13,7 @@
 <form id="resetSOForm" action="<?= base_url('sup/So/reset_so') ?>" method="POST" style="display:none;">
   <input type="hidden" name="id_so" value="<?= $SO->id ?>">
 </form>
-<form id="adjust_form" action="<?= base_url('mng_ops/Dashboard/adjust_save') ?>" method="POST">
+<form id="adjust_form" action="<?= base_url('mng_ops/Dashboard/adjust_save') ?>" method="POST" enctype="multipart/form-data">
   <section class="content">
     <div class="container-fluid">
       <div id="printableArea">
@@ -233,30 +233,37 @@
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
-        <div class="modal-header bg-info">
-          <h5 class="modal-title" id="exampleModalLongTitle">
-            <li class="fas fa-window-restore"></li> Adjustment Stok Toko
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <li><small>Proses ini membutuhkan verifikasi dari Direksi.</small></li>
-          <li><small>Proses ini hanya bisa di lakukan sekali untuk satu nomor SO.</small></li>
-          <li><small>Ketika proses sudah di verifikasi maka akan memperbarui stok sistem sesuai dengan hasil SO SPG berdasarkan tanggal SO.</small></li>
-          <li><small>Jika pengajuan ini tidak di verifikasi selama 10 hari, maka sistem akan membatalkan secara otomatis.</small></li>
-          <hr>
-          <div class="form-group">
-            <strong>Catatan : *</strong>
-            <textarea name="catatan" class="form-control form-control-sm" placeholder="Catatan anda..." required></textarea>
-            <input type="hidden" name="toko" value="<?= $SO->nama_toko; ?>">
+        <form action="upload_handler.php" method="POST" enctype="multipart/form-data">
+          <div class="modal-header bg-info">
+            <h5 class="modal-title" id="exampleModalLongTitle">
+              <li class="fas fa-window-restore"></li> Adjustment Stok Toko
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-info btn-sm">Ya, Lanjutkan</button>
-        </div>
+          <div class="modal-body">
+            <li><small>Proses ini membutuhkan verifikasi dari Manager OPR & Direksi.</small></li>
+            <li><small>Proses ini hanya bisa di lakukan sekali untuk satu nomor SO.</small></li>
+            <li><small>Ketika proses sudah di verifikasi maka akan memperbarui stok sistem sesuai dengan hasil SO SPG berdasarkan tanggal SO.</small></li>
+            <li><small>Jika pengajuan ini tidak di verifikasi selama 2 hari, maka sistem akan membatalkan secara otomatis.</small></li>
+            <hr>
+            <div class="form-group">
+              <strong>Catatan : *</strong>
+              <textarea name="catatan" class="form-control form-control-sm" placeholder="Catatan anda..." required></textarea>
+              <input type="hidden" name="toko" value="<?= $SO->nama_toko; ?>">
+            </div>
+            <div class="form-group">
+              <strong>Upload Berkas : *</strong>
+              <input type="file" name="bukti" class="form-control form-control-sm" accept=".pdf,image/*" required>
+              <small class="form-text text-muted">Hanya file gambar (jpg, png) atau PDF yang diperbolehkan.</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-info btn-sm">Ya, Lanjutkan</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
