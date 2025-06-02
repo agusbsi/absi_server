@@ -91,7 +91,7 @@
                     </small>
                   </td>
                   <td class="text-center">
-                    <?= $d->stok ?>
+                    <?= $d->stok ? $d->stok : "-" ?>
                   </td>
                   <td class="text-center">
                     <?= $d->qty ?>

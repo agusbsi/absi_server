@@ -132,22 +132,37 @@ class Permintaan extends CI_Controller
       'id_toko' => $id_toko,
       'id_user' => $id_user,
     );
+
     // Ambil data SPG, toko, dan leader dari database
     $spg_query = $this->db->query("SELECT nama_user FROM tb_user WHERE id = '$id_user'");
     $spg_row = $spg_query->row();
     $spg = $spg_row ? $spg_row->nama_user : 'Tanpa Nama';
+
     $this->db->trans_start();
     $this->db->insert('tb_permintaan', $data);
+
     $data_cart = $this->cart->contents();
     foreach ($data_cart as $d) {
-      $data = array(
+      // Ambil stok produk di tb_stok berdasarkan id_produk dan id_toko
+      $stok_query = $this->db->select('qty')
+        ->where('id_produk', $d['id'])
+        ->where('id_toko', $id_toko)
+        ->get('tb_stok')
+        ->row();
+
+      $stok = $stok_query ? $stok_query->qty : 0; // Jika stok tidak ditemukan, default 0
+
+      $data_detail = array(
         'id_permintaan' => $id_permintaan,
         'id_produk' => $d['id'],
-        'keterangan' => $d['satuan'],
         'qty' => $d['qty'],
+        'stok' => $stok,
+        'keterangan' => $d['satuan'],
       );
-      $this->db->insert('tb_permintaan_detail', $data);
+
+      $this->db->insert('tb_permintaan_detail', $data_detail);
     }
+
     $histori = array(
       'id_po' => $id_permintaan,
       'aksi' => 'Dibuat oleh : ',
@@ -156,9 +171,11 @@ class Permintaan extends CI_Controller
     $this->db->insert('tb_po_histori', $histori);
     $this->db->trans_complete();
     $this->cart->destroy();
+
     $toko_query = $this->db->query("SELECT id_leader, nama_toko FROM tb_toko WHERE id = '$id_toko'")->row();
     $leader = $toko_query ? $toko_query->id_leader : null;
     $namaToko = $toko_query ? $toko_query->nama_toko : 'Tanpa Nama';
+
     if ($leader) {
       // Ambil nomor telepon dari tabel tb_user
       $phones = $this->db->select('no_telp')

@@ -60,30 +60,37 @@ class Permintaan extends CI_Controller
   //  approve artikel
   public function approve()
   {
-    $nama_perusahaan = $this->session->userdata('pt');
     $id_user = $this->session->userdata('id');
-    $nama_leader = $this->db->query("SELECT nama_user FROM tb_user WHERE id = ?", array($id_user))->row()->nama_user;
 
-    $id_detail = $this->input->post('id_detail');
+    if (!$id_user) {
+      tampil_alert('error', 'GAGAL', 'Session Anda telah habis. Silakan login kembali.');
+      redirect(base_url('login'));
+      return;
+    }
+
+    $nama_leader = $this->db->select('nama_user')
+      ->where('id', $id_user)
+      ->get('tb_user')
+      ->row('nama_user');
+
+    // Terima array id_detail dan qty_acc dari form
+    $id_detail_arr = $this->input->post('id_detail'); // array
+    $qty_acc_arr = $this->input->post('qty_acc');     // array
     $id_permintaan = $this->input->post('id_minta');
-    $catatan_leader = $this->input->post('catatan_leader');
+    $catatan_leader = $this->input->post('catatan_leader', true);
     $tindakan = $this->input->post('tindakan');
-    $qty_acc = $this->input->post('qty_acc');
 
-    // Validasi awal
-    if (empty($id_detail) || empty($id_permintaan) || $tindakan === null) {
-      tampil_alert('error', 'GAGAL', 'Data tidak lengkap.');
+    // Validasi input
+    if (empty($id_detail_arr) || empty($qty_acc_arr) || empty($id_permintaan) || !isset($tindakan)) {
+      tampil_alert('error', 'GAGAL', 'Data tidak lengkap atau tidak valid.');
       redirect(base_url('leader/Permintaan'));
       return;
     }
 
-    $jumlah_item = count($id_detail);
-
-    // Mulai transaksi database
     $this->db->trans_start();
 
-    if ($tindakan == 1) {
-      // Setujui permintaan
+    if ($tindakan == '1') {
+      // Update status permintaan menjadi disetujui
       $this->db->update('tb_permintaan', [
         'status' => '1',
         'updated_at' => date('Y-m-d H:i:s')
@@ -91,29 +98,31 @@ class Permintaan extends CI_Controller
 
       // Siapkan data untuk update_batch
       $data_details = [];
-      for ($i = 0; $i < $jumlah_item; $i++) {
+      foreach ($id_detail_arr as $index => $id_detail) {
+        $qty = isset($qty_acc_arr[$index]) ? (int)$qty_acc_arr[$index] : 0;
         $data_details[] = [
-          'id' => $id_detail[$i],
-          'qty' => isset($qty_acc[$i]) ? $qty_acc[$i] : 0,
-          'status' => 1
+          'id' => (int)$id_detail,
+          'qty_acc' => $qty,
+          'status' => 1,
         ];
       }
 
-      // Update detail permintaan
-      $this->db->update_batch('tb_permintaan_detail', $data_details, 'id');
+      if (!empty($data_details)) {
+        $this->db->update_batch('tb_permintaan_detail', $data_details, 'id');
+      }
 
-      $status_aksi = "Disetujui TL : ";
+      $status_aksi = "Disetujui TL :";
     } else {
-      // Tolak permintaan
+      // Update status permintaan menjadi ditolak
       $this->db->update('tb_permintaan', [
         'status' => '5',
         'updated_at' => date('Y-m-d H:i:s')
       ], ['id' => $id_permintaan]);
 
-      $status_aksi = "Ditolak TL : ";
+      $status_aksi = "Ditolak TL :";
     }
 
-    // Simpan histori tindakan
+    // Insert histori aksi
     $this->db->insert('tb_po_histori', [
       'id_po' => $id_permintaan,
       'aksi' => $status_aksi,
@@ -123,15 +132,15 @@ class Permintaan extends CI_Controller
 
     $this->db->trans_complete();
 
-    // Cek status transaksi database
     if ($this->db->trans_status() === FALSE) {
       tampil_alert('error', 'GAGAL', 'Terjadi kesalahan saat memproses data.');
-      redirect(base_url('leader/Permintaan'));
-      return;
+    } else {
+      tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil diproses!');
     }
-    tampil_alert('success', 'BERHASIL', 'Permintaan artikel berhasil diproses!');
+
     redirect(base_url('leader/Permintaan'));
   }
+
 
 
   public function edit($po)

@@ -30,11 +30,12 @@
         <table class="table table-bordered table-striped">
           <tr class="text-center">
             <th>Artikel</th>
-            <th>Jumlah</th>
+            <th>Jml Minta</th>
+            <th>Jml Acc</th>
           </tr>
           <?php
           $total = 0;
-          $akhir = 0;
+          $total_acc = 0;
           foreach ($detail as $d) { ?>
             <tr>
               <td>
@@ -44,14 +45,17 @@
                 </small>
               </td>
               <td class="text-center"><?= $d->qty ?></td>
+              <td class="text-center"><?= $d->qty_acc ? $d->qty_acc : "-" ?></td>
             </tr>
           <?php
             $total += $d->qty;
+            $total_acc += (int)$d->qty_acc;
           } ?>
           <tfoot>
             <tr>
               <td class="text-right"> <strong>Total :</strong> </td>
               <td class="text-center"><b><?= $total; ?></b></td>
+              <td class="text-center"><b><?= $total_acc; ?></b></td>
             </tr>
           </tfoot>
         </table>

@@ -95,7 +95,7 @@
                         <input type="hidden" name="id_detail[]" value="<?= $d->id ?>">
                       </td>
                       <td class="text-center">
-                        <?= $d->stok ?>
+                        <?= $d->stok ? $d->stok : "-" ?>
                       </td>
                       <td class="text-center">
                         <?= $d->qty ?>
