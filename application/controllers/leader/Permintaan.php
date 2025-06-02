@@ -102,7 +102,7 @@ class Permintaan extends CI_Controller
         $qty = isset($qty_acc_arr[$index]) ? (int)$qty_acc_arr[$index] : 0;
         $data_details[] = [
           'id' => (int)$id_detail,
-          'qty_acc' => $qty,
+          'qty' => $qty,
           'status' => 1,
         ];
       }
