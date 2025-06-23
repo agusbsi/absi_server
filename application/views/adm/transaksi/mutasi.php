@@ -104,7 +104,8 @@
                   <th>Nomor</th>
                   <th>Nama Toko</th>
                   <th>Status</th>
-                  <th>Tanggal</th>
+                  <th>Tgl Buat</th>
+                  <th>Tgl Terima</th>
                   <th>Menu</th>
                 </tr>
               </thead>
@@ -122,6 +123,7 @@
                       </small></td>
                     <td class="text-center"><?= status_mutasi($row->status) ?></td>
                     <td class="text-center"><small><?= date('d-M-Y : H:m:s', strtotime($row->created_at)) ?></small></td>
+                    <td class="text-center"><small><?= $row->tgl_terima ? date('d-M-Y', strtotime($row->tgl_terima)) : "-" ?></small></td>
                     <td class="text-center"><a class="btn btn-primary btn-sm" href="<?= base_url('adm/Mutasi/detail/') . $row->id ?>"><i class="fa fa-eye" aria-hidden="true"></i> Detail</a></td>
                   </tr>
                 <?php } ?>

@@ -66,6 +66,7 @@ class Mutasi extends CI_Controller
     $id_toko = $this->session->userdata('id_toko');
     $id_toko_asal = $this->input->post('id_toko_asal');
     $catatan = $this->input->post('catatan');
+    $tgl_terima = $this->input->post('tgl_terima');
     $id_mutasi = $this->input->post('id_mutasi');
     $id_produk = $this->input->post('id_produk');
     $qty_terima = $this->input->post('qty_terima');
@@ -156,6 +157,7 @@ class Mutasi extends CI_Controller
     $list_mutasi = array(
       'status' => 2,
       'updated_at' => date('Y-m-d H:i:s'),
+      'tgl_terima' => $tgl_terima,
       'id_unik' => $unique_id
     );
     $this->db->update('tb_mutasi', $list_mutasi, $where);

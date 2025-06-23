@@ -143,6 +143,11 @@
             ?>
             <hr>
             <div class="form-group">
+              <label for="tgl_terima">Tgl Penerimaan : *</label>
+              <input type="date" name="tgl_terima" id="tgl_terima" class="form-control form-control-sm" required>
+              <small>* Wajib di isi.</small>
+            </div>
+            <div class="form-group">
               <label for="">Catatan :</label>
               <textarea name="catatan" class="form-control form-control-sm" placeholder="catatan jika ada.."></textarea>
             </div>

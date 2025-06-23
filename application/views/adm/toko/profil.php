@@ -144,29 +144,6 @@
         </div>
       </div>
     <?php } ?>
-
-    <?php if ($cek_status->status == 7) { ?>
-      <div class="alert alert-soft-warning shadow-sm mb-3" style="border-left: 5px solid #ffe082; background: #fffde7;">
-        <div class="d-flex align-items-start">
-          <i class="fas fa-info-circle fa-2x mr-3" style="color:#ffc107;"></i>
-          <div>
-            <div class="mb-1 font-weight-bold" style="color:#b28704;font-size:16px;">Toko Dalam Proses Suspend (Pengecekan)</div>
-            <div class="mb-1" style="color:#b28704;">
-              Toko <strong><?= $toko->nama_toko ?></strong> sedang dalam proses pengecekan oleh tim <b>Accounting</b>.<br>
-              <span class="badge badge-warning">PROSES SUSPEND</span>
-            </div>
-            <ul class="mb-1" style="color:#b28704;">
-              <li>Transaksi, pengajuan, dan perubahan data <b>masih dapat dilakukan</b> hingga proses selesai.</li>
-              <li>Jika proses selesai, toko akan dinonaktifkan.</li>
-            </ul>
-            <small class="text-muted">Silakan hubungi tim accounting untuk informasi lebih lanjut.</small>
-            <div class="mt-3">
-              <button class="btn btn-outline-danger btn-sm" id="btnSuspendToko"><i class="fas fa-ban"></i> Nonaktifkan Toko</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    <?php } ?>
     <div class="judul_toko">
       <h5><i class="fas fa-store"></i> <?= $toko->nama_toko ?></h5>
       <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
@@ -963,20 +940,20 @@
 </script>
 <script>
   $(document).ready(function() {
-        $('#btnHistori').click(function() {
-          var id = $(this).data('id');
-          $.ajax({
-            url: '<?= base_url('adm/Toko/histori/') ?>' + id, // Ganti url dengan endpoint Anda
-            method: 'GET',
-            dataType: 'json',
-            success: function(response) {
-              if (response.status === 'success') {
-                // Bersihkan konten timeline sebelum menambahkan data baru
-                $('.timeline').empty();
+    $('#btnHistori').click(function() {
+      var id = $(this).data('id');
+      $.ajax({
+        url: '<?= base_url('adm/Toko/histori/') ?>' + id, // Ganti url dengan endpoint Anda
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 'success') {
+            // Bersihkan konten timeline sebelum menambahkan data baru
+            $('.timeline').empty();
 
-                // Iterasi data histori dan tambahkan ke dalam timeline
-                $.each(response.data, function(index, item) {
-                  var timelineItem = `
+            // Iterasi data histori dan tambahkan ke dalam timeline
+            $.each(response.data, function(index, item) {
+              var timelineItem = `
                 <div>
                   <i class="fas bg-blue">${index + 1}</i>
                   <div class="timeline-item">
@@ -992,126 +969,140 @@
                   </div>
                 </div>
               `;
-                  $('.timeline').append(timelineItem);
-                });
-
-                // Tampilkan modal
-                $('#modalHistori').modal('show');
-              } else {
-                // Tampilkan pesan error jika terjadi kesalahan
-                alert('Histori Toko Tidak Ditemukan.');
-              }
-            },
-            error: function(xhr, status, error) {
-              console.error(xhr.responseText);
-              alert('Terjadi kesalahan saat mengambil data histori.');
-            }
-          });
-        });
-        $('.btn_edit[data-target="#modal_toko"]').on('click', function() {
-          var id = $(this).data('id');
-          var namaToko = $(this).data('toko');
-          $('#toko_id').val(id);
-          $('#nama_toko').val(namaToko);
-        });
-        $('.btn_edit[data-target="#modal_foto"]').on('click', function() {
-          var id = $(this).data('id');
-          var namaToko = $(this).data('toko');
-          $('#toko_id_foto').val(id);
-        });
-        $('.btn_edit[data-target="#modal_detail"]').on('click', function() {
-            var id = $(this).data('id');
-            var id_cust = $(this).data('id_cust');
-            var jenis_toko = $(this).data('jenis_toko');
-            var pic = $(this).data('pic');
-            var telp = $(this).data('telp');
-            var provinsi = $(this).data('provinsi');
-            var kab = $(this - > data('kabupaten');
-              var kec = $(this).data('kecamatan');
-              var alamat = $(this).data('alamat'); $('#id_cust').val(id_cust).trigger('change'); $('#jenis_toko').val(jenis_toko).trigger('change'); setAutoProvinsi(provinsi); setAutoKabupaten(kab); $('#kecamatan').val(kec).trigger('change'); $('#pic').val(pic); $('#telp').val(telp); $('#alamat').val(alamat); $('#id_toko_detail').val(id);
-            }); $('.btn_edit[data-target="#modal_pengaturan"]').on('click', function() {
-            var id = $(this).data('id_toko_pengaturan');
-            var gudang = $(this).data('gudang');
-            var tgl_so = $(this).data('tgl_so');
-            var margin = $(this).data('margin');
-            var target_toko = $(this).data('target_toko');
-            var het = $(this).data('het');
-            $('#tgl_so').val(tgl_so).trigger('change');
-            $('#het').val(het).trigger('change');
-            $('#id_toko_pengaturan').val(id);
-            $('#gudang').val(gudang);
-            $('#margin').val(margin);
-            $('#target').val(target_toko);
-          }); $('.btn_edit[data-target="#modal_po"]').on('click', function() {
-            var id = $(this).data('id_toko_po');
-            var batas_po = $(this).data('batas_po');
-            var ssr = $(this).data('ssr');
-            var max_po = $(this).data('max_po');
-            $('#id_toko_po').val(id);
-            $('#batas_po').val(batas_po).trigger('change');
-            $('#ssr').val(ssr);
-            $('#max_po').val(max_po);
-          }); $('.btn_edit[data-target="#modal_marketing"]').on('click', function() {
-            var id = $(this).data('id_toko_marketing');
-            var spv = $(this).data('spv');
-            var leader = $(this).data('leader');
-            var spg = $(this).data('spg');
-            $('#id_toko_marketing').val(id);
-            $('#id_spv').val(spv).trigger('change');
-            $('#id_leader').val(leader).trigger('change');
-            $('#id_spg').val(spg).trigger('change');
-          });
-
-          function setAutoProvinsi(provinsi) {
-            autoTriggered = true;
-            $('#id_provinsi').val(provinsi).trigger('change');
-            autoTriggered = false;
-          }
-
-          function setAutoKabupaten(kabupaten) {
-            autoTriggered = true;
-            $('#kabupaten').val(kabupaten).trigger('change');
-            autoTriggered = false;
-          }
-        });
-      var autoTriggered = false; $('#id_provinsi').on('change', function() {
-        if (!autoTriggered) {
-          var selectedProvinsi = $(this).val();
-          if (selectedProvinsi) {
-            $.ajax({
-              url: "<?php echo base_url('adm/Toko/add_ajax_kab'); ?>/" + selectedProvinsi,
-              dataType: 'json',
-              success: function(data) {
-                $('#kabupaten').empty();
-                $('#kecamatan').empty();
-                $('#kecamatan').append('<option value="">- Select Kecamatan -</option>');
-                $('#kabupaten').append('<option value="">- Select Kabupaten -</option>');
-                $.each(data, function(index, item) {
-                  $('#kabupaten').append('<option value="' + item.id + '">' + item.nama + '</option>');
-                });
-              }
+              $('.timeline').append(timelineItem);
             });
-          }
-        }
-      }); $("#kabupaten").change(function() {
-        if (!autoTriggered) {
-          var selectedkab = $(this).val();
-          if (selectedkab) {
-            $.ajax({
-              url: "<?php echo base_url('adm/Toko/add_ajax_kec'); ?>/" + selectedkab,
-              dataType: 'json',
-              success: function(data) {
-                $('#kecamatan').empty();
-                $('#kecamatan').append('<option value="">- Select Kecamatan -</option>');
-                $.each(data, function(index, item) {
-                  $('#kecamatan').append('<option value="' + item.id + '">' + item.nama + '</option>');
-                });
-              }
-            });
-          }
-        }
 
+            // Tampilkan modal
+            $('#modalHistori').modal('show');
+          } else {
+            // Tampilkan pesan error jika terjadi kesalahan
+            alert('Histori Toko Tidak Ditemukan.');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error(xhr.responseText);
+          alert('Terjadi kesalahan saat mengambil data histori.');
+        }
       });
+    });
+    $('.btn_edit[data-target="#modal_toko"]').on('click', function() {
+      var id = $(this).data('id');
+      var namaToko = $(this).data('toko');
+      $('#toko_id').val(id);
+      $('#nama_toko').val(namaToko);
+    });
+    $('.btn_edit[data-target="#modal_foto"]').on('click', function() {
+      var id = $(this).data('id');
+      var namaToko = $(this).data('toko');
+      $('#toko_id_foto').val(id);
+    });
+    $('.btn_edit[data-target="#modal_detail"]').on('click', function() {
+      var id = $(this).data('id');
+      var id_cust = $(this).data('id_cust');
+      var jenis_toko = $(this).data('jenis_toko');
+      var pic = $(this).data('pic');
+      var telp = $(this).data('telp');
+      var provinsi = $(this).data('provinsi');
+      var kab = $(this).data('kabupaten');
+      var kec = $(this).data('kecamatan');
+      var alamat = $(this).data('alamat');
+      $('#id_cust').val(id_cust).trigger('change');
+      $('#jenis_toko').val(jenis_toko).trigger('change');
+      setAutoProvinsi(provinsi);
+      setAutoKabupaten(kab);
+      $('#kecamatan').val(kec).trigger('change');
+      $('#pic').val(pic);
+      $('#telp').val(telp);
+      $('#alamat').val(alamat);
+      $('#id_toko_detail').val(id);
+    });
+    $('.btn_edit[data-target="#modal_pengaturan"]').on('click', function() {
+      var id = $(this).data('id_toko_pengaturan');
+      var gudang = $(this).data('gudang');
+      var tgl_so = $(this).data('tgl_so');
+      var margin = $(this).data('margin');
+      var target_toko = $(this).data('target_toko');
+      var het = $(this).data('het');
+      $('#tgl_so').val(tgl_so).trigger('change');
+      $('#het').val(het).trigger('change');
+      $('#id_toko_pengaturan').val(id);
+      $('#gudang').val(gudang);
+      $('#margin').val(margin);
+      $('#target').val(target_toko);
+    });
+    $('.btn_edit[data-target="#modal_po"]').on('click', function() {
+      var id = $(this).data('id_toko_po');
+      var batas_po = $(this).data('batas_po');
+      var ssr = $(this).data('ssr');
+      var max_po = $(this).data('max_po');
+      $('#id_toko_po').val(id);
+      $('#batas_po').val(batas_po).trigger('change');
+      $('#ssr').val(ssr);
+      $('#max_po').val(max_po);
+    });
+    $('.btn_edit[data-target="#modal_marketing"]').on('click', function() {
+      var id = $(this).data('id_toko_marketing');
+      var spv = $(this).data('spv');
+      var leader = $(this).data('leader');
+      var spg = $(this).data('spg');
+      $('#id_toko_marketing').val(id);
+      $('#id_spv').val(spv).trigger('change');
+      $('#id_leader').val(leader).trigger('change');
+      $('#id_spg').val(spg).trigger('change');
+    });
+
+    function setAutoProvinsi(provinsi) {
+      autoTriggered = true;
+      $('#id_provinsi').val(provinsi).trigger('change');
+      autoTriggered = false;
+    }
+
+    function setAutoKabupaten(kabupaten) {
+      autoTriggered = true;
+      $('#kabupaten').val(kabupaten).trigger('change');
+      autoTriggered = false;
+    }
+  });
+  var autoTriggered = false;
+  $('#id_provinsi').on('change', function() {
+    if (!autoTriggered) {
+      var selectedProvinsi = $(this).val();
+      if (selectedProvinsi) {
+        $.ajax({
+          url: "<?php echo base_url('adm/Toko/add_ajax_kab'); ?>/" + selectedProvinsi,
+          dataType: 'json',
+          success: function(data) {
+            $('#kabupaten').empty();
+            $('#kecamatan').empty();
+            $('#kecamatan').append('<option value="">- Select Kecamatan -</option>');
+            $('#kabupaten').append('<option value="">- Select Kabupaten -</option>');
+            $.each(data, function(index, item) {
+              $('#kabupaten').append('<option value="' + item.id + '">' + item.nama + '</option>');
+            });
+          }
+        });
+      }
+    }
+  });
+  $("#kabupaten").change(function() {
+    if (!autoTriggered) {
+      var selectedkab = $(this).val();
+      if (selectedkab) {
+        $.ajax({
+          url: "<?php echo base_url('adm/Toko/add_ajax_kec'); ?>/" + selectedkab,
+          dataType: 'json',
+          success: function(data) {
+            $('#kecamatan').empty();
+            $('#kecamatan').append('<option value="">- Select Kecamatan -</option>');
+            $.each(data, function(index, item) {
+              $('#kecamatan').append('<option value="' + item.id + '">' + item.nama + '</option>');
+            });
+          }
+        });
+      }
+    }
+
+  });
 </script>
 <script>
   function formatRupiah(angka, prefix) {
@@ -1136,36 +1127,6 @@
       input.addEventListener('keyup', function(e) {
         this.value = formatRupiah(this.value, 'Rp. ');
       });
-    });
-  });
-</script>
-<div class="modal fade" id="modalSuspendToko" tabindex="-1" role="dialog" aria-labelledby="modalSuspendTokoLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <form action="<?= base_url('adm/Toko/nonaktifkan') ?>" method="POST">
-      <div class="modal-content">
-        <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title" id="modalSuspendTokoLabel"><i class="fas fa-exclamation-triangle"></i> Konfirmasi Nonaktifkan Toko</h5>
-          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Apakah Anda yakin ingin <b>menonaktifkan</b> toko <strong><?= $toko->nama_toko ?></strong>?<br>
-            Setelah dinonaktifkan, seluruh transaksi dan perubahan data tidak dapat dilakukan.</p>
-          <input type="hidden" name="id_toko" value="<?= $toko->id ?>">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-danger btn-sm">Ya, Nonaktifkan</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-<script>
-  $(document).ready(function() {
-    $('#btnSuspendToko').click(function() {
-      $('#modalSuspendToko').modal('show');
     });
   });
 </script>

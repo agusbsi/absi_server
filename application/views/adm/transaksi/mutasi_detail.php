@@ -26,6 +26,12 @@
           </div>
           <div class="col-md-3">
             <div class="form-group">
+              <label for="">Tgl Terima</label>
+              <input type="text" class="form-control form-control-sm" value="<?= $mutasi->tgl_terima ? date('d-M-Y', strtotime($mutasi->tgl_terima)) : "-" ?>" readonly>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
               <label for="">Status</label> <br>
               <?= status_mutasi($mutasi->status) ?>
             </div>
