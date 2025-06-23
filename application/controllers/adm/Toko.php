@@ -252,7 +252,7 @@ class Toko extends CI_Controller
     $this->db->insert('tb_retur_histori', $histori);
     $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
     if ($action == "4") {
-      $dataPengajuan = array('status' => 5, 'id_direksi' => $id_direksi);
+      $dataPengajuan = array('status' => 6, 'id_direksi' => $id_direksi);
       $wherePengajuan = array('id' => $id_pengajuan);
       $this->db->update('tb_pengajuan_toko', $dataPengajuan, $wherePengajuan);
       $this->db->update('tb_toko', array('status' => 7), array('id' => $id_toko));

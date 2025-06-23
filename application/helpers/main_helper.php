@@ -126,7 +126,7 @@ function status_pengajuan($id)
         echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (Direksi)</span>";
     } else if ($id == 4) {
         echo "<span class='badge badge-success badge-sm'>Selesai</span>";
-    } else if ($id == 5) {
+    } else if ($id == 6) {
         echo "<span class='badge badge-warning badge-sm'>Disetujui, Proses Suspend</span>";
     } else {
         echo "<span class='badge badge-danger badge-sm'>Di Tolak</span>";

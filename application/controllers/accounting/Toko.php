@@ -19,7 +19,7 @@ class Toko extends CI_Controller
     $data['pengajuan'] = $this->db->query("SELECT tpt.*, tt.nama_toko, tt.alamat, tc.nama_cust from tb_pengajuan_toko tpt
     JOIN tb_toko tt on tpt.id_toko = tt.id
     JOIN tb_customer tc on tt.id_customer = tc.id
-    WHERE tpt.kategori != 3 or (tpt.kategori = 3 and tpt.status = 5)
+    WHERE tpt.kategori != 3 or (tpt.kategori = 3 and tpt.status = 6)
     order by tpt.id desc")->result();
     $this->template->load('template/template', 'accounting/toko/pengajuanToko', $data);
   }
