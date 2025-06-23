@@ -4,7 +4,7 @@
       <div class="col-12">
         <div class="card card-info ">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> Pengajuan Toko</b> </h3>
+            <h3 class="card-title"><i class="fas fa-store"></i> List Pengajuan Toko</b> </h3>
           </div>
           <div class="card-body">
             <div class="alert alert-success alert-dismissible">
@@ -52,7 +52,7 @@
                       <?= status_pengajuan($t->status) ?>
                     </td>
                     <td>
-                      <?php if ($t->kategori == 3) { ?>
+                      <?php if ($t->kategori == 3 && $t->kategori = 5) { ?>
                         <a href="<?= base_url('adm/Toko/toko_tutup_d/' . $t->id) ?>"
                           class="btn btn-<?= ($t->status == 3 || $t->status == 5) ? 'success' : 'info' ?> btn-sm">
                           <i class="fas fa-<?= ($t->status == 3 || $t->status == 5) ? 'arrow-right' : 'eye' ?>"></i>
@@ -60,7 +60,7 @@
                         </a>
 
                       <?php } else { ?>
-                        <a href="<?= base_url('adm/Toko/detail/' . $t->id) ?>" class="btn btn-<?= $t->status == 3 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 3 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 3 ? "Proses" : "Detail" ?> </a>
+                        <a href="<?= base_url('accounting/Toko/detail/' . $t->id) ?>" class="btn btn-<?= $t->status == 2 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 2 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 2 ? "Proses" : "Detail" ?> </a>
                       <?php } ?>
                     </td>
                   </tr>

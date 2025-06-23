@@ -124,6 +124,9 @@
                 <div class="text-right">
                   <a href="<?= base_url('adm/Toko/toko_tutup') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Kembali</a>
                   <button type="submit" class="btn btn-sm btn-primary btn_simpan"><i class="fas fa-save"></i> Simpan</button>
+                  <?php if ($retur->status == 7) : ?>
+                    <button type="button" class="btn btn-sm btn-warning btn_suspend"><i class="fas fa-ban"></i> Suspend Toko</button>
+                  <?php endif; ?>
                 </div>
               </form>
               <hr>
@@ -133,6 +136,9 @@
                   <a href="<?= base_url('adm/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
                     <i class="fas fa-arrow-left"></i> Kembali </a>
                   <a href="<?= base_url('adm/Toko/fpo_tutup/' . $retur->id) ?>" target="_blank" class="btn btn-default float-right btn-sm mr-3 <?= $retur->status != 4 ? 'disabled' : '' ?>"><i class="fas fa-print"></i> Print FPO</a>
+                  <?php if ($retur->status == 5) : ?>
+                    <button type="button" class="btn btn-sm btn-warning float-right mr-3 btn_suspend"><i class="fas fa-ban"></i> Suspend Toko</button>
+                  <?php endif; ?>
                 </div>
               </div>
             <?php } ?>
@@ -186,6 +192,24 @@
           }
         }
       })
+    })
+
+    $('.btn_suspend').click(function(e) {
+      e.preventDefault();
+      Swal.fire({
+        title: 'Suspend Toko?',
+        text: "Apakah Anda yakin ingin suspend toko ini secara lengkap? Tindakan ini tidak dapat dibatalkan.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Suspend!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "<?= base_url('adm/Toko/Suspend/' . $retur->id) ?>";
+        }
+      });
     })
 
     function printDiv(divName) {

@@ -136,7 +136,7 @@
           "orderable": false,
           "searchable": false,
           "render": function(data, type, row) {
-            if (data.role == 1) {
+            if (data.role == 1 || data.role == 14 || data.role == 17) {
               return `
               <a href="<?= base_url('sup/Penjualan/detail/') ?>${data.id}" class="btn btn-sm btn-primary" title="Detail">
                 <i class="fas fa-eye"></i></a>

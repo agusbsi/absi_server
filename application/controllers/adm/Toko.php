@@ -27,7 +27,7 @@ class Toko extends CI_Controller
     left join tb_user tu on tt.id_spg = tu.id
     left join tb_user tl on tt.id_leader = tl.id
     left join tb_user spv on tt.id_spv = spv.id
-    where tt.status = 1
+    where tt.status = 1 OR tt.status = 7
     ORDER BY  tt.id desc")->result();
     $this->template->load('template/template', 'adm/toko/lihat_data', $data);
   }
@@ -205,11 +205,11 @@ class Toko extends CI_Controller
   {
     $data['title'] = 'Pengajuan Toko';
     $id_user = $this->session->userdata('id');
-    $cekTTD = $this->db->query("SELECT ttd from tb_user where id = ?", array($id_user))->row();
-    if (empty($cekTTD->ttd)) {
-      popup('Tanda Tangan Digital', 'Anda harus membuat TTD Digital terlebih dahulu untuk melanjutkan proses Pengajuan Toko', 'Profile');
-      redirect('adm/Toko/pengajuanToko');
-    }
+    // $cekTTD = $this->db->query("SELECT ttd from tb_user where id = ?", array($id_user))->row();
+    // if (empty($cekTTD->ttd)) {
+    //   popup('Tanda Tangan Digital', 'Anda harus membuat TTD Digital terlebih dahulu untuk melanjutkan proses Pengajuan Toko', 'Profile');
+    //   redirect('adm/Toko/pengajuanToko');
+    // }
     $query = $this->db->query("SELECT trt.*, tr.tgl_jemput, tt.nama_toko, tt.alamat from tb_pengajuan_toko trt
     JOIN tb_retur tr on trt.id_retur = tr.id
     JOIN tb_toko tt on tr.id_toko = tt.id
@@ -252,10 +252,10 @@ class Toko extends CI_Controller
     $this->db->insert('tb_retur_histori', $histori);
     $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
     if ($action == "4") {
-      $dataPengajuan = array('status' => 4, 'id_direksi' => $id_direksi);
+      $dataPengajuan = array('status' => 5, 'id_direksi' => $id_direksi);
       $wherePengajuan = array('id' => $id_pengajuan);
       $this->db->update('tb_pengajuan_toko', $dataPengajuan, $wherePengajuan);
-      $this->db->update('tb_toko', array('status' => 6), array('id' => $id_toko));
+      $this->db->update('tb_toko', array('status' => 7), array('id' => $id_toko));
       // pesan ke pembuat
       $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$pembuat'")->row()->no_telp;
       $message = "Pengajuan Tutup Toko ( " . $get_toko . " - " . $pt . " ) anda Di setujui, silahkan kunjungi s.id/absi-app";
@@ -934,5 +934,45 @@ class Toko extends CI_Controller
       tampil_alert('error', 'GAGAL', 'Gagal mengunggah file!');
     }
     redirect('adm/Toko');
+  }
+
+  public function Suspend($id_pengajuan)
+  {
+    // Ambil data pengajuan untuk mendapatkan id_toko
+    $pengajuan = $this->db->get_where('tb_pengajuan_toko', ['id' => $id_pengajuan])->row();
+    if (!$pengajuan) {
+      tampil_alert('error', 'Gagal', 'Data pengajuan tidak ditemukan.');
+      redirect('adm/Toko/toko_tutup');
+      return;
+    }
+
+    // Update status tb_pengajuan_toko menjadi 4 (Selesai)
+    $this->db->where('id', $id_pengajuan)->update('tb_pengajuan_toko', ['status' => 4]);
+
+    // Update status tb_toko menjadi 0 (Nonaktif)
+    $this->db->where('id', $pengajuan->id_toko)->update('tb_toko', ['status' => 0]);
+
+    tampil_alert('success', 'Berhasil', 'Toko berhasil di-suspend.');
+    redirect('adm/Toko/toko_tutup');
+  }
+
+  public function nonaktifkan()
+  {
+    $id_toko = $this->input->post('id_toko');
+    if (!$id_toko) {
+      tampil_alert('error', 'Gagal', 'ID Toko tidak ditemukan.');
+      redirect('adm/Toko');
+      return;
+    }
+
+    $this->db->where('id', $id_toko);
+    $this->db->update('tb_toko', ['status' => 0]);
+
+    if ($this->db->affected_rows() > 0) {
+      tampil_alert('success', 'Berhasil', 'Toko berhasil dinonaktifkan.');
+    } else {
+      tampil_alert('error', 'Gagal', 'Toko gagal dinonaktifkan atau sudah nonaktif.');
+    }
+    redirect('adm/Toko/profil/' . $id_toko);
   }
 }

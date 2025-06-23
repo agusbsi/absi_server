@@ -1,3 +1,6 @@
+<?php
+$Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '2'")->num_rows();
+?>
 <!-- Sidebar -->
 <div class="sidebar">
   <!-- Sidebar Menu -->
@@ -42,14 +45,22 @@
           <p>
             Toko
             <i class="right fas fa-angle-left"></i>
+            <?php if ($Toko == 0) { ?>
+            <?php } else { ?>
+              <span class="right badge badge-danger"><?= $Toko ?></span>
+            <?php } ?>
           </p>
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="<?= base_url('adm/Toko/pengajuanToko') ?>" class="nav-link <?= ($title == 'Pengajuan Toko') ? "active" : "" ?>">
+            <a href="<?= base_url('accounting/Toko/pengajuanToko') ?>" class="nav-link <?= ($title == 'Pengajuan Toko') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
               <p>
                 Pengajuan Toko
+                <?php if ($Toko == 0) { ?>
+                <?php } else { ?>
+                  <span class="right badge badge-danger"><?= $Toko ?></span>
+                <?php } ?>
               </p>
             </a>
           </li>

@@ -313,9 +313,9 @@ class Toko extends CI_Controller
     $this->db->trans_start();
     $this->db->query("UPDATE tb_pengajuan_toko set status = $keputusan, id_mm = '$id' where id = '$id_pengajuan'");
     if ($keputusan == 2) {
-      $pesan = "Data Toko di teruskan ke pihak Audit!";
+      $pesan = "Data Toko di teruskan ke pihak Accounting!";
       $aksi = "Di Setujui Oleh MM : ";
-      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 10 and status = 1")->result_array();
+      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 15 and status = 1")->result_array();
       $message = "Anda memiliki 1 Pengajuan Toko Baru ( " . $toko . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
     } else {
       $pesan = "Data Toko DI Tolak";

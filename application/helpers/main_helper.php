@@ -121,11 +121,13 @@ function status_pengajuan($id)
     } else if ($id == 1) {
         echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (MV)</span>";
     } else if ($id == 2) {
-        echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (Audit)</span>";
+        echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (Accounting)</span>";
     } else if ($id == 3) {
         echo "<span class='badge badge-warning badge-sm'>Proses Verifikasi (Direksi)</span>";
     } else if ($id == 4) {
-        echo "<span class='badge badge-success badge-sm'>Disetujui</span>";
+        echo "<span class='badge badge-success badge-sm'>Selesai</span>";
+    } else if ($id == 5) {
+        echo "<span class='badge badge-warning badge-sm'>Disetujui, Proses Suspend</span>";
     } else {
         echo "<span class='badge badge-danger badge-sm'>Di Tolak</span>";
     }
@@ -181,6 +183,8 @@ function status_toko($id)
         echo "<span class='badge badge-danger'>Di Tolak !</span>";
     } elseif ($id == 6) {
         echo "<span class='badge badge-warning'>Proses tutup</span>";
+    } elseif ($id == 7) {
+        echo "<span class='badge badge-warning'>Proses Suspend</span>";
     } else {
         echo "<span class='badge badge-danger'>Error!</span>";
     }

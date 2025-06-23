@@ -15,7 +15,7 @@ $Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '2'")-
           </p>
         </a>
       </li>
-      <li class="nav-item <?= ($title == 'Toko'  || $title == 'Pengajuan Toko') ? "menu-open" : "" ?>">
+      <!-- <li class="nav-item <?= ($title == 'Toko'  || $title == 'Pengajuan Toko') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Toko' || $title == 'Pengajuan Toko') ? "active" : "" ?>">
           <i class="nav-icon fas fa-store"></i>
           <p>
@@ -47,6 +47,12 @@ $Toko = $this->db->query("SELECT id FROM tb_pengajuan_toko WHERE status = '2'")-
             </a>
           </li>
         </ul>
+      </li> -->
+      <li class="nav-item">
+        <a href="<?= base_url('audit/Toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-store"></i>
+          <p>Toko Aktif</p>
+        </a>
       </li>
       <li class="nav-item">
         <a href="<?= base_url('audit/Customer') ?>" class="nav-link <?= ($title == 'Kelola Customer') ? "active" : "" ?>">
