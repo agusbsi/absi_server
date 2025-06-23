@@ -43,6 +43,12 @@
               <input type="text" value="<?= date('d-M-Y', strtotime($retur->tgl_jemput)) ?>" class="form-control form-control-sm" readonly>
             </div>
           </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="">Tgl Diterima:</label>
+              <input type="text" value="<?= $retur->tgl_terima ? date('d-M-Y', strtotime($retur->tgl_terima)) : "-" ?>" class="form-control form-control-sm" readonly>
+            </div>
+          </div>
           <div class="col-md-3">
             <div class="form-group">
               <label for="">Status:</label> <br>

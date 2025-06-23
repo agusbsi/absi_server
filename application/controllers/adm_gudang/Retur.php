@@ -176,6 +176,7 @@ class Retur extends CI_Controller
     $id_retur = $this->input->post('id_retur');
     $id_toko = $this->input->post('id_toko');
     $catatan = $this->input->post('catatan');
+    $tgl_terima = $this->input->post('tgl_terima');
     $qty_terima = $this->input->post('qty_input');
     $id_produk = $this->input->post('id_produk');
     $nilai = count($id_produk);
@@ -184,10 +185,8 @@ class Retur extends CI_Controller
     for ($i = 0; $i < $nilai; $i++) {
       $d_id_produk = $id_produk[$i];
       $d_qty_input = (float)$qty_terima[$i];
-      $d_catatan = $catatan[$i];
       $data_detail = [
         'qty_terima' => $d_qty_input,
-        'catatan_gudang' => $d_catatan,
       ];
       $where_detail = [
         'id_produk' => $d_id_produk,
@@ -220,6 +219,7 @@ class Retur extends CI_Controller
     $data_retur = array(
       'status' => 15,
       'updated_at' => date('Y-m-d H:i:s'),
+      'tgl_terima' => $tgl_terima,
     );
     $where_retur = array('id' => $id_retur);
 
@@ -245,13 +245,14 @@ class Retur extends CI_Controller
     $qty_input = $this->input->post('qty_input');
     $id_toko = $this->input->post('id_toko');
     $catatan = $this->input->post('catatan');
+    $tgl_terima = $this->input->post('tgl_terima');
     $id_retur = $this->input->post('id_retur');
     $gudang = $this->session->userdata('nama_user');
-    date_default_timezone_set('Asia/Jakarta');
     $data_retur = [
       'id_toko' => $id_toko,
       'status' => '4',
       'updated_at' => date('Y-m-d H:i:s'),
+      'tgl_terima' => $tgl_terima,
     ];
     $where_retur = ['id' => $id_retur];
 
@@ -261,10 +262,8 @@ class Retur extends CI_Controller
     for ($i = 0; $i < $nilai; $i++) {
       $d_id_produk = $id_produk[$i];
       $d_qty_input = (float)$qty_input[$i];
-      $d_catatan = $catatan[$i];
       $data_detail = [
         'qty_terima' => $d_qty_input,
-        'catatan_gudang' => $d_catatan,
       ];
       $where_detail = [
         'id_produk' => $d_id_produk,

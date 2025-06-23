@@ -158,6 +158,11 @@
               <textarea name="catatan" class="form-control form-control-sm" placeholder="Berikan catatan disini..." required></textarea>
               <small>* Wajib di isi.</small>
             </div>
+            <div class="form-group">
+              <label for="tgl_terima">Tanggal Penerimaan : *</label>
+              <input type="date" name="tgl_terima" id="tgl_terima" class="form-control form-control-sm" required>
+              <small>* Wajib di isi.</small>
+            </div>
             <hr>
             <li class="fas fa-info"></li> Reminder : Proses retur ini akan mempengaruhi jumlah stok di toko : <strong><?= $retur->nama_toko ?></strong> !
 

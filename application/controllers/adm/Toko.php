@@ -256,6 +256,7 @@ class Toko extends CI_Controller
       $wherePengajuan = array('id' => $id_pengajuan);
       $this->db->update('tb_pengajuan_toko', $dataPengajuan, $wherePengajuan);
       $this->db->update('tb_toko', array('status' => 7), array('id' => $id_toko));
+      $this->db->update('tb_retur', array('status' => 13), array('id' => $id_retur));
       // pesan ke pembuat
       $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$pembuat'")->row()->no_telp;
       $message = "Pengajuan Tutup Toko ( " . $get_toko . " - " . $pt . " ) anda Di setujui, silahkan kunjungi s.id/absi-app";
