@@ -53,12 +53,12 @@ class Toko extends CI_Controller
     $this->db->query("UPDATE tb_pengajuan_toko set status = $keputusan where id = '$id_pengajuan'");
     if ($keputusan == 3) {
       $pesan = "Data Toko di teruskan ke Direksi!";
-      $aksi = "Di Setujui Oleh AUDIT : ";
+      $aksi = "Di Setujui Oleh Accounting : ";
       $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 1 and status = 1")->result_array();
       $message = "Anda memiliki 1 Pengajuan Toko Baru ( " . $toko . " - " . $pt . " ) yang perlu approve silahkan kunjungi s.id/absi-app";
     } else {
       $pesan = "Data Toko DI Tolak";
-      $aksi = "Di Tolak Oleh AUDIT : ";
+      $aksi = "Di Tolak Oleh Accounting : ";
       $spv = $this->db->query("SELECT id_spv FROM tb_toko WHERE id = '$id_toko'")->row()->id_spv;
       $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$spv'")->result_array();
       $message = "Pengajuan Toko ( " . $toko . " - " . $pt . " ) anda DI TOLAK, Silahkan ajukan kembali dengan data yang benar,  s.id/absi-app";
