@@ -20,7 +20,7 @@ $Mutasi = $this->db->query("SELECT id FROM tb_mutasi WHERE status = '0'")->num_r
       </li>
       <li class="nav-header">Master Data</li>
       <li class="nav-item">
-        <a href="<?= base_url('adm_mv/barang') ?>" class="nav-link <?= ($title == 'Master Barang') ? "active" : "" ?>">
+        <a href="<?= base_url('adm/Produk') ?>" class="nav-link <?= ($title == 'Master Barang') ? "active" : "" ?>">
           <i class="nav-icon fas fa-boxes"></i>
           <p>
             Artikel
