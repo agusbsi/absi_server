@@ -128,7 +128,8 @@
                                                                           echo $stok->qty_awal;
                                                                         } ?>">
                         </td>
-                        <td style="width:35%"> <input type="number" name="qty_input[]" min="0" class="form-control form-control-sm" required></td>
+                        <td style="width:35%"> <input type="number" name="qty_input[]" min="0" class="form-control form-control-sm"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" required></td>
                     </tr>
                   <?php
                       } ?>
