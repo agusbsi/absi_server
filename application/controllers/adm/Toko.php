@@ -821,7 +821,6 @@ class Toko extends CI_Controller
               FROM tb_kartu_stok 
               WHERE id_toko = ? AND id_produk = ?
               ORDER BY tanggal DESC 
-              LIMIT 3
           ) AS latest_dates
       )
       ORDER BY id ASC",
