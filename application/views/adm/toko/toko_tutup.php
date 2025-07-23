@@ -14,6 +14,7 @@
                   <th>Nama Toko</th>
                   <th>Alamat</th>
                   <th>Status</th>
+                  <th>Menu</th>
                 </tr>
               </thead>
               <tbody>
@@ -30,11 +31,14 @@
                         <?= jenis_toko($t->jenis_toko) ?>
                       </small>
                     </td>
-                    <td>
+                    <td style="width: 45%;">
                       <small><?= $t->alamat ?></small>
                     </td>
                     <td class="text-center">
                       <?= status_toko($t->status) ?>
+                    </td>
+                    <td class="text-center">
+                      <a href="<?= base_url('adm/Toko/detail_toko/' . $t->id) ?>" class="btn btn-info btn-sm"> <i class="fas fa-eye"></i> Detail</a>
                     </td>
                   </tr>
                 <?php endforeach ?>

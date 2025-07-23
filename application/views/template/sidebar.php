@@ -302,6 +302,15 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 4")->nu
           <p>B.A.P</p>
         </a>
       </li>
+      <li class="nav-header">Keuangan</li>
+      <li class="nav-item">
+        <a href="<?= base_url('adm/Keuangan/omset') ?>" class="nav-link <?= ($title == 'Omset') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-money-bill-wave"></i>
+          <p>
+            Omset
+          </p>
+        </a>
+      </li>
       <li class="nav-header">Akun</li>
       <li class="nav-item">
         <a href="<?= base_url('profile') ?>" class="nav-link <?= ($title == 'Profile') ? "active" : "" ?>">

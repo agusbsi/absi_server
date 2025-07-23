@@ -198,7 +198,7 @@ class Toko extends CI_Controller
   {
     $data['title'] = 'List Toko Tutup';
     $data['toko_tutup'] = $this->db->query("SELECT * from tb_toko
-    where status = 0 OR status = 6 order by id desc")->result();
+    where status = 0  order by tgl_suspend desc")->result();
     $this->template->load('template/template', 'adm/toko/toko_tutup', $data);
   }
   public function toko_tutup_d($id)
@@ -257,10 +257,17 @@ class Toko extends CI_Controller
       $this->db->update('tb_pengajuan_toko', $dataPengajuan, $wherePengajuan);
       $this->db->update('tb_toko', array('status' => 7), array('id' => $id_toko));
       $this->db->update('tb_retur', array('status' => 13), array('id' => $id_retur));
-      // pesan ke pembuat
-      $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$pembuat'")->row()->no_telp;
-      $message = "Pengajuan Tutup Toko ( " . $get_toko . " - " . $pt . " ) anda Di setujui, silahkan kunjungi s.id/absi-app";
-      kirim_wa($phones, $message);
+      // Ambil nomor WA
+      $phones   = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$pembuat'")->row()->no_telp;
+      $telp_Acc = $this->db->query("SELECT no_telp FROM tb_user WHERE role = '15' AND status = '1'")->row()->no_telp;
+
+      // Pesan untuk pembuat
+      $message_pembuat = "Pengajuan Tutup Toko ( $get_toko - $pt ) anda disetujui, silakan kunjungi s.id/absi-app.";
+      kirim_wa($phones, $message_pembuat);
+
+      // Pesan untuk akun role 15 (accounting)
+      $message_acc = "Proses penutupan toko ( $get_toko - $pt ) telah disetujui oleh direksi. Silakan lakukan pengecekan untuk suspend.";
+      kirim_wa($telp_Acc, $message_acc);
     } else {
       $dataPengajuan = array('status' => 5, 'id_direksi' => $id_direksi);
       $wherePengajuan = array('id' => $id_pengajuan);
@@ -507,6 +514,50 @@ class Toko extends CI_Controller
   public function profil($id_toko)
   {
     $data['title']         = 'Toko';
+    $query = $this->db->query("SELECT tt.*,tcs.nama_cust, tp.nama as provinsi,tk.nama as kabupaten,
+    tc.nama as kecamatan, tt.provinsi as id_provinsi, tt.kabupaten as id_kab, tt.kecamatan as id_kec, tg.nama_user as spg, tl.nama_user as leader, ts.nama_user as nama_spv from tb_toko tt
+     join wilayah_provinsi tp on tt.provinsi = tp.id
+     join wilayah_kabupaten tk on tt.kabupaten = tk.id
+     join wilayah_kecamatan tc on tt.kecamatan = tc.id
+     join tb_customer tcs on tt.id_customer = tcs.id
+     LEFT join tb_user tg on tt.id_spg = tg.id
+     LEFT join tb_user tl on tt.id_leader = tl.id
+     LEFT join tb_user ts on tt.id_spv = ts.id
+     where tt.id = '$id_toko'")->row();
+    $data['toko']          = $query;
+    $data['cek_status_stok']  = $this->db->query("SELECT status from tb_stok where id_toko = '$id_toko' and status = 2 ")->num_rows();
+    $ssr = $this->db->query("SELECT ssr from tb_toko where id = '$id_toko'")->row()->ssr;
+    $data['stok_produk'] = $this->db->query("
+        SELECT tb_produk.*, tb_stok.qty,tb_stok.updated_at, COALESCE(ROUND(AVG(penjualan_3_bulan.qty), 0), 0) * '$ssr' as ssr
+        FROM tb_produk
+        JOIN tb_stok ON tb_produk.id = tb_stok.id_produk AND tb_stok.id_toko = '$id_toko'
+        LEFT JOIN (
+            SELECT tb_penjualan_detail.id_produk, AVG(tb_penjualan_detail.qty) as qty
+            FROM tb_penjualan_detail
+            JOIN tb_penjualan ON tb_penjualan_detail.id_penjualan = tb_penjualan.id
+            WHERE tb_penjualan.id_toko = '$id_toko'
+                AND tb_penjualan.tanggal_penjualan >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
+            GROUP BY tb_penjualan_detail.id_produk
+        ) as penjualan_3_bulan ON tb_produk.id = penjualan_3_bulan.id_produk
+        WHERE tb_stok.id_toko = '$id_toko'
+        GROUP BY tb_produk.id
+    ")->result();
+    $data['list_produk'] = $this->db->query("SELECT * from tb_produk where id not in (select id_produk from tb_stok where id_toko = '$id_toko') ")->result();
+    $data['cek_status'] = $this->db->query("SELECT status from tb_toko where id = '$id_toko'")->row();
+    $data['customer'] = $this->db->query("SELECT * from tb_customer")->result();
+    $data['spv'] = $this->db->query("SELECT * from tb_user where role = 2 AND status = 1")->result();
+    $data['leader'] = $this->db->query("SELECT * from tb_user where role = 3 AND status = 1")->result();
+    $data['spg'] = $this->db->query("SELECT * from tb_user where role = 4 AND status = 1")->result();
+    $id_prov = $query->id_provinsi;
+    $id_kab = $query->id_kab;
+    $data['provinsi'] = $this->db->query("SELECT * from wilayah_provinsi")->result();
+    $data['kabupaten'] = $this->db->query("SELECT * from wilayah_kabupaten where provinsi_id = '$id_prov'")->result();
+    $data['kecamatan'] = $this->db->query("SELECT * from wilayah_kecamatan where kabupaten_id = '$id_kab'")->result();
+    $this->template->load('template/template', 'adm/toko/profil', $data);
+  }
+  public function detail_toko($id_toko)
+  {
+    $data['title']         = 'List Toko Tutup';
     $query = $this->db->query("SELECT tt.*,tcs.nama_cust, tp.nama as provinsi,tk.nama as kabupaten,
     tc.nama as kecamatan, tt.provinsi as id_provinsi, tt.kabupaten as id_kab, tt.kecamatan as id_kec, tg.nama_user as spg, tl.nama_user as leader, ts.nama_user as nama_spv from tb_toko tt
      join wilayah_provinsi tp on tt.provinsi = tp.id
@@ -938,6 +989,7 @@ class Toko extends CI_Controller
 
   public function Suspend($id_pengajuan)
   {
+    $pembuat = $this->session->userdata('nama_user');
     // Ambil data pengajuan untuk mendapatkan id_toko
     $pengajuan = $this->db->get_where('tb_pengajuan_toko', ['id' => $id_pengajuan])->row();
     if (!$pengajuan) {
@@ -950,8 +1002,23 @@ class Toko extends CI_Controller
     $this->db->where('id', $id_pengajuan)->update('tb_pengajuan_toko', ['status' => 4]);
 
     // Update status tb_toko menjadi 0 (Nonaktif)
-    $this->db->where('id', $pengajuan->id_toko)->update('tb_toko', ['status' => 0]);
+    $this->db->where('id', $pengajuan->id_toko)->update('tb_toko', [
+      'status' => 0,
+      'tgl_suspend' => date('Y-m-d H:i:s')
+    ]);
+    $this->db->where('id_toko', $pengajuan->id_toko)->update('tb_stok', [
+      'qty' => 0
+    ]);
 
+    // input ke history
+    $histori = array(
+      'id_toko' => $pengajuan->id_toko,
+      'aksi' => 'Suspend Toko oleh :',
+      'pembuat' => $pembuat,
+      'catatan' => "Toko telah di-suspend & stok telah di-reset ke 0.",
+    );
+    $this->db->insert('tb_toko_histori', $histori);
+    $this->db->trans_complete();
     tampil_alert('success', 'Berhasil', 'Toko berhasil di-suspend.');
     redirect('adm/Toko/toko_tutup');
   }

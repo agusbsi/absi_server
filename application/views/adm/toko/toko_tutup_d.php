@@ -41,7 +41,7 @@
             <hr>
             # List Artikel
             <hr>
-            <div style="max-height: 300px; overflow-y: auto;">
+            <div style="max-height: 400px; overflow-y: auto;">
               <table class="table table-bordered table-striped">
                 <thead>
                   <tr class="text-center">
@@ -198,7 +198,7 @@
       e.preventDefault();
       Swal.fire({
         title: 'Suspend Toko?',
-        text: "Apakah Anda yakin ingin suspend toko ini secara lengkap? Tindakan ini tidak dapat dibatalkan.",
+        text: "Apakah Anda yakin ingin suspend toko ini secara lengkap? Tindakan ini tidak dapat dibatalkan. Semua stok barang akan diubah menjadi 0 secara otomatis.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -210,7 +210,8 @@
           window.location.href = "<?= base_url('adm/Toko/Suspend/' . $retur->id) ?>";
         }
       });
-    })
+    });
+
 
     function printDiv(divName) {
       var printContents = document.getElementById(divName).innerHTML;

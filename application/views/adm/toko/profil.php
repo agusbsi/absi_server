@@ -137,13 +137,13 @@
 <section class="content">
   <div class="container-fluid">
     <?php if ($cek_status->status == 0) { ?>
-      <div class="overlay-wrapper">
-        <div class="overlay">
-          <i class="fas fa-3x fa-sync-alt fa-spin"></i>
-          <div class="text-bold pt-2">TOKO NON-AKTIF !</div>
-        </div>
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <i class="icon fas fa-exclamation-triangle"></i>
+        <small><strong>Perhatian:</strong> Toko ini telah <u>disuspend</u> dan saat ini <u>tidak aktif</u>. Seluruh stok barang telah dinonaktifkan dan tidak dapat diproses lebih lanjut.</small>
       </div>
     <?php } ?>
+
     <div class="judul_toko">
       <h5><i class="fas fa-store"></i> <?= $toko->nama_toko ?></h5>
       <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>

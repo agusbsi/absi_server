@@ -54,9 +54,9 @@
                     <td>
                       <?php if ($t->kategori == 3 && $t->kategori = 5) { ?>
                         <a href="<?= base_url('adm/Toko/toko_tutup_d/' . $t->id) ?>"
-                          class="btn btn-<?= ($t->status == 3 || $t->status == 5) ? 'success' : 'info' ?> btn-sm">
-                          <i class="fas fa-<?= ($t->status == 3 || $t->status == 5) ? 'arrow-right' : 'eye' ?>"></i>
-                          <?= ($t->status == 3 || $t->status == 5) ? 'Proses' : 'Detail' ?>
+                          class="btn btn-<?= ($t->status == 3 || $t->status == 6) ? 'success' : 'info' ?> btn-sm">
+                          <i class="fas fa-<?= ($t->status == 3 || $t->status == 6) ? 'arrow-right' : 'eye' ?>"></i>
+                          <?= ($t->status == 3 || $t->status == 6) ? 'Proses' : 'Detail' ?>
                         </a>
 
                       <?php } else { ?>
