@@ -14,6 +14,7 @@
                <tr class="text-center">
                  <th>#</th>
                  <th style="width: 16%;">Nomor</th>
+                 <th style="width: 16%;">No Kirim</th>
                  <th>Nama Toko</th>
                  <th>Status</th>
                  <th>Tanggal</th>
@@ -28,6 +29,9 @@
                    <td><?= $no ?></td>
                    <td>
                      <?= $dd->nomor ? $dd->nomor : "-" ?>
+                   </td>
+                   <td>
+                     <?= $dd->id_kirim ?>
                    </td>
                    <td>
                      <small>
