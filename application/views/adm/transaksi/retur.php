@@ -42,6 +42,7 @@
               <th>Nama Toko</th>
               <th>Status</th>
               <th>Tanggal</th>
+              <th>Tgl Terima</th>
               <th>Menu</th>
             </tr>
           </thead>
@@ -88,6 +89,12 @@
           "data": "tgl_dibuat",
           "render": function(data, type, row) {
             return '<small>' + data + '</small>';
+          }
+        },
+        {
+          "data": "tgl_terima",
+          "render": function(data, type, row) {
+            return '<small>' + (data ? data : '-') + '</small>';
           }
         },
         {
