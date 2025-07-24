@@ -17,7 +17,7 @@ class Bap extends CI_Controller
     $data['title'] = 'Bap';
     $data['list_data'] = $this->db->query("SELECT tp.*, tk.nama_toko, tu.nama_user as spg from tb_bap tp
     JOIN tb_toko tk on tp.id_toko = tk.id
-    JOIN tb_user tu on tp.id_user = tu.id
+    LEFT JOIN tb_user tu on tp.id_user = tu.id
     where tp.status >= 1 order by tp.status = 1 desc, tp.id desc ")->result();
     $this->template->load('template/template', 'manager_mv/bap/lihat_data', $data);
   }
@@ -30,15 +30,17 @@ class Bap extends CI_Controller
         JOIN tb_toko tk on tp.id_toko = tk.id
         JOIN tb_user tu on tp.id_user = tu.id
         where tp.id = '$Bap'")->row();
-    $data['detail_bap'] = $this->db->query("SELECT td.*,tpk.kode as kode_produk, tpk.nama_produk, tpk.satuan  from tb_bap_detail td
+    $data['detail_bap'] = $this->db->query("SELECT td.*,tpk.kode, tpk.nama_produk as artikel, tpk.satuan  from tb_bap_detail td
         JOIN tb_bap tp on td.id_bap = tp.id
         JOIN tb_produk tpk on td.id_produk = tpk.id
         where td.id_bap = '$Bap'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_bap_histori where id_bap = '$Bap'")->result();
     $this->template->load('template/template', 'manager_mv/bap/detail', $data);
   }
   public function simpan()
   {
     $username = $this->session->userdata('username');
+    $nama_user = $this->session->userdata('nama_user');
     $id_bap = $this->input->post('id_bap');
     $id_kirim = $this->input->post('id_kirim');
     $id_toko = $this->input->post('id_toko');
@@ -100,7 +102,13 @@ class Bap extends CI_Controller
     } else {
       $pesan = "Ditolak.";
     }
-
+    $histori = array(
+      'id_bap' => $id_bap,
+      'aksi' => $pesan,
+      'pembuat' => $nama_user,
+      'catatan' => $catatan_mv,
+    );
+    $this->db->insert('tb_bap_histori', $histori);
     $this->db->trans_complete();
 
     tampil_alert('success', 'Berhasil', 'Data Pengajuan BAP berhasil ' . $pesan);

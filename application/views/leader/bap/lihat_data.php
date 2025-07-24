@@ -17,8 +17,8 @@
            <table id="example1" class="table table-bordered table-striped">
              <thead>
                <tr class="text-center">
-                 <th>No</th>
-                 <th style="width: 16%;">ID Kirim</th>
+                 <th>#</th>
+                 <th style="width: 16%;">Nomor</th>
                  <th>Nama Toko</th>
                  <th>Status</th>
                  <th>Tanggal</th>
@@ -32,7 +32,7 @@
                  <tr>
                    <td><?= $no ?></td>
                    <td>
-                     <?= $dd->id_kirim ?>
+                     <?= $dd->nomor ? $dd->nomor : "-" ?>
                    </td>
                    <td>
                      <small>

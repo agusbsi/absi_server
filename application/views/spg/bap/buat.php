@@ -42,7 +42,7 @@
                 <div>
                     <input type="hidden" name="id_kirim" value="<?= $bap->id ?>">
                     <input type="hidden" name="unique_id" value="<?= uniqid() ?>">
-                    <strong><?= $bap->id ?></strong> <br>
+                    <strong>Nomor : <?= $bap->id ?></strong> <br>
                     <small><?= date('d M Y', strtotime($bap->created_at)) ?></small>
                 </div>
                 <div class="card-tools">
@@ -51,12 +51,14 @@
                     </a>
                 </div>
             </div>
-            <?php foreach ($detail as $d): ?>
+            <?php $no = 0;
+            foreach ($detail as $d): $no++; ?>
                 <div class="cardArtikel">
-                    <strong><?= $d->kode ?></strong>
+                    <strong><?= $no ?> | <?= $d->kode ?></strong>
                     <small><?= $d->artikel ?></small>
                     <input type="hidden" name="id_produk[]" value="<?= $d->id_produk ?>">
                     <div class="form-group mt-1">
+                        <label>Kategori : *</label>
                         <select name="kategori[]" class="form-control form-control-sm select2 kategori" required>
                             <option value=""> Pilih kategori </option>
                             <option value="Perbaikan QTY diterima"> Perbaikan QTY diterima</option>
@@ -73,7 +75,7 @@
                             <input type="text" name="qty_terima[]" class="form-control form-control-sm" value="<?= $d->qty_diterima ?>" readonly>
                         </div>
                         <div class="form-group">
-                            <strong>Di Update</strong>
+                            <strong>Di Update *</strong>
                             <input type="number" name="qty_update[]" class="form-control form-control-sm qty_update" required>
                         </div>
                     </div>
@@ -86,7 +88,7 @@
             <?php endforeach ?>
             <hr>
             <div class="card-footer text-right">
-                <a href="<?= base_url('spg/Bap') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Close</a>
+                <a href="<?= base_url('spg/Bap/selisih') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Close</a>
                 <button type="submit" class="btn btn-sm btn-info" id="btn_kirim"><i class="fas fa-paper-plane"></i> Kirim</button>
             </div>
         </form>

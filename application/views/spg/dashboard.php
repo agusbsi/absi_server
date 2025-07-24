@@ -212,12 +212,18 @@
       <span>SO</span>
     </div>
     <div class="menu-item">
-      <a href="<?= base_url('spg/Bap') ?>">
+      <a href="<?= base_url('spg/Bap/selisih') ?>">
         <?php if ($bap != 0) { ?>
           <div class="notif">
             <?= $bap; ?>
           </div>
         <?php } ?>
+        <i class="fas fa-not-equal"></i>
+      </a>
+      <span>Selisih Data</span>
+    </div>
+    <div class="menu-item">
+      <a href="<?= base_url('spg/Bap') ?>">
         <i class="fas fa-envelope"></i>
       </a>
       <span>BAP</span>

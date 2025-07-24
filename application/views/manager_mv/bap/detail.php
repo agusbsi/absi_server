@@ -6,8 +6,8 @@
           <h5><i class="fas fa-info"></i> BAP :</h5>
           <div class="row">
             <div class="col-md-3">
-              <strong>No Kirim : </strong> <br>
-              <?= $bap->id_kirim ?>
+              <strong>Nomor : </strong> <br>
+              <?= $bap->nomor ? $bap->nomor : "-" ?>
             </div>
             <div class="col-md-4">
               <strong>Toko : </strong> <br>
@@ -56,8 +56,8 @@
                           <td class="text-center"><?= $no ?></td>
                           <td>
                             <small>
-                              <strong><?= $d->kode_produk ?></strong><br>
-                              <?= $d->nama_produk ?>
+                              <strong><?= $d->kode ?></strong><br>
+                              <?= $d->artikel ?>
                             </small>
                             <input type="hidden" name="id_produk[]" value="<?= $d->id_produk ?>">
                             <input type="hidden" name="qty_terima[]" value="<?= $d->qty_awal ?>">
@@ -82,6 +82,31 @@
                 </div>
               </div>
               <hr>
+              # Proses Pengajuan :
+              <hr>
+              <div class="timeline">
+                <?php $no = 0;
+                foreach ($histori as $h) :
+                  $no++;
+                ?>
+                  <div>
+                    <i class="fas bg-blue"><?= $no ?></i>
+                    <div class="timeline-item">
+                      <span class="time"></span>
+                      <p class="timeline-header"><small><?= $h->aksi ?> <strong><?= $h->pembuat ?></strong></small></p>
+                      <div class="timeline-body">
+                        <small>
+                          <?= date('d-M-Y  H:i:s', strtotime($h->tanggal)) ?> <br>
+                          Catatan :<br>
+                          <?= $h->catatan ?>
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                <?php endforeach ?>
+              </div>
+              <hr>
+              <hr>
               <strong>Noted :</strong> <br>
               <small>Jika Proses BAP ini disetujui, secara otomatis akan memperbarui Stok.</small>
               <hr>
@@ -98,15 +123,6 @@
                     <option value="2"> Setuju </option>
                     <option value="4"> Tolak</option>
                   </select>
-                </div>
-              <?php } else { ?>
-                <div class="form-group">
-                  <label for="Catatan Leader:">Catatan Leader :</label>
-                  <textarea class="form-control form-control-sm" readonly><?= $bap->catatan_leader ?></textarea>
-                </div>
-                <div class="form-group">
-                  <label for="Catatan Leader:">Catatan MV :</label>
-                  <textarea class="form-control form-control-sm" readonly><?= $bap->catatan_mv ?></textarea>
                 </div>
               <?php } ?>
               <hr>

@@ -39,7 +39,7 @@
     <div class="container-fluid">
         <div class="judul">
             <div>
-                <strong><?= $bap->id_kirim ?></strong> <br>
+                <strong><?= $bap->nomor ? $bap->nomor : "-" ?></strong> <br>
                 <?= status_bap($bap->status) ?>
             </div>
             <div class="card-tools">
@@ -48,9 +48,10 @@
                 </a>
             </div>
         </div>
-        <?php foreach ($detail as $d): ?>
+        <?php $no = 0;
+        foreach ($detail as $d): $no++; ?>
             <div class="cardArtikel">
-                <strong><?= $d->kode ?></strong>
+                <strong><?= $no ?> | <?= $d->kode ?></strong>
                 <small><?= $d->artikel ?></small>
                 <div class="form-group mt-1">
                     <input type="text" class="form-control form-control-sm" value="<?= $d->kategori ?>" readonly>
@@ -76,21 +77,28 @@
             </div>
         <?php endforeach ?>
         <hr>
-        # Respon :
-        <div class="form-group">
-            <strong>Catatan Leader :</strong>
-            <textarea class="form-control form-control-sm" readonly><?= $d->catatan_leader ?></textarea>
-        </div>
-        <div class="form-group">
-            <strong>Catatan MV :</strong>
-            <textarea class="form-control form-control-sm" readonly><?= $d->catatan_mv ?></textarea>
-        </div>
+        # Proses Pengajuan :
         <hr>
-        <div class="card-footer text-right">
-            <a href="<?= base_url('spg/Bap') ?>" class="btn btn-sm btn-danger"><i class="fas fa-arrow-left"></i> Close</a>
-            <?php if ($bap->status == 4) { ?>
-                <a href="<?= base_url('spg/Bap/buat/' . $bap->id_kirim) ?>" class="btn btn-sm btn-warning"><i class="fas fa-paper-plane"></i> Ajukan Ulang</a>
-            <?php } ?>
+        <div class="timeline">
+            <?php $no = 0;
+            foreach ($histori as $h) :
+                $no++;
+            ?>
+                <div>
+                    <i class="fas bg-blue"><?= $no ?></i>
+                    <div class="timeline-item">
+                        <span class="time"></span>
+                        <p class="timeline-header"><small><?= $h->aksi ?> <strong><?= $h->pembuat ?></strong></small></p>
+                        <div class="timeline-body">
+                            <small>
+                                <?= date('d-M-Y  H:i:s', strtotime($h->tanggal)) ?> <br>
+                                Catatan :<br>
+                                <?= $h->catatan ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach ?>
         </div>
     </div>
 </section>

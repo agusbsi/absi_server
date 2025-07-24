@@ -34,11 +34,11 @@
         border-radius: 15px;
         padding: 2px 10px 2px 10px;
         color: #ffffff;
-        background-color: #38ae53;
+        background-color: #0aaefaff;
     }
 
     .tombol a:hover {
-        background-color: rgb(0, 123, 255);
+        background-color: rgba(4, 50, 99, 1);
         color: white;
     }
 </style>
@@ -46,7 +46,7 @@
     <div class="container-fluid">
         <div class="card card-info">
             <div class="card-header">
-                Data BAP
+                List Data BAP (Berita Acara Pengiriman)
                 <div class="card-tools">
                     <a href="<?= base_url('spg/Dashboard') ?>" type="button" class="btn btn-tool">
                         <i class="fas fa-times"></i>
@@ -54,28 +54,22 @@
                 </div>
             </div>
             <div class="card-body">
-                <small style="display: block;">Berikut list Pengiriman yang selisih, segera buat BAP untuk memperbaiki datanya.</small>
+                <small style="display: block;">Berikut list data BAP yang pernah anda buat.</small>
                 <hr>
                 <div id="bap-list">
                     <?php foreach ($bap as $row): ?>
                         <div class="box">
                             <div class="box-header">
-                                <strong><?= $row->id ?></strong>
+                                <strong><?= $row->nomor ? $row->nomor : "-" ?></strong>
                                 <small><?= date('d M Y', strtotime($row->created_at)) ?></small>
                             </div>
                             <div class="box-body">
-                                <h5><?= (empty($row->id_bap)) ? 'Status Kirim :' : 'Status BAP :' ?></h5> <?= (empty($row->id_bap)) ? status_pengiriman($row->status) : status_bap($row->status_bap) ?>
+                                <h5>Nomor Kirim : <?= $row->id_kirim ?></h5>
+                                <h5>Status :</h5>
+                                <h5><?= status_bap($row->status) ?></h5>
                             </div>
                             <div class="tombol">
-                                <?php
-                                if (empty($row->id_bap)) { ?>
-                                    <a href="<?= base_url('spg/Bap/buat/' . $row->id) ?>">Buat BAP</a>
-                                <?php } else if ($row->status_bap == 4) { ?>
-                                    <a href="<?= base_url('spg/Bap/buat/' . $row->id) ?>">Ajukan Ulang</a>
-                                    <a href="<?= base_url('spg/Bap/detail/' . $row->id_bap) ?>">Detail</a>
-                                <?php } else { ?>
-                                    <a href="<?= base_url('spg/Bap/detail/' . $row->id_bap) ?>">Detail</a>
-                                <?php } ?>
+                                <a href="<?= base_url('spg/Bap/detail/' . $row->id) ?>">Detail</a>
                             </div>
                         </div>
                     <?php endforeach; ?>

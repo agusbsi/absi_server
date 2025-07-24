@@ -34,14 +34,16 @@ class Bap extends CI_Controller
         JOIN tb_toko tk on tp.id_toko = tk.id
         JOIN tb_user tu on tp.id_user = tu.id
         where tp.id = '$Bap'")->row();
-    $data['detail_bap'] = $this->db->query("SELECT td.*,tpk.kode as kode_produk, tpk.nama_produk, tpk.satuan  from tb_bap_detail td
+    $data['detail_bap'] = $this->db->query("SELECT td.*,tpk.kode, tpk.nama_produk as artikel, tpk.satuan  from tb_bap_detail td
         JOIN tb_bap tp on td.id_bap = tp.id
         JOIN tb_produk tpk on td.id_produk = tpk.id
         where td.id_bap = '$Bap'")->result();
+    $data['histori'] = $this->db->query("SELECT * from tb_bap_histori where id_bap = '$Bap'")->result();
     $this->template->load('template/template', 'leader/bap/detail', $data);
   }
   public function simpan()
   {
+    $nama_user          = $this->session->userdata('nama_user');
     $id_bap = $this->input->post('id_bap');
     $tindakan = $this->input->post('tindakan');
     $catatan_leader = $this->input->post('catatan_leader');
@@ -52,10 +54,19 @@ class Bap extends CI_Controller
     );
     if ($tindakan == 1) {
       $pesan = "Di setujui. ";
+      $status_aksi = "Disetujui TL :";
     } else {
       $pesan = "Di tolak. ";
+      $status_aksi = "Ditolak TL :";
     }
     $this->db->update('tb_bap', $data, $where);
+    $histori = array(
+      'id_bap' => $id_bap,
+      'aksi' => $status_aksi,
+      'pembuat' => $nama_user,
+      'catatan' => $catatan_leader,
+    );
+    $this->db->insert('tb_bap_histori', $histori);
     tampil_alert('success', 'Berhasil', 'Data Pengajuan BAP berhasil ' . $pesan);
     redirect(base_url('leader/Bap/detail_p/' . $id_bap));
   }
