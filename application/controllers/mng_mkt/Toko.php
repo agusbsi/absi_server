@@ -123,7 +123,8 @@ class Toko extends CI_Controller
     if ($action == "1") {
       $hp = $this->db->select('no_telp')
         ->from('tb_user')
-        ->where_in('role', array(6, 8))
+        ->where_in('role', [6, 8])
+        ->where('status', '1')
         ->get()
         ->result();
       foreach ($hp as $h) {

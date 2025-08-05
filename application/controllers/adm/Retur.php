@@ -60,6 +60,7 @@ class Retur extends CI_Controller
       status_retur($stok->status);
       $row['status'] = ob_get_clean();
       $row['tgl_dibuat'] = date('d-M-Y H:i:s', strtotime($stok->created_at));
+      $row['tgl_terima'] = date('d-M-Y H:i:s', strtotime($stok->tgl_terima));
       $row['menu'] = $stok->id;
       $output_data[] = $row;
     }

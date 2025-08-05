@@ -84,7 +84,7 @@ class Stok extends CI_Controller
           GROUP BY tp.id_toko, tpd.id_produk
       ) tpk ON tsh.id_produk = tpk.id_produk AND tsh.id_toko = tpk.id_toko
       JOIN tb_toko tt ON tsh.id_toko = tt.id
-      WHERE tsh.id_produk = ? 
+      WHERE tsh.id_produk = ? AND tt.status = 1 
       GROUP BY tsh.id_toko, tsh.qty_awal, tt.nama_toko, tpd.qty, trd.qty_retur, mk.qty_mk, mm.qty_mk, tpk.qty_terima
       ORDER BY tt.nama_toko ASC
       ";
@@ -163,7 +163,7 @@ class Stok extends CI_Controller
     $params = [$start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal];
 
     if ($id_artikel != "all") {
-      $where_artikel = "WHERE tsh.id_produk = ?";
+      $where_artikel = "WHERE tsh.id_produk = ? AND tt.status = 1";
       $params[] = $id_artikel;
 
       $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
@@ -226,6 +226,7 @@ class Stok extends CI_Controller
           GROUP BY tp.id_toko, tpd.id_produk
       ) tpk ON tsh.id_produk = tpk.id_produk AND tsh.id_toko = tpk.id_toko
       JOIN tb_produk tpp ON tsh.id_produk = tpp.id
+      JOIN tb_toko tt ON tsh.id_toko = tt.id
       $where_artikel
       GROUP BY tsh.id_produk, tpp.kode, tpp.nama_produk
       ORDER BY tpp.kode ASC

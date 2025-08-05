@@ -41,47 +41,16 @@
        <li class="nav-item">
          <a href="<?= base_url('mng_ops/Dashboard/toko') ?>" class="nav-link <?= ($title == 'Toko') ? "active" : "" ?>">
            <i class="nav-icon fas fa-store"></i>
-           <p>Toko </p>
+           <p>Toko Aktif</p>
          </a>
        </li>
        <li class="nav-header">Menu Utama</li>
-       <li class="nav-item">
-         <a href="<?= base_url('mng_ops/Dashboard/permintaan') ?>" class="nav-link <?= ($title == 'Permintaan') ? "active" : "" ?>">
-           <i class="nav-icon fas fa-file-alt"></i>
-           <p>
-             Permintaan
-           </p>
-         </a>
-       </li>
-       <li class="nav-item">
-         <a href="<?= base_url('mng_ops/Dashboard/pengiriman') ?>" class="nav-link <?= ($title == 'pengiriman') ? "active" : "" ?>">
-           <i class="nav-icon fas fa-truck"></i>
-           <p>
-             Pengiriman
-           </p>
-         </a>
-       </li>
-       <li class="nav-item">
-         <a href="<?= base_url('mng_ops/Dashboard/retur') ?>" class="nav-link <?= ($title == 'retur') ? "active" : "" ?>">
-           <i class="nav-icon fas fa-exchange-alt"></i>
-           <p>
-             Retur
-           </p>
-         </a>
-       </li>
-       <li class="nav-item">
-         <a href="<?= base_url('mng_mkt/Penjualan') ?>" class="nav-link <?= ($title == 'Penjualan') ? "active" : "" ?>">
-           <i class="nav-icon fas fa-shopping-cart"></i>
-           <p>
-             Penjualan
-           </p>
-         </a>
-       </li>
+
        <li class="nav-item">
          <a href="<?= base_url('sup/So') ?>" class="nav-link <?= ($title == 'Management Stock Opname') ? "active" : "" ?>">
            <i class="nav-icon fas fa-file-alt"></i>
            <p>
-             Kelola SO Toko
+             Management SO Artikel
            </p>
          </a>
        </li>
@@ -95,13 +64,13 @@
          </a>
        </li>
        <li class="nav-item">
-        <a href="<?= base_url('hrd/Toko') ?>" class="nav-link <?= ($title == 'Akses Toko') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-store"></i>
-          <p>
-            Akses Toko SPG
-          </p>
-        </a>
-      </li>
+         <a href="<?= base_url('hrd/Toko') ?>" class="nav-link <?= ($title == 'Akses Toko') ? "active" : "" ?>">
+           <i class="nav-icon fas fa-store"></i>
+           <p>
+             Akses Toko SPG
+           </p>
+         </a>
+       </li>
        <li class="nav-header">Akun</li>
        <li class="nav-item">
          <a href="<?= base_url('Profile') ?>" class="nav-link <?= ($title == 'Profil') ? "active" : "" ?>">

@@ -50,6 +50,22 @@
                 </h3>
             </div>
             <div class="card-body">
+                <!-- Modern Info Banner -->
+                <div class="alert alert-info border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px;">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-3">
+                            <i class="fas fa-info-circle fa-2x text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1 font-weight-bold">📊 Informasi Laporan Stok</h6>
+                            <p class="mb-0 small opacity-90">
+                                Data stok artikel ini hanya menampilkan dari <strong>toko yang masih aktif beroperasi</strong>.
+                                Stok dari toko yang sudah tutup tidak dimasukkan dalam perhitungan untuk memastikan akurasi data real-time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
