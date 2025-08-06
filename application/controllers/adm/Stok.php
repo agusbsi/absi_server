@@ -15,6 +15,8 @@ class Stok extends CI_Controller
     if ($this->session->userdata('status') != 'login') {
       redirect(base_url());
     }
+    $this->load->library('upload');
+    $this->load->database();
   }
 
   //   halaman utama
@@ -827,63 +829,145 @@ class Stok extends CI_Controller
   }
   public function process_import()
   {
+    // Set time limit for processing large files
+    set_time_limit(300); // 5 minutes
+    ini_set('memory_limit', '512M'); // Increase memory limit
+
+    if (!isset($_FILES['excel_file']) || $_FILES['excel_file']['error'] !== UPLOAD_ERR_OK) {
+      echo json_encode(['error' => 'No file uploaded or upload error occurred']);
+      return;
+    }
+
     if ($_FILES['excel_file']['name']) {
       $config['upload_path'] = './assets/excel/';
-      $config['allowed_types'] = 'xlsx';
-      $config['max_size'] = 2048;
+      $config['allowed_types'] = 'xlsx|xls';
+      $config['max_size'] = 51200; // Increase to 50MB for large files
+      $config['file_name'] = 'import_' . time() . '_' . $_FILES['excel_file']['name'];
+
       $this->upload->initialize($config);
+
       if (!$this->upload->do_upload('excel_file')) {
         $error = array('error' => $this->upload->display_errors());
         echo json_encode($error);
       } else {
         $data = $this->upload->data();
         $file_path = './assets/excel/' . $data['file_name'];
-        $spreadsheet = IOFactory::load($file_path);
-        $sheet = $spreadsheet->getActiveSheet();
-        $excelData = '';
-        $rowNum = 1;
-        $startRow = 6;
-        $highestRow = $sheet->getHighestRow();
-        $totalData = 0;
-        $totalTerverifikasi = 0;
-        $totalTidakDitemukan = 0;
-        $kodeArray = [];
-        for ($row = $startRow; $row <= $highestRow; $row++) {
-          $kode = $sheet->getCell('C' . $row)->getValue();
-          $kodeArray[] = $kode;
-        }
-        $this->db->where_in('kode', $kodeArray);
-        $produkQuery = $this->db->get('tb_produk');
-        $existingProduk = $produkQuery->result_array();
-        $existingKodeArray = array_column($existingProduk, 'kode');
-        for ($row = $startRow; $row <= $highestRow; $row++) {
-          $excelData .= '<tr>';
-          $excelData .= '<td>' . ($row - $startRow + 1) . '</td>';
-          $kode = $sheet->getCell('C' . $row)->getValue();
-          $nama_artikel = $sheet->getCell('F' . $row)->getValue();
-          $stok = $sheet->getCell('I' . $row)->getValue();
-          $totalData++;
-          if (in_array($kode, $existingKodeArray)) {
-            $status = "<small class='text-success'> Terverifikasi </small>";
-            $totalTerverifikasi++;
-          } else {
-            $status = "<small class='text-danger'> Kode tidak ditemukan </small>";
-            $totalTidakDitemukan++;
+
+        try {
+          $spreadsheet = IOFactory::load($file_path);
+          $sheet = $spreadsheet->getActiveSheet();
+          $excelData = '';
+          $rowNum = 1;
+          $startRow = 2;
+          $highestRow = $sheet->getHighestRow();
+          $totalData = 0;
+          $totalTerverifikasi = 0;
+          $totalTidakDitemukan = 0;
+          $kodeArray = [];
+
+          // Check if file is too large (more than 10,000 rows)
+          if (($highestRow - $startRow + 1) > 10000) {
+            unlink($file_path);
+            echo json_encode(['error' => 'File terlalu besar. Maksimal 10,000 baris data yang dapat diproses.']);
+            return;
           }
-          $excelData .= '<td>' . $kode . '</td>';
-          $excelData .= '<td>' . $nama_artikel . '</td>';
-          $excelData .= '<td>' . $stok . '</td>';
-          $excelData .= '<td>' . $status . '</td>';
-          $excelData .= '</tr>';
+
+          // Collect all codes first for batch verification - using smaller chunks
+          $kodeArray = [];
+          for ($row = $startRow; $row <= $highestRow; $row++) {
+            $kode = trim($sheet->getCell('B' . $row)->getValue());
+            if (!empty($kode)) {
+              $kodeArray[] = $kode;
+            }
+          }
+
+          // Check existing products in smaller batches to avoid regex overflow
+          $existingKodeArray = [];
+          if (!empty($kodeArray)) {
+            $batchSize = 50; // Smaller batch size to prevent regex overflow
+            $kodeChunks = array_chunk($kodeArray, $batchSize);
+
+            foreach ($kodeChunks as $chunk) {
+              // Use direct SQL to avoid CodeIgniter regex issues with large IN clauses
+              if (count($chunk) > 25) {
+                // For very large chunks, use FIND_IN_SET or multiple OR conditions
+                $kodeList = "'" . implode("','", array_map([$this->db, 'escape_str'], $chunk)) . "'";
+                $query = "SELECT kode FROM tb_produk WHERE kode IN ($kodeList)";
+                $result = $this->db->query($query);
+                $batchResults = $result->result_array();
+              } else {
+                // For smaller chunks, use normal where_in
+                $this->db->where_in('kode', $chunk);
+                $batchResults = $this->db->get('tb_produk')->result_array();
+              }
+
+              $batchKodes = array_column($batchResults, 'kode');
+              $existingKodeArray = array_merge($existingKodeArray, $batchKodes);
+            }
+          }          // Process each row
+          for ($row = $startRow; $row <= $highestRow; $row++) {
+            $kode = trim($sheet->getCell('B' . $row)->getValue());
+            $nama_artikel = trim($sheet->getCell('C' . $row)->getValue());
+            $stok = trim($sheet->getCell('E' . $row)->getValue());
+
+            // Skip empty rows
+            if (empty($kode) && empty($nama_artikel) && empty($stok)) {
+              continue;
+            }
+
+            $totalData++;
+
+            $excelData .= '<tr>';
+            $excelData .= '<td>' . ($row - $startRow + 1) . '</td>';
+
+            if (in_array($kode, $existingKodeArray)) {
+              $status = "<small class='text-success'><i class='fas fa-check'></i> Terverifikasi</small>";
+              $totalTerverifikasi++;
+            } else {
+              $status = "<small class='text-danger'><i class='fas fa-times'></i> Kode tidak ditemukan</small>";
+              $totalTidakDitemukan++;
+            }
+
+            $excelData .= '<td>' . htmlspecialchars($kode) . '</td>';
+            $excelData .= '<td>' . htmlspecialchars($nama_artikel) . '</td>';
+            $excelData .= '<td>' . htmlspecialchars($stok) . '</td>';
+            $excelData .= '<td>' . $status . '</td>';
+            $excelData .= '</tr>';
+          }
+
+          // Clean up uploaded file
+          unlink($file_path);
+
+          $response = [
+            'excelData' => $excelData,
+            'totalData' => $totalData,
+            'totalTerverifikasi' => $totalTerverifikasi,
+            'totalTidakDitemukan' => $totalTidakDitemukan,
+            'fileInfo' => [
+              'fileName' => $_FILES['excel_file']['name'],
+              'fileSize' => round($_FILES['excel_file']['size'] / 1024, 2) . ' KB',
+              'uploadTime' => date('Y-m-d H:i:s'),
+              'startRow' => $startRow,
+              'endRow' => $highestRow
+            ],
+            'validation' => [
+              'isValid' => $totalTidakDitemukan == 0,
+              'accuracy' => $totalData > 0 ? round(($totalTerverifikasi / $totalData) * 100, 2) : 0,
+              'recommendation' => $totalTidakDitemukan > 0 ?
+                'Periksa kembali kode artikel yang tidak ditemukan sebelum menyimpan data.' :
+                'Data siap untuk disimpan ke database.'
+            ]
+          ];
+
+          echo json_encode($response);
+        } catch (Exception $e) {
+          // Clean up uploaded file on error
+          if (file_exists($file_path)) {
+            unlink($file_path);
+          }
+
+          echo json_encode(['error' => 'Error processing Excel file: ' . $e->getMessage()]);
         }
-        unlink($file_path);
-        $response = [
-          'excelData' => $excelData,
-          'totalData' => $totalData,
-          'totalTerverifikasi' => $totalTerverifikasi,
-          'totalTidakDitemukan' => $totalTidakDitemukan
-        ];
-        echo json_encode($response);
       }
     } else {
       echo json_encode(['error' => 'No file uploaded']);
@@ -891,42 +975,124 @@ class Stok extends CI_Controller
   }
   public function save_import()
   {
+    // Set time limit and memory for processing large datasets
+    set_time_limit(600); // 10 minutes
+    ini_set('memory_limit', '1024M'); // 1GB memory limit
+
     $pengguna = $this->session->userdata('nama_user');
+
+    // Start database transaction
     $this->db->trans_start();
-    $this->db->insert('tb_produk_histori', array('pengguna' => $pengguna));
-    $postData = json_decode(file_get_contents('php://input'), true);
-    if (!empty($postData)) {
-      $notFoundCodes = [];
-      $updateData = [];
-      foreach ($postData as $data) {
-        $kode = $data['kode'];
-        $stok = $data['stok'];
-        $productExists = $this->db->get_where('tb_produk', ['kode' => $kode])->row();
-        if ($productExists) {
-          $updateData[] = [
-            'kode' => $kode,
-            'stok' => $stok
+
+    try {
+      // Insert history record
+      $this->db->insert('tb_produk_histori', array(
+        'pengguna' => $pengguna,
+        'updated_at' => date('Y-m-d H:i:s')
+      ));
+
+      $postData = json_decode(file_get_contents('php://input'), true);
+
+      if (!empty($postData)) {
+        $notFoundCodes = [];
+        $updateData = [];
+        $successCount = 0;
+        $batchSize = 50; // Reduced batch size to prevent regex overflow
+
+        // Process data in batches to handle large datasets
+        $dataChunks = array_chunk($postData, $batchSize);
+
+        foreach ($dataChunks as $chunkIndex => $chunk) {
+          $kodesToCheck = array_column($chunk, 'kode');
+
+          // Use smaller sub-batches for database queries to avoid regex overflow
+          $subBatchSize = 25; // Even smaller for WHERE IN queries
+          $kodeSubChunks = array_chunk($kodesToCheck, $subBatchSize);
+          $existingKodes = [];
+
+          foreach ($kodeSubChunks as $subChunk) {
+            // Use direct SQL for larger chunks to avoid regex overflow
+            if (count($subChunk) > 15) {
+              $kodeList = "'" . implode("','", array_map([$this->db, 'escape_str'], $subChunk)) . "'";
+              $query = "SELECT kode FROM tb_produk WHERE kode IN ($kodeList)";
+              $result = $this->db->query($query);
+              $existingProducts = $result->result_array();
+            } else {
+              $this->db->where_in('kode', $subChunk);
+              $existingProducts = $this->db->get('tb_produk')->result_array();
+            }
+
+            $subBatchKodes = array_column($existingProducts, 'kode');
+            $existingKodes = array_merge($existingKodes, $subBatchKodes);
+          }
+
+          $batchUpdateData = [];
+
+          foreach ($chunk as $data) {
+            $kode = trim($data['kode']);
+            $stok = is_numeric($data['stok']) ? floatval($data['stok']) : 0;
+
+            if (in_array($kode, $existingKodes)) {
+              $batchUpdateData[] = [
+                'kode' => $kode,
+                'stok' => $stok,
+                'updated_at' => date('Y-m-d H:i:s')
+              ];
+              $successCount++;
+            } else {
+              $notFoundCodes[] = $kode;
+            }
+          }
+
+          // Batch update for this chunk
+          if (!empty($batchUpdateData)) {
+            $this->db->update_batch('tb_produk', $batchUpdateData, 'kode');
+          }
+        }
+
+        // Complete transaction
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+          $response = [
+            'status' => 'error',
+            'message' => 'Terjadi kesalahan saat menyimpan data ke database.'
           ];
         } else {
-          $notFoundCodes[] = $kode;
+          $message = "Berhasil menyimpan {$successCount} data.";
+          if (!empty($notFoundCodes)) {
+            $notFoundCount = count($notFoundCodes);
+            $message .= " {$notFoundCount} kode artikel tidak ditemukan.";
+          }
+
+          $response = [
+            'status' => 'success',
+            'message' => $message,
+            'details' => [
+              'total_processed' => count($postData),
+              'success_count' => $successCount,
+              'not_found_count' => count($notFoundCodes)
+            ]
+          ];
         }
+
+        echo json_encode($response);
+      } else {
+        $this->db->trans_rollback();
+        $response = [
+          'status' => 'error',
+          'message' => 'Tidak ada data yang diterima.'
+        ];
+        echo json_encode($response);
       }
-      if (!empty($updateData)) {
-        $this->db->update_batch('tb_produk', $updateData, 'kode');
-      }
-      $response = [
-        'status' => 'success',
-        'message' => empty($notFoundCodes) ? 'Semua data berhasil disimpan.' : 'Menyimpan data sebagian, beberapa kode artikel tidak ditemukan.'
-      ];
-      echo json_encode($response);
-    } else {
+    } catch (Exception $e) {
+      $this->db->trans_rollback();
       $response = [
         'status' => 'error',
-        'message' => 'Tidak ada data yang diterima.'
+        'message' => 'Terjadi kesalahan: ' . $e->getMessage()
       ];
       echo json_encode($response);
     }
-    $this->db->trans_complete();
   }
   public function unduhExcel()
   {
