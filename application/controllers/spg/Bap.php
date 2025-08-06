@@ -35,7 +35,7 @@ class Bap extends CI_Controller
     $data['title'] = 'Selisih';
     $id_toko = $this->session->userdata('id_toko');
     $data['bap'] = $this->db->query("SELECT * FROM tb_pengiriman
-    WHERE id_toko = ? AND status = '3' AND id NOT IN(SELECT id_kirim FROM tb_bap)
+    WHERE id_toko = ? AND status = '3' AND id NOT IN(SELECT id_kirim FROM tb_bap WHERE status != '4')
     ORDER BY id DESC", array($id_toko))->result();
 
     $this->template->load('template/template', 'spg/bap/selisih', $data);

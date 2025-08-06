@@ -3,7 +3,7 @@ $id = $this->session->userdata('id');
 $id_toko = $this->session->userdata('id_toko');
 $Penerimaan = $this->db->query("SELECT * FROM tb_pengiriman WHERE status = '1' AND id_toko ='$id_toko'")->num_rows();
 $Mutasi = $this->db->query("SELECT * FROM tb_mutasi WHERE status = '1' AND id_toko_tujuan ='$id_toko'")->num_rows();
-$bap = $this->db->query("SELECT * FROM tb_pengiriman WHERE status = '3' AND id_toko ='$id_toko' AND id NOT IN(SELECT id_kirim FROM tb_bap)")->num_rows();
+$bap = $this->db->query("SELECT * FROM tb_pengiriman WHERE status = '3' AND id_toko ='$id_toko' AND id NOT IN(SELECT id_kirim FROM tb_bap WHERE status != '4')")->num_rows();
 ?>
 <!-- Sidebar -->
 <div class="sidebar">
