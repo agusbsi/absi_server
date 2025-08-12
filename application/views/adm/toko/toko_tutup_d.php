@@ -103,7 +103,7 @@
               <?php endforeach ?>
             </div>
             <hr>
-            <?php if ($retur->status == 3) { ?>
+            <?php if ($retur->status == 3 && $this->session->userdata('role') == 1) { ?>
               <form action="<?= base_url('adm/Toko/tindakan') ?>" method="post" id="form_approve">
                 <strong>Catatan Direksi:</strong>
                 <textarea name="catatan_direksi" rows="3" class="form-control form-control-sm" required></textarea>

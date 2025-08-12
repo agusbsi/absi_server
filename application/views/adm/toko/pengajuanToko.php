@@ -54,13 +54,13 @@
                     <td>
                       <?php if ($t->kategori == 3) { ?>
                         <a href="<?= base_url('adm/Toko/toko_tutup_d/' . $t->id) ?>"
-                          class="btn btn-<?= ($t->status == 3 || $t->status == 6) ? 'success' : 'info' ?> btn-sm">
-                          <i class="fas fa-<?= ($t->status == 3 || $t->status == 6) ? 'arrow-right' : 'eye' ?>"></i>
-                          <?= ($t->status == 3 || $t->status == 6) ? 'Proses' : 'Detail' ?>
+                          class="btn btn-<?= (($t->status == 3 || $t->status == 6) && $this->session->userdata('role') == 1) ? 'success' : 'info' ?> btn-sm">
+                          <i class="fas fa-<?= (($t->status == 3 || $t->status == 6) && $this->session->userdata('role') == 1) ? 'arrow-right' : 'eye' ?>"></i>
+                          <?= (($t->status == 3 || $t->status == 6) && $this->session->userdata('role') == 1) ? 'Proses' : 'Detail' ?>
                         </a>
 
                       <?php } else { ?>
-                        <a href="<?= base_url('adm/Toko/detail/' . $t->id) ?>" class="btn btn-<?= $t->status == 3 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 3 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 3 ? "Proses" : "Detail" ?> </a>
+                        <a href="<?= base_url('adm/Toko/detail/' . $t->id) ?>" class="btn btn-<?= $t->status == 3 && $this->session->userdata('role') == 1 ? "success" : "info" ?> btn-sm "> <i class="fas fa-<?= $t->status == 3 && $this->session->userdata('role') == 1 ? "arrow-right" : "eye" ?>"></i> <?= $t->status == 3 && $this->session->userdata('role') == 1 ? "Proses" : "Detail" ?> </a>
                       <?php } ?>
                     </td>
                   </tr>
