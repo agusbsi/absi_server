@@ -23,7 +23,6 @@ class Profile extends CI_Controller
     $data['profil'] = $this->db->query("SELECT * FROM tb_user WHERE id = '$id'")->row();
     $data['lihat_role'] = $this->db->query("SELECT * FROM tb_user_role WHERE id = '$role'")->row();
     $data['foto'] = "img/profil/" . $id . ".jpg";
-    $data['avatar'] = $this->M_admin->get_data_gambar('tb_upload_gambar_user', $this->session->userdata('username'));
     $this->template->load('template/template', 'profile/index', $data);
   }
   public function update()

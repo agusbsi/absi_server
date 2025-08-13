@@ -293,18 +293,17 @@
         tableBody.innerHTML = '';
         data.tabel_data.forEach((item, index) => {
             var row = document.createElement('tr');
-            var stok = parseInt(item.stok_awal) - parseInt(item.jual) - parseInt(item.retur) - parseInt(item.mutasi_keluar) + parseInt(item.mutasi_masuk) + parseInt(item.terima);
             row.innerHTML = `
             <td class="text-center"><small>${index + 1}</small></td>
             <td><small>${item.kode}</small></td>
             <td><small>${item.deskripsi}</small></td>
-            <td class="text-center"> ${stok}</td>
+            <td class="text-center"> ${item.stok}</td>
             <td class="text-center">${data.tanggal}</td>
             <td class="text-center">
-               <a class="btn btn-sm btn-primary" href="<?= base_url() ?>adm/Stok/detail/${item.id_artikel}/${tanggal}">Detail</a>
+               <a class="btn btn-sm btn-primary" href="<?= base_url() ?>adm/Stok/detail/${item.id}/${tanggal}">Detail</a>
             </td>`;
             tableBody.appendChild(row);
-            var qty = parseInt(stok, 10);
+            var qty = parseInt(item.stok, 10);
             if (!isNaN(qty)) {
                 totalstok += qty;
             }

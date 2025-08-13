@@ -31,72 +31,32 @@ class Stok extends CI_Controller
   public function detail($id_artikel, $tanggal)
   {
     $data['title'] = 'Stok Artikel';
-    $start_date = "2024-12-01";
-    $params = [$start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $id_artikel];
 
     $query = "
-          SELECT 
-      tt.nama_toko, tsh.qty_awal AS stok_awal, 
-      COALESCE(tpd.qty, 0) AS jual, 
-      COALESCE(trd.qty_retur, 0) AS retur, 
-      COALESCE(mk.qty_mk, 0) AS mutasi_keluar, 
-      COALESCE(mm.qty_mk, 0) AS mutasi_masuk, 
-      COALESCE(tpk.qty_terima, 0) AS terima,
-      (tsh.qty_awal 
-          - COALESCE(tpd.qty, 0) 
-          - COALESCE(trd.qty_retur, 0) 
-          - COALESCE(mk.qty_mk, 0) 
-          + COALESCE(mm.qty_mk, 0) 
-          + COALESCE(tpk.qty_terima, 0)
-      ) AS stok_akhir
-      FROM tb_stok tsh
-      LEFT JOIN (
-          SELECT tp.id_toko, tpd.id_produk, SUM(tpd.qty) AS qty
-          FROM tb_penjualan_detail tpd
-          JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
-          WHERE DATE(tp.tanggal_penjualan) BETWEEN ? AND ?
-          GROUP BY tp.id_toko, tpd.id_produk
-      ) tpd ON tsh.id_produk = tpd.id_produk AND tsh.id_toko = tpd.id_toko
-      LEFT JOIN (
-          SELECT tr.id_toko, trd.id_produk, SUM(trd.qty_terima) AS qty_retur
-          FROM tb_retur_detail trd
-          JOIN tb_retur tr ON trd.id_retur = tr.id
-          WHERE DATE(tr.tgl_terima) BETWEEN ? AND ?
-          GROUP BY tr.id_toko, trd.id_produk
-      ) trd ON tsh.id_produk = trd.id_produk AND tsh.id_toko = trd.id_toko
-      LEFT JOIN (
-          SELECT tm.id_toko_asal AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
-          FROM tb_mutasi_detail tmd
-          JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
-          GROUP BY tm.id_toko_asal, tmd.id_produk
-      ) mk ON tsh.id_produk = mk.id_produk AND tsh.id_toko = mk.id_toko
-      LEFT JOIN (
-          SELECT tm.id_toko_tujuan AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
-          FROM tb_mutasi_detail tmd
-          JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
-          GROUP BY tm.id_toko_tujuan, tmd.id_produk
-      ) mm ON tsh.id_produk = mm.id_produk AND tsh.id_toko = mm.id_toko
-      LEFT JOIN (
-          SELECT tp.id_toko, tpd.id_produk, SUM(tpd.qty_diterima) AS qty_terima
-          FROM tb_pengiriman_detail tpd
-          JOIN tb_pengiriman tp ON tpd.id_pengiriman = tp.id
-          WHERE DATE(tp.updated_at) BETWEEN ? AND ?
-          GROUP BY tp.id_toko, tpd.id_produk
-      ) tpk ON tsh.id_produk = tpk.id_produk AND tsh.id_toko = tpk.id_toko
-      JOIN tb_toko tt ON tsh.id_toko = tt.id
-      WHERE tsh.id_produk = ? AND tt.status = 1 
-      GROUP BY tsh.id_toko, tsh.qty_awal, tt.nama_toko, tpd.qty, trd.qty_retur, mk.qty_mk, mm.qty_mk, tpk.qty_terima
-      ORDER BY tt.nama_toko ASC
-      ";
-
+        SELECT tt.nama_toko, ks.sisa AS stok
+        FROM tb_kartu_stok ks
+        JOIN tb_toko tt ON ks.id_toko = tt.id
+        WHERE ks.id_produk = ?
+          AND tt.status = 1
+          AND ks.tanggal = (
+              SELECT MAX(tanggal)
+              FROM tb_kartu_stok
+              WHERE id_produk = ks.id_produk
+                AND id_toko = ks.id_toko
+                AND tanggal <= ?
+          )
+        ORDER BY tt.nama_toko ASC
+    ";
+    $params = [$id_artikel, $tanggal];
 
     $data['data'] = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
     $data['list_data'] = $this->db->query($query, $params)->result();
     $data['tanggal'] = date('d M Y', strtotime($tanggal));
+
     $this->template->load('template/template', 'adm/stok/detail', $data);
   }
+
+
   public function detail_cust($id)
   {
     $data['title'] = 'Stok Artikel';
@@ -158,86 +118,57 @@ class Stok extends CI_Controller
   {
     $id_artikel = $this->input->get('id_artikel');
     $tanggal = $this->input->get('tanggal');
-    $start_date = "2024-12-01";
-
     $artikel = "Semua Artikel";
     $where_artikel = "";
-    $params = [$start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal, $start_date, $tanggal];
+    $params = [$tanggal . ' 23:59:59'];
 
-    if ($id_artikel != "all") {
-      $where_artikel = "WHERE tsh.id_produk = ? AND tt.status = 1";
+    if ($id_artikel !== "all") {
+      $where_artikel = "AND tp.id = ?";
       $params[] = $id_artikel;
 
       $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
-      $artikel = '<strong>' . $summary->kode . '</strong></br>' . $summary->nama_produk;
+      if ($summary) {
+        $artikel = '<strong>' . htmlspecialchars($summary->kode) . '</strong><br>' . htmlspecialchars($summary->nama_produk);
+      } else {
+        $artikel = 'Artikel tidak ditemukan';
+      }
     }
 
     $query = "
-    SELECT
-      tpp.id as id_artikel,
-      tpp.kode,
-      tpp.nama_produk AS deskripsi,
-      COALESCE(SUM(tsh.qty_awal), 0) AS stok_awal,
-      COALESCE(SUM(tpd.qty), 0) AS jual,
-      COALESCE(SUM(trd.qty_retur), 0) AS retur,
-      COALESCE(SUM(mk.qty_mk), 0) AS mutasi_keluar,
-      COALESCE(SUM(mm.qty_mk), 0) AS mutasi_masuk,
-      COALESCE(SUM(tpk.qty_terima), 0) AS terima,
-      (
-        COALESCE(SUM(tsh.qty_awal), 0)
-        - COALESCE(SUM(tpd.qty), 0)
-        - COALESCE(SUM(trd.qty_retur), 0)
-        - COALESCE(SUM(mk.qty_mk), 0)
-        + COALESCE(SUM(mm.qty_mk), 0)
-        + COALESCE(SUM(tpk.qty_terima), 0)
-      ) AS stok_akhir
-      FROM tb_stok tsh
-      LEFT JOIN (
-          SELECT tp.id_toko, tpd.id_produk, SUM(tpd.qty) AS qty
-          FROM tb_penjualan_detail tpd
-          JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
-          WHERE DATE(tp.tanggal_penjualan) BETWEEN ? AND ?
-          GROUP BY tp.id_toko, tpd.id_produk
-      ) tpd ON tsh.id_produk = tpd.id_produk AND tsh.id_toko = tpd.id_toko
-      LEFT JOIN (
-          SELECT tr.id_toko, trd.id_produk, SUM(trd.qty_terima) AS qty_retur
-          FROM tb_retur_detail trd
-          JOIN tb_retur tr ON trd.id_retur = tr.id
-          WHERE DATE(tr.tgl_terima) BETWEEN ? AND ?
-          GROUP BY tr.id_toko, trd.id_produk
-      ) trd ON tsh.id_produk = trd.id_produk AND tsh.id_toko = trd.id_toko
-      LEFT JOIN (
-          SELECT tm.id_toko_asal AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
-          FROM tb_mutasi_detail tmd
-          JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
-          GROUP BY tm.id_toko_asal, tmd.id_produk
-      ) mk ON tsh.id_produk = mk.id_produk AND tsh.id_toko = mk.id_toko
-      LEFT JOIN (
-          SELECT tm.id_toko_tujuan AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
-          FROM tb_mutasi_detail tmd
-          JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
-          GROUP BY tm.id_toko_tujuan, tmd.id_produk
-      ) mm ON tsh.id_produk = mm.id_produk AND tsh.id_toko = mm.id_toko
-      LEFT JOIN (
-          SELECT tp.id_toko, tpd.id_produk, SUM(tpd.qty_diterima) AS qty_terima
-          FROM tb_pengiriman_detail tpd
-          JOIN tb_pengiriman tp ON tpd.id_pengiriman = tp.id
-          WHERE DATE(tp.updated_at) BETWEEN ? AND ?
-          GROUP BY tp.id_toko, tpd.id_produk
-      ) tpk ON tsh.id_produk = tpk.id_produk AND tsh.id_toko = tpk.id_toko
-      JOIN tb_produk tpp ON tsh.id_produk = tpp.id
-      JOIN tb_toko tt ON tsh.id_toko = tt.id
-      $where_artikel
-      GROUP BY tsh.id_produk, tpp.kode, tpp.nama_produk
-      ORDER BY tpp.kode ASC
+        SELECT 
+            tp.id,
+            tp.kode,
+            tp.nama_produk as deskripsi,
+            COALESCE(SUM(ks.sisa), 0) AS stok
+        FROM tb_produk tp
+        LEFT JOIN (
+            SELECT ks1.*
+            FROM tb_kartu_stok ks1
+            INNER JOIN (
+                SELECT id_produk, id_toko, MAX(tanggal) AS max_tanggal
+                FROM tb_kartu_stok
+                WHERE tanggal <= ?
+                GROUP BY id_produk, id_toko
+            ) ks2 ON ks1.id_produk = ks2.id_produk
+                 AND ks1.id_toko = ks2.id_toko
+                 AND ks1.tanggal = ks2.max_tanggal
+        ) ks ON tp.id = ks.id_produk
+         JOIN tb_toko tt ON tt.id = ks.id_toko
+        WHERE 1=1 AND tt.status = 1
+          $where_artikel
+        GROUP BY tp.id, tp.kode, tp.nama_produk
+        ORDER BY tp.kode ASC
     ";
 
     $hasil_data = $this->db->query($query, $params)->result();
 
+    $no = 1;
+    foreach ($hasil_data as $row) {
+      $row->nomor = $no++;
+      $row->tanggal = date('d M Y', strtotime($tanggal));
+    }
+
     $data = [
-      'toko' => "Semua Toko",
       'artikel' => $artikel,
       'tanggal' => date('d M Y', strtotime($tanggal)),
       'tabel_data' => $hasil_data
@@ -245,6 +176,9 @@ class Stok extends CI_Controller
 
     echo json_encode($data);
   }
+
+
+
   public function cari_stoktoko()
   {
     $id_toko = $this->input->get('id_toko');

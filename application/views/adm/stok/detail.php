@@ -42,11 +42,11 @@
                                             <tr>
                                                 <td><?= $no ?></td>
                                                 <td><?= $dd->nama_toko ?></td>
-                                                <td class="text-center"><?= $dd->stok_akhir ?></td>
+                                                <td class="text-center"><?= $dd->stok ?></td>
                                                 <td class="text-center"><?= $tanggal ?></td>
                                             </tr>
                                         <?php
-                                            $total += $dd->stok_akhir; // Perbaiki penggunaan variabel
+                                            $total += $dd->stok; // Perbaiki penggunaan variabel
                                         endforeach;
                                         ?>
                                         <tr>
