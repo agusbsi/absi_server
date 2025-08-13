@@ -1,5 +1,5 @@
 <?php
-$retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '3'  OR status = '13' ")->num_rows();
+$retur = $this->db->query("SELECT id FROM tb_retur WHERE status = '3' ")->num_rows();
 ?>
 <div class="sidebar">
   <nav class="mt-2">

@@ -61,21 +61,21 @@ class Stok extends CI_Controller
           SELECT tr.id_toko, trd.id_produk, SUM(trd.qty_terima) AS qty_retur
           FROM tb_retur_detail trd
           JOIN tb_retur tr ON trd.id_retur = tr.id
-          WHERE DATE(tr.updated_at) BETWEEN ? AND ?
+          WHERE DATE(tr.tgl_terima) BETWEEN ? AND ?
           GROUP BY tr.id_toko, trd.id_produk
       ) trd ON tsh.id_produk = trd.id_produk AND tsh.id_toko = trd.id_toko
       LEFT JOIN (
           SELECT tm.id_toko_asal AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
           FROM tb_mutasi_detail tmd
           JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.updated_at) BETWEEN ? AND ?
+          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
           GROUP BY tm.id_toko_asal, tmd.id_produk
       ) mk ON tsh.id_produk = mk.id_produk AND tsh.id_toko = mk.id_toko
       LEFT JOIN (
           SELECT tm.id_toko_tujuan AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
           FROM tb_mutasi_detail tmd
           JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.updated_at) BETWEEN ? AND ?
+          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
           GROUP BY tm.id_toko_tujuan, tmd.id_produk
       ) mm ON tsh.id_produk = mm.id_produk AND tsh.id_toko = mm.id_toko
       LEFT JOIN (
@@ -186,7 +186,7 @@ class Stok extends CI_Controller
       (
         COALESCE(SUM(tsh.qty_awal), 0)
         - COALESCE(SUM(tpd.qty), 0)
-        + COALESCE(SUM(trd.qty_retur), 0)
+        - COALESCE(SUM(trd.qty_retur), 0)
         - COALESCE(SUM(mk.qty_mk), 0)
         + COALESCE(SUM(mm.qty_mk), 0)
         + COALESCE(SUM(tpk.qty_terima), 0)
@@ -203,21 +203,21 @@ class Stok extends CI_Controller
           SELECT tr.id_toko, trd.id_produk, SUM(trd.qty_terima) AS qty_retur
           FROM tb_retur_detail trd
           JOIN tb_retur tr ON trd.id_retur = tr.id
-          WHERE DATE(tr.updated_at) BETWEEN ? AND ?
+          WHERE DATE(tr.tgl_terima) BETWEEN ? AND ?
           GROUP BY tr.id_toko, trd.id_produk
       ) trd ON tsh.id_produk = trd.id_produk AND tsh.id_toko = trd.id_toko
       LEFT JOIN (
           SELECT tm.id_toko_asal AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
           FROM tb_mutasi_detail tmd
           JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.updated_at) BETWEEN ? AND ?
+          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
           GROUP BY tm.id_toko_asal, tmd.id_produk
       ) mk ON tsh.id_produk = mk.id_produk AND tsh.id_toko = mk.id_toko
       LEFT JOIN (
           SELECT tm.id_toko_tujuan AS id_toko, tmd.id_produk, SUM(tmd.qty_terima) AS qty_mk
           FROM tb_mutasi_detail tmd
           JOIN tb_mutasi tm ON tmd.id_mutasi = tm.id
-          WHERE DATE(tm.updated_at) BETWEEN ? AND ?
+          WHERE DATE(tm.tgl_terima) BETWEEN ? AND ?
           GROUP BY tm.id_toko_tujuan, tmd.id_produk
       ) mm ON tsh.id_produk = mm.id_produk AND tsh.id_toko = mm.id_toko
       LEFT JOIN (

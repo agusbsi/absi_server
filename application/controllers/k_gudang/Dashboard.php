@@ -121,8 +121,8 @@ class Dashboard extends CI_Controller
     $data['po'] = $this->db->query("SELECT tp.*, tt.nama_toko, tt.alamat,tl.nama_user as leader from tb_retur tp
     JOIN tb_toko tt on tp.id_toko = tt.id
     LEFT JOIN tb_user tl on tt.id_leader = tl.id
-    WHERE tp.status IN (3,4,7,13,14,15)
-    ORDER BY tp.status = 3 desc, tp.status = 13 desc, tp.id desc")->result();
+    WHERE tp.status IN (3,4,7)
+    ORDER BY tp.status = 3 desc, tp.id desc")->result();
     $this->template->load('template/template', 'k_gudang/retur', $data);
   }
   public function retur_detail($id)

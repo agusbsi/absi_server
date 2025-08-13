@@ -92,55 +92,88 @@ class Toko extends CI_Controller
     join tb_retur tr on tro.id_retur = tr.id where tro.id_retur = '$id_retur'")->result();
     $this->template->load('template/template', 'manager_mkt/toko/toko_tutup_d', $data);
   }
-  // tindakan tutup toko
   public function tindakan()
   {
-    $tgl_jemput = $this->input->post('tgl_jemput');
-    $catatan = $this->input->post('catatan_mm');
-    $action = $this->input->post('tindakan');
-    $id_retur = $this->input->post('id_retur');
-    $id_pengajuan = $this->input->post('id_pengajuan');
-    $id_toko = $this->input->post('id_toko');
-    $pembuat = $this->input->post('pembuat');
-    $mm = $this->session->userdata('nama_user');
-    $pt = $this->session->userdata('pt');
-    $id_mm = $this->session->userdata('id');
-    $status = $action == "1" ? "1" : "5";
-    $aksi = $action == "1" ? 'Disetujui' : 'Ditolak';
+    $catatan       = $this->input->post('catatan_mm');
+    $action        = $this->input->post('tindakan');
+    $id_retur      = $this->input->post('id_retur');
+    $id_pengajuan  = $this->input->post('id_pengajuan');
+    $id_toko       = $this->input->post('id_toko');
+    $pembuat       = $this->input->post('pembuat');
+    $mm            = $this->session->userdata('nama_user');
+    $pt            = $this->session->userdata('pt');
+    $id_mm         = $this->session->userdata('id');
 
-    $data = array('status' => $status, 'id_mm' => $id_mm);
-    $where = array('id' => $id_pengajuan);
-    $this->db->update('tb_pengajuan_toko', $data, $where);
-    // Insert history retur
-    $histori = array(
-      'id_retur' => $id_retur,
-      'aksi' => $aksi . ' oleh : ',
-      'pembuat' => $mm,
+    $status = $action == "1" ? "1" : "5";
+    $aksi   = $action == "1" ? 'Disetujui' : 'Ditolak';
+
+    // Mulai transaksi biar aman
+    $this->db->trans_start();
+
+    // Update status pengajuan
+    $this->db->update('tb_pengajuan_toko', [
+      'status' => $status,
+      'id_mm'  => $id_mm
+    ], ['id' => $id_pengajuan]);
+
+    // Insert histori retur
+    $this->db->insert('tb_retur_histori', [
+      'id_retur'  => $id_retur,
+      'aksi'      => $aksi . ' oleh : ',
+      'pembuat'   => $mm,
       'catatan_h' => $catatan
-    );
-    $this->db->insert('tb_retur_histori', $histori);
-    $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
+    ]);
+
+    // Ambil nama toko
+    $get_toko = $this->db->select('nama_toko')
+      ->where('id', $id_toko)
+      ->get('tb_toko')
+      ->row()->nama_toko;
+
+    $this->db->trans_complete();
+    tampil_alert('success', 'BERHASIL', "Pengajuan Tutup Toko berhasil di $aksi");
+    redirect(base_url('mng_mkt/Toko/toko_tutup_d/' . $id_pengajuan));
+    // Kirim WA di background (setelah respon terkirim)
+    if (function_exists('fastcgi_finish_request')) {
+      fastcgi_finish_request();
+    }
+    // Kirim WA di luar transaksi supaya DB commit dulu
     if ($action == "1") {
-      $hp = $this->db->select('no_telp')
+      // Kirim ke semua user role 6 & 8
+      $hp_list = $this->db->select('no_telp')
         ->from('tb_user')
         ->where_in('role', [6, 8])
         ->where('status', '1')
         ->get()
         ->result();
-      foreach ($hp as $h) {
-        $phone = $h->no_telp;
-        $message = "Anda memiliki 1 Pengajuan Tutup Toko ($get_toko - $pt) yang perlu di cek, silahkan kunjungi s.id/absi-app";
+
+      $message = "Anda memiliki 1 Pengajuan Tutup Toko ($get_toko - $pt) yang perlu dicek, silahkan kunjungi s.id/absi-app";
+
+      foreach ($hp_list as $h) {
+        $phone = $this->formatPhone($h->no_telp);
         kirim_wa($phone, $message);
       }
     } else {
-      // pesan ke pembuat
-      $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$pembuat'")->row()->no_telp;
-      $message = "Pengajuan Tutup Toko ( " . $get_toko . " - " . $pt . " ) anda Di Tolak, silahkan kunjungi s.id/absi-app";
-      kirim_wa($phones, $message);
+      // Kirim ke pembuat
+      $phone_pembuat = $this->db->select('no_telp')
+        ->where('id', $pembuat)
+        ->get('tb_user')
+        ->row()->no_telp;
+
+      $message = "Pengajuan Tutup Toko ( $get_toko - $pt ) anda Ditolak, silahkan kunjungi s.id/absi-app";
+      kirim_wa($this->formatPhone($phone_pembuat), $message);
     }
-    tampil_alert('success', 'BERHASIL', 'Pengajuan Tutup Toko berhasil di' . $aksi);
-    redirect(base_url('mng_mkt/Toko/toko_tutup_d/' . $id_pengajuan));
   }
+
+  private function formatPhone($number)
+  {
+    $number = preg_replace('/[^0-9]/', '', $number); // hanya angka
+    if (substr($number, 0, 1) === '0') {
+      return '62' . substr($number, 1);
+    }
+    return $number;
+  }
+
   // halaman update toko
   public function update($id)
   {

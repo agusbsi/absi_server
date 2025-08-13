@@ -135,7 +135,7 @@
                 <div class="col-12">
                   <a href="<?= base_url('adm/Toko/pengajuanToko') ?>" class="btn btn-sm btn-danger float-right" style="margin-right: 5px;">
                     <i class="fas fa-arrow-left"></i> Kembali </a>
-                  <a href="<?= base_url('adm/Toko/fpo_tutup/' . $retur->id) ?>" target="_blank" class="btn btn-default float-right btn-sm mr-3 <?= $retur->status != 4 ? 'disabled' : '' ?>"><i class="fas fa-print"></i> Print FPO</a>
+                  <a href="<?= base_url('adm/Toko/fpo_tutup/' . $retur->id) ?>" target="_blank" class="btn btn-default float-right btn-sm mr-3 <?= $retur->status != 6 ? 'disabled' : '' ?>"><i class="fas fa-print"></i> Print FPO</a>
                   <?php if ($retur->status == 6) : ?>
                     <button type="button" class="btn btn-sm btn-warning float-right mr-3 btn_suspend"><i class="fas fa-ban"></i> Suspend Toko</button>
                   <?php endif; ?>

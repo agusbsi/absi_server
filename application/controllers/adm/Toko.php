@@ -229,35 +229,55 @@ class Toko extends CI_Controller
   // tindakan tutup toko
   public function tindakan()
   {
-    $tgl_jemput = $this->input->post('tgl_jemput');
-    $catatan = $this->input->post('catatan_direksi');
-    $action = $this->input->post('tindakan');
+    $catatan      = $this->input->post('catatan_direksi');
+    $action       = $this->input->post('tindakan');
     $id_pengajuan = $this->input->post('id_pengajuan');
-    $id_retur = $this->input->post('id_retur');
-    $id_toko = $this->input->post('id_toko');
-    $pembuat = $this->input->post('pembuat');
-    $id_direksi = $this->session->userdata('id');
-    $mm = $this->session->userdata('nama_user');
-    $pt = $this->session->userdata('pt');
-    $status = $action == "4" ? "13" : "16";
-    $aksi = $action == "4" ? 'Disetujui' : 'Ditolak';
+    $id_retur     = $this->input->post('id_retur');
+    $id_toko      = $this->input->post('id_toko');
+    $pembuat      = $this->input->post('pembuat');
+    $id_direksi   = $this->session->userdata('id');
+    $mm           = $this->session->userdata('nama_user');
+    $pt           = $this->session->userdata('pt');
+    $aksi         = $action == "4" ? 'Disetujui' : 'Ditolak';
+
     $this->db->trans_start();
+
     // Insert history retur
-    $histori = array(
-      'id_retur' => $id_retur,
-      'aksi' => $aksi . ' oleh : ',
-      'pembuat' => $mm,
-      'catatan_h' => $catatan
-    );
+    $histori = [
+      'id_retur'   => $id_retur,
+      'aksi'       => $aksi . ' oleh : ',
+      'pembuat'    => $mm,
+      'catatan_h'  => $catatan
+    ];
     $this->db->insert('tb_retur_histori', $histori);
-    $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
+
+    $get_toko = $this->db->query("SELECT nama_toko FROM tb_toko WHERE id = '$id_toko'")
+      ->row()->nama_toko;
+
     if ($action == "4") {
-      $dataPengajuan = array('status' => 6, 'id_direksi' => $id_direksi);
-      $wherePengajuan = array('id' => $id_pengajuan);
-      $this->db->update('tb_pengajuan_toko', $dataPengajuan, $wherePengajuan);
-      $this->db->update('tb_toko', array('status' => 7), array('id' => $id_toko));
-      $this->db->update('tb_retur', array('status' => 13), array('id' => $id_retur));
-      // Ambil nomor WA
+      // Update status setuju
+      $this->db->update('tb_pengajuan_toko', ['status' => 6, 'id_direksi' => $id_direksi], ['id' => $id_pengajuan]);
+      $this->db->update('tb_toko', ['status' => 7], ['id' => $id_toko]);
+      $this->db->update('tb_retur', ['status' => 13], ['id' => $id_retur]);
+    } else {
+      // Update status tolak
+      $this->db->update('tb_pengajuan_toko', ['status' => 5, 'id_direksi' => $id_direksi], ['id' => $id_pengajuan]);
+    }
+
+    $this->db->trans_complete();
+
+    // ====== Kirim respon ke user dulu ======
+    tampil_alert('success', 'BERHASIL', 'Pengajuan Tutup Toko berhasil di' . $aksi);
+    redirect(base_url('adm/Toko/toko_tutup_d/' . $id_pengajuan));
+
+    // ====== Kirim WA di background ======
+    // Gunakan fastcgi_finish_request() agar respon ke browser selesai
+    if (function_exists('fastcgi_finish_request')) {
+      fastcgi_finish_request();
+    }
+
+    // Ambil nomor WA setelah respon dikirim
+    if ($action == "4") {
       $phones   = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$pembuat'")->row()->no_telp;
       $telp_Acc = $this->db->query("SELECT no_telp FROM tb_user WHERE role = '15' AND status = '1'")->row()->no_telp;
 
@@ -269,51 +289,10 @@ class Toko extends CI_Controller
       $message_acc = "Proses penutupan toko ( $get_toko - $pt ) telah disetujui oleh direksi. Silakan lakukan pengecekan untuk suspend.";
       kirim_wa($telp_Acc, $message_acc);
     } else {
-      $dataPengajuan = array('status' => 5, 'id_direksi' => $id_direksi);
-      $wherePengajuan = array('id' => $id_pengajuan);
-      $this->db->update('tb_pengajuan_toko', $dataPengajuan, $wherePengajuan);
-      // pesan ke pembuat
-      $phones = $this->db->query("SELECT no_telp FROM tb_user where id = '$pembuat'")->row()->no_telp;
+      $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE id = '$pembuat'")->row()->no_telp;
       $message = "Pengajuan Tutup Toko ( " . $get_toko . " - " . $pt . " ) anda Di Tolak, silahkan kunjungi s.id/absi-app";
       kirim_wa($phones, $message);
     }
-
-    $this->db->trans_complete();
-    tampil_alert('success', 'BERHASIL', 'Pengajuan Tutup Toko berhasil di' . $aksi);
-    redirect(base_url('adm/Toko/toko_tutup_d/' . $id_pengajuan));
-  }
-
-  // approve pengajuan tutup toko
-  public function approveToko()
-  {
-    $no_retur = $this->input->post('id_retur');
-    $id_toko = $this->input->post('id_toko');
-    $catatan_mm = $this->input->post('catatan_mm');
-    $data = array(
-      'catatan_mm'  => $catatan_mm,
-      'status'  => 13,
-      'updated_at' => date("Y-m-d")
-    );
-    $where = array(
-      'id'  => $no_retur
-    );
-    $dataToko = array(
-      'status'  => 0
-    );
-    $whereToko = array(
-      'id'  => $id_toko
-    );
-    $this->db->trans_start();
-    $this->db->update('tb_retur', $data, $where);
-    $this->db->update('tb_toko', $dataToko, $whereToko);
-    $this->db->trans_complete();
-    $get_toko = $this->db->query("SELECT nama_toko from tb_toko where id ='$id_toko'")->row()->nama_toko;
-    $hp = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 5")->row();
-    $phone = $hp->no_telp;
-    $message = "Anda memiliki pengajuan Retur untuk ( " . $get_toko . " ) segera proses & silahkan kunjungi s.id/absi-app";
-    kirim_wa($phone, $message);
-    tampil_alert('success', 'Berhasil', 'Data Pengajuan berhasil di Approve!');
-    redirect(base_url('adm/Toko/toko_tutup'));
   }
   public function update($id)
   {

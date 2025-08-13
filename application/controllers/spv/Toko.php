@@ -247,18 +247,27 @@ class Toko extends CI_Controller
     $this->db->insert('tb_pengajuan_toko', $dataPengajuan);
 
     $this->db->trans_complete();
+
+    // Kirim respon dulu
+    tampil_alert('success', 'Berhasil', 'Pengajuan Tutup Toko berhasil di ajukan.');
+    redirect(base_url('spv/Toko/pengajuanToko'));
+
+    // Kirim WA di background (setelah respon terkirim)
+    if (function_exists('fastcgi_finish_request')) {
+      fastcgi_finish_request();
+    }
+
     $hp = $this->db->select('no_telp')
       ->from('tb_user')
       ->where('role', 9)
       ->get()
       ->result();
+
     foreach ($hp as $h) {
       $phone = $h->no_telp;
       $message = "$nama Mengajukan Tutup Toko ($get_toko - $pt) yang perlu di cek, silahkan kunjungi s.id/absi-app";
       kirim_wa($phone, $message);
     }
-    tampil_alert('success', 'Berhasil', 'Pengajuan Tutup Toko berhasil di ajukan.');
-    redirect(base_url('spv/Toko/pengajuanToko'));
   }
   // ambil data ajax untuk wilayah
   function add_ajax_kab($id_prov)
