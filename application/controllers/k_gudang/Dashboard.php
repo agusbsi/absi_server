@@ -154,36 +154,53 @@ class Dashboard extends CI_Controller
   public function retur_simpan()
   {
     $tgl_jemput = $this->input->post('tgl_jemput');
-    $catatan = $this->input->post('catatan');
-    $id_retur = $this->input->post('id_retur');
-    $jenis = $this->input->post('jenis');
-    $kg = $this->session->userdata('nama_user');
-    $pt = $this->session->userdata('pt');
+    $catatan    = $this->input->post('catatan');
+    $id_retur   = $this->input->post('id_retur');
+    $jenis      = $this->input->post('jenis');
+
+    $kg   = $this->session->userdata('nama_user');
+    $pt   = $this->session->userdata('pt');
     $id_kg = $this->session->userdata('id');
-    $status = $jenis == "retur_spg" ? "7" : "14";
-    $data = array('status' => $status, 'tgl_jemput' => $tgl_jemput, 'id_kgudang' => $id_kg);
-    $where = array('id' => $id_retur);
-    $this->db->update('tb_retur', $data, $where);
+
+    $status = ($jenis == "retur_spg") ? "7" : "14";
+
+    // Mulai transaksi
+    $this->db->trans_start();
+
+    // Update status retur
+    $this->db->update('tb_retur', [
+      'status'      => $status,
+      'tgl_jemput'  => $tgl_jemput,
+      'id_kgudang'  => $id_kg
+    ], ['id' => $id_retur]);
 
     // Insert history retur
-    $histori = array(
-      'id_retur' => $id_retur,
-      'aksi' => 'Di Ketahui oleh : ',
-      'pembuat' => $kg,
+    $this->db->insert('tb_retur_histori', [
+      'id_retur'  => $id_retur,
+      'aksi'      => 'Diketahui oleh : ',
+      'pembuat'   => $kg,
       'catatan_h' => $catatan
-    );
-    $this->db->insert('tb_retur_histori', $histori);
-    $hp = $this->db->select('no_telp')
+    ]);
+
+    // Ambil semua nomor WA role 5
+    $phones = $this->db->select('no_telp')
       ->from('tb_user')
       ->where('role', 5)
+      ->where('status', 1)
       ->get()
-      ->result();
-    foreach ($hp as $h) {
-      $phone = $h->no_telp;
-      $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu di jemput, silahkan kunjungi s.id/absi-app";
-      kirim_wa($phone, $message);
+      ->result_array();
+
+    $this->db->trans_complete();
+
+    // Kirim WA di luar transaksi supaya DB tidak menunggu
+    if (!empty($phones)) {
+      $message = "Anda memiliki 1 Pengajuan Retur ($id_retur - $pt) yang perlu dijemput, silahkan kunjungi s.id/absi-app";
+      foreach ($phones as $p) {
+        kirim_wa($p['no_telp'], $message);
+      }
     }
-    tampil_alert('success', 'BERHASIL', 'Pengajuan Retur berhasil di proses dan siap dibuatkan SPPR');
+
+    tampil_alert('success', 'BERHASIL', 'Pengajuan Retur berhasil diproses dan siap dibuatkan SPPR');
     redirect(base_url('k_gudang/Dashboard/retur_detail/' . $id_retur));
   }
 }
