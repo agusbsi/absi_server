@@ -92,41 +92,63 @@ class Permintaan extends CI_Controller
   }
   public function approve()
   {
-    $id_user  = $this->session->userdata('id');
-    $pt       = $this->session->userdata('pt');
-    $id       = $this->input->post('id_permintaan');
+    $id_user    = $this->session->userdata('id');
+    $pt         = $this->session->userdata('pt');
+    $id         = $this->input->post('id_permintaan');
     date_default_timezone_set('Asia/Jakarta');
-    $update_at = date('Y-m-d H:i:s');
-    $id_detail = $this->input->post('id_detail');
-    $qty_acc   = $this->input->post('qty_acc');
+    $update_at  = date('Y-m-d H:i:s');
+    $id_detail  = $this->input->post('id_detail');
+    $qty_acc    = $this->input->post('qty_acc');
     $catatan_mv = $this->input->post('catatan_mv');
-    $tindakan  = $this->input->post('tindakan');
-    $jumlah    = count($id_detail);
-    $mv        = $this->db->select('nama_user')->get_where('tb_user', ['id' => $id_user])->row()->nama_user;
+    $tindakan   = $this->input->post('tindakan');
+    $jumlah     = count($id_detail);
+    $mv         = $this->session->userdata('nama_user');
 
     $this->db->trans_start();
 
+    // Tentukan status & aksi
     if ($tindakan == 1) {
-      // Update tb_permintaan
-      $this->db->update('tb_permintaan', [
-        'status' => 2,
-        'keterangan' => $catatan_mv,
-        'updated_at' => $update_at
-      ], ['id' => $id]);
+      $status = 2;
+      $aksi   = "Disetujui MV : ";
+    } elseif ($tindakan == 2) {
+      $status = 7;
+      $aksi   = "Ditunda MV : ";
+    } else {
+      $status = 5;
+      $aksi   = "Ditolak MV : ";
+    }
 
-      $aksi = "Disetujui MV : ";
+    // Update tb_permintaan
+    $this->db->update('tb_permintaan', [
+      'status'     => $status,
+      'keterangan' => $tindakan == 1 ? $catatan_mv : null,
+      'updated_at' => $update_at
+    ], ['id' => $id]);
 
-      // Update tb_permintaan_detail menggunakan batch update
+    // Jika setuju, update detail
+    if ($tindakan == 1 && $jumlah > 0) {
       $detail_data = [];
       for ($i = 0; $i < $jumlah; $i++) {
         $detail_data[] = [
-          'id' => $id_detail[$i],
+          'id'      => $id_detail[$i],
           'qty_acc' => $qty_acc[$i]
         ];
       }
       $this->db->update_batch('tb_permintaan_detail', $detail_data, 'id');
+    }
 
-      // Ambil nomor telepon user dengan sekali query
+    // Insert histori
+    $this->db->insert('tb_po_histori', [
+      'id_po'   => $id,
+      'aksi'    => $aksi,
+      'pembuat' => $mv,
+      'catatan' => $catatan_mv
+    ]);
+
+    $this->db->trans_complete();
+
+    // Kirim WA (diluar transaction biar DB commit dulu)
+    if ($tindakan == 1) {
       $phones = $this->db->select('no_telp')
         ->where(['role' => 5, 'status' => 1])
         ->get('tb_user')
@@ -134,44 +156,25 @@ class Permintaan extends CI_Controller
 
       $message = "Anda memiliki 1 PO Barang ( $id - $pt ) yang perlu disiapkan silahkan kunjungi s.id/absi-app";
 
-      foreach ($phones as $phone) {
-        $number = $phone['no_telp'];
-        if (substr($number, 0, 1) == '0') {
-          $number = '62' . substr($number, 1);
-        }
+      foreach ($phones as $p) {
+        $number = $this->formatPhone($p['no_telp']);
         kirim_wa($number, $message);
       }
-    } elseif ($tindakan == 2) {
-      // Tunda
-      $this->db->update('tb_permintaan', [
-        'status' => 7,
-        'updated_at' => $update_at
-      ], ['id' => $id]);
-
-      $aksi = "Ditunda MV : ";
-    } else {
-      // Tolak
-      $this->db->update('tb_permintaan', [
-        'status' => 5,
-        'updated_at' => $update_at
-      ], ['id' => $id]);
-
-      $aksi = "Ditolak MV : ";
     }
 
-    // Insert histori
-    $this->db->insert('tb_po_histori', [
-      'id_po' => $id,
-      'aksi' => $aksi,
-      'pembuat' => $mv,
-      'catatan' => $catatan_mv
-    ]);
-
-    $this->db->trans_complete();
-
-    tampil_alert('success', 'Berhasil', 'Data PO Barang berhasil di proses.');
+    tampil_alert('success', 'Berhasil', 'Data PO Barang berhasil diproses.');
     redirect(base_url('sup/permintaan/detail/' . $id));
   }
+
+  private function formatPhone($number)
+  {
+    $number = preg_replace('/[^0-9]/', '', $number); // hanya angka
+    if (substr($number, 0, 1) === '0') {
+      return '62' . substr($number, 1);
+    }
+    return $number;
+  }
+
 
   public function hapus_item()
   {
