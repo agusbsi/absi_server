@@ -171,6 +171,22 @@
            </p>
          </a>
        </li>
+       <li class="nav-item">
+         <a href="<?= base_url('spv/Pengiriman') ?>" class="nav-link <?= ($title == 'Pengiriman') ? "active" : "" ?>">
+           <i class="nav-icon fas fa-truck"></i>
+           <p>
+             Pengiriman
+           </p>
+         </a>
+       </li>
+       <li class="nav-item">
+         <a href="<?= base_url('spv/Retur') ?>" class="nav-link <?= ($title == 'Retur') ? "active" : "" ?>">
+           <i class="nav-icon fas fa-exchange-alt"></i>
+           <p>
+             Retur
+           </p>
+         </a>
+       </li>
 
        <li class="nav-header">Akun</li>
        <li class="nav-item">
