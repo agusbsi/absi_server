@@ -100,7 +100,7 @@ class Dashboard extends CI_Controller
     from tb_toko tt
     left join tb_user tu on tt.id_spg = tu.id
     left join tb_user tl on tt.id_leader = tl.id
-    where tt.status = 1
+    where tt.status IN (1,7)
     order by tt.id desc")->result();
     $this->template->load('template/template', 'manager_ops/toko/index.php', $data);
   }

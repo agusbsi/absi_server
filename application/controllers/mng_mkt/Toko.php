@@ -22,7 +22,7 @@ class Toko extends CI_Controller
     $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user
     from tb_toko tt
     left join tb_user tu on tt.id_spg = tu.id
-    where tt.status = 1
+    where tt.status IN (1,7)
     ORDER BY tt.id desc")->result();
     $this->template->load('template/template', 'manager_mkt/toko/lihat_data', $data);
   }

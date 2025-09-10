@@ -27,7 +27,7 @@ class Toko extends CI_Controller
     left join tb_user tu on tt.id_spg = tu.id
     left join tb_user tl on tt.id_leader = tl.id
     left join tb_user spv on tt.id_spv = spv.id
-    where tt.status = 1 OR tt.status = 7
+    where tt.status IN (1,7)
     ORDER BY  tt.id desc")->result();
     $this->template->load('template/template', 'adm/toko/lihat_data', $data);
   }

@@ -22,7 +22,7 @@ class Toko extends CI_Controller
     $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user
     from tb_toko tt
     left join tb_user tu on tt.id_leader = tu.id
-    where tt.id_spv = $id_spv AND tt.status = 1 order by tt.id desc")->result();
+    where tt.id_spv = $id_spv AND tt.status IN (1,7) order by tt.id desc")->result();
     $this->template->load('template/template', 'spv/toko/lihat_data', $data);
   }
   public function pengajuanToko()
