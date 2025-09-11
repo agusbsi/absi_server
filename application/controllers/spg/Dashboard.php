@@ -28,7 +28,7 @@ class Dashboard extends CI_Controller
     $data['toko_new'] = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
     $data['terima'] = $this->db->query("SELECT * FROM tb_pengiriman WHERE  id_toko = '$id_toko' and status = '1'")->num_rows();
     $data['mutasi'] = $this->db->query("SELECT * FROM tb_mutasi WHERE status = '1' AND id_toko_tujuan ='$id_toko'")->num_rows();
-    $data['jml'] = $this->db->query("SELECT * from tb_toko where id_spg = '$id_spg' and status = 1")->num_rows();
+    $data['jml'] = $this->db->query("SELECT * from tb_toko where id_spg = '$id_spg' and status IN (1,7)")->num_rows();
     $data['bap'] = $this->db->query("SELECT * FROM tb_pengiriman WHERE status = '3' AND id_toko ='$id_toko' AND id NOT IN(SELECT id_kirim FROM tb_bap WHERE status != '4')")->num_rows();
     $this->template->load('template/template', 'spg/dashboard', $data);
   }
