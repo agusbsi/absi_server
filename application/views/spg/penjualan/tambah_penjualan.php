@@ -155,7 +155,7 @@
           <div class="form-group">
             <small><strong>Tanggal Penjualan : *</strong></small>
             <input type="hidden" name="unique_id" value="<?= uniqid() ?>">
-            <input id="tanggal_penjualan" name="tgl_jual" class="form-control form-control-sm" type="date" max="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d', strtotime('-200 days')) ?>" required>
+            <input id="tanggal_penjualan" name="tgl_jual" class="form-control form-control-sm" type="date" max="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d', strtotime('-260 days')) ?>" required>
           </div>
           <hr>
           <div class="item-list" id="item-list">
