@@ -58,6 +58,7 @@
               <thead>
                 <tr>
                   <th rowspan="2"><input type="checkbox" id="checkAll"></th>
+                  <th rowspan="2" style="width:10%" class="text-center">No Rak</th>
                   <th rowspan="2" style="width:10%" class="text-center">Kode</th>
                   <th rowspan="2" class="text-center">Nama Artikel</th>
                   <th rowspan="2">Satuan</th>
@@ -79,6 +80,7 @@
                   $no++; ?>
                   <tr>
                     <td><input type="checkbox" class="rowCheck" value="<?= $dd->id ?>"></td>
+                    <td class="text-center"><b><?= $dd->no_rak ? $dd->no_rak : '-' ?></b></td>
                     <td><b><?= $dd->kode ?></b></td>
                     <td><?= $dd->nama_produk ?></td>
                     <td><?= $dd->satuan ?></td>

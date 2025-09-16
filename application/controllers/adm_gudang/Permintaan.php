@@ -194,7 +194,7 @@ class Permintaan extends CI_Controller
   join tb_toko tt on tp.id_toko = tt.id
   join tb_user tu on tt.id_spg = tu.id
   where tp.id = '$no_permintaan'")->result();
-    $data['detail'] = $this->db->query("SELECT tpd.*, tpk.nama_produk, tpk.kode,tpk.satuan from tb_permintaan_detail tpd
+    $data['detail'] = $this->db->query("SELECT tpd.*, tpk.nama_produk, tpk.kode,tpk.satuan, tpk.no_rak from tb_permintaan_detail tpd
   join tb_produk tpk on tpd.id_produk = tpk.id
   where tpd.id_permintaan = '$no_permintaan' and tpd.status ='1'")->result();
     $this->load->view('adm_gudang/permintaan/list_packing', $data);

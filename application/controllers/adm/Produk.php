@@ -24,7 +24,7 @@ class Produk extends CI_Controller
   public function index()
   {
     $data['title'] = 'Produk';
-    $data['list_data'] = $this->db->query("SELECT * from tb_produk order by id desc")->result();
+    $data['list_data'] = $this->db->query("SELECT * from tb_produk order by id DESC")->result();
     $this->template->load('template/template', 'adm/produk/lihat_data', $data);
   }
 
@@ -194,7 +194,7 @@ class Produk extends CI_Controller
       $spreadsheet = new Spreadsheet();
       $worksheet = $spreadsheet->getActiveSheet();
       $worksheet->setTitle('Template_Artikel');
-      $worksheet->getStyle('A1:H1')->getFont()->setBold(true);
+      $worksheet->getStyle('A1:I1')->getFont()->setBold(true);
       $worksheet->getStyle('A1')
         ->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
@@ -208,6 +208,7 @@ class Produk extends CI_Controller
       $worksheet->setCellValue('F1', 'SP');
       $worksheet->setCellValue('G1', 'MIN PACKING');
       $worksheet->setCellValue('H1', 'BRAND');
+      $worksheet->setCellValue('I1', 'NO RAK');
       $row = 2;
       $no = 1;
       foreach ($detail as $data) {
@@ -219,15 +220,16 @@ class Produk extends CI_Controller
         $worksheet->setCellValue('F' . $row, $data->sp);
         $worksheet->setCellValue('G' . $row, $data->packing);
         $worksheet->setCellValue('H' . $row, $data->brand);
+        $worksheet->setCellValue('I' . $row, $data->no_rak);
         $row++;
         $no++;
       }
-      $range = 'A1:H' . ($row - 1);
+      $range = 'A1:I' . ($row - 1);
       $tableStyle = $worksheet->getStyle($range);
       $tableStyle->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
       $writer = new Xlsx($spreadsheet);
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      header('Content-Disposition: attachment; filename="template_artikel.xlsx"');
+      header('Content-Disposition: attachment; filename="template_artikel_new.xlsx"');
       ob_end_clean();
       $writer->save('php://output');
       exit();
@@ -259,6 +261,7 @@ class Produk extends CI_Controller
         $sp = isset($rows[$i][5]) ? intval($rows[$i][5]) : 0;
         $packing = isset($rows[$i][6]) ? intval($rows[$i][6]) : 0;
         $brand = isset($rows[$i][7]) ? trim($rows[$i][7]) : '';
+        $rak = isset($rows[$i][8]) ? trim($rows[$i][8]) : '';
 
         if (empty($kode) || empty($nama_produk) || empty($satuan)) {
           tampil_alert('warning', 'DATA KOSONG', 'Data pada baris ' . ($i + 1) . ' memiliki kolom yang kosong, tidak akan disimpan.');
@@ -278,6 +281,7 @@ class Produk extends CI_Controller
             'satuan' => $satuan,
             'packing' => $packing,
             'brand' => $brand,
+            'no_rak' => $rak,
             'harga_jawa' => $het_jawa,
             'harga_indobarat' => $het_indobarat,
             'sp' => $sp,
@@ -294,6 +298,7 @@ class Produk extends CI_Controller
             'satuan' => $satuan,
             'packing' => $packing,
             'brand' => $brand,
+            'no_rak' => $rak,
             'harga_jawa' => $het_jawa,
             'harga_indobarat' => $het_indobarat,
             'sp' => $sp,
