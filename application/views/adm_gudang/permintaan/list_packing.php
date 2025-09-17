@@ -73,8 +73,7 @@
                     <tr class="text-center">
                       <th style="border: 2px solid; width: 5%;">No</th>
                       <th style="border: 2px solid; width: 5%;">Rak</th>
-                      <th style="border: 2px solid; width: 18%;">Kode Artikel#</th>
-                      <th style="border: 2px solid; width: 25%;">Artikel</th>
+                      <th style="border: 2px solid; width: 18%;">Kode Artikel</th>
                       <th style="border: 2px solid; width: 10%;">Satuan</th>
                       <th style="border: 2px solid; width: 10%;">Qty Permintaan</th>
                       <th style="border: 2px solid; width: 10%;">Qty</th>
@@ -100,13 +99,15 @@
                         $no++;
                         $total_qty += $d->qty_acc;
                     ?>
-                        <tr class="text-sm">
+                        <tr class="text-lg">
                           <td style="border: 2px solid" class="text-center"><?= $no ?></td>
                           <?php if ($first_item): ?>
                             <td style="border: 2px solid; vertical-align: middle;" class="text-center" rowspan="<?= $item_count ?>"><?= $rak ?></td>
                           <?php endif; ?>
-                          <td style="border: 2px solid"><?= $d->kode ?></td>
-                          <td style="border: 2px solid"><?= $d->nama_produk ?></td>
+                          <td style="border: 2px solid">
+                            <strong><?= $d->kode ?></strong> <br>
+                            <?= $d->nama_produk ?>
+                          </td>
                           <td style="border: 2px solid" class="text-center"><?= $d->satuan ?></td>
                           <td style="border: 2px solid" class="text-center"><?= $d->qty_acc ?></td>
                           <td style="border: 2px solid" class="text-center">....</td>
@@ -118,7 +119,7 @@
                     ?>
                     <!-- Total Row -->
                     <tr style="background-color: #f8f9fa; font-weight: bold;">
-                      <td colspan="5" style="border: 2px solid; text-align: right; padding-right: 10px;">
+                      <td colspan="4" style="border: 2px solid; text-align: right; padding-right: 10px;">
                         <strong>TOTAL JUMLAH PERMINTAAN:</strong>
                       </td>
                       <td style="border: 2px solid; text-align: center;">
