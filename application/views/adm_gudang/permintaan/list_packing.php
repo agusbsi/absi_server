@@ -101,9 +101,10 @@
                     ?>
                         <tr class="text-lg">
                           <td style="border: 2px solid" class="text-center"><?= $no ?></td>
-                          <?php if ($first_item): ?>
+                          <!-- <?php if ($first_item): ?>
                             <td style="border: 2px solid; vertical-align: middle;" class="text-center" rowspan="<?= $item_count ?>"><?= $rak ?></td>
-                          <?php endif; ?>
+                          <?php endif; ?> -->
+                          <td style="border: 2px solid"><?= $d->no_rak ?></td>
                           <td style="border: 2px solid">
                             <strong><?= $d->kode ?></strong> <br>
                             <?= $d->nama_produk ?>
