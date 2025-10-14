@@ -1,15 +1,17 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class So extends CI_Controller {
+class So extends CI_Controller
+{
 
-  public function __construct(){
+  public function __construct()
+  {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if($role != "1"){
-      tampil_alert('error','DI TOLAK !','Anda tidak punya akses untuk halaman ini.!');
-      redirect(base_url(''));
-    }
+    // if ($role != "1") {
+    //   tampil_alert('error', 'DI TOLAK !', 'Anda tidak punya akses untuk halaman ini.!');
+    //   redirect(base_url(''));
+    // }
     $this->load->model('M_admin');
     $this->load->model('M_support');
   }
@@ -25,7 +27,7 @@ class So extends CI_Controller {
     $this->template->load('template/template', 'adm/stokopname/index', $data);
   }
 
- // proses so untuk adjust stok
+  // proses so untuk adjust stok
   public function detail($toko)
   {
     $data['title'] = 'Management Stock Opname';
@@ -49,87 +51,137 @@ class So extends CI_Controller {
     $id_detail    = $this->input->post('id_detail');
     $hasil_so     = $this->input->post('hasil_so');
     $jumlah       = count($id_produk);
-    
-      $this->db->trans_start();
-      for ($i=0; $i < $jumlah; $i++)
-      { 
-        $d_id_produk  = $id_produk[$i];
-        $d_id_detail  = $id_detail[$i];
-        $d_qty        = $hasil_so[$i];
 
-        $data_detail = array(
-          'qty' => $d_qty,
-          'qty_awal' => $d_qty,
-        );
-        $where_stok = array(
-          'id_produk' => $d_id_produk,
-          'id_toko'   => $id_toko,
-          'status'    => '1'
-        );
-        // update qty akhir di stok toko
-        $this->db->update('tb_stok',$data_detail,$where_stok);
-        $this->db->trans_complete();  
-      }
-      tampil_alert('success','Berhasil','Data Berhasil di Approve');
-      redirect(base_url('adm/So'));
-    
+    $this->db->trans_start();
+    for ($i = 0; $i < $jumlah; $i++) {
+      $d_id_produk  = $id_produk[$i];
+      $d_id_detail  = $id_detail[$i];
+      $d_qty        = $hasil_so[$i];
+
+      $data_detail = array(
+        'qty' => $d_qty,
+        'qty_awal' => $d_qty,
+      );
+      $where_stok = array(
+        'id_produk' => $d_id_produk,
+        'id_toko'   => $id_toko,
+        'status'    => '1'
+      );
+      // update qty akhir di stok toko
+      $this->db->update('tb_stok', $data_detail, $where_stok);
+      $this->db->trans_complete();
+    }
+    tampil_alert('success', 'Berhasil', 'Data Berhasil di Approve');
+    redirect(base_url('adm/So'));
   }
   // download pdf
   public function pdf($toko)
-    {
-        // panggil library yang kita buat sebelumnya yang bernama pdfgenerator
-        $this->load->library('pdfgenerator');
-        // title dari pdf
-        $data['title_pdf'] = 'List Artikel Stok Opname';
-        // filename dari pdf ketika didownload
-        $file_pdf = 'List_Artikel_Stok_Opname';
-        // setting paper
-        $paper = 'A4';
-        //orientasi paper potrait / landscape 
-        $orientation = "portrait";
-        // menampilkan Data Toko
-        $data['data_toko']  = $this->db->query("SELECT tb_toko.*, tb_user.nama_user from tb_toko 
+  {
+    // panggil library yang kita buat sebelumnya yang bernama pdfgenerator
+    $this->load->library('pdfgenerator');
+    // title dari pdf
+    $data['title_pdf'] = 'List Artikel Stok Opname';
+    // filename dari pdf ketika didownload
+    $file_pdf = 'List_Artikel_Stok_Opname';
+    // setting paper
+    $paper = 'A4';
+    //orientasi paper potrait / landscape 
+    $orientation = "portrait";
+    // menampilkan Data Toko
+    $data['data_toko']  = $this->db->query("SELECT tb_toko.*, tb_user.nama_user from tb_toko 
         join tb_user on tb_toko.id_spg = tb_user.id
         where tb_toko.id ='$toko'")->row();
-        // menampilkan Data Stok di toko
-        $data['stok'] = $this->db->query("SELECT ts.*, tp.nama_produk, tp.kode, tp.satuan from tb_stok ts
+    // menampilkan Data Stok di toko
+    $data['stok'] = $this->db->query("SELECT ts.*, tp.nama_produk, tp.kode, tp.satuan from tb_stok ts
         join tb_produk tp on ts.id_produk = tp.id
         where ts.id_toko = '$toko' and ts.qty != '0'")->result();
-		    $html = $this->load->view('adm/stokopname/print_so',$data, true);	 
-        // run dompdf
-        $this->pdfgenerator->generate($html, $file_pdf,$paper,$orientation);
-    }
-     // download pdf
+    $html = $this->load->view('adm/stokopname/print_so', $data, true);
+    // run dompdf
+    $this->pdfgenerator->generate($html, $file_pdf, $paper, $orientation);
+  }
+  // download pdf
   public function hasil_so($toko)
   {
 
     // so terbaru
-      $id_so = $this->db->query("SELECT id from tb_so where id_toko = '$toko' order by id desc limit 1")->row();
-      // panggil library yang kita buat sebelumnya yang bernama pdfgenerator
-      $this->load->library('pdfgenerator');
-      // title dari pdf
-      $data['title_pdf'] = 'Hasil Stok Opname';
-      // filename dari pdf ketika didownload
-      $file_pdf = 'Hasil_Stok_Opname';
-      // setting paper
-      $paper = 'A4';
-      //orientasi paper potrait / landscape 
-      $orientation = "portrait";
-      // menampilkan Data Toko
-      $data['data_toko']  = $this->db->query("SELECT tb_toko.*, tb_user.nama_user from tb_toko 
+    $id_so = $this->db->query("SELECT id from tb_so where id_toko = '$toko' order by id desc limit 1")->row();
+    // panggil library yang kita buat sebelumnya yang bernama pdfgenerator
+    $this->load->library('pdfgenerator');
+    // title dari pdf
+    $data['title_pdf'] = 'Hasil Stok Opname';
+    // filename dari pdf ketika didownload
+    $file_pdf = 'Hasil_Stok_Opname';
+    // setting paper
+    $paper = 'A4';
+    //orientasi paper potrait / landscape 
+    $orientation = "portrait";
+    // menampilkan Data Toko
+    $data['data_toko']  = $this->db->query("SELECT tb_toko.*, tb_user.nama_user from tb_toko 
       join tb_user on tb_toko.id_spg = tb_user.id
       where tb_toko.id ='$toko'")->row();
-      // menampilkan Hasil SO terbaru
-      $data['hasil_so'] = $this->db->query("SELECT tsd.*, tp.kode, tp.nama_produk, tp.satuan, tsd.hasil_so - tsd.qty_akhir as selisih from tb_so_detail tsd
+    // menampilkan Hasil SO terbaru
+    $data['hasil_so'] = $this->db->query("SELECT tsd.*, tp.kode, tp.nama_produk, tp.satuan, tsd.hasil_so - tsd.qty_akhir as selisih from tb_so_detail tsd
       join tb_so ts on tsd.id_so = ts.id
       join tb_produk tp on tsd.id_produk = tp.id
       where ts.id_toko = '$toko' and tsd.id_so = '$id_so->id'")->result();
-      $data['so_terbaru'] = $this->db->query("SELECT * from tb_so where id_toko = '$toko' order by id desc limit 1")->row();
-      $html = $this->load->view('adm/stokopname/print_hasil_so',$data, true);	 
-      // run dompdf
-      $this->pdfgenerator->generate($html, $file_pdf,$paper,$orientation);
+    $data['so_terbaru'] = $this->db->query("SELECT * from tb_so where id_toko = '$toko' order by id desc limit 1")->row();
+    $html = $this->load->view('adm/stokopname/print_hasil_so', $data, true);
+    // run dompdf
+    $this->pdfgenerator->generate($html, $file_pdf, $paper, $orientation);
   }
 
+  // RIWAYAT ASET
+  public function histori_aset()
+  {
+    $data['title'] = 'Histori Aset';
+    $id = $this->session->userdata('id');
+    $role = $this->session->userdata('role');
 
+    if ($role == 2) {
+      $query = "AND id_spv = '$id'";
+    } else if ($role == 3) {
+      $query = "AND id_leader = '$id'";
+    } else {
+      $query = "";
+    }
+
+    $thisMonth = date('Y-m-d', strtotime('first day of this month'));
+    $december2024 = '2024-12-31';
+
+    $data['list_so'] = $this->db->query("
+        SELECT ts.*, 
+               tt.nama_toko, 
+               ts.created_at as dibuat 
+        FROM tb_aset_toko ts
+        JOIN tb_toko tt ON ts.id_toko = tt.id
+        WHERE ts.created_at < '$thisMonth' 
+              AND ts.created_at > '$december2024' 
+              $query
+        ORDER BY ts.created_at DESC
+    ")->result();
+
+    $this->template->load('template/template', 'adm/stokopname/histori_aset', $data);
+  }
+  // detail aset
+  public function detail_aset($id, $bulan)
+  {
+    $data['title'] = 'Detail Aset';
+    $data['toko'] = $this->db->query("SELECT tt.*, tu.nama_user as spv, tuu.nama_user as leader, ts.nama_user as spg FROM tb_toko tt
+    join tb_user tu on tt.id_spv = tu.id
+    join tb_user tuu on tt.id_leader = tuu.id
+    join tb_user ts on tt.id_spg = ts.id
+    WHERE tt.id ='$id'")->row();
+    $data['list'] = $this->db->query("SELECT ts.*, ta.aset, ta.kode,ta.unit from tb_aset_toko ts
+    join tb_aset_master ta on ts.id_aset = ta.id
+    where ts.id_toko = '$id' ")->result();
+    $data['aset_spg'] = $this->db->query("
+    SELECT ts.*, tat.no_aset, tam.aset
+    FROM tb_aset_spg ts
+    JOIN tb_aset_toko tat ON ts.id_aset = tat.id
+    JOIN tb_aset_master tam ON tat.id_aset = tam.id
+    WHERE ts.id_toko = '$id'
+      AND DATE_FORMAT(ts.tanggal, '%Y-%m') = '$bulan'")->result();
+    $data['aset'] = $this->db->query("SELECT * from tb_aset_master order by id asc")->result();
+    $this->template->load('template/template', 'hrd/aset/detail', $data);
+  }
 }
-?>
