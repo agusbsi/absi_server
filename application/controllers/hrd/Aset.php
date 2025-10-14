@@ -145,7 +145,7 @@ class Aset extends CI_Controller
   public function list_aset()
   {
     $data['title'] = 'Management Aset';
-    $data['list_data'] = $this->db->query("SELECT tt.id as id_toko, tt.nama_toko, tt.alamat, COUNT(ta.id_aset) AS total_aset, tt.status_aset,ta.created_at from tb_toko tt
+    $data['list_data'] = $this->db->query("SELECT tt.id as id_toko, tt.nama_toko, tt.alamat, COUNT(ta.id_aset) AS total_aset, tt.status_aset,MAX(ta.created_at) AS created_at_terakhir from tb_toko tt
     left join tb_aset_toko ta on tt.id = ta.id_toko
     where tt.status = 1 GROUP BY tt.nama_toko ")->result();
     $this->template->load('template/template', 'hrd/aset/list_aset.php', $data);
