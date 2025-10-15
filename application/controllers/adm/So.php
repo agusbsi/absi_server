@@ -134,34 +134,64 @@ class So extends CI_Controller
   public function histori_aset()
   {
     $data['title'] = 'Histori Aset';
-    $id = $this->session->userdata('id');
+
+    $id   = $this->session->userdata('id');
     $role = $this->session->userdata('role');
 
+    // Rentang bulan yang mau ditampilkan:
+    // dari 2025-01-01 s.d. H-1 bulan ini (pakai batas < first day of this month)
+    $startDate = date('Y-m-d', strtotime('2024-12-31 +1 day')); // 2025-01-01
+    $endDate   = date('Y-m-01');                                 // first day of current month
+
+    // Filter role
+    $roleWhere = '';
+    $binds     = [$startDate, $endDate];
+
     if ($role == 2) {
-      $query = "AND id_spv = '$id'";
+      $roleWhere = ' AND tt.id_spv = ?';
+      $binds[]   = $id;
     } else if ($role == 3) {
-      $query = "AND id_leader = '$id'";
-    } else {
-      $query = "";
+      $roleWhere = ' AND tt.id_leader = ?';
+      $binds[]   = $id;
     }
 
-    $thisMonth = date('Y-m-d', strtotime('first day of this month'));
-    $december2024 = '2024-12-31';
+    $sql = "
+        SELECT
+            tt.id                     AS id_toko,
+            tt.nama_toko,
+            tt.alamat,
+            COALESCE(ta.total_aset, 0) AS total_aset,
+            ts.periode_ym,
+            ts.tanggal_terakhir       AS tanggal
+        FROM (
+            /* Ambil SATU baris per toko per bulan (pakai tanggal terakhir di bulan tsb) */
+            SELECT
+                id_toko,
+                DATE_FORMAT(tanggal, '%Y-%m')      AS periode_ym,
+                MAX(tanggal)                       AS tanggal_terakhir
+            FROM tb_aset_spg
+            WHERE tanggal >= ? AND tanggal < ?
+            GROUP BY id_toko, DATE_FORMAT(tanggal, '%Y-%m')
+        ) ts
+        JOIN tb_toko tt
+          ON tt.id = ts.id_toko
+        LEFT JOIN (
+            SELECT id_toko, SUM(qty) AS total_aset
+            FROM tb_aset_toko
+            GROUP BY id_toko
+        ) ta
+          ON ta.id_toko = tt.id
+        WHERE 1=1
+        {$roleWhere}
+        /* Urut: bulan terbaru dulu, lalu nama toko A-Z */
+        ORDER BY ts.periode_ym DESC, tt.nama_toko ASC
+    ";
 
-    $data['list_so'] = $this->db->query("
-        SELECT ts.*, 
-               tt.nama_toko, 
-               ts.created_at as dibuat 
-        FROM tb_aset_toko ts
-        JOIN tb_toko tt ON ts.id_toko = tt.id
-        WHERE ts.created_at < '$thisMonth' 
-              AND ts.created_at > '$december2024' 
-              $query
-        ORDER BY ts.created_at DESC
-    ")->result();
-
+    $data['list_so'] = $this->db->query($sql, $binds)->result();
     $this->template->load('template/template', 'adm/stokopname/histori_aset', $data);
   }
+
+
   // detail aset
   public function detail_aset($id, $bulan)
   {

@@ -43,7 +43,12 @@
                         <?php } ?>
                       </td>
                       <td class="text-center">
-                        <a href="<?= base_url('adm/So/detail_aset/' . $dd->id_toko . '/' . date('Y-m', strtotime($dd->created_at_terakhir))) ?>" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Detail</a>
+                        <?php
+                        $tgl = (!empty($dd->tanggal) && date('Y-m', strtotime($dd->tanggal)) == date('Y-m'))
+                          ? date('Y-m', strtotime($dd->tanggal))
+                          : "empty";
+                        ?>
+                        <a href="<?= base_url('adm/So/detail_aset/' . $dd->id_toko . '/' . $tgl) ?>" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Detail</a>
                       </td>
                 </tr>
                 <?php $no++; ?>

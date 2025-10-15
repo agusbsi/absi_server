@@ -144,12 +144,34 @@ class Aset extends CI_Controller
   }
   public function list_aset()
   {
+    $sql = "
+        SELECT
+            tt.id AS id_toko,
+            tt.nama_toko,
+            tt.alamat,
+            COALESCE(ta.total_aset, 0) AS total_aset,
+            tt.status_aset,
+            ts.tanggal
+        FROM tb_toko tt
+        LEFT JOIN (
+            SELECT id_toko, SUM(qty) AS total_aset
+            FROM tb_aset_toko
+            GROUP BY id_toko
+        ) ta ON ta.id_toko = tt.id
+        LEFT JOIN (
+            SELECT id_toko, MAX(tanggal) AS tanggal
+            FROM tb_aset_spg
+            GROUP BY id_toko
+        ) ts ON ts.id_toko = tt.id
+        WHERE tt.status = 1
+        ORDER BY tt.nama_toko ASC
+    ";
+
     $data['title'] = 'Management Aset';
-    $data['list_data'] = $this->db->query("SELECT tt.id as id_toko, tt.nama_toko, tt.alamat, COUNT(ta.id_aset) AS total_aset, tt.status_aset,MAX(ta.created_at) AS created_at_terakhir from tb_toko tt
-    left join tb_aset_toko ta on tt.id = ta.id_toko
-    where tt.status = 1 GROUP BY tt.nama_toko ")->result();
+    $data['list_data'] = $this->db->query($sql)->result();
     $this->template->load('template/template', 'hrd/aset/list_aset.php', $data);
   }
+
 
   public function tambah_aset_toko()
   {

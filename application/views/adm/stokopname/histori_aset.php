@@ -37,9 +37,9 @@
                        <tr>
                          <td class="text-center"><?= $no ?></td>
                          <td><?= $s->nama_toko ?></td>
-                         <td class="text-center"><?= date('d M Y', strtotime($s->dibuat)) ?></td>
+                         <td class="text-center"><?= date('d M Y', strtotime($s->tanggal)) ?></td>
                          <td class="text-center">
-                           <a href="<?= base_url('adm/So/detail_aset/' . $s->id_toko . '/' . date('Y-m', strtotime($s->dibuat))) ?>" class="btn btn-sm btn-info mr-3">Lihat <i class="fas fa-arrow-circle-right"></i> </a>
+                           <a href="<?= base_url('adm/So/detail_aset/' . $s->id_toko . '/' . date('Y-m', strtotime($s->tanggal))) ?>" class="btn btn-sm btn-info mr-3">Lihat <i class="fas fa-arrow-circle-right"></i> </a>
                          </td>
                        </tr>
                      <?php endforeach ?>
