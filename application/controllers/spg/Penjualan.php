@@ -29,7 +29,7 @@ class Penjualan extends CI_Controller
           SELECT tp.*, ts.qty as stok 
           FROM tb_stok ts
           JOIN tb_produk tp ON ts.id_produk = tp.id
-          WHERE ts.id_toko = '$id_toko' AND ts.status = 1 AND tp.status = 1 
+          WHERE ts.id_toko = '$id_toko'  AND tp.status = 1 
           AND (tp.kode LIKE '%$keyword%' OR tp.nama_produk LIKE '%$keyword%')
       ");
     $output = '<ul class="list-group">';
