@@ -34,8 +34,8 @@ class Mutasi extends CI_Controller
     $id_leader = $this->session->userdata('id');
     $id_toko = $this->input->get('id');
     $data['kode_mutasi'] = $this->M_adm_gudang->kode_mutasi();
-    $data['list_toko'] = $this->db->query("SELECT * from tb_toko where status ='1' and id_leader='$id_leader'")->result();
-    $data['toko_tujuan'] = $this->db->query("SELECT * from tb_toko where status ='1' and id != '$id_toko'")->result();
+    $data['list_toko'] = $this->db->query("SELECT * from tb_toko where status != 0 and id_leader='$id_leader'")->result();
+    $data['toko_tujuan'] = $this->db->query("SELECT * from tb_toko where status != 0 and id != '$id_toko'")->result();
     $this->template->load('template/template', 'leader/mutasi/add', $data);
   }
   public function detail($id)

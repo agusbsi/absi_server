@@ -163,7 +163,7 @@ class Aset extends CI_Controller
             FROM tb_aset_spg
             GROUP BY id_toko
         ) ts ON ts.id_toko = tt.id
-        WHERE tt.status = 1
+        WHERE tt.status != 0
         ORDER BY tt.nama_toko ASC
     ";
 
