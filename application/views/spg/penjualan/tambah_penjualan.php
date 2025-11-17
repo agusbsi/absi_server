@@ -468,6 +468,21 @@
       localStorage.setItem('items', JSON.stringify(items));
       loadItems();
     };
+
+    // Clear item-list when page is closed or navigating away
+    window.addEventListener('beforeunload', function() {
+      localStorage.removeItem('items');
+    });
+
+    window.addEventListener('pagehide', function() {
+      localStorage.removeItem('items');
+    });
+
+    // Clear item-list when navigating away using browser navigation
+    window.addEventListener('unload', function() {
+      localStorage.removeItem('items');
+    });
+    
     loadItems();
   });
 </script>
