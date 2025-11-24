@@ -183,50 +183,63 @@ class Stok extends CI_Controller
   {
     $id_toko = $this->input->get('id_toko');
     $id_artikel = $this->input->get('id_artikel');
-    $tanggal = $this->input->get('tanggal');
+    $tanggal = $this->input->get('tanggal') . ' 23:59:59';
 
     // Cek apakah user memilih semua artikel atau artikel tertentu
     if ($id_artikel == 'all' || empty($id_artikel)) {
       // Ambil semua produk - Query dioptimasi dengan JOIN untuk performa lebih baik
       $artikel = '( Semua Artikel )';
       $query = "
-          SELECT tt.nama_toko, tpp.nama_produk, tpp.kode,tpp.satuan, ks1.sisa as stok 
-          FROM tb_kartu_stok ks1
-          INNER JOIN (
-              SELECT id_produk, id_toko, MAX(tanggal) as max_tanggal
-              FROM tb_kartu_stok
-              WHERE id_toko = ? 
-                AND tanggal <= ?
-              GROUP BY id_produk, id_toko
-          ) ks2 ON ks1.id_produk = ks2.id_produk 
-               AND ks1.id_toko = ks2.id_toko 
-               AND ks1.tanggal = ks2.max_tanggal
-          JOIN tb_produk tpp ON ks1.id_produk = tpp.id
-          JOIN tb_toko tt ON ks1.id_toko = tt.id
-          WHERE tt.status = 1
+          SELECT tt.nama_toko, tpp.nama_produk, tpp.kode, tpp.satuan, ks.sisa as stok 
+          FROM tb_kartu_stok ks
+          JOIN (
+              SELECT t.id_produk, MAX(t.id) AS id_max
+              FROM tb_kartu_stok t
+              JOIN (
+                  SELECT id_produk, MAX(tanggal) AS max_tanggal
+                  FROM tb_kartu_stok
+                  WHERE id_toko = ?
+                    AND tanggal <= ?
+                  GROUP BY id_produk
+              ) m ON t.id_produk = m.id_produk AND t.tanggal = m.max_tanggal
+              WHERE t.id_toko = ?
+              GROUP BY t.id_produk
+          ) pick ON ks.id = pick.id_max
+          JOIN tb_produk tpp ON ks.id_produk = tpp.id
+          JOIN tb_toko tt ON ks.id_toko = tt.id
+          WHERE ks.id_toko = ?
+            AND tt.status = 1
           ORDER BY tpp.kode ASC";
-      $params = [$id_toko, $tanggal];
+      $params = [$id_toko, $tanggal, $id_toko, $id_toko];
     } else {
       // Ambil 1 produk tertentu
       $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
       $artikel = '<strong>' . $summary->kode . '</strong></br>' . $summary->nama_produk;
       $query = "
-          SELECT tt.nama_toko, tpp.nama_produk, tpp.kode,tpp.satuan, ks.sisa as stok 
+          SELECT tt.nama_toko, tpp.nama_produk, tpp.kode, tpp.satuan, ks.sisa as stok 
           FROM tb_kartu_stok ks
+          JOIN (
+              SELECT t.id_produk, MAX(t.id) AS id_max
+              FROM tb_kartu_stok t
+              JOIN (
+                  SELECT id_produk, MAX(tanggal) AS max_tanggal
+                  FROM tb_kartu_stok
+                  WHERE id_toko = ?
+                    AND id_produk = ?
+                    AND tanggal <= ?
+                  GROUP BY id_produk
+              ) m ON t.id_produk = m.id_produk AND t.tanggal = m.max_tanggal
+              WHERE t.id_toko = ?
+                AND t.id_produk = ?
+              GROUP BY t.id_produk
+          ) pick ON ks.id = pick.id_max
           JOIN tb_produk tpp ON ks.id_produk = tpp.id
           JOIN tb_toko tt ON ks.id_toko = tt.id
-          WHERE ks.id_toko = ? 
-          AND ks.id_produk = ?
-          AND tt.status = 1
-          AND ks.tanggal = (
-              SELECT MAX(tanggal)
-              FROM tb_kartu_stok
-              WHERE id_produk = ks.id_produk
-                AND id_toko = ks.id_toko
-                AND tanggal <= ?
-          )
+          WHERE ks.id_toko = ?
+            AND ks.id_produk = ?
+            AND tt.status = 1
           ORDER BY tpp.kode ASC";
-      $params = [$id_toko, $id_artikel, $tanggal];
+      $params = [$id_toko, $id_artikel, $tanggal, $id_toko, $id_artikel, $id_toko, $id_artikel];
     }
 
     $hasil_data = $this->db->query($query, $params)->result();
