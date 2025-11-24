@@ -309,7 +309,7 @@
             <td class="text-center text-sm">${data.toko}</td>
         `;
       tableBody.appendChild(row);
-      var qty = parseInt(stok, 10);
+      var qty = parseInt(item.stok, 10);
       if (!isNaN(qty)) {
         totalstok += qty;
       }
