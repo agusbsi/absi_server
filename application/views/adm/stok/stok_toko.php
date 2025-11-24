@@ -299,13 +299,12 @@
     tableBody.innerHTML = '';
     data.tabel_data.forEach((item, index) => {
       var row = document.createElement('tr');
-      var stok = parseInt(item.stok_awal) - parseInt(item.jual) - parseInt(item.retur) - parseInt(item.mutasi_keluar) + parseInt(item.mutasi_masuk) + parseInt(item.terima);
       row.innerHTML = `
             <td class="text-center"><small>${index + 1}</small></td>
             <td><small>${item.kode}</small></td>
             <td><small>${item.nama_produk}</small></td>
             <td><small>${item.satuan}</small></td>
-            <td class="text-center"> ${stok}</td>
+            <td class="text-center"> ${item.stok}</td>
             <td class="text-center">${data.tanggal}</td>
             <td class="text-center text-sm">${data.toko}</td>
         `;
