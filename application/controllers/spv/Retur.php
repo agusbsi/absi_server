@@ -20,7 +20,7 @@ class Retur extends CI_Controller
     $data['list_data'] = $this->db->query("SELECT tp.*, tk.nama_toko, tu.nama_user as spg from tb_retur tp
         JOIN tb_toko tk on tp.id_toko = tk.id
         LEFT JOIN tb_user tu on tk.id_spg = tu.id
-        where tk.id_spv = '$id_spv' AND YEAR(tp.created_at) = YEAR(CURDATE()) order by tp.id desc")->result();
+        where tk.id_spv = '$id_spv' AND YEAR(tp.created_at) = YEAR(CURDATE()) AND tp.status <= 9 order by tp.id desc")->result();
     $this->template->load('template/template', 'spv/retur/index', $data);
   }
   public function detail($id)
