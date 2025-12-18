@@ -34,7 +34,7 @@
                            <td><?= $no ?></td>
                            <td><?= $dd->id ?></td>
                            <td>
-                             <?= status_permintaan($dd->status); ?>
+                             <?= status_retur($dd->status); ?>
                            </td>
                            <td><?= $dd->nama_toko ?></td>
 
