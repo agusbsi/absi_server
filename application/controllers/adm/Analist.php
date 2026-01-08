@@ -149,15 +149,15 @@ class Analist extends CI_Controller
         }
       }
 
-      $stok_akhir_before_sales = $stok_awal_fix + $d->jml_terima + $d->mutasi_masuk - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
-      $stok_akhir = $stok_akhir_before_sales - $d->total;
+      // Hitung stok akhir (sama dengan riwayat_so_toko)
+      $stok_akhir = $stok_awal_fix + $d->jml_terima + $d->mutasi_masuk - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
 
       // Hanya kembalikan data yang diperlukan
       $hasil[] = [
         'kode' => $d->kode,
         'nama' => $d->nama_produk,
         'jual' => $d->total,
-        'stok_akhir' => $stok_akhir
+        'stok_akhir' => $stok_akhir - $d->total
       ];
     }
 
