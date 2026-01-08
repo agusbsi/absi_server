@@ -404,8 +404,8 @@
     tableBody.innerHTML = '';
 
     data.tabel_data.forEach((item, index) => {
-      var jual = parseInt(item.jual) || 0;
-      var stok_akhir = parseInt(item.stok_akhir) || 0;
+      var jual = parseInt(item.jual_terbaru) || 0;
+      var stok_akhir = parseInt(item.stok_akhir + item.po_masuk_terbaru + item.mutasi_masuk_terbaru - item.mutasi_keluar_terbaru - item.retur_terbaru - item.jual_terbaru) || 0;
       var dsiValue = jual != 0 ? (stok_akhir / (jual / data.bln)).toFixed(1) : '-';
       var dsiColor = jual != 0 && dsiValue > 4 ? 'red' : 'inherit';
       var dsiClass = jual != 0 && dsiValue > 4 ? 'font-weight-bold' : '';
