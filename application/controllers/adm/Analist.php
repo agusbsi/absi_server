@@ -122,11 +122,11 @@ class Analist extends CI_Controller
     LEFT JOIN (SELECT tpd.id_produk, SUM(tpd.qty) AS jml_jual FROM tb_penjualan_detail tpd JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id WHERE tp.id_toko = '$id_toko' AND tp.tanggal_penjualan BETWEEN '$awal_tahun' AND DATE_SUB('$tgl_so_sebelumnya', INTERVAL DAYOFMONTH('$tgl_so_sebelumnya') DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND GROUP BY tpd.id_produk) vp_kemarin ON vp_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT tpd.id_produk, SUM(tpd.qty_terima) AS jml_retur FROM tb_retur_detail tpd JOIN tb_retur tp ON tpd.id_retur = tp.id WHERE tp.id_toko = '$id_toko' AND tp.status >= 2 AND tp.status <= 4 AND tp.updated_at BETWEEN '$awal_tahun' AND DATE_SUB('$tgl_so_sebelumnya', INTERVAL DAYOFMONTH('$tgl_so_sebelumnya') DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND GROUP BY tpd.id_produk) vr_kemarin ON vr_kemarin.id_produk = ts.id_produk
     LEFT JOIN (SELECT tpd.id_produk, SUM(tpd.qty_terima) AS jml_mutasi FROM tb_mutasi_detail tpd JOIN tb_mutasi tp ON tpd.id_mutasi = tp.id WHERE tp.id_toko_asal = '$id_toko' AND tp.status = 2 AND tp.updated_at BETWEEN '$awal_tahun' AND DATE_SUB('$tgl_so_sebelumnya', INTERVAL DAYOFMONTH('$tgl_so_sebelumnya') DAY) + INTERVAL 23 HOUR + INTERVAL 59 MINUTE + INTERVAL 59 SECOND GROUP BY tpd.id_produk) vk_kemarin ON vk_kemarin.id_produk = ts.id_produk
-    LEFT JOIN (SELECT id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = '$id_toko' AND tahun = YEAR(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) AND bulan = MONTH(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) GROUP BY id_produk) vt ON vt.id_produk = ts.id_produk
-    LEFT JOIN (SELECT id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = '$id_toko' AND tahun = YEAR(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) AND bulan = MONTH(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) GROUP BY id_produk) vm ON vm.id_produk = ts.id_produk
-    LEFT JOIN (SELECT id_produk, jml_jual FROM vw_penjualan WHERE id_toko = '$id_toko' AND tahun = YEAR(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) AND bulan = MONTH(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) GROUP BY id_produk) vp ON vp.id_produk = ts.id_produk
-    LEFT JOIN (SELECT id_produk, jml_retur FROM vw_retur WHERE id_toko = '$id_toko' AND tahun = YEAR(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) AND bulan = MONTH(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) GROUP BY id_produk) vr ON vr.id_produk = ts.id_produk
-    LEFT JOIN (SELECT id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = '$id_toko' AND tahun = YEAR(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) AND bulan = MONTH(DATE_SUB('$tgl_so', INTERVAL 1 MONTH)) GROUP BY id_produk) vk ON vk.id_produk = ts.id_produk
+    LEFT JOIN (SELECT id_produk, jml_terima FROM vw_penerimaan WHERE id_toko = '$id_toko' AND tahun = YEAR('$tgl_so') AND bulan = MONTH('$tgl_so') GROUP BY id_produk) vt ON vt.id_produk = ts.id_produk
+    LEFT JOIN (SELECT id_produk, jml_mutasi FROM vw_mutasi_masuk WHERE id_toko_tujuan = '$id_toko' AND tahun = YEAR('$tgl_so') AND bulan = MONTH('$tgl_so') GROUP BY id_produk) vm ON vm.id_produk = ts.id_produk
+    LEFT JOIN (SELECT id_produk, jml_jual FROM vw_penjualan WHERE id_toko = '$id_toko' AND tahun = YEAR('$tgl_so') AND bulan = MONTH('$tgl_so') GROUP BY id_produk) vp ON vp.id_produk = ts.id_produk
+    LEFT JOIN (SELECT id_produk, jml_retur FROM vw_retur WHERE id_toko = '$id_toko' AND tahun = YEAR('$tgl_so') AND bulan = MONTH('$tgl_so') GROUP BY id_produk) vr ON vr.id_produk = ts.id_produk
+    LEFT JOIN (SELECT id_produk, jml_mutasi FROM vw_mutasi_keluar WHERE id_toko_asal = '$id_toko' AND tahun = YEAR('$tgl_so') AND bulan = MONTH('$tgl_so') GROUP BY id_produk) vk ON vk.id_produk = ts.id_produk
     $join_adjust
     WHERE ts.id_toko = '$id_toko'
     GROUP BY tpk.id
@@ -149,8 +149,8 @@ class Analist extends CI_Controller
         }
       }
 
-      // Hitung stok akhir (sama dengan riwayat_so_toko)
-      $stok_akhir = $stok_awal_fix + $d->jml_terima + $d->mutasi_masuk - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
+      // Hitung stok akhir: stok_awal + po_masuk + mutasi_masuk - retur - mutasi_keluar - penjualan
+      $stok_akhir = $stok_awal_fix + $d->jml_terima + $d->mutasi_masuk - $d->jml_retur - $d->mutasi_keluar - $d->jml_jual;
 
       // Kembalikan data lengkap
       $hasil[] = [
