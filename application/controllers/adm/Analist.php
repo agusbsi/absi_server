@@ -132,7 +132,7 @@ class Analist extends CI_Controller
     GROUP BY tpk.id
     ORDER BY COALESCE(tpd_user.qty, 0) DESC")->result();
 
-    // Kalkulasi stok_akhir dan simplifikasi output
+    // Kalkulasi stok_akhir dan output detail
     $hasil = [];
     foreach ($tabel_data as $d) {
       if ($isDec2024) {
@@ -152,12 +152,18 @@ class Analist extends CI_Controller
       // Hitung stok akhir (sama dengan riwayat_so_toko)
       $stok_akhir = $stok_awal_fix + $d->jml_terima + $d->mutasi_masuk - $d->jml_retur - $d->jml_jual - $d->mutasi_keluar;
 
-      // Hanya kembalikan data yang diperlukan
+      // Kembalikan data lengkap
       $hasil[] = [
         'kode' => $d->kode,
         'nama' => $d->nama_produk,
-        'jual' => $d->total,
-        'stok_akhir' => $stok_akhir - $d->total
+        'stok_awal' => $stok_awal_fix,
+        'po_masuk' => $d->jml_terima,
+        'mutasi_masuk' => $d->mutasi_masuk,
+        'retur' => $d->jml_retur,
+        'penjualan' => $d->jml_jual,
+        'mutasi_keluar' => $d->mutasi_keluar,
+        'stok_akhir' => $stok_akhir,
+        'jual' => $d->total
       ];
     }
 
