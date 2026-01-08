@@ -90,17 +90,22 @@ class Analist extends CI_Controller
     // Build query adjust
     $select_adjust = "";
     $join_adjust = "";
-    if ($cek_adjustmen) {
-      $select_adjust = "COALESCE(adj.hasil_so, 0) as stok_adjust,";
-      $join_adjust = "LEFT JOIN (SELECT id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = '{$cek_adjustmen->id_adjust}' GROUP BY id_produk) adj ON adj.id_produk = ts.id_produk";
-    } else if ($cek_toko->id_adjust && $cek_toko->status_adjust == 1) {
-      $select_adjust = "COALESCE(adj.hasil_so, 0) as stok_adjust,";
-      $join_adjust = "LEFT JOIN (SELECT id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = '{$cek_toko->id_adjust}' GROUP BY id_produk) adj ON adj.id_produk = ts.id_produk";
+    if ($cek_toko->status_adjust == 1) {
+      if ($cek_adjustmen) {
+        $select_adjust = "ts.qty_awal,COALESCE(adj.hasil_so, 0) as stok_adjust,";
+        $join_adjust = "LEFT JOIN (SELECT id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = '{$cek_adjustmen->id_adjust}' GROUP BY id_produk) adj ON adj.id_produk = ts.id_produk";
+      } else if ($cek_toko->id_adjust) {
+        $select_adjust = "ts.qty_awal,COALESCE(adj.hasil_so, 0) as stok_adjust,";
+        $join_adjust = "LEFT JOIN (SELECT id_produk, hasil_so FROM tb_adjust_detail WHERE id_adjust = '{$cek_toko->id_adjust}' GROUP BY id_produk) adj ON adj.id_produk = ts.id_produk";
+      } else {
+        $select_adjust = "ts.qty_awal,";
+      }
+    } else {
+      $select_adjust = "ts.qty_awal,";
     }
 
     // Query data
     $tabel_data = $this->db->query("SELECT tpk.kode, tpk.nama_produk,
-    ts.qty_awal,
     $select_adjust
     COALESCE(ts.qty_awal + COALESCE(vt_kemarin.jml_terima, 0) + COALESCE(vm_kemarin.jml_mutasi, 0) - COALESCE(vp_kemarin.jml_jual, 0) - COALESCE(vr_kemarin.jml_retur, 0) - COALESCE(vk_kemarin.jml_mutasi, 0), 0) as qty_awal_kemarin,
     COALESCE(vt.jml_terima, 0) AS jml_terima,
