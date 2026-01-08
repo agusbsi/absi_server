@@ -8,6 +8,58 @@
          height: 210px;
          border-radius: 20px;
          overflow: hidden;
+         transition: all 0.3s ease-in-out;
+       }
+
+       .e-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0px 12px 35px -9px rgba(0, 0, 0, 0.6);
+       }
+
+       /* Styling untuk card yang belum aktif */
+       .e-card.inactive {
+         background: linear-gradient(135deg, #e0e0e0 0%, #c5c5c5 100%);
+         box-shadow: 0px 5px 15px -5px rgba(0, 0, 0, 0.15);
+         border: 2px dashed #999999;
+         opacity: 1;
+       }
+
+       .e-card.inactive:hover {
+         transform: translateY(-5px) scale(1.02);
+         box-shadow: 0px 10px 25px -5px rgba(0, 0, 0, 0.3);
+         background: linear-gradient(135deg, #d0d0d0 0%, #b5b5b5 100%);
+         border-color: #777777;
+       }
+
+       .e-card.inactive .infotop {
+         color: #666666 !important;
+       }
+
+       .e-card.inactive .infotop img {
+         opacity: 0.5;
+         filter: grayscale(100%);
+       }
+
+       .e-card.inactive .wave {
+         display: none;
+       }
+
+       .e-card.inactive::before {
+         content: '🔒 Belum Tersedia';
+         position: absolute;
+         bottom: 10px;
+         left: 0;
+         right: 0;
+         text-align: center;
+         font-size: 11px;
+         color: #888888;
+         font-weight: 500;
+         z-index: 10;
+       }
+
+       a[href="#"] {
+         cursor: not-allowed;
+         pointer-events: none;
        }
 
        .wave {
@@ -51,30 +103,24 @@
          top: 100px;
        }
 
-       .playing .wave {
+       /* Animasi wave hanya aktif saat hover pada card aktif */
+       .e-card:not(.inactive):hover .wave {
          border-radius: 50%;
          animation: wave 3000ms infinite linear;
        }
 
-       .wave {
-         border-radius: 20%;
-         animation: wave 55s infinite linear;
-       }
-
-       .playing .wave:nth-child(2) {
+       .e-card:not(.inactive):hover .wave:nth-child(2) {
          animation-duration: 4000ms;
        }
 
-       .wave:nth-child(2) {
-         animation-duration: 50s;
-       }
-
-       .playing .wave:nth-child(3) {
+       .e-card:not(.inactive):hover .wave:nth-child(3) {
          animation-duration: 5000ms;
        }
 
-       .wave:nth-child(3) {
-         animation-duration: 45s;
+       /* Wave default tanpa animasi */
+       .wave {
+         border-radius: 40%;
+         animation: none;
        }
 
        @keyframes wave {
@@ -123,7 +169,7 @@
            </div>
            <div class="col-md-3">
              <a href="#" title="Fitur">
-               <div class="e-card playing">
+               <div class="e-card inactive">
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="wave"></div>
@@ -137,7 +183,7 @@
            </div>
            <div class="col-md-3">
              <a href="#" title="Fitur">
-               <div class="e-card playing">
+               <div class="e-card inactive">
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="wave"></div>
@@ -151,7 +197,7 @@
            </div>
            <div class="col-md-3">
              <a href="#" title="Fitur">
-               <div class="e-card playing">
+               <div class="e-card inactive">
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="wave"></div>
@@ -165,7 +211,7 @@
            </div>
            <div class="col-md-3">
              <a href="#" title="Fitur">
-               <div class="e-card playing">
+               <div class="e-card inactive">
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="wave"></div>
@@ -179,7 +225,7 @@
            </div>
            <div class="col-md-3">
              <a href="#" title="Fitur">
-               <div class="e-card playing">
+               <div class="e-card inactive">
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="wave"></div>
@@ -193,7 +239,7 @@
            </div>
            <div class="col-md-3">
              <a href="#" title="Fitur">
-               <div class="e-card playing">
+               <div class="e-card inactive">
                  <div class="wave"></div>
                  <div class="wave"></div>
                  <div class="wave"></div>

@@ -90,6 +90,9 @@
         </h3>
         <div class="card-tools">
           <span class="badge badge-info">Analisis Inventori</span>
+          <button type="button" class="btn btn-tool" onclick="window.history.back();" title="Tutup">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
       </div>
       <div class="card-body">
@@ -170,8 +173,8 @@
       <div class="card-header">
         <h3 class="card-title"><i class="fas fa-table"></i> Hasil Analisis DSI</h3>
         <div class="card-tools">
-          <button type="button" class="btn btn-tool" data-card-widget="collapse">
-            <i class="fas fa-minus"></i>
+          <button type="button" class="btn btn-tool" onclick="$('.hasil').addClass('d-none'); $('.cari').removeClass('d-none'); $('.no-data').removeClass('d-none');" title="Tutup">
+            <i class="fas fa-times"></i>
           </button>
         </div>
       </div>
