@@ -51,20 +51,22 @@
                                     <th rowspan="2" style="width:3%">#</th>
                                     <th rowspan="2" style="width:30%;" class="text-center">Customer </th>
                                     <th colspan="4" class="text-center">Total</th>
-                                    <th rowspan="2" class="text-center">Stok Rasio </th>
-                                    <th rowspan="2" class="text-center">Menu </th>
+                                    <th rowspan="2" class="text-center">Stok Rasio <br>
+                                        <small>Stok akhir / Penjualan</small>
+                                    </th>
+                                    <!-- <th rowspan="2" class="text-center">Menu </th> -->
                                 </tr>
                                 <tr>
-                                    <th class="text-center">Toko</th>
+                                    <th class="text-center">Jml Toko</th>
+                                    <th class="text-center">Stok Saat ini</th>
                                     <th class="text-center">
                                         Penjualan <br>
-                                        <small> ( <?= (new DateTime('first day of -2 month'))->format('M-Y') ?> )</small>
+                                        <small> ( <?= (new DateTime('first day of -1 month'))->format('M-Y') ?> )</small>
                                     </th>
                                     <th class="text-center">
                                         Stok Akhir <br>
                                         <small> ( <?= (new DateTime('first day of -1 month'))->format('M-Y') ?> )</small>
                                     </th>
-                                    <th class="text-center">Stok</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -82,11 +84,11 @@
                                                 </small>
                                             </td>
                                             <td class="text-center"><?= $dd->t_toko ?></td>
+                                            <td class="text-center"><?= number_format($dd->t_stok) ?></td>
                                             <td class="text-center"><?= number_format($dd->t_jual) ?></td>
                                             <td class="text-center"><?= number_format($dd->t_akhir) ?></td>
-                                            <td class="text-center"><?= number_format($dd->t_stok) ?></td>
                                             <td class="text-center"> <?= (!empty($dd->t_jual) && $dd->t_jual != 0) ? ROUND($dd->t_akhir / $dd->t_jual, 2) : ROUND($dd->t_akhir / 1, 2) ?></td>
-                                            <td>
+                                            <!-- <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-info btn-sm"> Lihat</button>
                                                     <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
@@ -97,7 +99,7 @@
                                                         <a class="dropdown-item" href="<?= base_url('adm/Stok/detail_artikel/' . $dd->id) ?>">Per Artikel</a>
                                                     </div>
                                                 </div>
-                                            </td>
+                                            </td> -->
                                 </tr>
                             <?php endforeach; ?>
                         <?php } ?>

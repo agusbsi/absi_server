@@ -76,8 +76,9 @@ class Stok extends CI_Controller
   public function s_customer()
   {
     $data['title'] = 'Stok Customer';
-    $thn = date('Y');
-    $bln = (new DateTime('first day of -2 month'))->format('m');
+    $lastMonth = new DateTime('first day of -1 month');
+    $thn = $lastMonth->format('Y');
+    $bln = $lastMonth->format('m');
     $query = "SELECT 
         tc.id,
         tc.nama_cust,
@@ -205,7 +206,7 @@ class Stok extends CI_Controller
               WHERE t.id_toko = ?
               GROUP BY t.id_produk
           ) pick ON ks.id = pick.id_max
-          JOIN tb_produk tpp ON ks.id_produk = tpp.id
+          LEFT JOIN tb_produk tpp ON ks.id_produk = tpp.id
           JOIN tb_toko tt ON ks.id_toko = tt.id
           WHERE ks.id_toko = ?
             AND tt.status = 1
@@ -310,6 +311,31 @@ class Stok extends CI_Controller
     $data['artikel'] = $this->db->query("SELECT * from tb_produk where status = 1")->result();
     $this->template->load('template/template', 'adm/stok/kartu_stok', $data);
   }
+
+  // Get products by store - used for dynamic product loading
+  public function get_produk_by_toko()
+  {
+    $id_toko = $this->input->get('id_toko');
+
+    if (!$id_toko) {
+      echo json_encode([]);
+      return;
+    }
+
+    // Query to get distinct products from tb_stok for the selected store
+    $query = "SELECT DISTINCT tp.id, tp.kode, tp.nama_produk 
+              FROM tb_stok ts
+              JOIN tb_produk tp ON ts.id_produk = tp.id
+              WHERE ts.id_toko = ? 
+              AND tp.status = 1
+              ORDER BY tp.kode ASC";
+
+    $result = $this->db->query($query, array($id_toko))->result();
+
+    header('Content-Type: application/json');
+    echo json_encode($result);
+  }
+
   public function cari_kartu()
   {
     $id_toko = $this->input->get('id_toko');

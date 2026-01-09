@@ -1,11 +1,181 @@
 <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .content {
+    padding: 15px 0;
+  }
+
+  .modern-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+  }
+
+  .card-header-modern {
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%);
+    border-radius: 8px 8px 0 0;
+  }
+
+  .card-header-modern h3 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-body-modern {
+    padding: 20px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d3748;
+  }
+
+  .form-section {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #5e72e4;
+  }
+
+  .modern-select,
+  .modern-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #ffffff;
+    color: #2d3748;
+    transition: all 0.2s;
+  }
+
+  .modern-select:focus,
+  .modern-input:focus {
+    outline: none;
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.1);
+  }
+
+  .modern-select:disabled {
+    background: #e2e8f0;
+    cursor: not-allowed;
+  }
+
+  .date-range-wrapper {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .date-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .date-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a5568;
+  }
+
+  .date-separator {
+    font-weight: 600;
+    color: #a0aec0;
+    padding-bottom: 10px;
+  }
+
+  .modern-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-primary-modern {
+    background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary-modern:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(94, 114, 228, 0.4);
+  }
+
+  .btn-success-modern {
+    background: #10b981;
+    color: #ffffff;
+  }
+
+  .btn-success-modern:hover {
+    background: #059669;
+  }
+
+  .btn-danger-modern {
+    background: #ef4444;
+    color: #ffffff;
+  }
+
+  .btn-danger-modern:hover {
+    background: #dc2626;
+  }
+
   #loading {
     position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -13,146 +183,464 @@
   }
 
   .loader {
-    position: relative;
-    width: 200px;
-    height: 200px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
   }
 
-  .circle {
-    position: relative;
-    width: 100%;
-    height: 100%;
+  .spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 15px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #5e72e4;
     border-radius: 50%;
-    background: conic-gradient(#3498db 0deg, #3498db 0deg, transparent 0deg);
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
+  }
+
+  .loading-subtext {
+    font-size: 13px;
+    color: #718096;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .empty-state img {
+    max-width: 250px;
+    margin-bottom: 20px;
+    opacity: 0.6;
+  }
+
+  .empty-state h4 {
+    color: #2d3748;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    color: #718096;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .report-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .report-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 15px;
+  }
+
+  .report-info {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .info-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4a5568;
+  }
+
+  .saldo-card {
+    background: #f7fafc;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    border: 1px solid #e2e8f0;
   }
 
-  .percentage {
-    position: absolute;
-    font-size: 2em;
-    font-weight: bold;
-    color: #ffc107;
+  .saldo-label {
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .img-nodata {
+  .saldo-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #5e72e4;
+  }
+
+  .result-table {
     width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+  }
 
+  .result-table thead {
+    background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%);
+  }
+
+  .result-table thead th {
+    color: #ffffff;
+    padding: 10px 8px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 11px;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .result-table tbody td {
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .result-table tbody tr:hover {
+    background: #f7fafc;
+  }
+
+  .td-left {
+    text-align: left !important;
+  }
+
+  .td-right {
+    text-align: right !important;
+  }
+
+  .stock-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    display: inline-block;
+  }
+
+  .stock-in {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .stock-out {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  @media print {
+    @page {
+      size: A4;
+      margin: 1cm;
+    }
+
+    body {
+      background: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    .cari,
+    .action-buttons,
+    .no-data,
+    .card-header-modern {
+      display: none !important;
+    }
+
+    .modern-card {
+      box-shadow: none;
+      border: none;
+      page-break-inside: avoid;
+      margin: 0;
+    }
+
+    .card-body-modern {
+      padding: 15px;
+    }
+
+    .report-header {
+      border-bottom: 2px solid #000;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+    }
+
+    .report-title {
+      color: #000 !important;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .info-badge {
+      border: 1px solid #000;
+      background: white;
+      color: #000 !important;
+      display: block;
+      margin: 5px 0;
+    }
+
+    .saldo-card {
+      border: 2px solid #000;
+      background: white;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    .saldo-label,
+    .saldo-value {
+      color: #000 !important;
+      font-weight: bold;
+    }
+
+    .result-table {
+      border: 2px solid #000 !important;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .result-table thead {
+      background: #000 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .result-table thead th {
+      border: 1px solid #000 !important;
+      color: #ffffff !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 8px 4px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .result-table tbody td {
+      border: 1px solid #000 !important;
+      color: #000 !important;
+      padding: 6px 4px;
+      font-size: 10px;
+    }
+
+    .result-table tbody tr:hover {
+      background: white !important;
+    }
+
+    .stock-badge {
+      background: white !important;
+      color: #000 !important;
+      border: 1px solid #000;
+      padding: 2px 6px;
+      font-weight: bold;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .date-range-wrapper {
+      grid-template-columns: 1fr;
+    }
+
+    .date-separator {
+      display: none;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .modern-btn {
+      width: 100%;
+      justify-content: center;
+    }
   }
 </style>
 <section class="content">
   <div class="container-fluid">
-    <div class="card card-info card-outline cari">
-      <div class="card-header">
-        <h3 class="card-title">
-          <li class="fas fa-cart-plus"></li> Laporan Kartu Stok
+    <!-- Form Card -->
+    <div class="modern-card cari">
+      <div class="card-header-modern">
+        <h3>
+          <i class="fas fa-clipboard-list"></i>
+          Laporan Kartu Stok
         </h3>
       </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-3">
+      <div class="card-body-modern">
+        <!-- Pilih Toko & Produk -->
+        <div class="form-section">
+          <div class="section-title">Filter Laporan</div>
+          <div class="form-row">
             <div class="form-group">
-              <label for="">Toko :</label>
-              <select name="id_toko" class="form-control form-control-sm select2" id="id_toko" required>
-                <option value="">- Pilih Toko -</option>
+              <label class="form-label">Pilih Toko</label>
+              <select name="id_toko" class="modern-select select2" id="id_toko" required>
+                <option value="">-- Pilih Toko --</option>
                 <?php foreach ($toko as $t) : ?>
                   <option value="<?= $t->id ?>"><?= $t->nama_toko ?></option>
                 <?php endforeach ?>
               </select>
             </div>
-          </div>
-          <div class="col-md-4">
             <div class="form-group">
-              <label for="">Artikel :</label>
-              <select name="id_artikel" class="form-control form-control-sm select2" id="id_artikel" required>
-                <option value="">- Pilih Artikel -</option>
-                <?php foreach ($artikel as $t) : ?>
-                  <option value="<?= $t->id ?>"> | <?= $t->kode ?> |<?= $t->nama_produk ?></option>
-                <?php endforeach ?>
+              <label class="form-label">Pilih Produk</label>
+              <select name="id_artikel" class="modern-select select2" id="id_artikel" required disabled>
+                <option value="">-- Pilih toko terlebih dahulu --</option>
               </select>
             </div>
           </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label>Tgl Awal :</label>
-              <div class="input-group">
-                <input type="date" name="tgl_awal" id="tgl_awal" class="form-control form-control-sm " required>
-              </div>
+        </div>
+
+        <!-- Periode Tanggal -->
+        <div class="form-section">
+          <div class="section-title">Periode Tanggal</div>
+          <div class="date-range-wrapper">
+            <div class="date-input-wrapper">
+              <label class="date-label">Tanggal Awal</label>
+              <input type="date" name="tgl_awal" id="tgl_awal" class="modern-input" required>
+            </div>
+            <span class="date-separator">—</span>
+            <div class="date-input-wrapper">
+              <label class="date-label">Tanggal Akhir</label>
+              <input type="date" name="tgl_akhir" id="tgl_akhir" class="modern-input" required>
             </div>
           </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label>Tgl Akhir :</label>
-              <div class="input-group">
-                <input type="date" name="tgl_akhir" id="tgl_akhir" class="form-control form-control-sm" required>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-1 pt-3">
-            <button class="btn btn-info btn-sm btn-cari mt-3" id="searchBtn">
-              <li class="fas fa-search"></li> Cari
-            </button>
-          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div style="text-align: right;">
+          <button class="modern-btn btn-primary-modern" id="searchBtn">
+            <i class="fas fa-search"></i>
+            <span>Tampilkan Laporan</span>
+          </button>
         </div>
       </div>
     </div>
+
+    <!-- Loading State -->
     <div id="loading" style="display: none;">
       <div class="loader">
-        <div class="circle">
-          <div class="percentage" id="percentage">0%</div>
-        </div>
+        <div class="spinner"></div>
+        <div class="loading-text">Memproses Data</div>
+        <div class="loading-subtext">Mohon tunggu...</div>
       </div>
     </div>
-    <div class="no-data">
-      <img src="<?= base_url('assets/img/nodata.png') ?>" alt="no-data" class="img-nodata">
+
+    <!-- Empty State -->
+    <div class="empty-state no-data">
+      <img src="<?= base_url('assets/img/nodata.png') ?>" alt="no-data">
+      <h4>Belum Ada Data</h4>
+      <p>Lengkapi form untuk menampilkan laporan kartu stok</p>
     </div>
-    <div class="card card-success card-outline hasil d-none">
-      <div class="card-body">
+
+    <!-- Results Card -->
+    <div class="modern-card hasil d-none">
+      <div class="card-body-modern">
         <div id="printableArea">
-          <div class="text-center"> <strong>- Laporan Kartu Stok Detail -</strong></div>
-          <hr>
-          <p class="text-center" id="artikel"></p>
-          <p class="text-center" id="toko"></p>
-          <p class="text-center"> Periode :</p>
-          <div class="text-center"><label id="lap_awal" class="mr-2 text-center"></label> s/d <label class="text-center ml-2" id="lap_akhir"></label>
+          <!-- Report Header -->
+          <div class="report-header">
+            <h2 class="report-title">Laporan Kartu Stok</h2>
+            <div class="report-info">
+              <div class="info-badge" id="toko"></div>
+              <div class="info-badge" id="artikel"></div>
+              <div class="info-badge">
+                <i class="fas fa-calendar-alt" style="margin-right: 6px;"></i>
+                Periode: <span id="lap_awal"></span> s/d <span id="lap_akhir"></span>
+              </div>
+            </div>
           </div>
-          <div class="row mr-4" style="justify-content:flex-end">
-            <p class="mr-5">Saldo Awal :</p>
-            <strong id="s_awal" class="ml-5"></strong>
+
+          <!-- Saldo Awal -->
+          <div class="saldo-card">
+            <span class="saldo-label">
+              <i class="fas fa-box-open"></i>
+              Saldo Awal
+            </span>
+            <span class="saldo-value" id="s_awal">0</span>
           </div>
-          <table class="table table-bordered">
-            <thead>
-              <tr class="text-center">
-                <th rowspan="2">Tanggal</th>
-                <th rowspan="2">No. Dok</th>
-                <th rowspan="2">Transaksi</th>
-                <th rowspan="2">Pembuat</th>
-                <th colspan="3">Stok Artikel</th>
-              </tr>
-              <tr class="text-center">
-                <th>Masuk</th>
-                <th>Keluar</th>
-                <th>Sisa</th>
-              </tr>
-            </thead>
-            <tbody id="dataTableBody">
-            </tbody>
-          </table>
-          <div class="row mr-4" style="justify-content:flex-end">
-            <p class="mr-5">Saldo Akhir :</p>
-            <strong id="s_akhir" class="ml-5"></strong>
+
+          <!-- Table -->
+          <div style="overflow-x: auto; margin-bottom: 15px;">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>No. Dokumen</th>
+                  <th>Transaksi</th>
+                  <th>Pembuat</th>
+                  <th>Masuk</th>
+                  <th>Keluar</th>
+                  <th>Sisa</th>
+                </tr>
+              </thead>
+              <tbody id="dataTableBody">
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Saldo Akhir -->
+          <div class="saldo-card">
+            <span class="saldo-label">
+              <i class="fas fa-check-circle"></i>
+              Saldo Akhir
+            </span>
+            <span class="saldo-value" style="color: #10b981;" id="s_akhir">0</span>
           </div>
         </div>
       </div>
-      <div class="card-footer">
-        <a type="button" onclick="printDiv('printableArea')" target="_blank" class="btn btn-default btn-sm float-right mr-3 ml-2">
-          <i class="fas fa-print"></i> Print </a>
-        <button class="btn btn-warning btn-sm float-right" id="downloadExcelBtn"><i class="fas fa-file-excel"></i> Unduh</button>
-        <a href="<?= base_url('adm/Stok/kartu_stok') ?>" class="btn btn-danger btn-sm float-right mr-1"><i class="fa fa-times-circle"></i> close</a>
+      <div class="card-body-modern" style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
+        <div class="action-buttons">
+          <button class="modern-btn btn-danger-modern" onclick="location.href='<?= base_url('adm/Stok/kartu_stok') ?>'">
+            <i class="fa fa-times-circle"></i>
+            <span>Tutup</span>
+          </button>
+          <button class="modern-btn btn-success-modern" id="downloadExcelBtn">
+            <i class="fas fa-file-excel"></i>
+            <span>Unduh Excel</span>
+          </button>
+          <button class="modern-btn btn-primary-modern" onclick="printDiv('printableArea')">
+            <i class="fas fa-print"></i>
+            <span>Cetak</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 </section>
 
@@ -160,10 +648,56 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 <script>
+  $(document).ready(function() {
+    // Excel download handler
+    $(document).on('click', '#downloadExcelBtn', function() {
+      downloadExcel();
+    });
+
+    // When store is selected, load products for that store
+    $('#id_toko').on('change', function() {
+      const idToko = $(this).val();
+      const artikelSelect = $('#id_artikel');
+
+      if (idToko) {
+        // Enable artikel select
+        artikelSelect.prop('disabled', false);
+        artikelSelect.html('<option value="">-- Memuat produk... --</option>');
+
+        // Fetch products for selected store
+        $.ajax({
+          url: '<?= base_url('adm/Stok/get_produk_by_toko') ?>',
+          type: 'GET',
+          data: {
+            id_toko: idToko
+          },
+          dataType: 'json',
+          success: function(response) {
+            let options = '<option value="">-- Pilih Produk --</option>';
+            if (response.length > 0) {
+              response.forEach(function(item) {
+                options += `<option value="${item.id}">${item.kode} | ${item.nama_produk}</option>`;
+              });
+            } else {
+              options = '<option value="">-- Tidak ada produk di toko ini --</option>';
+            }
+            artikelSelect.html(options);
+          },
+          error: function() {
+            artikelSelect.html('<option value="">-- Gagal memuat produk --</option>');
+          }
+        });
+      } else {
+        // Reset artikel select
+        artikelSelect.prop('disabled', true);
+        artikelSelect.html('<option value="">-- Pilih toko terlebih dahulu --</option>');
+      }
+    });
+  });
+
   function validateForm() {
     let isValid = true;
-    // Get all required input fields
-    $('.cari').find('input[required], select[required], textarea[required]').each(function() {
+    $('.cari').find('input[required], select[required]').each(function() {
       if ($(this).val() === '') {
         isValid = false;
         $(this).addClass('is-invalid');
@@ -173,13 +707,10 @@
     });
     return isValid;
   }
-  document.getElementById('downloadExcelBtn').addEventListener('click', function() {
-    downloadExcel();
-  });
 
   function downloadExcel() {
     var wb = XLSX.utils.book_new();
-    var header = ["Tanggal", "No.Dok", "Ketrangan", "Pembuat", "Masuk", "Keluar", "Sisa"];
+    var header = ["Tanggal", "No.Dok", "Transaksi", "Pembuat", "Masuk", "Keluar", "Sisa"];
     var sheetData = [];
     sheetData.push(header);
     var table = document.getElementById('dataTableBody');
@@ -202,97 +733,50 @@
     XLSX.writeFile(wb, filename);
   }
 
-
-
   document.getElementById('searchBtn').addEventListener('click', function() {
     var idToko = document.getElementById('id_toko').value;
     var idArtikel = document.getElementById('id_artikel').value;
     var tglAwal = document.getElementById('tgl_awal').value;
     var tglAkhir = document.getElementById('tgl_akhir').value;
     const url = '<?= base_url('adm/Stok') ?>';
+
     if (validateForm()) {
       document.getElementById('loading').style.display = 'flex';
-      // Reset the percentage
-      var percentageElement = document.getElementById('percentage');
-      percentageElement.textContent = '0%';
-      var circle = document.querySelector('.circle');
-      // Simulate loading data with setInterval
-      var percentage = 0;
-      var intervalTime = 50; // update every 50ms
-      var interval = setInterval(() => {
-        if (percentage < 100) {
-          percentage += 1;
-          percentageElement.textContent = Math.round(percentage) + '%';
-          var angle = percentage * 3.6;
-          circle.style.background = `conic-gradient(
-                    #3498db 0deg,
-                    #3498db ${angle}deg,
-                    transparent ${angle}deg,
-                    transparent 360deg
-                )`;
-        } else {
-          clearInterval(interval);
-        }
-      }, intervalTime);
 
       fetch(`${url}/cari_kartu?id_toko=${idToko}&id_artikel=${idArtikel}&tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`)
         .then(response => response.json())
         .then(data => {
-          // Additional duration after data is fetched
-          var additionalDuration = 2000; // 3 seconds
-          var additionalIntervalTime = intervalTime; // same interval time
-          var additionalIntervals = additionalDuration / additionalIntervalTime;
-          var remainingIntervals = 0;
-
-          var additionalInterval = setInterval(() => {
-            remainingIntervals++;
-            percentage = Math.min(100, percentage + (1 / additionalIntervals) * 100);
-            if (remainingIntervals <= additionalIntervals && percentage <= 100) {
-              percentageElement.textContent = Math.round(percentage) + '%';
-              var angle = percentage * 3.6;
-              circle.style.background = `conic-gradient(
-                            #3498db 0deg,
-                            #3498db ${angle}deg,
-                            transparent ${angle}deg,
-                            transparent 360deg
-                        )`;
+          setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            if (data.tabel_data && data.tabel_data.length > 0) {
+              updateUI(data);
             } else {
-              clearInterval(additionalInterval);
-              percentageElement.textContent = '100%';
-              circle.style.background = `conic-gradient(
-                            #3498db 0deg,
-                            #3498db 360deg,
-                            transparent 360deg,
-                            transparent 360deg
-                        )`;
-              setTimeout(() => {
-                // Hide the loading animation
-                document.getElementById('loading').style.display = 'none';
-                if (data.tabel_data != "") {
-                  updateUI(data);
-                } else {
-                  Swal.fire(
-                    'TIDAK ADA DATA',
-                    'Data tidak ditemukan, silahkan cari kembali',
-                    'info'
-                  );
-                }
-
-              }, 500);
+              Swal.fire({
+                icon: 'info',
+                title: 'Tidak Ada Data',
+                text: 'Data tidak ditemukan untuk periode yang dipilih',
+                confirmButtonColor: '#4F46E5'
+              });
             }
-          }, additionalIntervalTime);
+          }, 800);
         })
         .catch(error => {
           console.error('Error fetching data:', error);
-          clearInterval(interval);
           document.getElementById('loading').style.display = 'none';
+          Swal.fire({
+            icon: 'error',
+            title: 'Terjadi Kesalahan',
+            text: 'Gagal memuat data, silakan coba lagi',
+            confirmButtonColor: '#EF4444'
+          });
         });
     } else {
-      Swal.fire(
-        'BELUM LENGKAP',
-        'Lengkapi semua kolom.',
-        'info'
-      );
+      Swal.fire({
+        icon: 'warning',
+        title: 'Form Belum Lengkap',
+        text: 'Mohon lengkapi semua field yang diperlukan',
+        confirmButtonColor: '#4F46E5'
+      });
     }
   });
 
@@ -304,7 +788,7 @@
     $('.cari').addClass('d-none');
     $('.no-data').addClass('d-none');
     $('.hasil').removeClass('d-none');
-    // Function to format the date
+
     function formatDate(dateString) {
       const date = new Date(dateString);
       const options = {
@@ -313,45 +797,164 @@
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit',
         hour12: false
       };
-      // Format date using Indonesian locale
       let formattedDate = new Intl.DateTimeFormat('id-ID', options).format(date);
-      // Remove the word "pukul"
-      formattedDate = formattedDate.replace(' pukul ', ' ');
       return formattedDate;
     }
-    // Update the table
+
     var tableBody = document.getElementById('dataTableBody');
-    var totalQty = 0;
     tableBody.innerHTML = '';
     data.tabel_data.forEach((item, index) => {
       var formattedDate = formatDate(item.tanggal);
       var row = document.createElement('tr');
+
+      const masukClass = item.masuk !== '-' ? 'stock-in' : '';
+      const keluarClass = item.keluar !== '-' ? 'stock-out' : '';
+
       row.innerHTML = `
-            <td class="text-center">${formattedDate}</td>
-            <td class="text-center">${item.no_doc}</td>
-            <td class="text-center">${item.keterangan}</td>
-            <td class="text-center">${item.pembuat}</td>
-            <td class="text-center">${item.masuk}</td>
-            <td class="text-center">${item.keluar}</td>
-            <td class="text-center">${item.sisa}</td>
-        `;
+        <td>${formattedDate}</td>
+        <td style="text-align: center;">${item.no_doc}</td>
+        <td>${item.keterangan}</td>
+        <td>${item.pembuat}</td>
+        <td style="text-align: center;">
+          ${item.masuk !== '-' ? '<span class="stock-badge stock-in">' + item.masuk + '</span>' : '-'}
+        </td>
+        <td style="text-align: center;">
+          ${item.keluar !== '-' ? '<span class="stock-badge stock-out">' + item.keluar + '</span>' : '-'}
+        </td>
+        <td style="text-align: center; font-weight: 600;">${item.sisa}</td>
+      `;
       tableBody.appendChild(row);
     });
+
     if (data.tabel_data.length > 0) {
-      // Assuming s_awal is the stock at the start of the period
       $('#s_awal').html(data.s_awal);
       $('#s_akhir').html(data.s_akhir);
     }
   }
 
   function printDiv(divName) {
-    var printContents = document.getElementById(divName).innerHTML;
-    var originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
+    var printWindow = window.open('', '_blank');
+    var printContent = document.getElementById(divName).innerHTML;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Laporan Kartu Stok</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 1cm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+          }
+          .report-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #000;
+          }
+          .report-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 15px;
+          }
+          .report-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .info-badge {
+            display: block;
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #000;
+            margin: 5px 0;
+          }
+          .saldo-card {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #000;
+          }
+          .saldo-label {
+            font-weight: bold;
+            color: #000;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .saldo-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+          }
+          .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            background: #ffffff;
+            border: 2px solid #000;
+            margin: 15px 0;
+          }
+          .result-table thead {
+            background: #000;
+          }
+          .result-table thead th {
+            color: #ffffff;
+            padding: 8px 4px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 10px;
+            text-transform: uppercase;
+            border: 1px solid #000;
+          }
+          .result-table tbody td {
+            padding: 6px 4px;
+            border: 1px solid #000;
+            color: #000;
+            text-align: center;
+            vertical-align: middle;
+          }
+          .stock-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+            display: inline-block;
+            background: white;
+            color: #000;
+            border: 1px solid #000;
+          }
+        </style>
+      </head>
+      <body>
+        ${printContent}
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+
+    setTimeout(function() {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
   }
 </script>

@@ -5,35 +5,144 @@
     height: 100%;
     top: 0;
     left: 0;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.85);
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
+    backdrop-filter: blur(5px);
   }
 
   .loader {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 320px;
+    padding: 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+
+  .loader-icon {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
   }
 
   .circle {
-    position: relative;
+    position: absolute;
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: conic-gradient(#3498db 0deg, #3498db 0deg, transparent 0deg);
+    border: 8px solid #e0e0e0;
+    border-top: 8px solid #17a2b8;
+    border-right: 8px solid #28a745;
+    animation: rotate 1.5s linear infinite;
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .progress-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(#17a2b8 0deg, #17a2b8 0deg, transparent 0deg);
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background 0.3s ease;
   }
 
   .percentage {
-    position: absolute;
-    font-size: 2em;
+    font-size: 1.5em;
     font-weight: bold;
-    color: #ffc107;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .loading-text {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .loading-subtext {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  .loading-dots {
+    display: inline-block;
+  }
+
+  .loading-dots span {
+    animation: blink 1.4s infinite;
+    animation-fill-mode: both;
+  }
+
+  .loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes blink {
+
+    0%,
+    80%,
+    100% {
+      opacity: 0;
+    }
+
+    40% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .progress-info {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #17a2b8;
+  }
+
+  .progress-stage {
+    font-size: 12px;
+    color: #17a2b8;
+    font-weight: 600;
+    margin-bottom: 5px;
   }
 
   .img-nodata {
@@ -88,8 +197,20 @@
     </div>
     <div id="loading" style="display: none;">
       <div class="loader">
-        <div class="circle">
-          <div class="percentage" id="percentage">0%</div>
+        <div class="loader-icon">
+          <div class="circle"></div>
+          <div class="progress-circle">
+            <div class="percentage" id="percentage">0%</div>
+          </div>
+        </div>
+        <div class="loading-text">
+          <span id="loadingText">Memuat Data</span><span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+        </div>
+        <div class="loading-subtext" id="loadingSubtext">
+          Mohon tunggu, sedang mengambil data dari server
+        </div>
+        <div class="progress-info">
+          <div class="progress-stage" id="progressStage">Menginisialisasi...</div>
         </div>
       </div>
     </div>
