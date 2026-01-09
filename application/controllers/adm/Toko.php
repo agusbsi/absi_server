@@ -1021,4 +1021,111 @@ class Toko extends CI_Controller
     }
     redirect('adm/Toko/profil/' . $id_toko);
   }
+
+  public function getPendingDetail()
+  {
+    $id_toko = $this->input->post('id_toko');
+    $type = $this->input->post('type');
+
+    if (!$id_toko || !$type) {
+      echo json_encode(['success' => false, 'message' => 'Parameter tidak lengkap']);
+      return;
+    }
+
+    $data = [];
+
+    try {
+      switch ($type) {
+        case 'po':
+          // Data PO dari tb_permintaan dengan status selain 5 & 6
+          $query = $this->db->query("
+            SELECT 
+              id as nomor,
+              DATE_FORMAT(created_at, '%d-%m-%Y') as tanggal,
+              status
+            FROM tb_permintaan 
+            WHERE id_toko = ? 
+              AND status NOT IN (5, 6)
+            ORDER BY created_at DESC
+          ", array($id_toko));
+          $data = $query->result_array();
+          break;
+
+        case 'pengiriman':
+          // Data Pengiriman dari tb_pengiriman dengan status selain 2
+          $query = $this->db->query("
+            SELECT 
+              id as nomor,
+              DATE_FORMAT(created_at, '%d-%m-%Y') as tanggal,
+              status
+            FROM tb_pengiriman 
+            WHERE id_toko = ? 
+              AND status != 2
+            ORDER BY created_at DESC
+          ", array($id_toko));
+          $data = $query->result_array();
+          break;
+
+        case 'mutasi_keluar':
+          // Data Mutasi Keluar dari tb_mutasi dengan status selain 2 dan 3
+          $query = $this->db->query("
+            SELECT 
+              id as nomor,
+              DATE_FORMAT(created_at, '%d-%m-%Y') as tanggal,
+              status
+            FROM tb_mutasi 
+            WHERE id_toko_asal = ? 
+              AND status NOT IN (2, 3)
+            ORDER BY created_at DESC
+          ", array($id_toko));
+          $data = $query->result_array();
+          break;
+
+        case 'mutasi_masuk':
+          // Data Mutasi Masuk dari tb_mutasi dengan status selain 2 dan 3
+          $query = $this->db->query("
+            SELECT 
+              id as nomor,
+              DATE_FORMAT(created_at, '%d-%m-%Y') as tanggal,
+              status
+            FROM tb_mutasi 
+            WHERE id_toko_tujuan = ? 
+              AND status NOT IN (2, 3)
+            ORDER BY created_at DESC
+          ", array($id_toko));
+          $data = $query->result_array();
+          break;
+
+        case 'retur':
+          // Data Retur dari tb_retur dengan status selain 4,5,15,16
+          $query = $this->db->query("
+            SELECT 
+              id as nomor,
+              DATE_FORMAT(created_at, '%d-%m-%Y') as tanggal,
+              status
+            FROM tb_retur 
+            WHERE id_toko = ? 
+              AND status NOT IN (4, 5,13, 15, 16)
+            ORDER BY created_at DESC
+          ", array($id_toko));
+          $data = $query->result_array();
+          break;
+
+        default:
+          echo json_encode(['success' => false, 'message' => 'Tipe tidak valid']);
+          return;
+      }
+
+      echo json_encode([
+        'success' => true,
+        'data' => $data,
+        'count' => count($data)
+      ]);
+    } catch (Exception $e) {
+      echo json_encode([
+        'success' => false,
+        'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+      ]);
+    }
+  }
 }
