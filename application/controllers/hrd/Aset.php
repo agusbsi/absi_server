@@ -8,10 +8,12 @@ class Aset extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != "7" && $role != "11" && $role != "1" && $role != "14" && $role != "15" && $role != "17") {
+    $allowed_roles = [1, 2, 3, 6, 8, 9, 10, 11, 14, 15, 17];
+    if (!in_array($role, $allowed_roles)) {
       tampil_alert('error', 'DI TOLAK !', 'Silahkan login kembali');
       redirect(base_url(''));
     }
+
     $this->load->model('M_admin');
     $this->load->model('M_support');
   }
@@ -144,6 +146,10 @@ class Aset extends CI_Controller
   }
   public function list_aset()
   {
+    $role = $this->session->userdata('role');
+    $id = $this->session->userdata('id');
+
+    // Base query
     $sql = "
         SELECT
             tt.id AS id_toko,
@@ -164,8 +170,18 @@ class Aset extends CI_Controller
             GROUP BY id_toko
         ) ts ON ts.id_toko = tt.id
         WHERE tt.status != 0
-        ORDER BY tt.nama_toko ASC
     ";
+
+    // Filter berdasarkan role
+    if ($role == 2) {
+      // Jika role SPV, tampilkan hanya toko yang id_spv sama dengan id user
+      $sql .= " AND tt.id_spv = '$id'";
+    } elseif ($role == 3) {
+      // Jika role Leader, tampilkan hanya toko yang id_leader sama dengan id user
+      $sql .= " AND tt.id_leader = '$id'";
+    }
+
+    $sql .= " ORDER BY tt.nama_toko ASC";
 
     $data['title'] = 'Management Aset';
     $data['list_data'] = $this->db->query($sql)->result();

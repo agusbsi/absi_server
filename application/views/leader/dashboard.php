@@ -194,14 +194,21 @@ $kirim = $this->db->query("SELECT tp.id FROM tb_pengiriman tp
           <span>BAP</span>
         </div>
         <div class="menu-item">
-          <a href="<?= base_url('sup/So') ?>"><i class="fas fa-folder"></i></a>
-          <span>SO SPG</span>
+          <a href="<?= base_url('sup/So') ?>"><i class="fas fa-box"></i></a>
+          <span>SO Artikel</span>
         </div>
         <div class="menu-item">
-          <a href="<?= base_url('sup/So/Riwayat_so') ?>"><i class="fas fa-folder-open"></i></a>
-          <span>Riwayat SO</span>
+          <a href="<?= base_url('hrd/Aset/list_aset') ?>"><i class="fas fa-cubes"></i></a>
+          <span>SO Aset</span>
         </div>
-
+        <div class="menu-item">
+          <a href="<?= base_url('sup/So/Riwayat_so') ?>"><i class="fas fa-history"></i></a>
+          <span>Riwayat SO Artikel</span>
+        </div>
+        <div class="menu-item">
+          <a href="<?= base_url('adm/So/histori_aset') ?>"><i class="fas fa-clipboard-list"></i></a>
+          <span>Riwayat SO Aset</span>
+        </div>
         <div class="menu-item">
           <a href="<?= base_url('leader/Penjualan/lap_toko') ?>"><i class="fas fa-cart-plus"></i></a>
           <span>Lap Penjualan</span>

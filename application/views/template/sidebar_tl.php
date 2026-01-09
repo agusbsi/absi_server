@@ -8,11 +8,10 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
   WHERE tb_bap.status = '0' AND tb_toko.id_leader ='$id'")->num_rows();
 ?>
 <!-- Sidebar -->
-<div class="sidebar">
+<div class="sidebar modern-sidebar">
   <!-- Sidebar Menu -->
   <nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-      <li class="nav-header">Menu Utama</li>
+    <ul class="nav nav-pills nav-sidebar flex-column modern-nav" data-widget="treeview" role="menu" data-accordion="false">
       <li class="nav-item">
         <a href="<?= base_url('leader/Dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
           <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -21,6 +20,7 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
           </p>
         </a>
       </li>
+      <li class="nav-header">Master Data</li>
       <li class="nav-item <?= ($title == 'Kelola Toko' || $title == 'List Toko Tutup') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Kelola Toko' || $title == 'List Toko Tutup') ? "active" : "" ?>">
           <i class="nav-icon fas fa-store"></i>
@@ -52,15 +52,31 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
           </p>
         </a>
       </li>
-
-      <li class="nav-header">Transaksi</li>
-      <li class="nav-item">
-        <a href="<?= base_url('adm/Analist') ?>" class="nav-link <?= ($title == 'Marketing Analist') ? "active" : "" ?>">
-          <i class="nav-icon fas fa-flask"></i>
+      <li class="nav-header">Menu Utama</li>
+      <li class="nav-item <?= ($title == 'Management Aset' || $title == 'Histori Aset' || $title == 'Detail Aset') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Management Aset' || $title == 'Histori ASET' || $title == 'Detail Aset') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-dolly"></i>
           <p>
-            Marketing Analist
+            Management Aset Toko
+            <i class="right fas fa-angle-left"></i>
           </p>
         </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?= base_url('hrd/Aset/list_aset') ?>" class="nav-link <?= ($title == 'Management Aset') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>
+                Bulan ini
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?= base_url('adm/So/histori_aset') ?>" class="nav-link <?= ($title == 'Histori Aset') ? "active" : "" ?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Histori</p>
+            </a>
+          </li>
+        </ul>
       </li>
       <li class="nav-item <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "menu-open" : "" ?>">
         <a href="#" class="nav-link <?= ($title == 'Management Stock Opname' || $title == 'Histori SO' || $title == 'Detail SO') ? "active" : "" ?>">
@@ -86,6 +102,14 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
             </a>
           </li>
         </ul>
+      </li>
+      <li class="nav-item">
+        <a href="<?= base_url('adm/Analist') ?>" class="nav-link <?= ($title == 'Marketing Analist') ? "active" : "" ?>">
+          <i class="nav-icon fas fa-flask"></i>
+          <p>
+            Marketing Analist
+          </p>
+        </a>
       </li>
       <li class="nav-item">
         <a href="<?= base_url('leader/Permintaan') ?>" class="nav-link <?= ($title == 'Permintaan') ? "active" : "" ?>">
@@ -235,3 +259,147 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
   <!-- /.sidebar-menu -->
 </div>
 <!-- /.sidebar -->
+
+<!-- Modern Sidebar Styles -->
+<style>
+  /* Modern Sidebar Styling */
+  .modern-sidebar {
+    background: linear-gradient(180deg, #1a3a52 0%, #2d5a7a 50%, #1a3a52 100%);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 181, 246, 0.3) transparent;
+    padding: 8px 0;
+  }
+
+  .modern-sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .modern-sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+
+  .modern-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(100, 181, 246, 0.4);
+    border-radius: 3px;
+  }
+
+  .modern-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 181, 246, 0.6);
+  }
+
+  /* Navigation Items */
+  .modern-nav .nav-item {
+    margin-bottom: 3px;
+  }
+
+  .modern-nav .nav-link {
+    border-radius: 8px;
+    margin: 2px 12px;
+    padding: 10px 14px;
+    color: rgba(235, 245, 255, 0.92);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .modern-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-left-color: #64b5f6;
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .modern-nav .nav-link.active {
+    background: linear-gradient(90deg, rgba(100, 181, 246, 0.25) 0%, rgba(100, 181, 246, 0.15) 100%);
+    color: #ffffff;
+    border-left-color: #64b5f6;
+    font-weight: 500;
+    box-shadow: 0 2px 12px rgba(100, 181, 246, 0.3);
+  }
+
+  .modern-nav .nav-link .nav-icon {
+    font-size: 16px;
+    margin-right: 12px;
+    color: #90caf9;
+    transition: all 0.3s ease;
+  }
+
+  .modern-nav .nav-link.active .nav-icon,
+  .modern-nav .nav-link:hover .nav-icon {
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+
+  /* Treeview Items */
+  .modern-nav .nav-treeview {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    margin: 4px 12px;
+    padding: 6px 0;
+  }
+
+  .modern-nav .nav-treeview .nav-link {
+    padding: 8px 12px 8px 40px;
+    margin: 2px 8px;
+    font-size: 13px;
+  }
+
+  .modern-nav .nav-treeview .nav-icon {
+    font-size: 8px;
+    margin-right: 10px;
+  }
+
+  /* Headers */
+  .modern-nav .nav-header {
+    color: #90caf9;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 14px 20px 8px 20px;
+    margin-top: 8px;
+    border-bottom: 1px solid rgba(100, 181, 246, 0.2);
+  }
+
+  /* Angle Icon */
+  .modern-nav .nav-link .right {
+    transition: transform 0.3s ease;
+  }
+
+  .modern-nav .menu-open>.nav-link .right {
+    transform: rotate(-90deg);
+  }
+
+  /* Badge Styling */
+  .modern-nav .badge {
+    font-size: 10px;
+    padding: 3px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* Smooth Animations */
+  .modern-nav .nav-treeview {
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

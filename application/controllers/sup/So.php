@@ -31,14 +31,14 @@ class So extends CI_Controller
     } else {
       $query = "";
     }
-    $data['t_toko'] = $this->db->query("SELECT * from tb_toko where status = '1' $query ")->num_rows();
-    $data['t_so'] = $this->db->query("SELECT * from tb_toko where status_so = '1' and status = '1' $query ")->num_rows();
-    $data['t_bso'] = $this->db->query("SELECT * from tb_toko where status_so = '0' and status = '1' $query ")->num_rows();
+    $data['t_toko'] = $this->db->query("SELECT * from tb_toko where status != 0 $query ")->num_rows();
+    $data['t_so'] = $this->db->query("SELECT * from tb_toko where status_so = '1' and status != 0 $query ")->num_rows();
+    $data['t_bso'] = $this->db->query("SELECT * from tb_toko where status_so = '0' and status != 0 $query ")->num_rows();
     $data['list_data'] = $this->db->query("SELECT tt.*, tb_user.nama_user,
     Max(ts.id) as id_so, Max(ts.created_at) as tgl_buat, max(ts.tgl_so) as tanggal_so FROM tb_toko tt
     left join tb_so ts on tt.id = ts.id_toko
     left JOIN tb_user ON tt.id_spg = tb_user.id 
-    WHERE tt.status = '1' $query group by tt.id order by tt.id asc")->result();
+    WHERE tt.status != 0 $query group by tt.id order by tt.id asc")->result();
     $this->template->load('template/template', 'manager_mv/stokopname/index', $data);
   }
 
