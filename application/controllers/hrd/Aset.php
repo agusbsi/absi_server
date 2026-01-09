@@ -279,4 +279,70 @@ class Aset extends CI_Controller
     $response = array('nomor_urut' => $latestAsetNumber, 'kode_aset' => $kode, 'unit' => $unit);
     echo json_encode($response);
   }
+
+  public function reset_laporan()
+  {
+    // Set response header to JSON
+    header('Content-Type: application/json');
+
+    // Cek apakah user memiliki akses (role 1, 14, atau 17)
+    if (!in_array($this->session->userdata('role'), [1, 14, 17])) {
+      echo json_encode([
+        'status' => 'error',
+        'message' => 'Anda tidak memiliki akses untuk melakukan aksi ini!'
+      ]);
+      return;
+    }
+
+    // Get data from POST
+    $id_toko = $this->input->post('id_toko');
+    $id_aset_list = $this->input->post('id_aset_list');
+
+    // Validasi data
+    if (empty($id_toko)) {
+      echo json_encode([
+        'status' => 'error',
+        'message' => 'ID Toko tidak valid!'
+      ]);
+      return;
+    }
+
+    if (empty($id_aset_list) || !is_array($id_aset_list)) {
+      echo json_encode([
+        'status' => 'error',
+        'message' => 'Tidak ada laporan yang akan dihapus!'
+      ]);
+      return;
+    }
+
+    // Begin transaction
+    $this->db->trans_start();
+
+    // Hapus laporan berdasarkan id_aset list
+    $this->db->where_in('id', $id_aset_list);
+    $this->db->where('id_toko', $id_toko);
+    $this->db->delete('tb_aset_spg');
+
+    // Update status_aset di tb_toko menjadi 0
+    $this->db->where('id', $id_toko);
+    $this->db->update('tb_toko', ['status_aset' => 0]);
+
+    // Complete transaction
+    $this->db->trans_complete();
+
+    // Check transaction status
+    if ($this->db->trans_status() === FALSE) {
+      echo json_encode([
+        'status' => 'error',
+        'message' => 'Gagal mereset laporan. Silakan coba lagi.'
+      ]);
+    } else {
+      $jumlah_dihapus = count($id_aset_list);
+      echo json_encode([
+        'status' => 'success',
+        'message' => "Berhasil menghapus {$jumlah_dihapus} laporan. SPG dapat menginput ulang laporan kondisi aset.",
+        'deleted_count' => $jumlah_dihapus
+      ]);
+    }
+  }
 }

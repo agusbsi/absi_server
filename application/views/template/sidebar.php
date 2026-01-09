@@ -428,7 +428,7 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 4")->nu
   .modern-nav .nav-header {
     color: rgba(100, 181, 246, 0.75);
     padding: 16px 18px 8px 18px;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -444,7 +444,7 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 4")->nu
   /* Badge Styling */
   .modern-nav .badge {
     padding: 4px 8px;
-    font-size: 10px;
+    font-size: 14px;
     border-radius: 10px;
     font-weight: 600;
     animation: pulse 2s infinite;
@@ -478,7 +478,7 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 4")->nu
   }
 
   .modern-nav .nav-treeview .nav-icon {
-    font-size: 11px;
+    font-size: 14px;
     width: 20px;
   }
 

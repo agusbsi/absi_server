@@ -33,8 +33,8 @@
                     <div class="d-flex align-items-center p-2 bg-light rounded">
                       <div class="mr-2"><i class="fas fa-map-marker-alt text-primary"></i></div>
                       <div class="flex-fill" style="min-width: 0;">
-                        <small class="text-muted d-block" style="font-size: 0.7rem;">Alamat</small>
-                        <small class="font-weight-bold text-truncate d-block"><?= $toko->alamat ?></small>
+                        <small class="text-muted d-block" style="font-size: 0.85rem;">Alamat</small>
+                        <small class="font-weight-bold text-truncate d-block" style="font-size: 0.95rem;"><?= $toko->alamat ?></small>
                       </div>
                     </div>
                   </div>
@@ -42,8 +42,8 @@
                     <div class="d-flex align-items-center p-2 bg-light rounded">
                       <div class="mr-2"><i class="fas fa-user-tie text-success"></i></div>
                       <div class="flex-fill" style="min-width: 0;">
-                        <small class="text-muted d-block" style="font-size: 0.7rem;">Supervisor</small>
-                        <small class="font-weight-bold text-truncate d-block"><?= $toko->spv ?></small>
+                        <small class="text-muted d-block" style="font-size: 0.85rem;">Supervisor</small>
+                        <small class="font-weight-bold text-truncate d-block" style="font-size: 0.95rem;"><?= $toko->spv ?></small>
                       </div>
                     </div>
                   </div>
@@ -51,8 +51,8 @@
                     <div class="d-flex align-items-center p-2 bg-light rounded">
                       <div class="mr-2"><i class="fas fa-users text-warning"></i></div>
                       <div class="flex-fill" style="min-width: 0;">
-                        <small class="text-muted d-block" style="font-size: 0.7rem;">Team Leader</small>
-                        <small class="font-weight-bold text-truncate d-block"><?= $toko->leader ?></small>
+                        <small class="text-muted d-block" style="font-size: 0.85rem;">Team Leader</small>
+                        <small class="font-weight-bold text-truncate d-block" style="font-size: 0.95rem;"><?= $toko->leader ?></small>
                       </div>
                     </div>
                   </div>
@@ -60,8 +60,8 @@
                     <div class="d-flex align-items-center p-2 bg-light rounded">
                       <div class="mr-2"><i class="fas fa-user text-info"></i></div>
                       <div class="flex-fill" style="min-width: 0;">
-                        <small class="text-muted d-block" style="font-size: 0.7rem;">SPG</small>
-                        <small class="font-weight-bold text-truncate d-block"><?= $toko->spg ?></small>
+                        <small class="text-muted d-block" style="font-size: 0.85rem;">SPG</small>
+                        <small class="font-weight-bold text-truncate d-block" style="font-size: 0.95rem;"><?= $toko->spg ?></small>
                       </div>
                     </div>
                   </div>
@@ -93,11 +93,11 @@
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-sm table-hover mb-0">
-                <thead class="bg-light" style="font-size: 0.8rem;">
+                <thead class="bg-light" style="font-size: 0.9rem;">
                   <tr>
                     <th class="text-center" style="width: 40px;">No</th>
                     <th style="width: 80px;">Kode</th>
-                    <th style="width: 120px;">No Aset</th>
+                    <th>No Aset</th>
                     <th>Nama Aset</th>
                     <th class="text-center" style="width: 70px;">Qty</th>
                     <th class="text-center" style="width: 60px;">Unit</th>
@@ -113,10 +113,10 @@
                       $no++;
                       $total += $l->qty;
                   ?>
-                      <tr style="font-size: 0.85rem;">
+                      <tr style="font-size: 0.95rem;">
                         <td class="text-center"><?= $no ?></td>
                         <td><span class="badge badge-secondary badge-sm"><?= $l->kode ?></span></td>
-                        <td><small><code><?= $l->no_aset ?></code></small></td>
+                        <td><strong><code style="font-size: 1rem;"><?= $l->no_aset ?></code></strong></td>
                         <td><?= $l->aset ?></td>
                         <td class="text-center">
                           <span class="badge badge-info"><?= $l->qty ?></span>
@@ -184,12 +184,17 @@
                   <i class="fas fa-calendar-alt mr-1"></i>Data kondisi realtime aset yang diperbarui rutin setiap bulan oleh SPG
                 </small>
               </div>
+              <?php if (!empty($aset_spg) && in_array($this->session->userdata('role'), [1, 14, 17])): ?>
+                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-reset">
+                  <i class="fas fa-redo"></i> Reset Laporan
+                </button>
+              <?php endif; ?>
             </div>
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-sm table-hover mb-0">
-                <thead class="bg-light" style="font-size: 0.8rem;">
+                <thead class="bg-light" style="font-size: 0.9rem;">
                   <tr>
                     <th class="text-center" style="width: 40px;">No</th>
                     <th style="width: 30%;">Aset</th>
@@ -201,17 +206,17 @@
                 </thead>
                 <tbody>
                   <?php
+                  $no = 0;
+                  $total_spg = 0;
                   if (!empty($aset_spg)) {
-                    $no = 0;
-                    $total_spg = 0;
                     foreach ($aset_spg as $l) :
                       $no++;
                       $total_spg += $l->qty;
                   ?>
-                      <tr style="font-size: 0.85rem;">
+                      <tr style="font-size: 0.95rem;">
                         <td class="text-center"><?= $no ?></td>
                         <td>
-                          <small><code><?= $l->no_aset ?></code></small>
+                          <strong><code style="font-size: 1rem;"><?= $l->no_aset ?></code></strong>
                           <div><?= $l->aset ?></div>
                         </td>
                         <td class="text-center">
@@ -268,6 +273,96 @@
   </div>
   <!-- /.container-fluid -->
 </section>
+<!-- Modal Reset Laporan -->
+<div class="modal fade" id="modal-reset">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-warning p-3">
+        <h5 class="modal-title mb-0">
+          <i class="fas fa-exclamation-triangle mr-2"></i>Konfirmasi Reset Laporan
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="alert alert-warning border-warning" role="alert">
+          <div class="d-flex align-items-start">
+            <i class="fas fa-exclamation-triangle fa-2x mr-3 mt-1"></i>
+            <div>
+              <h6 class="alert-heading mb-2">Perhatian!</h6>
+              <p class="mb-0">Aksi ini akan menghapus <strong>semua laporan</strong> kondisi aset yang telah diinput oleh SPG untuk toko ini bulan ini.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border mb-3">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label class="text-muted mb-1" style="font-size: 0.85rem;"><i class="fas fa-store mr-1"></i>Nama Toko</label>
+                <div class="font-weight-bold"><?= $toko->nama_toko ?></div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label class="text-muted mb-1" style="font-size: 0.85rem;"><i class="fas fa-list mr-1"></i>Total Laporan</label>
+                <div class="font-weight-bold">
+                  <span class="badge badge-warning" style="font-size: 1rem;"><?= !empty($aset_spg) ? count($aset_spg) : 0 ?></span> item akan dihapus
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <?php if (!empty($aset_spg)): ?>
+          <div class="mb-3">
+            <label class="font-weight-bold mb-2"><i class="fas fa-clipboard-list mr-1"></i>Detail Laporan yang akan dihapus:</label>
+            <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+              <table class="table table-sm table-bordered mb-0">
+                <thead class="bg-light sticky-top">
+                  <tr>
+                    <th style="width: 40px;" class="text-center">No</th>
+                    <th style="width: 150px;">No Aset</th>
+                    <th>Nama Aset</th>
+                    <th style="width: 70px;" class="text-center">Qty</th>
+                    <th style="width: 120px;" class="text-center">Tanggal Input</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                  $no = 0;
+                  foreach ($aset_spg as $item):
+                    $no++;
+                  ?>
+                    <tr>
+                      <td class="text-center"><?= $no ?></td>
+                      <td><code><?= $item->no_aset ?></code></td>
+                      <td><?= $item->aset ?></td>
+                      <td class="text-center"><span class="badge badge-info"><?= $item->qty ?></span></td>
+                      <td class="text-center"><small><?= date('d M Y', strtotime($item->tanggal)) ?></small></td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <div class="alert alert-danger border-danger mb-0" role="alert">
+          <i class="fas fa-exclamation-circle mr-2"></i>
+          <strong>Data yang dihapus tidak dapat dikembalikan!</strong> SPG harus menginput ulang seluruh laporan kondisi aset.
+        </div>
+      </div>
+      <div class="modal-footer p-3 bg-light border-top">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class="fas fa-times mr-1"></i> Batal
+        </button>
+        <button type="button" class="btn btn-warning" onclick="submitResetLaporan()">
+          <i class="fas fa-redo mr-1"></i> Ya, Reset Laporan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Modal Tambah Aset -->
 <div class="modal fade" id="modal-tambah">
   <div class="modal-dialog modal-dialog-centered">
@@ -566,6 +661,72 @@
         $("#no_aset_edit").val(data.no_aset);
       },
       error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+      }
+    });
+  }
+
+  function submitResetLaporan() {
+    // Collect all id_aset from aset_spg
+    var id_aset_list = [];
+    <?php if (!empty($aset_spg)): ?>
+      <?php foreach ($aset_spg as $item): ?>
+        id_aset_list.push('<?= $item->id ?>');
+      <?php endforeach; ?>
+    <?php endif; ?>
+
+    // Prepare data to send
+    var dataToSend = {
+      id_toko: '<?= $toko->id ?>',
+      id_aset_list: id_aset_list
+    };
+
+    // Show loading state
+    Swal.fire({
+      title: 'Memproses...',
+      text: 'Sedang menghapus laporan',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    // Send AJAX request
+    $.ajax({
+      url: "<?= base_url('hrd/Aset/reset_laporan') ?>",
+      method: "POST",
+      data: dataToSend,
+      dataType: "json",
+      success: function(response) {
+        $('#modal-reset').modal('hide');
+
+        if (response.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: response.message,
+            confirmButtonColor: '#28a745'
+          }).then(() => {
+            location.reload();
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: response.message,
+            confirmButtonColor: '#dc3545'
+          });
+        }
+      },
+      error: function(xhr, status, error) {
+        $('#modal-reset').modal('hide');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Terjadi kesalahan saat memproses permintaan.',
+          confirmButtonColor: '#dc3545'
+        });
         console.error(xhr.responseText);
       }
     });
