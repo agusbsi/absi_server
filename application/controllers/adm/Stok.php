@@ -530,8 +530,10 @@ class Stok extends CI_Controller
 
       // Cek jika status selain 1 atau 2, dan created_at lebih dari 2 hari
       if ($status != 1 && $status != 2) {
-        $created_date = new DateTime($created_at);
-        $current_date = new DateTime();
+        // Set timezone ke Asia/Jakarta untuk waktu lokal
+        $timezone = new DateTimeZone('Asia/Jakarta');
+        $created_date = new DateTime($created_at, $timezone);
+        $current_date = new DateTime('now', $timezone);
         $interval = $current_date->diff($created_date);
         $days_diff = $interval->days;
 
