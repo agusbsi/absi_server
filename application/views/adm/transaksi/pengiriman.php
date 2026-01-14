@@ -86,7 +86,11 @@
         {
           "data": "tgl_dibuat",
           "render": function(data, type, row) {
-            return '<small>' + data + '</small>';
+            var html = '<small>';
+            html += '<strong>Dibuat:</strong> ' + row.tgl_dibuat + '<br>';
+            html += '<strong>Terima:</strong> ' + (row.tgl_terima ? row.tgl_terima : '-');
+            html += '</small>';
+            return html;
           }
         },
         {

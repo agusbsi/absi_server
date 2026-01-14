@@ -21,7 +21,8 @@
               No. Permintaan : <strong><?= $pengiriman->id_permintaan; ?></strong>
             </div>
             <div class="col-md-4">
-              Tgl : <strong><?= date('d F Y', strtotime($pengiriman->created_at)) ?></strong> <br>
+              Tgl Dibuat : <strong><?= date('d-M-Y H:i:s', strtotime($pengiriman->created_at)) ?></strong> <br>
+              Tgl Terima : <strong><?= $pengiriman->tgl_terima ? date('d-M-Y H:i:s', strtotime($pengiriman->tgl_terima)) : '-' ?></strong> <br>
               <strong><?= status_pengiriman($pengiriman->status) ?></strong>
 
             </div>

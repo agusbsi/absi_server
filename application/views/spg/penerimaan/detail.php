@@ -31,10 +31,26 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="">Keterangan</label>
-                <textarea class="form-control form-control-sm" readonly><?= $terima->keterangan ?></textarea>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="">Tanggal terima</label>
+                    <input type="text" class="form-control form-control-sm"
+                      value="<?php
+                              $dt = new DateTime($terima->tgl_terima);
+                              echo $dt->format('j F Y');
+                              ?>"
+                      readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="">Keterangan</label>
+                    <textarea class="form-control form-control-sm" readonly><?= $terima->keterangan ?></textarea>
+                  </div>
+                </div>
               </div>
+
               <hr>
               List Artikel
               <hr>
@@ -87,7 +103,7 @@
             <!-- /.card-body -->
             <div class="card-footer">
               <?php if ($terima->status == 3) { ?>
-                <a href="<?= base_url('spg/Bap') ?>" class="btn btn-warning btn-sm float-right"><i class="fas fa-file"></i> Buat BAP</a>
+                <a href="<?= base_url('spg/Bap/selisih') ?>" class="btn btn-warning btn-sm float-right"><i class="fas fa-file"></i> Buat BAP</a>
               <?php } ?>
               <a href="<?= base_url('spg/Penerimaan') ?>" type="button" class="btn btn-danger btn-sm float-right mr-2"><i class="fa fa-step-backward" aria-hidden="true"></i> Kembali</a>
             </div>

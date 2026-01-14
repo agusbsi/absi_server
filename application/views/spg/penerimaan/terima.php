@@ -73,6 +73,11 @@
                 <label for="">Catatan :</label>
                 <textarea name="catatan" class="form-control form-control-sm" placeholder="Catatan anda jika ada..."></textarea>
               </div>
+              <div class="form-group">
+                <label for="tgl_terima">Tanggal Penerimaan <span class="text-danger">*</span></label>
+                <input type="date" id="tgl_terima" name="tgl_terima" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>" required>
+                <small class="text-muted">Tanggal saat barang diterima di toko</small>
+              </div>
               <hr>
               <small># Pastikan anda sudah mengisi data dengan benar.</small>
             </div>

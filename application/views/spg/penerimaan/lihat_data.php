@@ -137,11 +137,24 @@
                 foreach ($list_data as $dd) :
                   $no++;
                 ?>
-                  <tr class="text-center">
-                    <td><?= $no ?></td>
+                  <tr>
+                    <td class="text-center"><?= $no ?></td>
                     <td><?= $dd->id ?></td>
                     <td><?= status_pengiriman($dd->status) ?></td>
-                    <td><?= $dd->created_at ?></td>
+                    <td>
+                      <small class="text-muted">Terima</small><br>
+                      <?php
+                      $dt1 = new DateTime($dd->tgl_terima);
+                      echo $dt1->format('j F Y');
+                      ?>
+                      <br>
+                      <small class="text-muted">Dibuat</small><br>
+                      <?php
+                      $dt2 = new DateTime($dd->created_at);
+                      echo $dt2->format('j F Y');
+                      ?>
+                    </td>
+
 
                     <td>
                       <?php

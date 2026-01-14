@@ -85,6 +85,7 @@ class Penerimaan extends CI_Controller
     $qty = $this->input->post('qty');
     $qty_terima = $this->input->post('qty_terima');
     $unique_id = $this->input->post('unique_id');
+    $tgl_terima = $this->input->post('tgl_terima');
     $spg = $this->db->query("SELECT nama_user from tb_user where id ='$id_penerima'")->row()->nama_user;
     $nilai = count($id_produk);
     $selisih = 0;
@@ -134,7 +135,7 @@ class Penerimaan extends CI_Controller
     $where = array('id' => $id_kirim);
     $data = array(
       'status' => $status,
-      'updated_at' => date('Y-m-d H:i:s'),
+      'tgl_terima' => $tgl_terima,
       'id_penerima' => $id_penerima,
       'catatan_spg' => $catatan_spg,
       'id_unik' => $unique_id

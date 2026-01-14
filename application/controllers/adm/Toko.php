@@ -1105,7 +1105,7 @@ class Toko extends CI_Controller
               status
             FROM tb_retur 
             WHERE id_toko = ? 
-              AND status NOT IN (4, 5,13, 15, 16)
+              AND status NOT IN (4, 5,10,11,12,13,14, 15, 16)
             ORDER BY created_at DESC
           ", array($id_toko));
           $data = $query->result_array();
