@@ -522,6 +522,33 @@ class Stok extends CI_Controller
     JOIN tb_so ts on tas.id_so = ts.id
     JOIN tb_toko tt on ts.id_toko = tt.id
     WHERE tas.id = ?", array($id))->row();
+
+    // Auto-update status jika memenuhi kondisi
+    if ($data['row']) {
+      $status = $data['row']->status;
+      $created_at = $data['row']->created_at;
+
+      // Cek jika status selain 1 atau 2, dan created_at lebih dari 2 hari
+      if ($status != 1 && $status != 2) {
+        $created_date = new DateTime($created_at);
+        $current_date = new DateTime();
+        $interval = $current_date->diff($created_date);
+        $days_diff = $interval->days;
+
+        // Jika lebih dari 2 hari, update status menjadi 5
+        if ($days_diff > 2) {
+          $this->db->where('id', $id);
+          $this->db->update('tb_adjust_stok', array('status' => 5));
+
+          // Refresh data setelah update
+          $data['row'] = $this->db->query("SELECT tas.*, tt.nama_toko, ts.tgl_so as periode, ts.id_toko from tb_adjust_stok tas
+          JOIN tb_so ts on tas.id_so = ts.id
+          JOIN tb_toko tt on ts.id_toko = tt.id
+          WHERE tas.id = ?", array($id))->row();
+        }
+      }
+    }
+
     $data['detail'] = $this->db->query("SELECT tad.*, tp.kode,tp.nama_produk as artikel from tb_adjust_detail tad
     JOIN tb_produk tp on tad.id_produk = tp.id
     WHERE tad.id_adjust = ?", array($id))->result();
