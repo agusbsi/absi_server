@@ -537,8 +537,8 @@ class Stok extends CI_Controller
         $interval = $current_date->diff($created_date);
         $days_diff = $interval->days;
 
-        // Jika lebih dari 2 hari, update status menjadi 5
-        if ($days_diff > 2) {
+        // Jika 2 hari atau lebih, update status menjadi 5
+        if ($days_diff >= 2) {
           $this->db->where('id', $id);
           $this->db->update('tb_adjust_stok', array('status' => 5));
 
