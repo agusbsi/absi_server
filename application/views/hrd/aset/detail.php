@@ -638,7 +638,8 @@
   });
 
   function getDetail(aset) {
-    var fotoAset = aset ? "<?php echo base_url('assets/img/aset/toko/'); ?>" + aset : "<?php echo base_url('assets/img/default.png'); ?>";
+    var timestamp = new Date().getTime();
+    var fotoAset = aset ? "<?php echo base_url('assets/img/aset/toko/'); ?>" + aset + '?' + timestamp : "<?php echo base_url('assets/img/default.png'); ?>";
     var imgElement = $("#modalFoto img");
     imgElement.attr("src", fotoAset);
   }
