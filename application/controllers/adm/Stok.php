@@ -259,47 +259,133 @@ class Stok extends CI_Controller
 
   public function detail_toko($id)
   {
-    $data['title'] = 'Stok Customer';
-    $thn = date('Y');
-    $bln = (new DateTime('first day of -2 month'))->format('m');
+    $data['title'] = 'Detail Toko per Customer';
+    $lastMonth = new DateTime('first day of -1 month');
+    $thn = $lastMonth->format('Y');
+    $bln = $lastMonth->format('m');
 
+    // Query untuk mendapatkan data customer
+    $data['customer'] = $this->db->get_where('tb_customer', ['id' => $id])->row();
+
+    // Query detail per toko dengan informasi lengkap
     $query = "
       SELECT 
+          tc.id as id_customer,
           tc.nama_cust, 
-          tt.nama_toko, 
+          tt.id as id_toko,
+          tt.nama_toko,
+          tt.alamat,
+          tt.telp,
+          (SELECT COUNT(DISTINCT ts.id_produk) FROM tb_stok ts WHERE ts.id_toko = tt.id AND ts.status = 1 AND ts.qty > 0) AS total_item,
           COALESCE(SUM(ts.qty), 0) AS t_stok,
-          (SELECT COALESCE(SUM(ts.qty_awal), 0) FROM tb_stok ts WHERE ts.id_toko = tt.id) AS t_akhir,
-          (SELECT COALESCE(SUM(ts.jml_jual), 0) FROM vw_penjualan ts WHERE ts.id_toko = tt.id AND ts.tahun = '$thn' AND ts.bulan = '$bln') AS t_jual
+          (SELECT COALESCE(SUM(ts.qty_awal), 0) FROM tb_stok ts WHERE ts.id_toko = tt.id AND ts.status = 1) AS t_akhir,
+          (SELECT COALESCE(SUM(ts.jml_jual), 0) FROM vw_penjualan ts WHERE ts.id_toko = tt.id AND ts.tahun = '$thn' AND ts.bulan = '$bln') AS t_jual,
+          (SELECT COALESCE(COUNT(DISTINCT tp.id), 0) FROM tb_penjualan tp WHERE tp.id_toko = tt.id AND YEAR(tp.tanggal_penjualan) = '$thn' AND MONTH(tp.tanggal_penjualan) = '$bln') AS total_transaksi
       FROM 
           tb_customer tc
       JOIN 
           tb_toko tt ON tc.id = tt.id_customer
       LEFT JOIN 
-          tb_stok ts ON tt.id = ts.id_toko
+          tb_stok ts ON tt.id = ts.id_toko AND ts.status = 1
       WHERE 
           tc.id = '$id' AND tt.status = 1 
       GROUP BY 
           tt.id 
       ORDER BY 
-          SUM(ts.qty) DESC
+          t_stok DESC
       ";
 
-    $data['data'] = $this->db->query($query)->row();
     $data['list_data'] = $this->db->query($query)->result();
+
+    // Ringkasan total untuk customer ini
+    $summary_query = "
+      SELECT 
+          COUNT(DISTINCT tt.id) AS total_toko,
+          COALESCE(SUM(ts.qty), 0) AS total_stok,
+          COALESCE(SUM(ts.qty_awal), 0) AS total_stok_akhir,
+          (SELECT COALESCE(SUM(vp.jml_jual), 0) FROM vw_penjualan vp 
+           JOIN tb_toko t ON vp.id_toko = t.id 
+           WHERE t.id_customer = '$id' AND vp.tahun = '$thn' AND vp.bulan = '$bln') AS total_jual
+      FROM 
+          tb_toko tt
+      LEFT JOIN 
+          tb_stok ts ON tt.id = ts.id_toko AND ts.status = 1
+      WHERE 
+          tt.id_customer = '$id' AND tt.status = 1
+      ";
+
+    $data['summary'] = $this->db->query($summary_query)->row();
+    $data['periode'] = $lastMonth->format('F Y');
+
     $this->template->load('template/template', 'adm/stok/detail_toko', $data);
   }
 
   public function detail_artikel($id)
   {
-    $data['title'] = 'Stok Customer';
-    $query = "SELECT tc.nama_cust, tp.kode,tp.nama_produk as artikel, COALESCE(SUM(ts.qty), 0) AS t_stok FROM tb_customer tc
-    JOIN tb_toko tt on tc.id = tt.id_customer
-    LEFT JOIN tb_stok ts on tt.id = ts.id_toko
-    JOIN tb_produk tp on ts.id_produk = tp.id
-    WHERE tc.id = '$id' AND tt.status = 1 GROUP BY tp.id ORDER BY SUM(ts.qty) DESC";
+    $data['title'] = 'Detail Artikel per Customer';
+    $lastMonth = new DateTime('first day of -1 month');
+    $thn = $lastMonth->format('Y');
+    $bln = $lastMonth->format('m');
 
-    $data['data'] = $this->db->query($query)->row();
+    // Query untuk mendapatkan data customer
+    $data['customer'] = $this->db->get_where('tb_customer', ['id' => $id])->row();
+
+    // Query detail per artikel dengan informasi lengkap
+    $query = "
+      SELECT 
+          tp.id as id_produk,
+          tp.kode,
+          tp.nama_produk as artikel,
+          tp.satuan,
+          COALESCE(SUM(ts.qty), 0) AS t_stok,
+          (SELECT COALESCE(SUM(ts.qty_awal), 0) FROM tb_stok ts 
+           JOIN tb_toko tt ON ts.id_toko = tt.id 
+           WHERE ts.id_produk = tp.id AND tt.id_customer = tc.id AND ts.status = 1 AND tt.status = 1) AS t_akhir,
+          (SELECT COALESCE(SUM(tpd.qty), 0) FROM tb_penjualan_detail tpd
+           JOIN tb_penjualan tpj ON tpd.id_penjualan = tpj.id
+           JOIN tb_toko tt ON tpj.id_toko = tt.id
+           WHERE tpd.id_produk = tp.id AND tt.id_customer = tc.id AND YEAR(tpj.tanggal_penjualan) = '$thn' AND MONTH(tpj.tanggal_penjualan) = '$bln') AS t_jual
+      FROM 
+          tb_customer tc
+      JOIN 
+          tb_toko tt ON tc.id = tt.id_customer
+      LEFT JOIN 
+          tb_stok ts ON tt.id = ts.id_toko AND ts.status = 1
+      JOIN 
+          tb_produk tp ON ts.id_produk = tp.id
+      WHERE 
+          tc.id = '$id' AND tt.status = 1 AND tp.status = 1
+      GROUP BY 
+          tp.id 
+      ORDER BY 
+          t_jual DESC
+      ";
+
     $data['list_data'] = $this->db->query($query)->result();
+
+    // Ringkasan total untuk customer ini
+    $summary_query = "
+      SELECT 
+          COUNT(DISTINCT tp.id) AS total_artikel,
+          COALESCE(SUM(ts.qty), 0) AS total_stok,
+          COALESCE(SUM(ts.qty_awal), 0) AS total_stok_akhir,
+          (SELECT COALESCE(SUM(tpd.qty), 0) FROM tb_penjualan_detail tpd
+           JOIN tb_penjualan tpj ON tpd.id_penjualan = tpj.id
+           JOIN tb_toko tt ON tpj.id_toko = tt.id
+           WHERE tt.id_customer = '$id' AND YEAR(tpj.tanggal_penjualan) = '$thn' AND MONTH(tpj.tanggal_penjualan) = '$bln') AS total_jual
+      FROM 
+          tb_toko tt
+      LEFT JOIN 
+          tb_stok ts ON tt.id = ts.id_toko AND ts.status = 1
+      LEFT JOIN
+          tb_produk tp ON ts.id_produk = tp.id
+      WHERE 
+          tt.id_customer = '$id' AND tt.status = 1 AND tp.status = 1
+      ";
+
+    $data['summary'] = $this->db->query($summary_query)->row();
+    $data['periode'] = $lastMonth->format('F Y');
+
     $this->template->load('template/template', 'adm/stok/detail_artikel', $data);
   }
 

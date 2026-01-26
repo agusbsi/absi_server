@@ -54,7 +54,7 @@
                                     <th rowspan="2" class="text-center">Stok Rasio <br>
                                         <small>Stok akhir / Penjualan</small>
                                     </th>
-                                    <!-- <th rowspan="2" class="text-center">Menu </th> -->
+                                    <th rowspan="2" class="text-center">Menu </th>
                                 </tr>
                                 <tr>
                                     <th class="text-center">Jml Toko</th>
@@ -88,7 +88,7 @@
                                             <td class="text-center"><?= number_format($dd->t_jual) ?></td>
                                             <td class="text-center"><?= number_format($dd->t_akhir) ?></td>
                                             <td class="text-center"> <?= (!empty($dd->t_jual) && $dd->t_jual != 0) ? ROUND($dd->t_akhir / $dd->t_jual, 2) : ROUND($dd->t_akhir / 1, 2) ?></td>
-                                            <!-- <td>
+                                            <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-info btn-sm"> Lihat</button>
                                                     <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
@@ -99,7 +99,7 @@
                                                         <a class="dropdown-item" href="<?= base_url('adm/Stok/detail_artikel/' . $dd->id) ?>">Per Artikel</a>
                                                     </div>
                                                 </div>
-                                            </td> -->
+                                            </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php } ?>
