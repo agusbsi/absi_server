@@ -263,7 +263,7 @@
                                                 <td class="text-center">
                                                     <?php
                                                     $rasio = $dd->t_jual > 0 ? round($dd->t_akhir / $dd->t_jual, 2) : 0;
-                                                    $badge_class = $rasio > 3 ? 'badge-danger' : ($rasio > 1 ? 'badge-warning' : 'badge-success');
+                                                    $badge_class = $rasio > 10 ? 'badge-danger' : ($rasio > 4 ? 'badge-warning' : 'badge-success');
                                                     ?>
                                                     <span class="badge <?= $badge_class ?>"><?= number_format($rasio, 2) ?></span>
                                                 </td>

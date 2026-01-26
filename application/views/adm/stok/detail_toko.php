@@ -48,9 +48,9 @@
                         <!-- Info Rasio -->
                         <div class="info-rasio no-print">
                             <strong>Perhitungan Rasio:</strong> Stok Akhir <?= (new DateTime('first day of -1 month'))->format('M Y') ?> ÷ Penjualan <?= (new DateTime('first day of -1 month'))->format('M Y') ?> |
-                            <span class="text-success">0-2: Optimal</span>,
-                            <span class="text-warning">2-4: Perhatian</span>,
-                            <span class="text-danger">&gt;4: Berlebih</span>
+                            <span class="text-success">0-4: Optimal</span>,
+                            <span class="text-warning">4.1-10: Perhatian</span>,
+                            <span class="text-danger">&gt;10: Berlebih</span>
                         </div>
 
                         <div id="printableArea">
@@ -94,11 +94,11 @@
                                                 $badge_class = 'badge-secondary';
                                                 $status_text = 'Tidak Ada Penjualan';
                                                 $icon = 'fa-minus-circle';
-                                            } elseif ($rasio <= 2) {
+                                            } elseif ($rasio <= 4) {
                                                 $badge_class = 'badge-success';
                                                 $status_text = 'Optimal';
                                                 $icon = 'fa-check-circle';
-                                            } elseif ($rasio <= 4) {
+                                            } elseif ($rasio <= 10) {
                                                 $badge_class = 'badge-warning';
                                                 $status_text = 'Perhatian';
                                                 $icon = 'fa-exclamation-triangle';
@@ -144,9 +144,9 @@
                                                 <?php
                                                 if ($total_rasio_display === 'N/A') {
                                                     echo '<span class="badge badge-secondary">N/A</span>';
-                                                } elseif ($total_rasio <= 2) {
-                                                    echo '<span class="badge badge-success">Optimal</span>';
                                                 } elseif ($total_rasio <= 4) {
+                                                    echo '<span class="badge badge-success">Optimal</span>';
+                                                } elseif ($total_rasio <= 10) {
                                                     echo '<span class="badge badge-warning">Perhatian</span>';
                                                 } else {
                                                     echo '<span class="badge badge-danger">Berlebih</span>';
@@ -209,7 +209,7 @@
             sheetData.push(["Periode: " + periode]);
             sheetData.push(["Tanggal: " + new Date().toLocaleDateString('id-ID')]);
             sheetData.push([]);
-            sheetData.push(["Formula: Rasio = Stok Akhir ÷ Penjualan | Optimal: 0-2, Perhatian: 2-4, Berlebih: >4"]);
+            sheetData.push(["Formula: Rasio = Stok Akhir ÷ Penjualan | Optimal: 0-4, Perhatian: 4.1-10, Berlebih: >10"]);
             sheetData.push([]);
 
             // Headers
