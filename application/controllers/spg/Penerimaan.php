@@ -135,7 +135,7 @@ class Penerimaan extends CI_Controller
     $where = array('id' => $id_kirim);
     $data = array(
       'status' => $status,
-      'tgl_terima' => $tgl_terima,
+      'updated_at' => $tgl_terima,
       'id_penerima' => $id_penerima,
       'catatan_spg' => $catatan_spg,
       'id_unik' => $unique_id
