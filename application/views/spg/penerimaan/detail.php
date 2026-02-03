@@ -37,7 +37,7 @@
                     <label for="">Tanggal terima</label>
                     <input type="text" class="form-control form-control-sm"
                       value="<?php
-                              $dt = new DateTime($terima->tgl_terima);
+                              $dt = new DateTime($terima->updated_at);
                               echo $dt->format('j F Y');
                               ?>"
                       readonly>

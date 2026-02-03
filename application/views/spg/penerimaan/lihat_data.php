@@ -144,7 +144,7 @@
                     <td>
                       <small class="text-muted">Terima</small><br>
                       <?php
-                      $dt1 = new DateTime($dd->tgl_terima);
+                      $dt1 = new DateTime($dd->updated_at);
                       echo $dt1->format('j F Y');
                       ?>
                       <br>
