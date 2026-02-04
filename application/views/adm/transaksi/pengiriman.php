@@ -88,7 +88,7 @@
           "render": function(data, type, row) {
             var html = '<small>';
             html += '<strong>Dibuat:</strong> ' + row.tgl_dibuat + '<br>';
-            html += '<strong>Terima:</strong> ' + (row.updated_at ? row.updated_at : row.tgl_terima);
+            html += '<strong>Terima:</strong> ' + (row.tgl_terima ? row.tgl_terima : "-");
             html += '</small>';
             return html;
           }

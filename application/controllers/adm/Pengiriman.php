@@ -60,6 +60,7 @@ class Pengiriman extends CI_Controller
       status_pengiriman($stok->status);
       $row['status'] = ob_get_clean();
       $row['tgl_dibuat'] = date('d-M-Y H:i:s', strtotime($stok->created_at));
+      $row['tgl_terima'] = date('d-M-Y H:i:s', strtotime($stok->updated_at));
       $row['menu'] = $stok->id;
       $output_data[] = $row;
     }
