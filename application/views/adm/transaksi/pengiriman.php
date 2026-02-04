@@ -88,7 +88,7 @@
           "render": function(data, type, row) {
             var html = '<small>';
             html += '<strong>Dibuat:</strong> ' + row.tgl_dibuat + '<br>';
-            html += '<strong>Terima:</strong> ' + (row.tgl_terima ? row.tgl_terima : "-");
+            html += '<strong>Terima:</strong> ' + (row.tgl_terima && row.tgl_terima != '0000-00-00 00:00:00' && row.tgl_terima != '0000-00-00' && !row.tgl_terima.includes('1970') ? row.tgl_terima : "belum diterima");
             html += '</small>';
             return html;
           }
