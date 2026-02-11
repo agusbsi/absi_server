@@ -119,6 +119,14 @@
           <?php endforeach ?>
         </div>
       </div>
+      <div class="card-footer">
+        <a href="<?= base_url('adm/Permintaan/export_excel/' . $permintaan->id) ?>" class="btn btn-success">
+          <i class="fas fa-file-excel"></i> Download Excel
+        </a>
+        <a href="<?= base_url('adm/Permintaan') ?>" class="btn btn-secondary float-right">
+          <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+      </div>
     </div>
   </div>
 </section>
