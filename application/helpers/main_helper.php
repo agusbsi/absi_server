@@ -303,6 +303,8 @@ function role($id)
         echo "<span class='badge badge-warning'>Kepala gudang</span>";
     } elseif ($id == 17) {
         echo "<span class='badge badge-warning'>Manager Operasional</span>";
+    } elseif ($id == 18) {
+        echo "<span class='badge badge-warning'>Produksi</span>";
     }
 }
 

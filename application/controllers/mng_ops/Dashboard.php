@@ -7,7 +7,7 @@ class Dashboard extends CI_Controller
   {
     parent::__construct();
     $role = $this->session->userdata('role');
-    if ($role != "14" && $role != 11 && $role != "15" && $role != "5" && $role != "1" && $role != "10" && $role != "17") {
+    if ($role != "14" && $role != 11 && $role != "15" && $role != "5" && $role != "1" && $role != "10" && $role != "17" && $role != "18") {
       tampil_alert('error', 'DI TOLAK !', 'Silahkan login kembali');
       redirect(base_url(''));
     }
