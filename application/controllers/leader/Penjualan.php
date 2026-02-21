@@ -100,17 +100,11 @@ class Penjualan extends CI_Controller
     $tgl_awal = $this->input->get('tgl_awal');
     $tgl_akhir = $this->input->get('tgl_akhir');
     $summary = $this->db->query("SELECT * from tb_toko where id = '$id_toko'")->row();
-    $tabel_data = $this->db->query("SELECT tpk.kode, tpk.nama_produk, COALESCE(SUM(tpd.qty), 0) as total, COALESCE(ts.qty_awal, 0) as stok
-    FROM tb_stok ts
-    LEFT JOIN tb_produk tpk ON ts.id_produk = tpk.id
-    LEFT JOIN (
-        SELECT tpd.id_produk, SUM(tpd.qty) as qty
-        FROM tb_penjualan_detail tpd
-        JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
-        WHERE tp.id_toko = '$id_toko' AND DATE(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir'
-        GROUP BY tpd.id_produk
-    ) tpd ON tpk.id = tpd.id_produk
-    WHERE ts.id_toko = '$id_toko'
+    $tabel_data = $this->db->query("SELECT tpk.kode, tpk.nama_produk, COALESCE(SUM(tpd.qty), 0) as total
+    FROM tb_penjualan_detail tpd
+    JOIN tb_penjualan tp ON tpd.id_penjualan = tp.id
+    JOIN tb_produk tpk ON tpd.id_produk = tpk.id
+    WHERE tp.id_toko = '$id_toko' AND DATE(tp.tanggal_penjualan) BETWEEN '$tgl_awal' AND '$tgl_akhir'
     GROUP BY tpk.id
     ORDER BY COALESCE(SUM(tpd.qty), 0) DESC")->result();
     $data = [
