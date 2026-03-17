@@ -21,12 +21,13 @@ class Sales_Invoice extends CI_Controller
     $data['title'] = 'Sales Invoice';
     $data['cust'] = $this->db->query("SELECT * from tb_customer ")->result();
     $data['list_toko'] = $this->db->query("SELECT * from tb_toko where status = 1")->result();
-    $pt = $this->session->userdata('pt');
-    if ($pt == 'VISTA MANDIRI GEMILANG') {
-      $halaman = 'sales_invoice';
-    } else {
-      $halaman = 'sales_invoice_pkp';
-    }
+    // $pt = $this->session->userdata('pt');
+    // if ($pt == 'VISTA MANDIRI GEMILANG') {
+    //   $halaman = 'sales_invoice';
+    // } else {
+    //   $halaman = 'sales_invoice_pkp';
+    // }
+    $halaman = 'sales_invoice';
     $this->template->load('template/template', 'template_easy/' . $halaman, $data);
   }
 
@@ -62,7 +63,6 @@ class Sales_Invoice extends CI_Controller
   {
     $pengguna = $this->session->userdata('nama_user');
     $faktur = preg_replace("/[^A-Za-z0-9]/", "", $this->input->post('faktur'));
-    $pesanan  = $this->input->post('pesanan');
     $kode_pelanggan  = $this->input->post('kode_pelanggan');
     $pelanggan  = $this->input->post('pelanggan');
     $tgl_f = $this->input->post('tgl_faktur');
@@ -76,6 +76,12 @@ class Sales_Invoice extends CI_Controller
     $harga      = str_replace(".", "", $this->input->post('harga'));
     $satuan      = $this->input->post('satuan');
     $jml      = count($kode);
+    $pt = $this->session->userdata('pt');
+    if ($pt == 'VISTA MANDIRI GEMILANG') {
+      $gudang = "51.1 GUD. KONSINYASI";
+    } else {
+      $gudang = "98 GUD.KONSINYASI";
+    }
     // Create a new Spreadsheet instance
     $spreadsheet = new Spreadsheet();
     $worksheet = $spreadsheet->getActiveSheet();
@@ -142,7 +148,7 @@ class Sales_Invoice extends CI_Controller
       $worksheet->setCellValue('AA' . $row, $satuan[$i]);
       $worksheet->setCellValue('AB' . $row, 'Non Department');
       $worksheet->setCellValue('AC' . $row, 'Non Project');
-      $worksheet->setCellValue('AD' . $row, '51.1 GUD. KONSINYASI');
+      $worksheet->setCellValue('AD' . $row, $gudang);
       $row++;
     }
 
