@@ -397,4 +397,109 @@ class Dashboard extends CI_Controller
     }
     redirect(base_url('mng_ops/Dashboard/adjust_detail/' . $id_adjust));
   }
+
+  // Lock SO (Stok Opname)
+  public function lock_so()
+  {
+    $pengguna = $this->session->userdata('nama_user');
+    $pt = $this->session->userdata('pt');
+    $id_so = $this->input->post('id_so', true);
+    $data_produk_json = $this->input->post('data_produk', true);
+
+    // Validasi input
+    if (empty($id_so)) {
+      tampil_alert('error', 'Gagal', 'Data SO tidak valid.');
+      redirect($_SERVER['HTTP_REFERER']);
+      return;
+    }
+
+    // Decode JSON data produk dari form
+    $data_produk = json_decode($data_produk_json, true);
+    
+    if (empty($data_produk) || !is_array($data_produk)) {
+      tampil_alert('error', 'Gagal', 'Tidak ada detail produk untuk dikunci.');
+      redirect($_SERVER['HTTP_REFERER']);
+      return;
+    }
+
+    // Mulai transaksi database
+    $this->db->trans_start();
+
+    try {
+      // 1. Update status_kunci di tb_so  
+      $this->db->update('tb_so', ['status_kunci' => 1], ['id' =>$id_so]);
+
+      if ($this->db->affected_rows() == 0) {
+        throw new Exception('Data SO tidak ditemukan atau sudah terkunci sebelumnya.');
+      }
+
+      // 2. Update dengan batch CASE statement (chunk per 50 item untuk performa)
+      $chunk_size = 50;
+      $chunks = array_chunk($data_produk, $chunk_size);
+
+      foreach ($chunks as $chunk) {
+        // Kumpulkan ID produk untuk IN clause
+        $id_produk_list = [];
+        foreach ($chunk as $produk) {
+          $id_produk_list[] = (int)($produk['id_produk'] ?? 0);
+        }
+        $in_clause = implode(',', $id_produk_list);
+
+        // Build CASE statements untuk setiap field
+        $case_qty_awal = "qty_awal = CASE id_produk ";
+        $case_po = "po = CASE id_produk ";
+        $case_mutasi_masuk = "mutasi_masuk = CASE id_produk ";
+        $case_retur = "retur = CASE id_produk ";
+        $case_jual = "jual = CASE id_produk ";
+        $case_mutasi_keluar = "mutasi_keluar = CASE id_produk ";
+        $case_stok_akhir = "stok_akhir = CASE id_produk ";
+        $case_hasil_so = "hasil_so = CASE id_produk ";
+        $case_jual_lanjutan = "jual_lanjutan = CASE id_produk ";
+
+        foreach ($chunk as $produk) {
+          $id_p = (int)($produk['id_produk'] ?? 0);
+          $case_qty_awal .= " WHEN " . $id_p . " THEN " . (int)($produk['qty_awal'] ?? 0);
+          $case_po .= " WHEN " . $id_p . " THEN " . (int)($produk['po'] ?? 0);
+          $case_mutasi_masuk .= " WHEN " . $id_p . " THEN " . (int)($produk['mutasi_masuk'] ?? 0);
+          $case_retur .= " WHEN " . $id_p . " THEN " . (int)($produk['retur'] ?? 0);
+          $case_jual .= " WHEN " . $id_p . " THEN " . (int)($produk['penjualan'] ?? 0);
+          $case_mutasi_keluar .= " WHEN " . $id_p . " THEN " . (int)($produk['mutasi_keluar'] ?? 0);
+          $case_stok_akhir .= " WHEN " . $id_p . " THEN " . (int)($produk['stok_akhir'] ?? 0);
+          $case_hasil_so .= " WHEN " . $id_p . " THEN " . (int)($produk['hasil_so'] ?? 0);
+          $case_jual_lanjutan .= " WHEN " . $id_p . " THEN " . (int)($produk['penjualan_lanjutan'] ?? 0);
+        }
+
+        $case_qty_awal .= " END";
+        $case_po .= " END";
+        $case_mutasi_masuk .= " END";
+        $case_retur .= " END";
+        $case_jual .= " END";
+        $case_mutasi_keluar .= " END";
+        $case_stok_akhir .= " END";
+        $case_hasil_so .= " END";
+        $case_jual_lanjutan .= " END";
+
+        $sql = "UPDATE tb_so_detail SET ";
+        $sql .= $case_qty_awal . ", " . $case_po . ", " . $case_mutasi_masuk . ", " . $case_retur . ", ";
+        $sql .= $case_jual . ", " . $case_mutasi_keluar . ", " . $case_stok_akhir . ", " . $case_hasil_so . ", " . $case_jual_lanjutan;
+        $sql .= " WHERE id_so = " . $this->db->escape($id_so) . " AND id_produk IN (" . $in_clause . ")";
+
+        $this->db->query($sql);
+      }
+
+      $this->db->trans_complete();
+
+      if ($this->db->trans_status() === FALSE) {
+        tampil_alert('error', 'Gagal', 'Terjadi kesalahan, laporan gagal dikunci.');
+        redirect($_SERVER['HTTP_REFERER']);
+      } else {
+        tampil_alert('success', 'Berhasil', 'Laporan SO berhasil dikunci. Data sekarang bersifat final dan tidak dapat diubah.');
+        redirect($_SERVER['HTTP_REFERER']);
+      }
+    } catch (Exception $e) {
+      $this->db->trans_complete();
+      tampil_alert('error', 'Gagal', 'Terjadi kesalahan: ' . $e->getMessage());
+      redirect($_SERVER['HTTP_REFERER']);
+    }
+  }
 }

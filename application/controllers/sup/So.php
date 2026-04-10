@@ -51,6 +51,10 @@ class So extends CI_Controller
     $id = $this->session->userdata('id');
     $role = $this->session->userdata('role');
 
+    // Get filter parameters from query string
+    $bulan = $this->input->get('bulan') ?: date('m');
+    $tahun = $this->input->get('tahun') ?: date('Y');
+
     if ($role == 2) {
       $query = "AND id_spv = '$id'";
     } else if ($role == 3) {
@@ -59,21 +63,46 @@ class So extends CI_Controller
       $query = "";
     }
 
-    $thisMonth = date('Y-m-d', strtotime('first day of this month'));
-    $december2024 = '2024-12-31';
+    // Start date & end date for previous month
+    $prev_date = date('Y-m-01', strtotime("$tahun-$bulan-01 +1 month"));
+    $start_date = $prev_date;
+    $end_date = date('Y-m-t', strtotime($prev_date));
 
-    $data['list_so'] = $this->db->query("
+    // Get list of SO data
+    $list_so_result = $this->db->query("
         SELECT ts.*, 
-               DATE_FORMAT(DATE_SUB(ts.created_at, INTERVAL 1 MONTH), '%M %Y') AS periode, 
+               DATE_FORMAT(ts.created_at, '%M %Y') AS periode, 
                tt.nama_toko, 
                ts.created_at as dibuat 
         FROM tb_so ts
         JOIN tb_toko tt ON ts.id_toko = tt.id
-        WHERE ts.created_at < '$thisMonth' 
-              AND ts.created_at > '$december2024' 
+        WHERE DATE(ts.created_at) >= '$start_date' 
+              AND DATE(ts.created_at) <= '$end_date' 
               $query
-        ORDER BY ts.created_at DESC
+        ORDER BY tt.nama_toko ASC
     ")->result();
+
+    // Calculate summary statistics
+    $summary = array();
+    $summary['periode'] = date('F Y', strtotime("$tahun-$bulan-01"));
+    $summary['total_toko'] = count(array_unique(array_map(function($item) { return $item->id_toko; }, $list_so_result)));
+    
+    $total_locked = 0;
+    $total_unlocked = 0;
+    foreach($list_so_result as $so) {
+      if ($so->status_kunci != 0) {
+        $total_locked++;
+      } else {
+        $total_unlocked++;
+      }
+    }
+    $summary['locked'] = $total_locked;
+    $summary['unlocked'] = $total_unlocked;
+
+    $data['list_so'] = $list_so_result;
+    $data['summary'] = $summary;
+    $data['bulan'] = $bulan;
+    $data['tahun'] = $tahun;
 
     $this->template->load('template/template', 'manager_mv/stokopname/riwayat_so', $data);
   }
@@ -546,31 +575,49 @@ class So extends CI_Controller
       ];
     }
 
-    $query = "SELECT ts.id_produk,tp.kode,tsd.hasil_so,
-    $select_adjust
-    COALESCE(ts.qty_awal + COALESCE(vt_kemarin.jml_terima, 0) + COALESCE(vm_kemarin.jml_mutasi, 0) - COALESCE(vp_kemarin.jml_jual, 0) - COALESCE(vr_kemarin.jml_retur, 0) - COALESCE(vk_kemarin.jml_mutasi, 0)  ,0) as qty_awal_kemarin,
-    COALESCE(tsd_kemarin.hasil_so,0) as hasil_so_kemarin,
-    COALESCE(nj.qty, 0) as qty_jual,
-    COALESCE(nj_kemarin.qty, 0) as qty_jual_kemarin,
-    COALESCE(vt.jml_terima, 0) AS jml_terima,
-    COALESCE(vt_kemarin.jml_terima, 0) AS jml_terima_kemarin,
-    COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,
-    COALESCE(vm_kemarin.jml_mutasi, 0) AS mutasi_masuk_kemarin,
-    COALESCE(vp.jml_jual, 0) AS jml_jual,
-    COALESCE(vp_kemarin.jml_jual, 0) AS jml_jual_kemarin,
-    COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,
-    COALESCE(vr.jml_retur, 0) AS jml_retur,
-    COALESCE(vr_kemarin.jml_retur, 0) AS jml_retur_kemarin,
-    COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar,
-    COALESCE(vk_kemarin.jml_mutasi, 0) AS mutasi_keluar_kemarin FROM tb_stok ts
-    $query_adjust
-    JOIN tb_produk tp ON ts.id_produk = tp.id
-    LEFT JOIN tb_so_detail tsd ON tsd.id_produk = ts.id_produk AND tsd.id_so = ?
-    LEFT JOIN tb_so_detail tsd_kemarin ON tsd_kemarin.id_produk = ts.id_produk AND tsd_kemarin.id_so = ?
-      WHERE ts.id_toko = ?
-      GROUP BY ts.id_produk ORDER BY tp.kode ASC";
+    // Cek status_kunci untuk menentukan sumber data detail SO
+    if ($cek->status_kunci == 1) {
+      // Jika terkunci, ambil data hanya dari tb_so_detail
+      $query = "SELECT tsd.id_produk, tsd.qty_awal, tsd.po as jml_terima, tsd.mutasi_masuk, 
+                       tsd.retur as jml_retur, tsd.jual as jml_jual, tsd.mutasi_keluar, tsd.hasil_so, 
+                       tsd.jual_lanjutan as qty_jual, tp.kode,
+                       0 as qty_awal_kemarin, 0 as hasil_so_kemarin, 0 as qty_jual_kemarin,
+                       0 as jml_terima_kemarin, 0 as mutasi_masuk_kemarin,
+                       0 as jml_jual_kemarin, 0 as jml_retur_kemarin, 0 as mutasi_keluar_kemarin,
+                       0 as jml_jual_buat, 0 as stok_adjust
+                FROM tb_so_detail tsd
+                JOIN tb_produk tp ON tsd.id_produk = tp.id
+                WHERE tsd.id_so = ?
+                ORDER BY tp.kode ASC";
+      $data['detail_so'] = $this->db->query($query, array($id_so))->result();
+    } else {
+      // Jika tidak terkunci, gunakan konsep yang saat ini
+      $query = "SELECT ts.id_produk,tp.kode,tsd.hasil_so,
+      $select_adjust
+      COALESCE(ts.qty_awal + COALESCE(vt_kemarin.jml_terima, 0) + COALESCE(vm_kemarin.jml_mutasi, 0) - COALESCE(vp_kemarin.jml_jual, 0) - COALESCE(vr_kemarin.jml_retur, 0) - COALESCE(vk_kemarin.jml_mutasi, 0)  ,0) as qty_awal_kemarin,
+      COALESCE(tsd_kemarin.hasil_so,0) as hasil_so_kemarin,
+      COALESCE(nj.qty, 0) as qty_jual,
+      COALESCE(nj_kemarin.qty, 0) as qty_jual_kemarin,
+      COALESCE(vt.jml_terima, 0) AS jml_terima,
+      COALESCE(vt_kemarin.jml_terima, 0) AS jml_terima_kemarin,
+      COALESCE(vm.jml_mutasi, 0) AS mutasi_masuk,
+      COALESCE(vm_kemarin.jml_mutasi, 0) AS mutasi_masuk_kemarin,
+      COALESCE(vp.jml_jual, 0) AS jml_jual,
+      COALESCE(vp_kemarin.jml_jual, 0) AS jml_jual_kemarin,
+      COALESCE(vpb.jml_jual, 0) AS jml_jual_buat,
+      COALESCE(vr.jml_retur, 0) AS jml_retur,
+      COALESCE(vr_kemarin.jml_retur, 0) AS jml_retur_kemarin,
+      COALESCE(vk.jml_mutasi, 0) AS mutasi_keluar,
+      COALESCE(vk_kemarin.jml_mutasi, 0) AS mutasi_keluar_kemarin FROM tb_stok ts
+      $query_adjust
+      JOIN tb_produk tp ON ts.id_produk = tp.id
+      LEFT JOIN tb_so_detail tsd ON tsd.id_produk = ts.id_produk AND tsd.id_so = ?
+      LEFT JOIN tb_so_detail tsd_kemarin ON tsd_kemarin.id_produk = ts.id_produk AND tsd_kemarin.id_so = ?
+        WHERE ts.id_toko = ?
+        GROUP BY ts.id_produk ORDER BY tp.kode ASC";
 
-    $data['detail_so'] = $this->db->query($query, $where_adjust)->result();
+      $data['detail_so'] = $this->db->query($query, $where_adjust)->result();
+    }
 
     $adjust = $this->db->query("SELECT * FROM tb_adjust_stok WHERE id_so = ?", array($id_so));
     $data['cek_adjust'] = $adjust->num_rows();

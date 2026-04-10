@@ -1,120 +1,180 @@
 <section class="content">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-4 col-sm-6 col-12">
-                <div class="info-box bg-info shadow-sm">
-                    <span class="info-box-icon bg-white"><i class="fas fa-hospital text-info"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Total Customer</span>
-                        <span class="info-box-number"><?= $cust->total ? number_format($cust->total) : "Kosong" ?></span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-12">
-                <div class="info-box bg-info shadow-sm">
-                    <span class="info-box-icon bg-white"><i class="fas fa-chart-pie text-info"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Total Stok</span>
-                        <span class="info-box-number"><?= $stok->total ? number_format($stok->total) : "Kosong" ?></span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-12">
-                <div class="info-box bg-info shadow-sm" title="Rasio berdasarkan total stok akhir / total penjualan">
-                    <span class="info-box-icon bg-white"><i class="fas fa-scroll text-info"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Stok Rasio</span>
-                        <span class="info-box-number">
-                            <?php
-                            if ($jual->total != 0) {
-                                echo round($stok->stok_akhir / $jual->total, 2);
-                            } else {
-                                echo "Kosong";
-                            }
-                            ?>
-
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Filter Section -->
         <div class="row">
             <div class="col-12">
-                <div class="card card-info">
+                <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title"> <i class="fas fa-chart-pie"></i> Data Stok Per Customer</h3>
+                        <h3 class="card-title"><i class="fas fa-filter"></i> Filter Laporan Stok Pelanggan</h3>
                     </div>
                     <div class="card-body">
-                        <table id="example1" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2" style="width:3%">#</th>
-                                    <th rowspan="2" style="width:30%;" class="text-center">Customer </th>
-                                    <th colspan="4" class="text-center">Total</th>
-                                    <th rowspan="2" class="text-center">Stok Rasio <br>
-                                        <small>Stok akhir / Penjualan</small>
-                                    </th>
-                                    <th rowspan="2" class="text-center">Menu </th>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">Jml Toko</th>
-                                    <th class="text-center">Stok Saat ini</th>
-                                    <th class="text-center">
-                                        Penjualan <br>
-                                        <small> ( <?= (new DateTime('first day of -1 month'))->format('M-Y') ?> )</small>
-                                    </th>
-                                    <th class="text-center">
-                                        Stok Akhir <br>
-                                        <small> ( <?= (new DateTime('first day of -1 month'))->format('M-Y') ?> )</small>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <?php if (is_array($list_data)) { ?>
+                        <form method="POST" action="<?= base_url('adm/Stok/s_customer') ?>" id="filterForm" class="form-inline w-100 justify-content-end">
+                            <!-- Customer Select -->
+                            <div class="form-group mr-2">
+                                <label for="id_cust" class="mr-2">Pilih Customer:</label>
+                                <select class="form-control form-control-sm select2" id="id_cust" name="id_cust" required style="width: 200px;">
+                                    <option value="">-- Pilih Customer --</option>
+                                    <?php foreach ($list_customers as $cust): ?>
+                                        <option value="<?= $cust->id ?>" <?= (!empty($customer) && $customer->id === $cust->id) ? 'selected' : '' ?>>
+                                            <?= $cust->nama_cust ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <!-- Month Select -->
+                            <div class="form-group mr-2">
+                                <label for="bulan" class="mr-2">Bulan:</label>
+                                <select class="form-control form-control-sm" id="bulan" name="bulan" required>
+                                    <?php
+                                    $bulan_name = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                                    for ($i = 1; $i <= 12; $i++): ?>
+                                        <option value="<?= str_pad($i, 2, '0', STR_PAD_LEFT) ?>" 
+                                            <?= ($bulan_filter === str_pad($i, 2, '0', STR_PAD_LEFT)) ? 'selected' : '' ?>>
+                                            <?= $bulan_name[$i] ?>
+                                        </option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+
+                            <!-- Year Select -->
+                            <div class="form-group mr-2">
+                                <label for="tahun" class="mr-2">Tahun:</label>
+                                <select class="form-control form-control-sm" id="tahun" name="tahun" required>
+                                    <?php
+                                    $current_year = (int)date('Y');
+                                    for ($y = $current_year - 5; $y <= $current_year; $y++): ?>
+                                        <option value="<?= $y ?>" <?= ($tahun_filter === (string)$y) ? 'selected' : '' ?>>
+                                            <?= $y ?>
+                                        </option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+
+                            <!-- Search Button -->
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-search"></i> Cari
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Section -->
+        <?php if ($show_report && !empty($customer)): ?>
+            <div class="card card-info">
+                <div class="card-body">
+                    <!-- Header dengan Customer Info -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h3 class="mb-1"><strong><?= strtoupper($customer->nama_cust) ?></strong></h3>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-calendar"></i> Periode: <strong><?= date('F Y', strtotime("$tahun_filter-$bulan_filter-01")) ?></strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Data Table dengan Action Buttons -->
+                    <div class="mt-4">
+                        
+                        <?php if (!empty($list_data)): ?>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead class="thead-light">
+                                        <tr class="text-center">
+                                            <th style="width: 5%">No</th>
+                                            <th>Nama Toko</th>
+                                            <th style="width: 12%">Stok Awal</th>
+                                            <th style="width: 12%">Penjualan</th>
+                                            <th style="width: 12%">Stok Akhir</th>
+                                            <th style="width: 12%">Rasio</th>
+                                            <th style="width: 12%">Detail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         <?php
                                         $no = 0;
-                                        foreach ($list_data as $dd) :
-                                            $no++; ?>
-                                            <td><?= $no ?></td>
+                                        foreach ($list_data as $item):
+                                            $no++;
+                                            $rasio = (!empty($item->penjualan) && $item->penjualan != 0) 
+                                                ? round($item->stok_akhir / $item->penjualan, 2) 
+                                                : round($item->stok_akhir / 1, 2);
+                                            
+                                            // Determine rasio status
+                                            if ($rasio < 1) {
+                                                $rasioBadge = 'badge-danger';
+                                            } elseif ($rasio < 2) {
+                                                $rasioBadge = 'badge-warning';
+                                            } else {
+                                                $rasioBadge = 'badge-success';
+                                            }
+                                        ?>
+                                            <tr>
+                                                <td class="text-center"><?= $no ?></td>
+                                                <td><?= $item->nama_toko ?></td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-sm badge-light"><?= number_format($item->stok_awal) ?></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-sm badge-info"><?= number_format($item->penjualan) ?></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-sm badge-primary"><?= number_format($item->stok_akhir) ?></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-sm <?= $rasioBadge ?>"><?= $rasio ?>x</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <?php if ($item->status_kunci != 1): ?>
+                                                        <div class="badge badge-warning" style="display: inline-block; padding: 8px; font-size: 11px;">
+                                                            <i class="fas fa-exclamation-triangle"></i> Data belum valid
+                                                        </div>
+                                                        <div style="font-size: 10px; margin-top: 4px; color: #b8860b;">
+                                                            Hubungi tim MV/Operasional
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <a href="<?= base_url('sup/So/riwayat_so_toko/' . $item->id . '/' . $item->nomor_so) ?>" class="btn btn-sm btn-info" target="_blank" rel="noopener noreferrer">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                    <tfoot class="thead-light">
+                                        <tr class="text-center">
+                                            <td colspan="2" class="text-left"><strong>TOTAL</strong></td>
                                             <td>
-                                                <small>
-                                                    <strong><?= $dd->nama_cust ?></strong> <br>
-                                                    Alamat : <?= $dd->alamat_cust ?>
-                                                </small>
+                                                <span class="badge badge-sm badge-light"><?= number_format($total_stok_awal) ?></span>
                                             </td>
-                                            <td class="text-center"><?= $dd->t_toko ?></td>
-                                            <td class="text-center"><?= number_format($dd->t_stok) ?></td>
-                                            <td class="text-center"><?= number_format($dd->t_jual) ?></td>
-                                            <td class="text-center"><?= number_format($dd->t_akhir) ?></td>
-                                            <td class="text-center"> <?= (!empty($dd->t_jual) && $dd->t_jual != 0) ? ROUND($dd->t_akhir / $dd->t_jual, 2) : ROUND($dd->t_akhir / 1, 2) ?></td>
                                             <td>
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-info btn-sm"> Lihat</button>
-                                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                                                        <span class="sr-only">Toggle Dropdown</span>
-                                                    </button>
-                                                    <div class="dropdown-menu" role="menu" style="">
-                                                        <a class="dropdown-item" href="<?= base_url('adm/Stok/detail_toko/' . $dd->id) ?>">Per Toko</a>
-                                                        <a class="dropdown-item" href="<?= base_url('adm/Stok/detail_artikel/' . $dd->id) ?>">Per Artikel</a>
-                                                    </div>
-                                                </div>
+                                                <span class="badge badge-sm badge-info"><?= number_format($total_penjualan) ?></span>
                                             </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php } ?>
-
-                            </tbody>
-
-                        </table>
+                                            <td>
+                                                <span class="badge badge-sm badge-primary"><?= number_format($total_stok_akhir) ?></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-sm badge-success">
+                                                    <?php
+                                                    $total_rasio = (!empty($total_penjualan) && $total_penjualan != 0) 
+                                                        ? round($total_stok_akhir / $total_penjualan, 1) 
+                                                        : round($total_stok_akhir / 1, 1);
+                                                    echo $total_rasio . 'x';
+                                                    ?>
+                                                </span>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        <?php else: ?>
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle"></i> Tidak ada data untuk customer dan periode yang dipilih.
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <!-- /.card-body -->
                 </div>
-                <!-- /.card -->
             </div>
-            <!-- /.col -->
-        </div>
-        <!-- /.row -->
+        <?php endif; ?>
     </div>
-    <!-- /.container-fluid -->
 </section>

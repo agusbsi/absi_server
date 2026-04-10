@@ -75,28 +75,66 @@ class Stok extends CI_Controller
   }
   public function s_customer()
   {
-    $data['title'] = 'Stok Customer';
-    $lastMonth = new DateTime('first day of -1 month');
-    $thn = $lastMonth->format('Y');
-    $bln = $lastMonth->format('m');
-    $query = "SELECT 
-        tc.id,
-        tc.nama_cust,
-        tc.alamat_cust,
-        (SELECT COUNT(id) FROM tb_toko tt WHERE tt.id_customer = tc.id AND tt.status = 1) AS t_toko,
-        (SELECT COALESCE(SUM(ts.qty), 0) FROM tb_stok ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1) AS t_stok,
-        (SELECT COALESCE(SUM(ts.qty_awal), 0) FROM tb_stok ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1) AS t_akhir,
-        (SELECT COALESCE(SUM(ts.jml_jual), 0) FROM vw_penjualan ts JOIN tb_toko tt ON ts.id_toko = tt.id WHERE tt.id_customer = tc.id AND tt.status = 1 AND ts.tahun = '$thn' AND ts.bulan = '$bln' ) AS t_jual
+    $data['title'] = 'Laporan Stok Customer';
+    
+    // Get filter parameters
+    $id_cust = $this->input->post('id_cust') ?: null;
+    $bulan = $this->input->post('bulan') ?: date('m');
+    $tahun = $this->input->post('tahun') ?: date('Y');
+    
+    // Get all customers for select dropdown
+    $data['list_customers'] = $this->db->query("SELECT id, nama_cust FROM tb_customer ORDER BY nama_cust ASC")->result();
+    
+    // If customer is selected, get detailed report
+    if (!empty($id_cust)) {
+      // Get customer info
+      $data['customer'] = $this->db->get_where('tb_customer', ['id' => $id_cust])->row();
+      $data['periode'] = date('F Y', strtotime("$tahun-$bulan-01"));
+      $data['bulan_filter'] = $bulan;
+      $data['tahun_filter'] = $tahun;
+      // buat tanggal dari input
+      $tanggal = strtotime("$tahun-$bulan-01");
 
-    FROM 
-        tb_customer tc
-    ORDER BY 
-        tc.nama_cust ASC";
-    $data['list_data'] = $this->db->query($query)->result();
-    $data['cust'] = $this->db->query("SELECT count(id) as total from tb_customer")->row();
-    $data['stok'] = $this->db->query("SELECT SUM(ts.qty) as total, SUM(ts.qty_awal) as stok_akhir from tb_stok ts
-    JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1 ")->row();
-    $data['jual'] = $this->db->query("SELECT SUM(jml_jual) as total from vw_penjualan where tahun = '$thn' AND bulan = '$bln' ")->row();
+      // tambah 1 bulan
+      $next_bulan = date('m', strtotime("+1 month", $tanggal));
+      $next_tahun = date('Y', strtotime("+1 month", $tanggal));
+      
+      // Get store and stock details for this customer from tb_so_detail
+      // Using LEFT JOIN dengan HAVING untuk menampilkan toko meski data SO belum ada
+      $query = "SELECT 
+          tt.id,
+          tt.nama_toko,so.status_kunci,so.id as nomor_so,
+          COALESCE(SUM(sod.qty_awal), 0) AS stok_awal,
+          COALESCE(SUM(sod.jual), 0) AS penjualan,
+          COALESCE(SUM(sod.stok_akhir), 0) AS stok_akhir
+        FROM tb_toko tt
+        LEFT JOIN tb_so so ON tt.id = so.id_toko AND YEAR(so.created_at) = ? AND MONTH(so.created_at) = ? AND so.status_kunci = 1
+        LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
+        WHERE tt.id_customer = ? AND tt.status = 1
+        GROUP BY tt.id, tt.nama_toko
+        ORDER BY tt.nama_toko ASC";
+      
+      $data['list_data'] = $this->db->query($query, [$next_tahun, $next_bulan, $id_cust])->result();
+      
+      // Calculate totals
+      $data['total_stok_awal'] = 0;
+      $data['total_penjualan'] = 0;
+      $data['total_stok_akhir'] = 0;
+      
+      foreach ($data['list_data'] as $item) {
+        $data['total_stok_awal'] += $item->stok_awal;
+        $data['total_penjualan'] += $item->penjualan;
+        $data['total_stok_akhir'] += $item->stok_akhir;
+      }
+      
+      $data['show_report'] = true;
+    } else {
+      $data['show_report'] = false;
+      $data['list_data'] = [];
+      $data['bulan_filter'] = $bulan;
+      $data['tahun_filter'] = $tahun;
+    }
+    
     $this->template->load('template/template', 'adm/stok/customer', $data);
   }
   public function s_toko()
@@ -1186,5 +1224,142 @@ class Stok extends CI_Controller
     ob_end_clean();
     $writer->save('php://output');
     exit();
+  }
+
+  // Print Customer Stock Report
+  public function print_customer($id_cust, $tahun, $bulan)
+  {
+    $id_cust = intval($id_cust);
+    $tahun = intval($tahun);
+    $bulan = str_pad(intval($bulan), 2, '0', STR_PAD_LEFT);
+    
+    // Get customer info
+    $data['customer'] = $this->db->get_where('tb_customer', ['id' => $id_cust])->row();
+    $data['periode'] = date('F Y', strtotime("$tahun-$bulan-01"));
+    $data['bulan_filter'] = $bulan;
+    $data['tahun_filter'] = $tahun;
+    
+    // Get store and stock details for this customer from tb_so_detail
+    // Using LEFT JOIN dengan kondisi di ON clause agar toko tetap tampil meski SO belum ada
+    $query = "SELECT 
+        tt.id,
+        tt.nama_toko,
+        COALESCE(MIN(so.status_kunci), 1) AS status_kunci,
+        COALESCE(SUM(sod.qty_awal), 0) AS stok_awal,
+        COALESCE(SUM(sod.jual), 0) AS penjualan,
+        COALESCE(SUM(sod.stok_akhir), 0) AS stok_akhir
+      FROM tb_toko tt
+      LEFT JOIN tb_so so ON tt.id = so.id_toko AND YEAR(so.created_at) = ? AND MONTH(so.created_at) = ?
+      LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
+      WHERE tt.id_customer = ? AND tt.status = 1
+      GROUP BY tt.id, tt.nama_toko
+      ORDER BY tt.nama_toko ASC";
+    
+    $data['list_data'] = $this->db->query($query, [$tahun, $bulan, $id_cust])->result();
+    
+    // Calculate totals
+    $data['total_stok_awal'] = 0;
+    $data['total_penjualan'] = 0;
+    $data['total_stok_akhir'] = 0;
+    
+    foreach ($data['list_data'] as $item) {
+      $data['total_stok_awal'] += $item->stok_awal;
+      $data['total_penjualan'] += $item->penjualan;
+      $data['total_stok_akhir'] += $item->stok_akhir;
+    }
+
+    $this->load->view('adm/stok/print_customer', $data);
+  }
+
+  // Export PDF Customer Stock Report
+  public function export_pdf_customer($id_cust, $tahun, $bulan)
+  {
+    $id_cust = intval($id_cust);
+    $tahun = intval($tahun);
+    $bulan = str_pad(intval($bulan), 2, '0', STR_PAD_LEFT);
+    
+    // Get customer info
+    $customer = $this->db->get_where('tb_customer', ['id' => $id_cust])->row();
+    $periode = date('F Y', strtotime("$tahun-$bulan-01"));
+    
+    // Get store and stock details for this customer from tb_so_detail
+    // Using LEFT JOIN dengan kondisi di ON clause agar toko tetap tampil meski SO belum ada
+    $query = "SELECT 
+        tt.id,
+        tt.nama_toko,
+        COALESCE(MIN(so.status_kunci), 1) AS status_kunci,
+        COALESCE(SUM(sod.qty_awal), 0) AS stok_awal,
+        COALESCE(SUM(sod.jual), 0) AS penjualan,
+        COALESCE(SUM(sod.stok_akhir), 0) AS stok_akhir
+      FROM tb_toko tt
+      LEFT JOIN tb_so so ON tt.id = so.id_toko AND YEAR(so.created_at) = ? AND MONTH(so.created_at) = ?
+      LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
+      WHERE tt.id_customer = ? AND tt.status = 1
+      GROUP BY tt.id, tt.nama_toko
+      ORDER BY tt.nama_toko ASC";
+    
+    $list_data = $this->db->query($query, [$tahun, $bulan, $id_cust])->result();
+    
+    // Calculate totals
+    $total_stok_awal = 0;
+    $total_penjualan = 0;
+    $total_stok_akhir = 0;
+    
+    foreach ($list_data as $item) {
+      $total_stok_awal += $item->stok_awal;
+      $total_penjualan += $item->penjualan;
+      $total_stok_akhir += $item->stok_akhir;
+    }
+
+    $html = '<h2 style="text-align:center; margin-bottom: 5px;">' . strtoupper($customer->nama_cust) . '</h2>';
+    $html .= '<p style="text-align:center; margin: 5px 0; color: #666;">Periode: ' . $periode . '</p>';
+    $html .= '<p style="text-align:center; margin-bottom: 20px; font-size: 11px; color: #999;">Laporan Stok Pelanggan - ' . date('d M Y H:i') . '</p>';
+    
+    $html .= '<table cellpadding="6" cellspacing="0" border="1" style="width: 100%; font-size: 11px; border-collapse: collapse;">';
+    $html .= '<thead>';
+    $html .= '<tr style="background-color: #f0f0f0; font-weight: bold; text-align: center;">';
+    $html .= '<td style="width: 5%">No</td>';
+    $html .= '<td>Nama Toko</td>';
+    $html .= '<td style="width: 12%; text-align: right;">Stok Awal</td>';
+    $html .= '<td style="width: 12%; text-align: right;">Penjualan</td>';
+    $html .= '<td style="width: 12%; text-align: right;">Stok Akhir</td>';
+    $html .= '<td style="width: 12%; text-align: right;">Rasio</td>';
+    $html .= '</tr>';
+    $html .= '</thead>';
+    $html .= '<tbody>';
+    
+    $no = 0;
+    foreach ($list_data as $item) {
+      $no++;
+      $rasio = (!empty($item->penjualan) && $item->penjualan != 0) 
+        ? round($item->stok_akhir / $item->penjualan, 2) 
+        : round($item->stok_akhir / 1, 2);
+      
+      $html .= '<tr>';
+      $html .= '<td style="text-align: center;">' . $no . '</td>';
+      $html .= '<td>' . $item->nama_toko . '</td>';
+      $html .= '<td style="text-align: right;">' . number_format($item->stok_awal) . '</td>';
+      $html .= '<td style="text-align: right;">' . number_format($item->penjualan) . '</td>';
+      $html .= '<td style="text-align: right;">' . number_format($item->stok_akhir) . '</td>';
+      $html .= '<td style="text-align: right;">' . $rasio . 'x</td>';
+      $html .= '</tr>';
+    }
+    
+    $html .= '<tr style="background-color: #f0f0f0; font-weight: bold;">';
+    $html .= '<td colspan="2" style="text-align: right;">TOTAL</td>';
+    $html .= '<td style="text-align: right;">' . number_format($total_stok_awal) . '</td>';
+    $html .= '<td style="text-align: right;">' . number_format($total_penjualan) . '</td>';
+    $html .= '<td style="text-align: right;">' . number_format($total_stok_akhir) . '</td>';
+    $total_rasio = (!empty($total_penjualan) && $total_penjualan != 0) 
+      ? round($total_stok_akhir / $total_penjualan, 2) 
+      : round($total_stok_akhir / 1, 2);
+    $html .= '<td style="text-align: right;">' . $total_rasio . 'x</td>';
+    $html .= '</tr>';
+    
+    $html .= '</tbody>';
+    $html .= '</table>';
+
+    $this->load->library('Pdfgenerator');
+    $this->pdfgenerator->generate($html, 'Laporan_Stok_' . $customer->nama_cust . '_' . $periode, true, 'A4', 'landscape');
   }
 }
