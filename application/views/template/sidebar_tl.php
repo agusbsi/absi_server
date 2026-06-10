@@ -8,10 +8,10 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
   WHERE tb_bap.status = '0' AND tb_toko.id_leader ='$id'")->num_rows();
 ?>
 <!-- Sidebar -->
-<div class="sidebar modern-sidebar">
+<div class="sidebar tl-sidebar">
   <!-- Sidebar Menu -->
   <nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column modern-nav" data-widget="treeview" role="menu" data-accordion="false">
+    <ul class="nav nav-pills nav-sidebar flex-column tl-nav" data-widget="treeview" role="menu" data-accordion="false">
       <li class="nav-item">
         <a href="<?= base_url('leader/Dashboard') ?>" class="nav-link <?= ($title == 'Dashboard') ? "active" : "" ?>">
           <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -172,11 +172,11 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
           </p>
         </a>
       </li>
-      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
-        <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
+      <li class="nav-item <?= ($title == 'Stok Artikel' || $title == 'Laporan Stok Customer' || $title == 'Kartu Stok') ? "menu-open" : "" ?>">
+        <a href="#" class="nav-link <?= ($title == 'Stok Artikel' || $title == 'Laporan Stok Customer' || $title == 'Kartu Stok') ? "active" : "" ?>">
           <i class="nav-icon fas fa-chart-pie"></i>
           <p>
-            Stok Toko
+            Stok
             <i class="right fas fa-angle-left"></i>
           </p>
         </a>
@@ -190,7 +190,7 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url('leader/Stok/s_customer') ?>" class="nav-link <?= ($title == 'Stok Customer') ? "active" : "" ?>">
+            <a href="<?= base_url('adm/Stok/s_customer') ?>" class="nav-link <?= ($title == 'Laporan Stok Customer') ? "active" : "" ?>">
               <i class="far fa-circle nav-icon"></i>
               <p>
                 Per Customer
@@ -260,141 +260,210 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
 </div>
 <!-- /.sidebar -->
 
-<!-- Modern Sidebar Styles -->
 <style>
-  /* Modern Sidebar Styling */
-  .modern-sidebar {
-    background: linear-gradient(180deg, #1a3a52 0%, #2d5a7a 50%, #1a3a52 100%);
-    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+  .tl-sidebar {
+    background:
+      radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 34%),
+      linear-gradient(180deg, #17202a 0%, #111827 52%, #0f172a 100%);
+    padding: 10px 0 18px;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 181, 246, 0.3) transparent;
-    padding: 8px 0;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+    scroll-behavior: smooth;
   }
 
-  .modern-sidebar::-webkit-scrollbar {
+  .tl-sidebar::-webkit-scrollbar {
     width: 6px;
   }
 
-  .modern-sidebar::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 3px;
+  .tl-sidebar::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  .modern-sidebar::-webkit-scrollbar-thumb {
-    background: rgba(100, 181, 246, 0.4);
-    border-radius: 3px;
+  .tl-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.38);
+    border-radius: 999px;
   }
 
-  .modern-sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 181, 246, 0.6);
+  .tl-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.62);
   }
 
-  /* Navigation Items */
-  .modern-nav .nav-item {
-    margin-bottom: 3px;
+  .tl-nav {
+    gap: 2px;
   }
 
-  .modern-nav .nav-link {
-    border-radius: 8px;
-    margin: 2px 12px;
-    padding: 10px 14px;
-    color: rgba(235, 245, 255, 0.92);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .tl-nav .nav-header {
+    color: rgba(203, 213, 225, 0.78);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 16px 14px 7px;
+    padding: 0 4px 8px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  }
+
+  .tl-nav .nav-header:first-of-type {
+    margin-top: 6px;
+  }
+
+  .tl-nav .nav-item {
+    margin: 1px 0;
+  }
+
+  .tl-nav .nav-link {
+    position: relative;
     display: flex;
     align-items: center;
+    min-height: 42px;
+    margin: 2px 10px;
+    padding: 10px 12px;
+    color: rgba(226, 232, 240, 0.88);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+  }
+
+  .tl-nav .nav-link::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 99px;
+    background: transparent;
+    transition: background-color 220ms ease, transform 220ms ease;
+    transform: scaleY(0.45);
+  }
+
+  .tl-nav .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.075);
+    border-color: rgba(148, 163, 184, 0.14);
+    transform: translateX(3px);
+  }
+
+  .tl-nav .nav-link:hover::before {
+    background: rgba(20, 184, 166, 0.72);
+    transform: scaleY(1);
+  }
+
+  .tl-nav .nav-link.active,
+  .tl-nav .menu-open > .nav-link {
+    color: #ffffff;
+    background: rgba(20, 184, 166, 0.16);
+    border-color: rgba(45, 212, 191, 0.22);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+  }
+
+  .tl-nav .nav-link.active::before,
+  .tl-nav .menu-open > .nav-link::before {
+    background: #2dd4bf;
+    transform: scaleY(1);
+  }
+
+  .tl-nav .nav-link .nav-icon {
+    width: 28px;
+    margin: 0 11px 0 0;
+    color: rgba(125, 211, 252, 0.82);
+    font-size: 15px;
+    text-align: center;
+    transition: color 220ms ease, transform 220ms ease;
+  }
+
+  .tl-nav .nav-link:hover .nav-icon,
+  .tl-nav .nav-link.active .nav-icon,
+  .tl-nav .menu-open > .nav-link .nav-icon {
+    color: #5eead4;
+    transform: translateY(-1px);
+  }
+
+  .tl-nav .nav-link p {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    gap: 8px;
     font-size: 14px;
-    border-left: 3px solid transparent;
-    position: relative;
-    line-height: 1.5;
+    line-height: 1.25;
+    white-space: normal;
   }
 
-  .modern-nav .nav-link:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
-    border-left-color: #64b5f6;
-    transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  .tl-nav .right {
+    margin-left: auto;
   }
 
-  .modern-nav .nav-link.active {
-    background: linear-gradient(90deg, rgba(100, 181, 246, 0.25) 0%, rgba(100, 181, 246, 0.15) 100%);
-    color: #ffffff;
-    border-left-color: #64b5f6;
-    font-weight: 500;
-    box-shadow: 0 2px 12px rgba(100, 181, 246, 0.3);
+  .tl-nav .nav-link .fa-angle-left {
+    color: rgba(203, 213, 225, 0.72);
+    transition: transform 240ms ease, color 220ms ease;
   }
 
-  .modern-nav .nav-link .nav-icon {
-    font-size: 16px;
-    margin-right: 12px;
-    color: #90caf9;
-    transition: all 0.3s ease;
-  }
-
-  .modern-nav .nav-link.active .nav-icon,
-  .modern-nav .nav-link:hover .nav-icon {
-    color: #ffffff;
-    transform: scale(1.1);
-  }
-
-  /* Treeview Items */
-  .modern-nav .nav-treeview {
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 6px;
-    margin: 4px 12px;
-    padding: 6px 0;
-  }
-
-  .modern-nav .nav-treeview .nav-link {
-    padding: 8px 12px 8px 40px;
-    margin: 2px 8px;
-    font-size: 13px;
-  }
-
-  .modern-nav .nav-treeview .nav-icon {
-    font-size: 8px;
-    margin-right: 10px;
-  }
-
-  /* Headers */
-  .modern-nav .nav-header {
-    color: #90caf9;
-    font-weight: 600;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    padding: 14px 20px 8px 20px;
-    margin-top: 8px;
-    border-bottom: 1px solid rgba(100, 181, 246, 0.2);
-  }
-
-  /* Angle Icon */
-  .modern-nav .nav-link .right {
-    transition: transform 0.3s ease;
-  }
-
-  .modern-nav .menu-open>.nav-link .right {
+  .tl-nav .menu-open > .nav-link .fa-angle-left {
+    color: #99f6e4;
     transform: rotate(-90deg);
   }
 
-  /* Badge Styling */
-  .modern-nav .badge {
-    font-size: 10px;
-    padding: 3px 7px;
-    border-radius: 10px;
-    font-weight: 600;
+  .tl-nav .badge {
+    min-width: 22px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    animation: tlBadgePulse 2.4s ease-in-out infinite;
   }
 
-  /* Smooth Animations */
-  .modern-nav .nav-treeview {
-    animation: slideDown 0.3s ease-out;
+  .tl-nav .nav-treeview {
+    margin: 2px 10px 7px 26px;
+    padding: 4px 0 4px 9px;
+    border-left: 1px solid rgba(148, 163, 184, 0.16);
+    animation: tlTreeIn 220ms ease;
   }
 
-  @keyframes slideDown {
+  .tl-nav .nav-treeview .nav-link {
+    min-height: 36px;
+    margin: 1px 0 1px 8px;
+    padding: 8px 10px;
+    color: rgba(203, 213, 225, 0.86);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .tl-nav .nav-treeview .nav-link::before {
+    left: -12px;
+    top: 15px;
+    bottom: auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.38);
+    transform: none;
+  }
+
+  .tl-nav .nav-treeview .nav-link.active::before,
+  .tl-nav .nav-treeview .nav-link:hover::before {
+    background: #2dd4bf;
+  }
+
+  .tl-nav .nav-treeview .nav-icon {
+    display: none;
+  }
+
+  .tl-nav .nav-treeview .nav-link p {
+    font-size: 13px;
+  }
+
+  @keyframes tlTreeIn {
     from {
       opacity: 0;
-      transform: translateY(-10px);
+      transform: translateY(-4px);
     }
 
     to {
@@ -402,4 +471,73 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
       transform: translateY(0);
     }
   }
+
+  @keyframes tlBadgePulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.06);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tl-sidebar,
+    .tl-nav .nav-link,
+    .tl-nav .nav-link::before,
+    .tl-nav .nav-link .nav-icon,
+    .tl-nav .nav-link .fa-angle-left,
+    .tl-nav .badge,
+    .tl-nav .nav-treeview {
+      animation: none;
+      scroll-behavior: auto;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .tl-nav .nav-link {
+      margin-left: 8px;
+      margin-right: 8px;
+      padding-right: 10px;
+    }
+
+    .tl-nav .nav-treeview {
+      margin-left: 22px;
+      margin-right: 8px;
+    }
+  }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.querySelector('.tl-sidebar');
+    var activeLink = document.querySelector('.tl-nav .nav-link.active');
+
+    if (sidebar && activeLink) {
+      window.setTimeout(function() {
+        sidebar.scrollTo({
+          top: Math.max(0, activeLink.offsetTop - 96),
+          behavior: 'smooth'
+        });
+      }, 260);
+    }
+
+    document.querySelectorAll('.tl-nav .nav-item > .nav-link[href="#"]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        var item = link.closest('.nav-item');
+
+        window.setTimeout(function() {
+          if (sidebar && item && item.classList.contains('menu-open')) {
+            sidebar.scrollTo({
+              top: Math.max(0, item.offsetTop - 72),
+              behavior: 'smooth'
+            });
+          }
+        }, 180);
+      });
+    });
+  });
+</script>

@@ -76,66 +76,117 @@ class Stok extends CI_Controller
   public function s_customer()
   {
     $data['title'] = 'Laporan Stok Customer';
-    
-    // Get filter parameters
-    $id_cust = $this->input->post('id_cust') ?: null;
-    $bulan = $this->input->post('bulan') ?: date('m');
-    $tahun = $this->input->post('tahun') ?: date('Y');
-    
-    // Get all customers for select dropdown
-    $data['list_customers'] = $this->db->query("SELECT id, nama_cust FROM tb_customer ORDER BY nama_cust ASC")->result();
-    
-    // If customer is selected, get detailed report
-    if (!empty($id_cust)) {
-      // Get customer info
-      $data['customer'] = $this->db->get_where('tb_customer', ['id' => $id_cust])->row();
-      $data['periode'] = date('F Y', strtotime("$tahun-$bulan-01"));
-      $data['bulan_filter'] = $bulan;
-      $data['tahun_filter'] = $tahun;
-      // buat tanggal dari input
-      $tanggal = strtotime("$tahun-$bulan-01");
 
-      // tambah 1 bulan
-      $next_bulan = date('m', strtotime("+1 month", $tanggal));
-      $next_tahun = date('Y', strtotime("+1 month", $tanggal));
-      
-      // Get store and stock details for this customer from tb_so_detail
-      // Using LEFT JOIN dengan HAVING untuk menampilkan toko meski data SO belum ada
-      $query = "SELECT 
-          tt.id,
-          tt.nama_toko,so.status_kunci,so.id as nomor_so,
-          COALESCE(SUM(sod.qty_awal), 0) AS stok_awal,
-          COALESCE(SUM(sod.jual), 0) AS penjualan,
-          COALESCE(SUM(sod.stok_akhir), 0) AS stok_akhir
+    $bulan = $this->input->post('bulan') ?: $this->input->get('bulan') ?: date('m');
+    $tahun = $this->input->post('tahun') ?: $this->input->get('tahun') ?: date('Y');
+    $bulan = str_pad((int)$bulan, 2, '0', STR_PAD_LEFT);
+    $tahun = (string)(int)$tahun;
+
+    $tanggal = strtotime("$tahun-$bulan-01");
+    $start_so = date('Y-m-01 00:00:00', strtotime("+1 month", $tanggal));
+    $end_so = date('Y-m-01 00:00:00', strtotime("+2 month", $tanggal));
+
+    $query = "SELECT 
+        tc.id,
+        tc.nama_cust,
+        COALESCE(sc.stok_awal, 0) AS stok_awal,
+        COALESCE(sc.penjualan, 0) AS penjualan,
+        COALESCE(sc.stok_akhir, 0) AS stok_akhir
+      FROM tb_customer tc
+      JOIN (
+        SELECT DISTINCT id_customer
+        FROM tb_toko
+        WHERE status = 1
+      ) active_customer ON active_customer.id_customer = tc.id
+      LEFT JOIN (
+        SELECT 
+          tt.id_customer,
+          SUM(COALESCE(sod.qty_awal, 0)) AS stok_awal,
+          SUM(COALESCE(sod.jual, 0)) AS penjualan,
+          SUM(COALESCE(sod.stok_akhir, 0)) AS stok_akhir
         FROM tb_toko tt
-        LEFT JOIN tb_so so ON tt.id = so.id_toko AND YEAR(so.created_at) = ? AND MONTH(so.created_at) = ? AND so.status_kunci = 1
+        JOIN tb_so so ON tt.id = so.id_toko
+          AND so.created_at >= ?
+          AND so.created_at < ?
+          AND so.status_kunci = 1
         LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
-        WHERE tt.id_customer = ? AND tt.status = 1
-        GROUP BY tt.id, tt.nama_toko
-        ORDER BY tt.nama_toko ASC";
-      
-      $data['list_data'] = $this->db->query($query, [$next_tahun, $next_bulan, $id_cust])->result();
-      
-      // Calculate totals
-      $data['total_stok_awal'] = 0;
-      $data['total_penjualan'] = 0;
-      $data['total_stok_akhir'] = 0;
-      
-      foreach ($data['list_data'] as $item) {
-        $data['total_stok_awal'] += $item->stok_awal;
-        $data['total_penjualan'] += $item->penjualan;
-        $data['total_stok_akhir'] += $item->stok_akhir;
-      }
-      
-      $data['show_report'] = true;
-    } else {
-      $data['show_report'] = false;
-      $data['list_data'] = [];
-      $data['bulan_filter'] = $bulan;
-      $data['tahun_filter'] = $tahun;
+        WHERE tt.status = 1
+        GROUP BY tt.id_customer
+      ) sc ON tc.id = sc.id_customer
+      ORDER BY tc.nama_cust ASC";
+
+    $data['list_data'] = $this->db->query($query, [$start_so, $end_so])->result();
+    $data['periode'] = date('F Y', strtotime("$tahun-$bulan-01"));
+    $data['bulan_filter'] = $bulan;
+    $data['tahun_filter'] = $tahun;
+    $data['total_stok_awal'] = 0;
+    $data['total_penjualan'] = 0;
+    $data['total_stok_akhir'] = 0;
+
+    foreach ($data['list_data'] as $item) {
+      $data['total_stok_awal'] += $item->stok_awal;
+      $data['total_penjualan'] += $item->penjualan;
+      $data['total_stok_akhir'] += $item->stok_akhir;
     }
-    
+
     $this->template->load('template/template', 'adm/stok/customer', $data);
+  }
+
+  public function detail_customer($id_cust, $tahun, $bulan)
+  {
+    $id_cust = (int)$id_cust;
+    $tahun = (string)(int)$tahun;
+    $bulan = str_pad((int)$bulan, 2, '0', STR_PAD_LEFT);
+
+    $tanggal = strtotime("$tahun-$bulan-01");
+    $start_so = date('Y-m-01 00:00:00', strtotime("+1 month", $tanggal));
+    $end_so = date('Y-m-01 00:00:00', strtotime("+2 month", $tanggal));
+
+    $data['title'] = 'Detail Stok Customer';
+    $data['customer'] = $this->db->get_where('tb_customer', ['id' => $id_cust])->row();
+    $data['periode'] = date('F Y', strtotime("$tahun-$bulan-01"));
+    $data['bulan_filter'] = $bulan;
+    $data['tahun_filter'] = $tahun;
+
+    $query = "SELECT 
+        tt.id,
+        tt.nama_toko,
+        so_data.status_kunci,
+        so_data.nomor_so,
+        COALESCE(so_data.stok_awal, 0) AS stok_awal,
+        COALESCE(so_data.penjualan, 0) AS penjualan,
+        COALESCE(so_data.stok_akhir, 0) AS stok_akhir
+      FROM tb_toko tt
+      LEFT JOIN (
+        SELECT
+          so.id_toko,
+          MAX(so.status_kunci) AS status_kunci,
+          MAX(so.id) AS nomor_so,
+          SUM(COALESCE(sod.qty_awal, 0)) AS stok_awal,
+          SUM(COALESCE(sod.jual, 0)) AS penjualan,
+          SUM(COALESCE(sod.stok_akhir, 0)) AS stok_akhir
+        FROM tb_so so
+        LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
+        WHERE so.created_at >= ?
+          AND so.created_at < ?
+          AND so.status_kunci = 1
+        GROUP BY so.id_toko
+      ) so_data ON tt.id = so_data.id_toko
+      WHERE tt.id_customer = ? AND tt.status = 1
+      ORDER BY tt.nama_toko ASC";
+
+    $data['list_data'] = $this->db->query($query, [$start_so, $end_so, $id_cust])->result();
+    $data['total_stok_awal'] = 0;
+    $data['total_penjualan'] = 0;
+    $data['total_stok_akhir'] = 0;
+
+    foreach ($data['list_data'] as $item) {
+      $data['total_stok_awal'] += $item->stok_awal;
+      $data['total_penjualan'] += $item->penjualan;
+      $data['total_stok_akhir'] += $item->stok_akhir;
+    }
+
+    $this->template->load('template/template', 'adm/stok/detail_customer', $data);
   }
   public function s_toko()
   {
