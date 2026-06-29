@@ -31,26 +31,50 @@ class Artikel extends CI_Controller
   //  approve artikel
   public function approve()
   {
-    $id = $this->input->get('id');
-    $nilai = count($id);
-   
-    for ($i=0; $i < $nilai; $i++)
-    {
-      $list_id = $id[$i];
-      $this->db->query("UPDATE tb_stok set status = '1' where id = '$list_id'");
-    }
+    $this->update_status('1');
   }
+
   //  Reject  Artikel
   public function reject()
   {
-    $id = $this->input->get('id');
-    $nilai = count($id);
-   
-    for ($i=0; $i < $nilai; $i++)
-    {
-      $list_id = $id[$i];
-      $this->db->query("UPDATE tb_stok set status = '0' where id = '$list_id'");
+    $this->update_status('0');
+  }
+
+  private function update_status($status)
+  {
+    $id = $this->input->post('id');
+
+    // Tetap mendukung request lama yang masih mengirim data melalui query string.
+    if ($id === null) {
+      $id = $this->input->get('id');
     }
+
+    $id = is_array($id) ? $id : array($id);
+    $id = array_values(array_unique(array_filter(array_map('intval', $id), function ($value) {
+      return $value > 0;
+    })));
+
+    if (empty($id)) {
+      return $this->output
+        ->set_status_header(400)
+        ->set_content_type('application/json')
+        ->set_output(json_encode(array('success' => false, 'message' => 'Artikel belum dipilih.')));
+    }
+
+    $updated = $this->db
+      ->where_in('id', $id)
+      ->update('tb_stok', array('status' => $status));
+
+    if (!$updated) {
+      return $this->output
+        ->set_status_header(500)
+        ->set_content_type('application/json')
+        ->set_output(json_encode(array('success' => false, 'message' => 'Status artikel gagal diperbarui.')));
+    }
+
+    return $this->output
+      ->set_content_type('application/json')
+      ->set_output(json_encode(array('success' => true, 'total' => count($id))));
   }
   
 

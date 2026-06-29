@@ -1,91 +1,71 @@
-<!-- Main content -->
-<section class="content">
-  <div class="row">
-    <div class="col-md-12">
+<?php
+$mutasi_items = is_array($list_data) ? $list_data : array();
+$total_mutasi = count($mutasi_items);
+$need_action = $in_transfer = $completed = 0;
+$status_options = array();
+$status_labels = array(0=>'Menunggu Verifikasi OPR',1=>'Disetujui - Proses Transfer',2=>'Selesai',3=>'Ditolak',4=>'Menunggu Proses BAP',5=>'Selesai Perbaikan',6=>'Menunggu Verifikasi MM');
+foreach ($mutasi_items as $item) {
+  $status = (int) $item->status;
+  if ($status === 6) $need_action++;
+  if (in_array($status, array(1,4), true)) $in_transfer++;
+  if (in_array($status, array(2,5), true)) $completed++;
+  $status_options[$status] = isset($status_labels[$status]) ? $status_labels[$status] : 'Status '.$status;
+}
+ksort($status_options);
+?>
 
-    </div>
+<style>
+.mutasi-page{--primary:#0f766e;--ink:#172033;--muted:#718096;--line:#e8edf5;padding-bottom:28px;color:var(--ink)}
+.mutasi-page .mutasi-hero{position:relative;display:flex;overflow:hidden;align-items:center;justify-content:space-between;gap:24px;margin-bottom:20px;padding:27px 30px;color:#fff;background:linear-gradient(120deg,#115e59 0%,#0f766e 55%,#14b8a6 135%);border-radius:19px;box-shadow:0 14px 34px rgba(15,118,110,.2)}
+.mutasi-page .mutasi-hero:before,.mutasi-page .mutasi-hero:after{position:absolute;content:'';border:1px solid rgba(255,255,255,.15);border-radius:50%}.mutasi-page .mutasi-hero:before{top:-110px;right:-45px;width:255px;height:255px}.mutasi-page .mutasi-hero:after{right:175px;bottom:-110px;width:190px;height:190px}
+.mutasi-page .hero-copy,.mutasi-page .hero-insight{position:relative;z-index:1}.mutasi-page .hero-eyebrow{display:block;margin-bottom:8px;color:rgba(255,255,255,.78);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.mutasi-page .mutasi-hero h1{margin:0 0 7px;font-size:27px;font-weight:700}.mutasi-page .mutasi-hero p{max-width:620px;margin:0;color:rgba(255,255,255,.82);font-size:14px}.mutasi-page .hero-insight{display:flex;min-width:225px;align-items:center;gap:12px;padding:13px 15px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.17);border-radius:13px;backdrop-filter:blur(7px)}.mutasi-page .hero-insight>i{font-size:22px}.mutasi-page .hero-insight span,.mutasi-page .hero-insight small{display:block;color:rgba(255,255,255,.76);font-size:10px}.mutasi-page .hero-insight strong{display:block;margin:1px 0;font-size:20px;line-height:1.1}
+.mutasi-page .stat-card{display:flex;min-height:91px;align-items:center;gap:13px;margin-bottom:18px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 16px rgba(34,45,70,.04)}.mutasi-page .stat-icon{display:flex;width:43px;height:43px;flex:0 0 43px;align-items:center;justify-content:center;color:var(--color);background:var(--stat-soft);border-radius:12px;font-size:16px}.mutasi-page .stat-value{margin:0;color:#111827;font-size:22px;font-weight:700;line-height:1.1}.mutasi-page .stat-label{margin:4px 0 0;color:var(--muted);font-size:11px}
+.mutasi-page .list-card{overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 7px 22px rgba(34,45,70,.05)}.mutasi-page .list-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:19px 21px;border-bottom:1px solid var(--line)}.mutasi-page .list-title{margin:0 0 3px;font-size:16px;font-weight:700}.mutasi-page .list-subtitle{margin:0;color:var(--muted);font-size:12px}.mutasi-page .toolbar{display:flex;align-items:center;gap:8px}.mutasi-page .search-box{position:relative;width:265px}.mutasi-page .search-box i{position:absolute;top:50%;left:13px;color:#9aa7b8;font-size:12px;transform:translateY(-50%)}.mutasi-page .search-box input,.mutasi-page .status-filter{height:39px;background:#f8fafc;border:1px solid var(--line);border-radius:9px;font-size:12px}.mutasi-page .search-box input{padding-left:36px}.mutasi-page .status-filter{min-width:165px;padding:0 30px 0 11px;color:#526070}.mutasi-page .search-box input:focus,.mutasi-page .status-filter:focus{background:#fff;border-color:#5eead4;box-shadow:0 0 0 3px rgba(20,184,166,.09)}
+.mutasi-page .table-responsive{overflow-x:auto}.mutasi-page .mutasi-table{width:100%!important;margin:0!important;font-size:12px}.mutasi-page .mutasi-table thead th{padding:12px 15px;color:#64748b;background:#f8fafc;border-top:0;border-bottom:1px solid var(--line);font-size:10px;font-weight:700;letter-spacing:.055em;text-transform:uppercase;white-space:nowrap}.mutasi-page .mutasi-table tbody td{padding:14px 15px;vertical-align:middle;border-top:1px solid #f0f3f8}.mutasi-page .mutasi-table tbody tr:hover{background:#fbfefd}.mutasi-page .row-number{color:#94a3b8;font-weight:600;text-align:center}.mutasi-page .mutation-id{display:inline-flex;align-items:center;gap:7px;color:#0f766e;font-weight:800;white-space:nowrap}.mutasi-page .route{display:flex;min-width:240px;align-items:center;gap:10px}.mutasi-page .route-point{min-width:0;flex:1}.mutasi-page .route-label{display:block;margin-bottom:3px;color:#94a3b8;font-size:9px;font-weight:700;text-transform:uppercase}.mutasi-page .route-store{display:block;overflow:hidden;color:#334155;font-size:11px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}.mutasi-page .route-arrow{display:flex;width:28px;height:28px;flex:0 0 28px;align-items:center;justify-content:center;color:#0f766e;background:#ecfdf5;border-radius:50%;font-size:10px}.mutasi-page .created-date{display:block;color:#334155;font-size:11px;font-weight:600;white-space:nowrap}.mutasi-page .created-time{display:block;margin-top:3px;color:#94a3b8;font-size:10px}.mutasi-page .status-cell .badge{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:700;line-height:1.2;white-space:normal}.mutasi-page .actions{display:flex;flex-wrap:wrap;gap:6px}.mutasi-page .action-btn{display:inline-flex;min-width:82px;align-items:center;justify-content:center;gap:6px;padding:8px 11px;border:0;border-radius:9px;font-size:11px;font-weight:700}.mutasi-page .action-btn.btn-success{background:#0f766e}.mutasi-page .action-btn.btn-success:hover{background:#115e59}.mutasi-page .action-btn.btn-info{color:#475569;background:#f1f5f9}.mutasi-page .action-btn.btn-info:hover{color:#0f766e;background:#ccfbf1}
+.mutasi-page .dataTables_wrapper>.row:first-child{display:none}.mutasi-page .dataTables_wrapper>.row:last-child{align-items:center;margin:0;padding:13px 19px;border-top:1px solid var(--line)}.mutasi-page .dataTables_info,.mutasi-page .dataTables_paginate{padding-top:0!important;color:var(--muted);font-size:11px}.mutasi-page .pagination .page-link{margin:0 2px;color:#64748b;border:0;border-radius:7px;font-size:11px}.mutasi-page .pagination .page-item.active .page-link{color:#fff;background:var(--primary)}.mutasi-page .dataTables_empty{height:150px;color:var(--muted)!important;text-align:center!important}
+@media(max-width:991.98px){.mutasi-page .list-header{align-items:flex-start;flex-direction:column}.mutasi-page .toolbar{width:100%}.mutasi-page .search-box{flex:1;width:auto}}
+@media(max-width:900px){.mutasi-page .table-responsive{overflow:visible}.mutasi-page .mutasi-table thead{display:none}.mutasi-page .mutasi-table,.mutasi-page .mutasi-table tbody,.mutasi-page .mutasi-table tr,.mutasi-page .mutasi-table td{display:block;width:100%!important}.mutasi-page .mutasi-table tbody{padding:8px 13px}.mutasi-page .mutasi-table tbody tr{margin:10px 0;padding:15px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 14px rgba(34,45,70,.05)}.mutasi-page .mutasi-table tbody tr:hover{background:#fff;border-color:#d8e7e4}.mutasi-page .mutasi-table tbody td{display:grid;grid-template-columns:110px minmax(0,1fr);align-items:center;padding:8px 0;border:0;text-align:left!important}.mutasi-page .mutasi-table tbody td:before{content:attr(data-label);color:#94a3b8;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.mutasi-page .mutasi-table tbody td:first-child{display:none}.mutasi-page .mutasi-table tbody td:last-child{padding-top:12px;border-top:1px solid #eef2f6}.mutasi-page .route{min-width:0}.mutasi-page .actions{width:100%}.mutasi-page .action-btn{flex:1}.mutasi-page .dataTables_empty{display:block!important;height:auto!important;padding:55px 10px!important}.mutasi-page .dataTables_empty:before{display:none}}
+@media(max-width:575.98px){.mutasi-page .mutasi-hero{align-items:flex-start;padding:22px;flex-direction:column}.mutasi-page .mutasi-hero h1{font-size:22px}.mutasi-page .hero-insight{width:100%;min-width:0}.mutasi-page .list-header{padding:17px}.mutasi-page .stat-card{min-height:84px;padding:13px}.mutasi-page .stat-value{font-size:19px}.mutasi-page .toolbar{align-items:stretch;flex-direction:column}.mutasi-page .search-box,.mutasi-page .status-filter{width:100%}.mutasi-page .mutasi-table tbody{padding:7px 10px}.mutasi-page .mutasi-table tbody tr{padding:14px}.mutasi-page .mutasi-table tbody td{display:block;padding:8px 0}.mutasi-page .mutasi-table tbody td:before{display:block;margin-bottom:6px}.mutasi-page .route{width:100%}.mutasi-page .route-store{white-space:normal}.mutasi-page .actions{flex-direction:column}.mutasi-page .action-btn{width:100%;flex:none}.mutasi-page .dataTables_wrapper>.row:last-child{padding:12px 8px}.mutasi-page .dataTables_wrapper>.row:last-child>div{text-align:center!important}.mutasi-page .dataTables_paginate .pagination{flex-wrap:wrap;justify-content:center!important}}
+</style>
+<section class="content mutasi-page"><div class="container-fluid">
+  <div class="mutasi-hero">
+    <div class="hero-copy"><span class="hero-eyebrow"><i class="fas fa-random mr-1"></i> Monitoring perpindahan barang</span><h1>Data Mutasi Barang</h1><p>Pantau perpindahan stok antar toko, proses persetujuan, dan penyelesaian mutasi dalam satu tempat.</p></div>
+    <div class="hero-insight"><i class="fas fa-clipboard-check"></i><div><span>Perlu tindakan Anda</span><strong><?= number_format($need_action) ?> pengajuan</strong><small>menunggu verifikasi Manager Marketing</small></div></div>
   </div>
+
   <div class="row">
-    <!-- /.col -->
-    <div class="col-md-12">
-      <div class="card card-info ">
-        <div class="card-header">
-          <h3 class="card-title">
-            <li class="fas fa-copy"></li> Data Mutasi Barang
-          </h3>
-          <div class="card-tools">
-          </div>
-          <!-- /.card-tools -->
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body">
-
-          <table id="table_kirim" class="table table-bordered table-striped ">
-            <thead>
-              <tr class="text-center">
-                <th>#</th>
-                <th style="width: 15%;">Kode Mutasi</th>
-                <th>Toko</th>
-                <th>Tgl dibuat</th>
-                <th>Status</th>
-                <th>Menu</th>
-              </tr>
-            </thead>
-            <tbody>
-
-              <?php
-              $no = 0;
-              foreach ($list_data as $data) :
-                $no++;
-              ?>
-                <tr>
-                  <td><?= $no ?></td>
-                  <td class="text-center"><?= $data->id ?></td>
-                  <td>
-                    <small>
-                      <b>Asal :</b> <?= $data->asal ?> <br>
-                      <b>Tujuan :</b> <?= $data->tujuan ?>
-                    </small>
-                  </td>
-                  <td class="text-center"><?= date("d F Y, H:i:s", strtotime($data->created_at));  ?></td>
-                  <td class="text-center"><?= status_mutasi($data->status) ?></td>
-                  <td>
-                    <a href="<?= base_url('mng_mkt/Mutasi/detail/' . $data->id) ?>" class="btn btn-<?= $data->status == 6 ? 'success' : 'info' ?> btn-sm" title="<?= $data->status == 6 ? 'Proses' : 'Detail' ?>"><i class="fa fa-<?= $data->status == 6 ? 'arrow-right' : 'eye' ?>"></i> <?= $data->status == 6 ? 'Proses' : 'Detail' ?></a>
-                    <a href="<?= base_url('mng_mkt/Mutasi/bap/' . $data->id) ?>" class="btn btn-success btn-sm <?= $data->status == 4 ? '' : 'd-none' ?>" title="Proses BAP"><i class="fa fa-check-circle"></i> Proses</a>
-                  </td>
-                </tr>
-              <?php
-              endforeach;
-              ?>
-
-            </tbody>
-
-          </table>
-        </div>
-        <!-- /.card-body -->
-
-      </div>
-      <!-- /.card -->
-    </div>
-    <!-- /.col -->
+    <?php $cards=array(array($total_mutasi,'copy','Total mutasi','#0f766e','#ecfdf5'),array($need_action,'hourglass-half','Perlu diproses','#d97706','#fffbeb'),array($in_transfer,'people-carry','Dalam transfer / BAP','#2563eb','#eff6ff'),array($completed,'check-circle','Mutasi selesai','#16a34a','#f0fdf4')); foreach($cards as $card): ?>
+      <div class="col-6 col-lg-3"><div class="stat-card" style="--color:<?= $card[3] ?>;--stat-soft:<?= $card[4] ?>"><span class="stat-icon"><i class="fas fa-<?= $card[1] ?>"></i></span><div><p class="stat-value"><?= number_format($card[0]) ?></p><p class="stat-label"><?= $card[2] ?></p></div></div></div>
+    <?php endforeach; ?>
   </div>
-  <!-- /.row -->
-</section>
 
-<!-- jQuery -->
-<script src="<?php echo base_url() ?>/assets/plugins/jquery/jquery.min.js"></script>
+  <div class="list-card">
+    <div class="list-header">
+      <div><h2 class="list-title">Daftar mutasi barang</h2><p class="list-subtitle">Cari kode atau toko, kemudian gunakan filter untuk mempersempit status.</p></div>
+      <div class="toolbar"><div class="search-box"><i class="fas fa-search"></i><input type="search" id="mutasiSearch" class="form-control" placeholder="Cari kode, asal, atau tujuan..." aria-label="Cari data mutasi"></div><select id="mutasiStatus" class="form-control status-filter" aria-label="Filter status mutasi"><option value="">Semua status</option><?php foreach($status_options as $label): ?><option value="<?= html_escape($label) ?>"><?= html_escape($label) ?></option><?php endforeach; ?></select></div>
+    </div>
+    <div class="table-responsive"><table id="mutasiTable" class="table mutasi-table">
+      <thead><tr><th style="width:55px">No.</th><th>Kode Mutasi</th><th>Rute Mutasi</th><th>Dibuat</th><th>Status</th><th style="width:180px">Aksi</th></tr></thead>
+      <tbody>
+        <?php foreach($mutasi_items as $index=>$data): $created_time=!empty($data->created_at)?strtotime($data->created_at):false; $status=(int)$data->status; $status_label=isset($status_labels[$status])?$status_labels[$status]:'Status '.$status; ?>
+          <tr>
+            <td class="row-number" data-label="No."><?= $index+1 ?></td>
+            <td data-label="Kode Mutasi"><span class="mutation-id"><i class="fas fa-hashtag"></i><?= html_escape($data->id) ?></span></td>
+            <td data-label="Rute"><div class="route"><div class="route-point"><span class="route-label">Dari</span><span class="route-store" title="<?= html_escape($data->asal) ?>"><?= html_escape($data->asal) ?></span></div><span class="route-arrow"><i class="fas fa-arrow-right"></i></span><div class="route-point"><span class="route-label">Ke</span><span class="route-store" title="<?= html_escape($data->tujuan) ?>"><?= html_escape($data->tujuan) ?></span></div></div></td>
+            <td data-label="Dibuat" data-order="<?= $created_time!==false?$created_time:0 ?>"><span class="created-date"><?= $created_time!==false?date('d M Y',$created_time):'-' ?></span><span class="created-time"><i class="far fa-clock mr-1"></i><?= $created_time!==false?date('H:i',$created_time).' WIB':'Waktu tidak tersedia' ?></span></td>
+            <td class="status-cell" data-label="Status" data-search="<?= html_escape($status_label) ?>"><?php if($status===4): ?><span class="badge badge-warning">Menunggu Proses BAP</span><?php else: status_mutasi($data->status); endif; ?></td>
+            <td data-label="Aksi"><div class="actions"><a href="<?= base_url('mng_mkt/Mutasi/detail/'.$data->id) ?>" class="btn btn-<?= $status===6?'success':'info' ?> action-btn" title="<?= $status===6?'Proses':'Detail' ?>"><i class="fa fa-<?= $status===6?'arrow-right':'eye' ?>"></i><span><?= $status===6?'Proses':'Detail' ?></span></a><a href="<?= base_url('mng_mkt/Mutasi/bap/'.$data->id) ?>" class="btn btn-success action-btn <?= $status===4?'':'d-none' ?>" title="Proses BAP"><i class="fa fa-check-circle"></i><span>Proses BAP</span></a></div></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table></div>
+  </div>
+</div></section>
+
 <script>
-  $(document).ready(function() {
-
-    $('#table_kirim').DataTable({
-      order: [
-        [0, 'asc']
-      ],
-      responsive: true,
-      lengthChange: false,
-      autoWidth: false,
-    });
-
-
-  })
+$(function(){
+  var mutasiTable=$('#mutasiTable').DataTable({order:[[0,'asc']],responsive:false,lengthChange:false,autoWidth:false,pageLength:10,dom:'rt<"row align-items-center"<"col-sm-6"i><"col-sm-6"p>>',columnDefs:[{targets:5,orderable:false,searchable:false}],language:{emptyTable:'Belum ada data mutasi',zeroRecords:'Data mutasi yang dicari tidak ditemukan',info:'Menampilkan _START_-_END_ dari _TOTAL_ mutasi',infoEmpty:'Menampilkan 0 mutasi',infoFiltered:'(difilter dari _MAX_ mutasi)',paginate:{previous:'<i class="fas fa-chevron-left"></i>',next:'<i class="fas fa-chevron-right"></i>'}}});
+  $('#mutasiSearch').on('input',function(){mutasiTable.search(this.value).draw();});
+  $('#mutasiStatus').on('change',function(){mutasiTable.column(4).search(this.value?'^'+$.fn.dataTable.util.escapeRegex(this.value)+'$':'',true,false).draw();});
+});
 </script>

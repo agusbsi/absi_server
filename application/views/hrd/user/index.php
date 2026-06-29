@@ -1,3 +1,7 @@
+<?php
+include APPPATH . 'views/hrd/user/index_modern.php';
+return;
+?>
 <style>
   .status-icon {
     font-size: 10px;

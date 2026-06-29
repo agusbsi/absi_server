@@ -1,3 +1,8 @@
+<?php
+// Tampilan dashboard dipisahkan agar struktur lama tetap tersedia selama masa transisi.
+$this->load->view('adm/dashboard_modern');
+return;
+?>
 <style>
   .nomor {
     position: absolute;

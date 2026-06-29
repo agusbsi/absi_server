@@ -20,7 +20,7 @@ class User extends CI_Controller
   {
     $data['title'] = 'Kelola User';
     $data['list_role'] = $this->db->query("SELECT * from tb_user_role ")->result();
-    $data['list_users'] = $this->db->query('SELECT tb_user.* , tb_user_role.nama, tb_jenis_bank.nama_bank FROM tb_user JOIN tb_user_role ON tb_user.role = tb_user_role.id JOIN tb_jenis_bank ON tb_user.type_bank = tb_jenis_bank.id WHERE deleted_at is null order by tb_user.id desc')->result();
+    $data['list_users'] = $this->db->query('SELECT tb_user.*, tb_user_role.nama, tb_jenis_bank.nama_bank FROM tb_user LEFT JOIN tb_user_role ON tb_user.role = tb_user_role.id LEFT JOIN tb_jenis_bank ON tb_user.type_bank = tb_jenis_bank.id WHERE tb_user.deleted_at IS NULL ORDER BY tb_user.id DESC')->result();
     $data['list_bank'] = $this->db->query("SELECT * FROM tb_jenis_bank ORDER BY nama_bank ASC")->result();
     $this->template->load('template/template', 'hrd/user/index', $data);
   }
@@ -50,6 +50,12 @@ class User extends CI_Controller
   {
     $this->form_validation->set_rules('pass', 'Password', 'required');
     $this->form_validation->set_rules('konfirm', 'Confirm password', 'required|matches[pass]');
+    $role_id = $this->input->post('id_role');
+    $role = $this->db->select('nama')->get_where('tb_user_role', array('id' => $role_id))->row();
+    if ($role && strtoupper(trim($role->nama)) === 'SPG') {
+      $this->form_validation->set_rules('id_bank', 'Bank', 'required');
+      $this->form_validation->set_rules('no_rek', 'Nomor rekening', 'required');
+    }
 
     if ($this->form_validation->run() == TRUE) {
       $this->db->trans_start();
@@ -116,7 +122,8 @@ class User extends CI_Controller
       tampil_alert('success', 'Berhasil', 'Data User Berhasil di buat');
       redirect(base_url('hrd/user'));
     } else {
-      tampil_alert('error', 'Information', 'Password Tidak Sama!');
+      $message = trim(strip_tags(validation_errors(' ', ' ')));
+      tampil_alert('error', 'Data belum lengkap', $message ?: 'Periksa kembali data pengguna.');
       redirect(base_url('hrd/user'));
     }
   }

@@ -19,84 +19,118 @@ class Dashboard extends CI_Controller
   public function index()
   {
     $data['title'] = 'Dashboard';
-    // Total toko
-    $data['t_toko'] = $this->db->query("SELECT count(id) as total from tb_toko where  status != 0")->row();
-    $data['t_user'] = $this->db->query("SELECT count(id) as total from tb_user where  status = 1 ")->row();
-    $bln = date('m');
-    $thn = date('Y');
-    // total permintaan
-    $data['t_minta'] = $this->db->query("SELECT sum(tpd.qty_acc) as total FROM tb_permintaan_detail tpd
-    join tb_permintaan tp on tpd.id_permintaan = tp.id
-    where tp.status >= 2 AND tp.status != 5 AND tpd.status = 1 AND MONTH(tp.created_at) = $bln AND YEAR(tp.created_at) = $thn")->row();
-    // total Pengiriman
-    $data['t_kirim'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_pengiriman_detail tpd
-    join tb_pengiriman tp on tpd.id_pengiriman = tp.id
-    where MONTH(tp.created_at) = $bln AND YEAR(tp.created_at) = $thn")->row();
-    // Total Penjualan
-    $data['t_jual'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_penjualan_detail tpd
-      join tb_penjualan tp on tpd.id_penjualan = tp.id
-      where MONTH(tp.tanggal_penjualan) = $bln AND YEAR(tp.tanggal_penjualan) = $thn")->row();
-    // retur
-    $data['t_retur'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_retur_detail tpd
-      join tb_retur tr on tpd.id_retur = tr.id
-      where tr.status >= 2 AND tr.status <= 4  AND MONTH(tr.created_at) = $bln AND YEAR(tr.created_at) = $thn")->row();
-    // 5 top toko
-    $data['t_stok'] = $this->db->query("SELECT sum(qty) as total FROM tb_stok where status = 1")->row();
-    // 5 top toko
-    $data['top_toko'] = $this->db->query("SELECT tt.*, SUM(tpd.qty) as total, tu.nama_user as spg 
-     FROM tb_toko tt
-     JOIN tb_user tu on tt.id_spg = tu.id
-     JOIN tb_penjualan tp ON tt.id = tp.id_toko
-     JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_penjualan
-     WHERE DATE_FORMAT(tp.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')
-     GROUP BY tp.id_toko 
-     ORDER BY total DESC 
-     LIMIT 5")->result();
-    $data['top_artikel'] = $this->db->query("SELECT tp.*, SUM(tpd.qty) as total
-     FROM tb_produk tp
-     JOIN tb_penjualan_detail tpd ON tp.id = tpd.id_produk
-     JOIN tb_penjualan tpk ON tpk.id = tpd.id_penjualan
-     WHERE DATE_FORMAT(tpk.tanggal_penjualan, '%Y-%m') = DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')
-     GROUP BY tpd.id_produk 
-     ORDER BY total DESC 
-     LIMIT 5")->result();
-    $data['top_stok'] = $this->db->query("SELECT tt.*, SUM(ts.qty) as total, tu.nama_user as spg 
-      FROM tb_toko tt
-      JOIN tb_user tu on tt.id_spg = tu.id
-      JOIN tb_stok ts on tt.id = ts.id_toko
-      GROUP BY ts.id_toko 
-      ORDER BY total DESC 
-      LIMIT 5")->result();
+    $awal_bulan = date('Y-m-01 00:00:00');
+    $awal_bulan_depan = date('Y-m-01 00:00:00', strtotime('+1 month'));
+
+    // Satu round-trip untuk seluruh angka ringkasan. Rentang tanggal menjaga index tetap terpakai.
+    $summary = $this->db->query("SELECT
+      (SELECT COUNT(id) FROM tb_toko WHERE status != 0) AS total_toko,
+      (SELECT COUNT(id) FROM tb_user WHERE status = 1) AS total_user,
+      (SELECT COALESCE(SUM(tpd.qty_acc), 0)
+        FROM tb_permintaan tp
+        JOIN tb_permintaan_detail tpd ON tpd.id_permintaan = tp.id
+        WHERE tp.created_at >= ? AND tp.created_at < ?
+          AND tp.status >= 2 AND tp.status != 5 AND tpd.status = 1) AS total_minta,
+      (SELECT COALESCE(SUM(tpd.qty), 0)
+        FROM tb_pengiriman tp
+        JOIN tb_pengiriman_detail tpd ON tpd.id_pengiriman = tp.id
+        WHERE tp.created_at >= ? AND tp.created_at < ?) AS total_kirim,
+      (SELECT COALESCE(SUM(tpd.qty), 0)
+        FROM tb_penjualan tp
+        JOIN tb_penjualan_detail tpd ON tpd.id_penjualan = tp.id
+        WHERE tp.tanggal_penjualan >= ? AND tp.tanggal_penjualan < ?) AS total_jual,
+      (SELECT COALESCE(SUM(tpd.qty), 0)
+        FROM tb_retur tr
+        JOIN tb_retur_detail tpd ON tpd.id_retur = tr.id
+        WHERE tr.created_at >= ? AND tr.created_at < ?
+          AND tr.status BETWEEN 2 AND 4) AS total_retur,
+      (SELECT COALESCE(SUM(qty), 0) FROM tb_stok WHERE status = 1) AS total_stok", array(
+        $awal_bulan, $awal_bulan_depan,
+        $awal_bulan, $awal_bulan_depan,
+        $awal_bulan, $awal_bulan_depan,
+        $awal_bulan, $awal_bulan_depan
+      ))->row();
+
+    $data['t_toko'] = (object) array('total' => $summary->total_toko);
+    $data['t_user'] = (object) array('total' => $summary->total_user);
+    $data['t_minta'] = (object) array('total' => $summary->total_minta);
+    $data['t_kirim'] = (object) array('total' => $summary->total_kirim);
+    $data['t_jual'] = (object) array('total' => $summary->total_jual);
+    $data['t_retur'] = (object) array('total' => $summary->total_retur);
+    $data['t_stok'] = (object) array('total' => $summary->total_stok);
     $this->template->load('template/template', 'manager_mkt/dashboard', $data);
+  }
+
+  public function ranking()
+  {
+    $awal_bulan_lalu = date('Y-m-01 00:00:00', strtotime('first day of last month'));
+    $awal_bulan_ini = date('Y-m-01 00:00:00');
+
+    $top_toko = $this->db->query("SELECT tt.nama_toko, tu.nama_user AS spg, SUM(tpd.qty) AS total
+      FROM tb_penjualan tp
+      JOIN tb_penjualan_detail tpd ON tpd.id_penjualan = tp.id
+      JOIN tb_toko tt ON tt.id = tp.id_toko
+      JOIN tb_user tu ON tu.id = tt.id_spg
+      WHERE tp.tanggal_penjualan >= ? AND tp.tanggal_penjualan < ?
+      GROUP BY tp.id_toko, tt.nama_toko, tu.nama_user
+      ORDER BY total DESC
+      LIMIT 5", array($awal_bulan_lalu, $awal_bulan_ini))->result();
+
+    $top_artikel = $this->db->query("SELECT pr.kode, pr.nama_produk, SUM(tpd.qty) AS total
+      FROM tb_penjualan tp
+      JOIN tb_penjualan_detail tpd ON tpd.id_penjualan = tp.id
+      JOIN tb_produk pr ON pr.id = tpd.id_produk
+      WHERE tp.tanggal_penjualan >= ? AND tp.tanggal_penjualan < ?
+      GROUP BY tpd.id_produk, pr.kode, pr.nama_produk
+      ORDER BY total DESC
+      LIMIT 5", array($awal_bulan_lalu, $awal_bulan_ini))->result();
+
+    $top_stok = $this->db->query("SELECT tt.nama_toko, tu.nama_user AS spg, SUM(ts.qty) AS total
+      FROM tb_stok ts
+      JOIN tb_toko tt ON tt.id = ts.id_toko
+      JOIN tb_user tu ON tu.id = tt.id_spg
+      WHERE ts.status = 1
+      GROUP BY ts.id_toko, tt.nama_toko, tu.nama_user
+      ORDER BY total DESC
+      LIMIT 5")->result();
+
+    return $this->output
+      ->set_content_type('application/json')
+      ->set_output(json_encode(array(
+        'top_toko' => $top_toko,
+        'top_artikel' => $top_artikel,
+        'top_stok' => $top_stok
+      )));
   }
   public function transaksi()
   {
-    $thn = date('Y');
-    $bln = date('m');
+    $bln = (int) date('m');
+    $awal_tahun = date('Y-01-01 00:00:00');
+    $awal_bulan_depan = date('Y-m-01 00:00:00', strtotime('+1 month'));
     $kirim = "
         SELECT MONTH(tp.created_at) as month, SUM(tpd.qty) as total
         FROM tb_pengiriman_detail tpd
         join tb_pengiriman tp on tpd.id_pengiriman = tp.id
-        WHERE YEAR(tp.created_at) = ? AND MONTH(tp.created_at) <= ?
+        WHERE tp.created_at >= ? AND tp.created_at < ?
         GROUP BY MONTH(tp.created_at)
     ";
     $retur = "
         SELECT MONTH(tp.created_at) as month, SUM(tpd.qty) as total
         FROM tb_retur_detail tpd
         join tb_retur tp on tpd.id_retur = tp.id
-        WHERE YEAR(tp.created_at) = ? AND MONTH(tp.created_at) <= ? AND  tp.status >= 2 AND tp.status <= 4
+        WHERE tp.created_at >= ? AND tp.created_at < ? AND tp.status BETWEEN 2 AND 4
         GROUP BY MONTH(tp.created_at)
     ";
     $jual = "
         SELECT MONTH(tp.tanggal_penjualan) as month, SUM(tpd.qty) as total
         FROM tb_penjualan_detail tpd
         join tb_penjualan tp on tpd.id_penjualan = tp.id
-        WHERE YEAR(tp.tanggal_penjualan) = ? AND MONTH(tp.tanggal_penjualan) <= ?
+        WHERE tp.tanggal_penjualan >= ? AND tp.tanggal_penjualan < ?
         GROUP BY MONTH(tp.tanggal_penjualan)
     ";
-    $hasil_kirim = $this->db->query($kirim, array($thn, $bln))->result_array();
-    $hasil_retur = $this->db->query($retur, array($thn, $bln))->result_array();
-    $hasil_jual = $this->db->query($jual, array($thn, $bln))->result_array();
+    $hasil_kirim = $this->db->query($kirim, array($awal_tahun, $awal_bulan_depan))->result_array();
+    $hasil_retur = $this->db->query($retur, array($awal_tahun, $awal_bulan_depan))->result_array();
+    $hasil_jual = $this->db->query($jual, array($awal_tahun, $awal_bulan_depan))->result_array();
     $data_kirim = array_fill(0, $bln, 0);
     $data_retur = array_fill(0, $bln, 0);
     $data_jual = array_fill(0, $bln, 0);
@@ -119,6 +153,8 @@ class Dashboard extends CI_Controller
       'jual' => $data_jual,
     );
 
-    echo json_encode($data);
+    return $this->output
+      ->set_content_type('application/json')
+      ->set_output(json_encode($data));
   }
 }

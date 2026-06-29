@@ -1,4 +1,8 @@
-     <!-- Main content -->
+<?php
+include APPPATH . 'views/manager_ops/user/index_modern.php';
+return;
+?>
+<!-- Main content -->
      <section class="content">
        <div class="container-fluid">
          <div class="row">

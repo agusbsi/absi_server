@@ -347,6 +347,45 @@
   <script src="<?= base_url() ?>assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="<?= base_url() ?>assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
   <script src="<?= base_url() ?>assets/dist/js/adminlte.min.js"></script>
+  <script>
+    (function() {
+      function scrollActiveSidebarMenu() {
+        var sidebar = document.querySelector('.main-sidebar .sidebar');
+
+        if (!sidebar) {
+          return;
+        }
+
+        var activeLinks = sidebar.querySelectorAll('.nav-link.active');
+        var activeLink = activeLinks.length ? activeLinks[activeLinks.length - 1] : null;
+
+        if (!activeLink) {
+          return;
+        }
+
+        // AdminLTE menjadikan viewport OverlayScrollbars sebagai area scroll.
+        var scrollContainer = sidebar.querySelector('.os-viewport') || sidebar;
+        var containerRect = scrollContainer.getBoundingClientRect();
+        var activeRect = activeLink.getBoundingClientRect();
+
+        scrollContainer.scrollTo({
+          top: Math.max(0, scrollContainer.scrollTop + activeRect.top - containerRect.top - 16),
+          behavior: 'smooth'
+        });
+      }
+
+      window.addEventListener('load', function() {
+        // Beri waktu kepada Layout AdminLTE untuk membuat OverlayScrollbars.
+        window.setTimeout(scrollActiveSidebarMenu, 400);
+      });
+
+      window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+          window.setTimeout(scrollActiveSidebarMenu, 100);
+        }
+      });
+    })();
+  </script>
   <script src="<?= base_url(); ?>assets/plugins/sweetalert2/sweetalert2.all.min.js"></script>
   <script src="<?= base_url(); ?>assets/plugins/sweetalert2/sweetalert2.all.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -605,15 +605,32 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 4")->nu
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.querySelector('.adm-sidebar');
-    var activeLink = document.querySelector('.adm-nav .nav-link.active');
+    var activeLinks = document.querySelectorAll('.adm-nav .nav-link.active');
+    var activeLink = activeLinks.length ? activeLinks[activeLinks.length - 1] : null;
+
+    function scrollMenuIntoView(element, offset) {
+      if (!sidebar || !element) {
+        return;
+      }
+
+      // AdminLTE membungkus sidebar dengan OverlayScrollbars setelah window load.
+      // Karena itu, gunakan viewport plugin jika sudah tersedia.
+      var scrollContainer = sidebar.querySelector('.os-viewport') || sidebar;
+      var containerRect = scrollContainer.getBoundingClientRect();
+      var elementRect = element.getBoundingClientRect();
+
+      scrollContainer.scrollTo({
+        top: Math.max(0, scrollContainer.scrollTop + elementRect.top - containerRect.top - offset),
+        behavior: 'smooth'
+      });
+    }
 
     if (sidebar && activeLink) {
-      window.setTimeout(function() {
-        sidebar.scrollTo({
-          top: Math.max(0, activeLink.offsetTop - 96),
-          behavior: 'smooth'
-        });
-      }, 260);
+      window.addEventListener('load', function() {
+        window.setTimeout(function() {
+          scrollMenuIntoView(activeLink, 16);
+        }, 350);
+      });
     }
 
     document.querySelectorAll('.adm-nav .nav-item > .nav-link[href="#"]').forEach(function(link) {
@@ -622,10 +639,7 @@ $adjust = $this->db->query("SELECT id FROM tb_adjust_stok WHERE status = 4")->nu
 
         window.setTimeout(function() {
           if (sidebar && item && item.classList.contains('menu-open')) {
-            sidebar.scrollTo({
-              top: Math.max(0, item.offsetTop - 72),
-              behavior: 'smooth'
-            });
+            scrollMenuIntoView(item, 16);
           }
         }, 180);
       });
