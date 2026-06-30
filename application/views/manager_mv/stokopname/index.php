@@ -1,118 +1,80 @@
-     <section class="content">
-       <div class="container-fluid">
-         <div class="col-12">
-           <div class="callout callout-info">
-             <div class="row">
-               <div class="col-md-6">
-                 <div class="form-group">
-                   <strong>Stok Opname Bulan ini.</strong>
-                   <h4 class="mt-2">Periode : <?= date('F Y', strtotime('-1 month')) ?></h4>
-                 </div>
-               </div>
-               <div class="col-md-2">
-                 <div class="form-group text-center">
-                   <label for="">TOTAL TOKO</label>
-                   <h4><strong><?= $t_toko ?></strong></h4>
-                 </div>
-               </div>
-               <div class="col-md-2">
-                 <div class="form-group text-center">
-                   <label for="">SUDAH SO</label>
-                   <h4><strong><?= $t_so ?></strong></h4>
-                 </div>
-               </div>
-               <div class="col-md-2">
-                 <div class="form-group text-center">
-                   <label for="">BELUM SO</label>
-                   <h4><strong><?= $t_bso ?></strong></h4>
-                 </div>
-               </div>
-             </div>
-           </div>
-           <div class="card card-info">
-             <div class="card-header">
-               <h3 class="card-title">
-                 <li class="fas fa-file-alt"></li> Data Stok Opname Toko
-               </h3>
-               <div class="card-tools">
-                 <a href="<?= base_url('sup/So') ?>" class="btn btn-tool">
-                   <i class="fas fa-times"></i>
-                 </a>
-               </div>
-             </div>
-             <div class="card-body">
-               <table id="example1" class="table table-bordered table-striped">
-                 <thead>
-                   <tr class="text-center">
-                     <th>No</th>
-                     <th>Nama Toko</th>
-                     <th>Status SO</th>
-                     <th>Tgl max SO</th>
-                     <th>Tgl SO</th>
-                     <th>Dibuat</th>
-                     <th>Menu</th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                   <?php
-                    $no = 0;
-                    foreach ($list_data as $dd) :
-                      $no++; ?>
-                     <tr>
-                       <td class="text-center"><?= $no ?></td>
-                       <td>
-                         <small>
-                           <strong><?= $dd->nama_toko ?></strong> <br>
-                           <?php if ($dd->nama_user == "") {
-                              echo "<span class='badge badge-danger'> ( Belum dikaitkan )</span>";
-                            } else {
-                              echo $dd->nama_user;
-                            }
-                            ?>
-                         </small>
-                       </td>
-                       <td class="text-center">
-                         <?php if ($dd->status_so == 0) {
-                            echo "<span class='badge badge-danger'> Belum SO </span>";
-                          } else if (($dd->status_so == 1)) {
-                            echo "<span class='badge badge-success'> Sudah SO </span>";
-                          }
-                          ?>
-                       </td>
-                       <td class="text-center">
-                         <?php if ($dd->tgl_so == null) { ?>
-                           - Kosong -
-                         <?php } else { ?>
-                           <?= $dd->tgl_so ?>
-                         <?php } ?>
-                       </td>
-                       <td class="text-center">
-                         <?php if ($dd->status_so == 0) {
-                            echo "<span class='badge badge-danger'> Belum SO </span>";
-                          } else {
-                          ?>
-                           <?= date('d M Y', strtotime($dd->tanggal_so)) ?>
-                         <?php } ?>
-                         <input type="hidden" name="id_toko" value="<?= $dd->id ?>">
-                       </td>
-                       <td class="text-center">
-                         <?php if ($dd->status_so == 0) {
-                            echo "<span class='badge badge-danger'> Belum SO </span>";
-                          } else {
-                          ?>
-                           <?= date('d M Y', strtotime($dd->tgl_buat)) ?>
-                         <?php } ?>
-                       </td>
-                       <td class="text-center">
-                         <a href="<?= base_url('sup/So/pdf/' . $dd->id) ?>" target="_blank" class="btn btn-warning btn-sm <?= ($dd->nama_user == "") ? 'd-none' : ''; ?> <?= ($dd->status_so == "1") ? 'd-none' : ''; ?>"><i class="fas fa-file-pdf"></i> Format SO</a>
-                         <a href="<?= base_url('sup/So/riwayat_so_toko/' . $dd->id . '/' . $dd->id_so) ?>" class="btn btn-primary btn-sm <?= ($dd->nama_user == "") ? 'd-none' : ''; ?> <?= ($dd->status_so == "0") ? 'd-none' : ''; ?>">Lihat <i class="fas fa-arrow-circle-right"></i></a>
-                       </td>
-                     </tr>
-                   <?php endforeach; ?>
-                 </tbody>
-               </table>
-             </div>
-           </div>
-         </div>
-       </div>
-     </section>
+<?php
+$stores = is_array($list_data) ? $list_data : array();
+$total_store = (int) $t_toko;
+$completed = (int) $t_so;
+$pending = (int) $t_bso;
+$progress = $total_store > 0 ? round(($completed / $total_store) * 100) : 0;
+$unassigned = 0;
+foreach ($stores as $store) {
+  if (empty($store->nama_user)) $unassigned++;
+}
+$months = array('Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember');
+$short_months = array('Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des');
+$period_time = strtotime('first day of last month');
+$period_label = $months[(int) date('n', $period_time) - 1].' '.date('Y', $period_time);
+$format_so_date = function ($value) use ($short_months) {
+  if (empty($value) || strtotime($value) === false) return '-';
+  $time = strtotime($value);
+  return date('d', $time).' '.$short_months[(int) date('n', $time) - 1].' '.date('Y', $time);
+};
+?>
+
+<style>
+  .so-page{--primary:#2563eb;--ink:#172033;--muted:#718096;--line:#e6edf5;padding-bottom:30px;color:var(--ink)}
+  .so-page .so-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:20px;padding:26px 29px;color:#fff;background:linear-gradient(120deg,#312e81 0%,#4f46e5 58%,#38bdf8 145%);border-radius:18px;box-shadow:0 14px 34px rgba(79,70,229,.2)}.so-page .so-hero:before,.so-page .so-hero:after{position:absolute;content:'';border:1px solid rgba(255,255,255,.14);border-radius:50%}.so-page .so-hero:before{top:-115px;right:10%;width:250px;height:250px}.so-page .so-hero:after{right:-55px;bottom:-100px;width:200px;height:200px;background:rgba(255,255,255,.04)}
+  .so-page .hero-copy,.so-page .hero-progress{position:relative;z-index:1}.so-page .hero-eyebrow{display:block;margin-bottom:6px;color:rgba(255,255,255,.75);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}.so-page .so-hero h1{margin:0 0 5px;font-size:25px;font-weight:700;letter-spacing:-.02em}.so-page .so-hero p{margin:0;color:rgba(255,255,255,.82);font-size:13px}.so-page .hero-progress{width:260px;padding:13px 15px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:12px;backdrop-filter:blur(5px)}.so-page .progress-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:11px}.so-page .progress-head strong{font-size:16px}.so-page .progress{height:6px;background:rgba(255,255,255,.2);border-radius:999px}.so-page .progress-bar{background:#fff;border-radius:999px}.so-page .progress-note{display:block;margin-top:7px;color:rgba(255,255,255,.72);font-size:10px}
+  .so-page .stat-card{display:flex;min-height:94px;align-items:center;gap:13px;margin-bottom:16px;padding:17px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 16px rgba(34,45,70,.04)}.so-page .stat-icon{display:flex;width:43px;height:43px;flex:0 0 43px;align-items:center;justify-content:center;color:var(--color);background:var(--soft);border-radius:12px;font-size:16px}.so-page .stat-value{margin:0;color:#111827;font-size:23px;font-weight:700;line-height:1.1}.so-page .stat-label{margin:4px 0 0;color:var(--muted);font-size:12px}
+  .so-page .list-card{overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 7px 22px rgba(34,45,70,.05)}.so-page .list-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:19px 21px;border-bottom:1px solid var(--line)}.so-page .list-title{margin:0 0 3px;font-size:16px;font-weight:700}.so-page .list-subtitle{margin:0;color:var(--muted);font-size:12px}.so-page .toolbar{display:flex;align-items:center;gap:9px}.so-page .search-box{position:relative;min-width:220px}.so-page .search-box i{position:absolute;top:50%;left:12px;color:#9aa7b8;font-size:12px;transform:translateY(-50%)}.so-page .search-box input{height:38px;padding-left:34px;background:#f8fafc;border:1px solid var(--line);border-radius:9px;font-size:12px}.so-page .filter-select{width:auto;min-width:135px;height:38px;background:#f8fafc;border-color:var(--line);border-radius:9px;font-size:12px}.so-page .history-btn{display:inline-flex;height:38px;align-items:center;gap:7px;padding:0 12px;color:#4338ca;background:#eef2ff;border:1px solid #e0e7ff;border-radius:9px;font-size:11px;font-weight:700;white-space:nowrap}.so-page .history-btn:hover{color:#fff;background:#4f46e5;border-color:#4f46e5}.so-page .export-actions .dt-buttons{display:flex;gap:7px}.so-page .export-actions .btn{display:inline-flex;height:38px;align-items:center;gap:6px;margin:0;padding:0 11px;color:#475569;background:#fff;border:1px solid var(--line);border-radius:9px;font-size:11px;font-weight:700;box-shadow:none}.so-page .export-actions .btn:hover{color:#4338ca;background:#eef2ff;border-color:#c7d2fe}.so-page .export-actions .btn.excel-btn:hover{color:#15803d;background:#ecfdf3;border-color:#bbf7d0}
+  .so-page .info-strip{display:flex;align-items:center;gap:9px;padding:10px 20px;color:#64748b;background:#fafbff;border-bottom:1px solid var(--line);font-size:11px}.so-page .info-strip i{color:#4f46e5}.so-page .table-responsive{overflow:visible}.so-page .so-table{width:100%!important;margin:0!important;table-layout:fixed;font-size:12px}.so-page .so-table thead th{padding:12px 10px;color:#64748b;background:#f8fafc;border-top:0;border-bottom:1px solid var(--line);font-size:10px;font-weight:700;letter-spacing:.045em;text-transform:uppercase;white-space:normal}.so-page .so-table tbody td{padding:13px 10px;vertical-align:middle;border-top:1px solid #f0f3f8;overflow-wrap:anywhere}.so-page .so-table tbody tr:hover{background:#fbfdff}.so-page .row-number{color:#94a3b8;font-weight:700}
+  .so-page .store-cell{display:flex;min-width:0;align-items:center;gap:10px}.so-page .store-icon{display:flex;width:39px;height:39px;flex:0 0 39px;align-items:center;justify-content:center;color:#4f46e5;background:#eef2ff;border-radius:11px}.so-page .store-cell>div{min-width:0}.so-page .store-name{display:block;overflow:hidden;margin-bottom:3px;color:#1f2937;font-size:13px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}.so-page .spg-name{display:block;overflow:hidden;color:var(--muted);font-size:10px;text-overflow:ellipsis;white-space:nowrap}.so-page .spg-name i{width:14px;color:#a8b3c2}.so-page .spg-name.unassigned{color:#b45309}
+  .so-page .status-pill{display:inline-flex;align-items:center;gap:7px;padding:6px 9px;border-radius:999px;font-size:10px;font-weight:700;white-space:nowrap}.so-page .status-pill i{font-size:6px}.so-page .status-pill.done{color:#15803d;background:#ecfdf3}.so-page .status-pill.pending{color:#b45309;background:#fff7ed}.so-page .date-main{display:block;color:#334155;font-size:11px;font-weight:600}.so-page .date-note{display:block;margin-top:3px;color:#94a3b8;font-size:9px}.so-page .empty-date{color:#a0aec0;font-size:11px}.so-page .action-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 10px;border-radius:8px;font-size:10px;font-weight:700;white-space:nowrap}.so-page .action-btn.format{color:#b45309;background:#fff7ed;border:1px solid #fed7aa}.so-page .action-btn.detail{color:#1d4ed8;background:#eff6ff;border:1px solid #dbeafe}.so-page .action-btn:hover{filter:brightness(.97);transform:translateY(-1px)}.so-page .action-unavailable{display:inline-flex;align-items:center;gap:5px;color:#94a3b8;font-size:10px}.so-page .empty-state{padding:42px 20px!important;text-align:center}.so-page .empty-state i{display:flex;width:48px;height:48px;align-items:center;justify-content:center;margin:0 auto 10px;color:#94a3b8;background:#f1f5f9;border-radius:14px;font-size:18px}.so-page .empty-state strong{display:block;color:#475569}.so-page .empty-state span{color:#94a3b8;font-size:11px}
+  .so-page .table-footer{display:flex;align-items:center;justify-content:space-between;padding:13px 19px;border-top:1px solid var(--line)}.so-page .dataTables_info,.so-page .dataTables_paginate{padding-top:0!important}.so-page .dataTables_info{color:var(--muted);font-size:11px}.so-page .pagination .page-link{margin:0 2px;color:#64748b;border:0;border-radius:7px;font-size:11px}.so-page .pagination .page-item.active .page-link{color:#fff;background:var(--primary)}
+  @media(max-width:1199.98px){.so-page .list-header{align-items:flex-start;flex-direction:column}.so-page .toolbar{width:100%}.so-page .search-box{min-width:0;flex:1}}
+  @media(max-width:991.98px){.so-page .table-responsive{overflow-x:auto}.so-page .so-table{min-width:980px}}
+  @media(max-width:575.98px){.so-page .so-hero{align-items:flex-start;padding:21px;flex-direction:column}.so-page .so-hero h1{font-size:21px}.so-page .hero-progress{width:100%}.so-page .toolbar{align-items:stretch;flex-direction:column}.so-page .filter-select,.so-page .history-btn{width:100%}.so-page .history-btn{justify-content:center}.so-page .export-actions .dt-buttons,.so-page .export-actions .btn{width:100%}.so-page .export-actions .btn{justify-content:center}.so-page .list-header{padding:17px}.so-page .info-strip{align-items:flex-start}}
+</style>
+
+<section class="content so-page"><div class="container-fluid">
+  <div class="so-hero">
+    <div class="hero-copy"><span class="hero-eyebrow"><i class="fas fa-clipboard-check mr-1"></i> Kontrol inventaris</span><h1>Stok Opname Toko</h1><p>Periode <?= $period_label ?> · Pantau penyelesaian laporan seluruh toko.</p></div>
+    <div class="hero-progress"><div class="progress-head"><span>Progres penyelesaian</span><strong><?= $progress ?>%</strong></div><div class="progress"><div class="progress-bar" style="width:<?= $progress ?>%"></div></div><span class="progress-note"><?= $completed ?> dari <?= $total_store ?> toko sudah menyelesaikan SO</span></div>
+  </div>
+
+  <div class="row">
+    <?php $cards=array(array($total_store,'store','Total toko','#2563eb','#eff6ff'),array($completed,'check-circle','Sudah SO','#16a34a','#ecfdf3'),array($pending,'clock','Belum SO','#d97706','#fff7ed'),array($unassigned,'user-slash','SPG belum terkait','#dc2626','#fef2f2')); foreach($cards as $card){ ?>
+      <div class="col-6 col-lg-3"><div class="stat-card" style="--color:<?= $card[3] ?>;--soft:<?= $card[4] ?>"><span class="stat-icon"><i class="fas fa-<?= $card[1] ?>"></i></span><div><p class="stat-value"><?= number_format($card[0],0,',','.') ?></p><p class="stat-label"><?= $card[2] ?></p></div></div></div>
+    <?php } ?>
+  </div>
+
+  <div class="list-card">
+    <div class="list-header"><div><h2 class="list-title">Daftar stok opname</h2><p class="list-subtitle">Cari toko, periksa status, dan akses dokumen SO.</p></div><div class="toolbar"><div class="search-box"><i class="fas fa-search"></i><input type="search" id="soSearch" class="form-control" placeholder="Cari toko atau SPG..." aria-label="Cari toko atau SPG"></div><select id="soStatusFilter" class="form-control filter-select"><option value="">Semua status</option><option value="Sudah SO">Sudah SO</option><option value="Belum SO">Belum SO</option></select><div id="soExportButtons" class="export-actions" aria-label="Ekspor data stok opname"></div><a href="<?= base_url('sup/So/riwayat_so') ?>" class="history-btn"><i class="fas fa-history"></i>Riwayat SO</a></div></div>
+    <div class="info-strip"><i class="fas fa-info-circle"></i><span>Toko yang belum dikaitkan dengan SPG belum dapat membuat format maupun membuka laporan SO.</span></div>
+    <div class="table-responsive"><table id="soStoreTable" class="table so-table">
+      <colgroup><col style="width:5%"><col style="width:28%"><col style="width:13%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:12%"></colgroup>
+      <thead><tr><th class="text-center">No.</th><th>Toko &amp; SPG</th><th>Status SO</th><th>Batas SO</th><th>Tanggal SO</th><th>Dibuat</th><th class="text-right">Aksi</th></tr></thead><tbody>
+      <?php if(!empty($stores)){ $no=1; foreach($stores as $dd){ $is_done=((int)$dd->status_so===1); $is_assigned=!empty($dd->nama_user); ?>
+        <tr>
+          <td class="text-center"><span class="row-number"><?= $no++ ?></span></td>
+          <td><div class="store-cell"><span class="store-icon"><i class="fas fa-store"></i></span><div><span class="store-name"><?= html_escape($dd->nama_toko) ?></span><span class="spg-name <?= $is_assigned?'':'unassigned' ?>"><i class="fas fa-user"></i><?= $is_assigned?html_escape($dd->nama_user):'SPG belum dikaitkan' ?></span></div></div></td>
+          <td><span class="status-pill <?= $is_done?'done':'pending' ?>"><i class="fas fa-circle"></i><?= $is_done?'Sudah SO':'Belum SO' ?></span></td>
+          <td><?php if(!empty($dd->tgl_so)){ ?><span class="date-main"><?= $format_so_date($dd->tgl_so) ?></span><span class="date-note">Batas pelaksanaan</span><?php }else{ ?><span class="empty-date">Belum ditentukan</span><?php } ?></td>
+          <td><?php if($is_done&&!empty($dd->tanggal_so)){ ?><span class="date-main"><?= $format_so_date($dd->tanggal_so) ?></span><span class="date-note">Pelaksanaan SO</span><?php }else{ ?><span class="empty-date">Belum tersedia</span><?php } ?></td>
+          <td><?php if($is_done&&!empty($dd->tgl_buat)){ ?><span class="date-main"><?= $format_so_date($dd->tgl_buat) ?></span><span class="date-note">Laporan dibuat</span><?php }else{ ?><span class="empty-date">Belum tersedia</span><?php } ?></td>
+          <td class="text-right"><?php if(!$is_assigned){ ?><span class="action-unavailable" title="Kaitkan SPG terlebih dahulu"><i class="fas fa-lock"></i>Tidak tersedia</span><?php }elseif(!$is_done){ ?><a href="<?= base_url('sup/So/pdf/'.rawurlencode($dd->id)) ?>" target="_blank" rel="noopener" class="action-btn format"><i class="fas fa-file-pdf"></i>Format SO</a><?php }else{ ?><a href="<?= base_url('sup/So/riwayat_so_toko/'.rawurlencode($dd->id).'/'.rawurlencode($dd->id_so)) ?>" class="action-btn detail"><i class="fas fa-eye"></i>Lihat</a><?php } ?></td>
+        </tr>
+      <?php }}else{ ?><tr><td colspan="7" class="empty-state"><i class="fas fa-clipboard-list"></i><strong>Belum ada data toko</strong><span>Data stok opname akan tampil di sini.</span></td></tr><?php } ?>
+      </tbody>
+    </table></div>
+  </div>
+</div></section>
+
+<script>
+$(function(){
+  if(!$.fn.DataTable||$('#soStoreTable .empty-state').length)return;
+  var exportConfig={columns:[0,1,2,3,4,5],format:{body:function(data,row,column,node){var cell=$(node);if(column===1)return cell.find('.store-name').text()+' - '+cell.find('.spg-name').text();if(column===2)return cell.find('.status-pill').text().trim();if(column>=3&&column<=5){var main=cell.find('.date-main').text()||cell.find('.empty-date').text();var note=cell.find('.date-note').text();return note?main+' - '+note:main}return cell.text().replace(/\s+/g,' ').trim()}}};
+  var table=$('#soStoreTable').DataTable({order:[],responsive:false,lengthChange:false,autoWidth:false,pageLength:10,dom:'Brt<"table-footer"ip>',buttons:[{extend:'excelHtml5',text:'<i class="fas fa-file-excel"></i> Excel',className:'btn excel-btn',title:'Stok Opname Toko - <?= $period_label ?>',filename:'stok-opname-toko-<?= date('Y-m',$period_time) ?>',exportOptions:exportConfig},{extend:'print',text:'<i class="fas fa-print"></i> Print',className:'btn print-btn',title:'Stok Opname Toko',messageTop:'Periode: <?= $period_label ?>',exportOptions:exportConfig,customize:function(win){$(win.document.body).css('font-size','11px');$(win.document.body).find('h1').css({'font-size':'20px','margin-bottom':'5px'});$(win.document.body).find('table').addClass('compact').css('font-size','10px')}}],language:{emptyTable:'Belum ada data stok opname',zeroRecords:'Toko yang dicari tidak ditemukan',info:'Menampilkan _START_-_END_ dari _TOTAL_ toko',infoEmpty:'Menampilkan 0 toko',infoFiltered:'(difilter dari _MAX_ toko)',paginate:{previous:'<i class="fas fa-chevron-left"></i>',next:'<i class="fas fa-chevron-right"></i>'}},columnDefs:[{targets:[0,6],orderable:false},{targets:6,searchable:false}]});
+  table.buttons().container().appendTo('#soExportButtons');
+  $('#soSearch').on('input',function(){table.search(this.value).draw()});
+  $('#soStatusFilter').on('change',function(){var value=$.fn.dataTable.util.escapeRegex(this.value);table.column(2).search(value?'^'+value+'$':'',true,false).draw()});
+});
+</script>

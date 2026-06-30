@@ -20,6 +20,15 @@ class Produk extends CI_Controller
     $this->load->model('M_admin');
   }
 
+  private function require_administrator()
+  {
+    if ((string) $this->session->userdata('role') !== '1') {
+      tampil_alert('error', 'AKSES DITOLAK', 'Fitur pengelolaan artikel hanya tersedia untuk Administrator.');
+      redirect(base_url('adm/produk'));
+      exit;
+    }
+  }
+
   //   halaman utama
   public function index()
   {
@@ -31,6 +40,7 @@ class Produk extends CI_Controller
   // hapus
   function hapus($id)
   {
+    $this->require_administrator();
     $where = array('id' => $id);
     $data = array(
       'deleted_at' => date('Y-m-d H:i:s'),
@@ -43,6 +53,7 @@ class Produk extends CI_Controller
 
   public function update_status()
   {
+    $this->require_administrator();
     header('Content-Type: application/json');
 
     // Ambil data dari request
@@ -76,6 +87,7 @@ class Produk extends CI_Controller
   // fungsi tambah produk
   public function proses_tambah()
   {
+    $this->require_administrator();
     $id_user = $this->session->userdata('id');
     $kode     = $this->input->post('kode');
     $nama     = $this->input->post('nama');
@@ -113,6 +125,7 @@ class Produk extends CI_Controller
   // Proses update
   public function proses_update()
   {
+    $this->require_administrator();
     $id_user = $this->session->userdata('id');
     $id = $this->input->post('id');
     $kode_baru = $this->input->post('kode');
@@ -161,6 +174,7 @@ class Produk extends CI_Controller
   }
   public function approve()
   {
+    $this->require_administrator();
     $id = $this->uri->segment(4);
     $where = array('id' => $id);
     $data = array(
@@ -173,6 +187,7 @@ class Produk extends CI_Controller
 
   public function reject()
   {
+    $this->require_administrator();
     $id = $this->uri->segment(4);
     $where = array('id' => $id);
     $data = array(
@@ -238,6 +253,7 @@ class Produk extends CI_Controller
   // import artikel
   public function import_artikel()
   {
+    $this->require_administrator();
     // Process the uploaded file
     $file = $_FILES['file']['tmp_name'];
     $reader = IOFactory::createReader('Xlsx');

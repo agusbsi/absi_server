@@ -776,17 +776,50 @@ class So extends CI_Controller
   // download pdf
   public function pdf($toko)
   {
+    $id_toko = (int) $toko;
+    if ($id_toko <= 0) {
+      show_404();
+      return;
+    }
+
+    $data_toko = $this->db
+      ->select('tb_toko.*, tb_user.nama_user')
+      ->from('tb_toko')
+      ->join('tb_user', 'tb_toko.id_spg = tb_user.id', 'left')
+      ->where('tb_toko.id', $id_toko)
+      ->where('tb_toko.status !=', 0)
+      ->get()
+      ->row();
+
+    if (!$data_toko) {
+      tampil_alert('error', 'Data tidak ditemukan', 'Toko tidak ditemukan atau sudah tidak aktif.');
+      redirect(base_url('sup/So'));
+      return;
+    }
+
+    if (empty($data_toko->nama_user)) {
+      tampil_alert('warning', 'Format belum tersedia', 'Kaitkan SPG ke toko terlebih dahulu.');
+      redirect(base_url('sup/So'));
+      return;
+    }
+
     $this->load->library('pdfgenerator');
     $data['title_pdf'] = 'List Artikel Stok Opname';
-    $file_pdf = 'List_Artikel_Stok_Opname';
+    $safe_store_name = preg_replace('/[^A-Za-z0-9_-]+/', '_', $data_toko->nama_toko);
+    $file_pdf = 'Format_SO_' . trim($safe_store_name, '_') . '_' . date('Y-m');
     $paper = 'A4';
     $orientation = "portrait";
-    $data['data_toko']  = $this->db->query("SELECT tb_toko.*, tb_user.nama_user from tb_toko 
-        join tb_user on tb_toko.id_spg = tb_user.id
-        where tb_toko.id ='$toko'")->row();
-    $data['stok'] = $this->db->query("SELECT ts.*, tp.nama_produk, tp.kode, tp.satuan from tb_stok ts
-        join tb_produk tp on ts.id_produk = tp.id
-        where ts.id_toko = '$toko' ")->result();
+    $data['data_toko'] = $data_toko;
+    $data['stok'] = $this->db
+      ->select('ts.id_produk, ts.qty, tp.nama_produk, tp.kode, tp.satuan')
+      ->from('tb_stok ts')
+      ->join('tb_produk tp', 'ts.id_produk = tp.id')
+      ->where('ts.id_toko', $id_toko)
+      ->where('ts.qty !=', 0)
+      ->order_by('tp.kode', 'ASC')
+      ->get()
+      ->result();
+
     $html = $this->load->view('manager_mv/stokopname/print_so', $data, true);
     $this->pdfgenerator->generate($html, $file_pdf, $paper, $orientation);
   }

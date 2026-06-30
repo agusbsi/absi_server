@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title_pdf; ?></title>
+    <title><?= html_escape($title_pdf); ?></title>
     <style>
         #table {
             font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -22,16 +22,26 @@
             background-color: #f2f2f2;
         }
 
-        #table tr:hover {
-            background-color: #ddd;
-        }
-
         #table th {
             padding-top: 10px;
             padding-bottom: 10px;
             text-align: left;
             background-color: #4CAF50;
             color: white;
+        }
+
+        #table thead {
+            display: table-header-group;
+        }
+
+        #table tr {
+            page-break-inside: avoid;
+        }
+
+        .empty-row {
+            color: #777;
+            text-align: center;
+            padding: 24px 8px !important;
         }
 
         #footer {
@@ -54,13 +64,13 @@
 
 <body>
     <div style="text-align:center">
-        <h3> <i class="fas fa-chart-pie"></i>== Format Stok Opname ==</h3>
-        <strong>( <?= date('M-Y') ?> )</strong>
+        <h3 style="margin-bottom:5px">FORMAT STOK OPNAME</h3>
+        <strong>Periode <?= date('m-Y') ?></strong>
 
     </div>
     <div class="col-md-12">
-        <div><strong>Nama Toko :</strong> <?= $data_toko->nama_toko ?></div>
-        <div><strong>SPG :</strong> <?= $data_toko->nama_user ?></div>
+        <div><strong>Nama Toko :</strong> <?= html_escape($data_toko->nama_toko) ?></div>
+        <div><strong>SPG :</strong> <?= html_escape($data_toko->nama_user) ?></div>
     </div>
     <hr>
     <table id="table">
@@ -75,6 +85,7 @@
         <tbody>
             <?php
             $no = 0;
+            if (!empty($stok)) :
             foreach ($stok as $s) :
                 $no++
             ?>
@@ -82,14 +93,16 @@
                     <td scope="row" style="text-align:center"><?= $no ?></td>
                     <td>
                         <small>
-                            <strong><?= $s->kode ?></strong> <br>
-                            <?= $s->nama_produk ?>
+                            <strong><?= html_escape($s->kode) ?></strong> <br>
+                            <?= html_escape($s->nama_produk) ?>
                         </small>
                     </td>
-                    <td style="text-align:center"><?= $s->satuan ?></td>
+                    <td style="text-align:center"><?= html_escape($s->satuan) ?></td>
                     <td style="text-align:center">...</td>
                 </tr>
-            <?php endforeach ?>
+            <?php endforeach; else : ?>
+                <tr><td colspan="4" class="empty-row">Tidak ada produk dengan stok aktif di toko ini.</td></tr>
+            <?php endif; ?>
         </tbody>
     </table>
     <div id="footer">

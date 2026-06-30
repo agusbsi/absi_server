@@ -261,6 +261,10 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
 <!-- /.sidebar -->
 
 <style>
+  .tl-bottom-nav {
+    display: none;
+  }
+
   .tl-sidebar {
     background:
       radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 34%),
@@ -498,6 +502,110 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
   }
 
   @media (max-width: 767.98px) {
+    .content-wrapper {
+      padding-bottom: calc(82px + env(safe-area-inset-bottom));
+    }
+
+    .tl-bottom-nav {
+      position: fixed;
+      right: 0;
+      bottom: calc(8px + env(safe-area-inset-bottom));
+      left: 0;
+      z-index: 1040;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: end;
+      width: calc(100% - 40px);
+      max-width: 330px;
+      height: 58px;
+      margin: 0 auto;
+      padding: 0 6px;
+      background: rgba(255, 255, 255, .97);
+      border: 1px solid rgba(15, 23, 42, .08);
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .16);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .tl-bottom-nav__item {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      height: 54px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: #8a94a6;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
+      text-decoration: none !important;
+      transition: color .2s ease, transform .2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tl-bottom-nav__item > i {
+      font-size: 17px;
+    }
+
+    .tl-bottom-nav__item:hover,
+    .tl-bottom-nav__item:focus,
+    .tl-bottom-nav__item.active {
+      color: #1677ff;
+    }
+
+    .tl-bottom-nav__item.active::after {
+      position: absolute;
+      bottom: 2px;
+      width: 4px;
+      height: 4px;
+      content: '';
+      background: #1677ff;
+      border-radius: 50%;
+    }
+
+    .tl-bottom-nav__item--po {
+      align-self: start;
+      height: 73px;
+      margin-top: -23px;
+      color: #526070;
+    }
+
+    .tl-bottom-nav__po-icon {
+      display: flex;
+      width: 50px;
+      height: 50px;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: linear-gradient(135deg, #1677ff 0%, #00b8d9 100%);
+      border: 4px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 6px 16px rgba(22, 119, 255, .32);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .tl-bottom-nav__po-icon i {
+      font-size: 18px;
+    }
+
+    .tl-bottom-nav__item--po:hover .tl-bottom-nav__po-icon,
+    .tl-bottom-nav__item--po:focus .tl-bottom-nav__po-icon,
+    .tl-bottom-nav__item--po.active .tl-bottom-nav__po-icon {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(22, 119, 255, .42);
+    }
+
+    .tl-bottom-nav__item--po.active::after {
+      display: none;
+    }
+
+    .tl-bottom-nav__item--po.active .tl-bottom-nav__label {
+      color: #1677ff;
+    }
+
     .tl-nav .nav-link {
       margin-left: 8px;
       margin-right: 8px;
@@ -510,6 +618,34 @@ $Bap = $this->db->query("SELECT * FROM tb_bap
     }
   }
 </style>
+
+<nav class="tl-bottom-nav no-print" aria-label="Navigasi utama Team Leader">
+  <a
+    href="<?= base_url('leader/Dashboard') ?>"
+    class="tl-bottom-nav__item <?= ($title == 'Dashboard') ? 'active' : '' ?>"
+    <?= ($title == 'Dashboard') ? 'aria-current="page"' : '' ?>>
+    <i class="fas fa-home" aria-hidden="true"></i>
+    <span class="tl-bottom-nav__label">Home</span>
+  </a>
+
+  <a
+    href="<?= base_url('leader/Permintaan') ?>"
+    class="tl-bottom-nav__item tl-bottom-nav__item--po <?= ($title == 'Permintaan') ? 'active' : '' ?>"
+    <?= ($title == 'Permintaan') ? 'aria-current="page"' : '' ?>>
+    <span class="tl-bottom-nav__po-icon">
+      <i class="fas fa-file-alt" aria-hidden="true"></i>
+    </span>
+    <span class="tl-bottom-nav__label">PO</span>
+  </a>
+
+  <a
+    href="<?= base_url('Profile') ?>"
+    class="tl-bottom-nav__item <?= ($title == 'Profile') ? 'active' : '' ?>"
+    <?= ($title == 'Profile') ? 'aria-current="page"' : '' ?>>
+    <i class="fas fa-user" aria-hidden="true"></i>
+    <span class="tl-bottom-nav__label">Profil</span>
+  </a>
+</nav>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
