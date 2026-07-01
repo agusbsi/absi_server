@@ -376,6 +376,39 @@ class Toko extends CI_Controller
     $alamat_cust        = $this->input->post('alamat_cust');
     $catatan_spv        = $this->input->post('catatan_spv');
 
+    // Validasi foto sebelum transaksi: hanya JPG/JPEG/PNG, maksimal 5 MB per file.
+    $photo_fields = array(
+      'foto_npwp' => true,
+      'foto_ktp'  => false,
+      'foto_toko' => true,
+      'foto_pic'  => true,
+    );
+    $allowed_extensions = array('jpg', 'jpeg', 'png');
+    $max_photo_size = 5 * 1024 * 1024;
+    foreach ($photo_fields as $field => $required) {
+      $has_file = isset($_FILES[$field]) && $_FILES[$field]['error'] !== UPLOAD_ERR_NO_FILE;
+      if (!$has_file && !$required) continue;
+      if (!$has_file || $_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
+        tampil_alert('error', 'Upload Gagal', 'Pastikan seluruh foto wajib sudah dipilih.');
+        redirect(base_url('spv/Toko/customer'));
+        return;
+      }
+
+      $extension = strtolower(pathinfo($_FILES[$field]['name'], PATHINFO_EXTENSION));
+      $image_info = @getimagesize($_FILES[$field]['tmp_name']);
+      $valid_image_type = $image_info !== false && in_array($image_info[2], array(IMAGETYPE_JPEG, IMAGETYPE_PNG), true);
+      if (!$valid_image_type || !in_array($extension, $allowed_extensions, true)) {
+        tampil_alert('error', 'Format Foto Tidak Sesuai', 'Foto hanya boleh berformat JPG, JPEG, atau PNG.');
+        redirect(base_url('spv/Toko/customer'));
+        return;
+      }
+      if ((int) $_FILES[$field]['size'] > $max_photo_size) {
+        tampil_alert('error', 'Foto Terlalu Besar', 'Ukuran maksimal setiap foto adalah 5 MB.');
+        redirect(base_url('spv/Toko/customer'));
+        return;
+      }
+    }
+
     $this->db->trans_start();
     $database = $this->db->database;
     $cek_cust = $this->db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = 'tb_customer' ")->row();
@@ -387,6 +420,7 @@ class Toko extends CI_Controller
     // Proses upload foto NPWP
     $config['upload_path'] = 'assets/img/customer/';
     $config['allowed_types'] = 'jpg|jpeg|png';
+    $config['max_size'] = 5120;
     $config['file_name'] = 'npwp_' . $id_auto_cust;
     $config['overwrite'] = TRUE;
     $config['remove_spaces'] = TRUE;
@@ -531,6 +565,11 @@ class Toko extends CI_Controller
     );
     $this->db->insert('tb_pengajuan_toko', $dataPengajuan);
     $this->db->trans_complete();
+    if (!$this->db->trans_status()) {
+      tampil_alert('error', 'Gagal', 'Data pengajuan belum berhasil disimpan. Silakan coba kembali.');
+      redirect(base_url('spv/Toko/customer'));
+      return;
+    }
     $pt = $this->session->userdata('pt');
     $phones = $this->db->query("SELECT no_telp FROM tb_user WHERE role = 9 and status = 1")->result_array();
     $message = $get_spv . " Mengajukan Customer & toko baru ( " . $nama_toko . " - " . $pt . " ) yang perlu di approve, silahkan kunjungi s.id/absi-app";
@@ -543,6 +582,7 @@ class Toko extends CI_Controller
       kirim_wa($number, $message);
     }
     tampil_alert('success', 'Berhasil', 'Data Customer & Toko Berhasil di buat');
+    $this->session->set_flashdata('clear_customer_toko_draft', true);
     redirect(base_url('spv/Toko/pengajuanToko'));
   }
   // proses tambah terbaru 2 foto

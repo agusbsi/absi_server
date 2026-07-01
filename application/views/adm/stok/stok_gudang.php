@@ -1,11 +1,10 @@
-<section class="content">
+<section class="content warehouse-page">
     <div class="container-fluid">
         <div class="card-container">
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <li class="fas fa-warehouse"></li> Data Stok Gudang Prepedan
-                    </h3>
+            <div class="card warehouse-card">
+                <div class="card-header warehouse-hero">
+                    <div><h2><i class="fas fa-warehouse mr-2"></i>Stok Gudang Prepedan</h2><p>Pantau ketersediaan artikel dan pembaruan stok dari Easy Accounting.</p></div>
+                    <span class="sync-badge"><i class="fas fa-sync-alt mr-1"></i>Sinkronisasi Harian</span>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -14,7 +13,7 @@
                                 <span class="info-box-icon bg-primary"><i class="fas fa-box"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Total Item</span>
-                                    <span class="info-box-number"><?= ($t_item->total_item == 0) ? "Kosong" : number_format($t_item->total_item) ?></span>
+                                <span class="info-box-number"><?= number_format($t_item->total_item, 0, ',', '.') ?></span>
                                 </div>
                             </div>
                         </div>
@@ -22,8 +21,8 @@
                             <div class="info-box">
                                 <span class="info-box-icon bg-primary"><i class="fas fa-cubes"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text">Total Stok (Gudang Prepedan)</span>
-                                    <span class="info-box-number"><?= ($t_item->total_stok == 0) ? '<small class="text-danger">Kosong</small>' : number_format($t_item->total_stok) ?></span>
+                                    <span class="info-box-text">Total Stok Gudang</span>
+                                    <span class="info-box-number"><?= number_format($t_item->total_stok, 0, ',', '.') ?></span>
                                 </div>
                             </div>
                         </div>
@@ -37,8 +36,8 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <div class="tabel-scroll">
+                    <div class="table-heading"><div><h3>Daftar Stok Artikel</h3><p>Gunakan pencarian untuk menemukan kode atau nama artikel.</p></div><span><?= number_format($t_item->total_item, 0, ',', '.') ?> artikel</span></div>
+                    <div class="tabel-scroll table-responsive">
                         <table id="tabel_baru" class="table table-striped">
                             <thead>
                                 <tr>
@@ -53,16 +52,10 @@
                             </tbody>
                         </table>
                     </div>
-                    <hr>
-                    <small>
-                        <strong>Keterangan :</strong>
-                        <li>Data stok gudang ini diambil dari data Easy Accounting.</li>
-                        <li>Data di perbarui setiap hari pukul 08.00 - 09.00 WIB.</li>
-                        <li>Data di import oleh tim Accounting.</li>
-                    </small>
+                    <div class="stock-note"><i class="fas fa-info-circle"></i><div><strong>Informasi pembaruan</strong><span>Data berasal dari Easy Accounting, diperbarui setiap hari pukul 08.00–09.00 WIB, dan diimpor oleh tim Accounting.</span></div></div>
                 </div>
                 <div class="card-footer text-right">
-                    <a href="<?= base_url('adm/Stok/unduhExcel') ?>" class="btn btn-warning btn-sm"><i class="fas fa-download"></i> Unduh Template Excel </a>
+                    <a href="<?= base_url('adm/Stok/unduhExcel') ?>" class="btn btn-light border btn-sm"><i class="fas fa-download"></i> Unduh Template Excel </a>
                     <?php if ($this->session->userdata('role') == 15) { ?>
                         <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#importModel"><i class="fas fa-upload"></i> Import Stok</button>
                     <?php } ?>
@@ -175,8 +168,13 @@
     .card-outline.card-info {
         border-top: 3px solid #17a2b8;
     }
+
+    .warehouse-page{--primary:#2563eb;--muted:#64748b;--line:#e2e8f0;color:#0f172a}.warehouse-page .warehouse-card{overflow:hidden;border:0;border-radius:19px;background:#fff;box-shadow:0 10px 35px rgba(15,23,42,.08)}.warehouse-page .warehouse-hero{display:flex;align-items:center;justify-content:space-between;padding:25px 27px;border:0;color:#fff;background:linear-gradient(125deg,#172554,#1d4ed8 75%,#38bdf8 140%)}.warehouse-page .warehouse-hero:after{display:none}.warehouse-page .warehouse-hero h2{margin:0 0 5px;font-size:24px;font-weight:700}.warehouse-page .warehouse-hero p{margin:0;color:rgba(255,255,255,.78);font-size:12px}.warehouse-page .sync-badge{padding:7px 11px;border:1px solid rgba(255,255,255,.25);border-radius:20px;background:rgba(255,255,255,.1);font-size:10px;font-weight:700}.warehouse-page .warehouse-card>.card-body{padding:21px}
+    .warehouse-page .info-box{min-height:100px;padding:14px;border:1px solid var(--line);border-radius:15px;box-shadow:0 4px 16px rgba(15,23,42,.04)}.warehouse-page .info-box .info-box-icon{width:50px;height:50px;border-radius:13px;color:#2563eb!important;background:#eff6ff!important;font-size:19px}.warehouse-page .col-md-4:nth-child(2) .info-box-icon{color:#059669!important;background:#ecfdf5!important}.warehouse-page .col-md-4:nth-child(3) .info-box-icon{color:#d97706!important;background:#fffbeb!important}.warehouse-page .info-box .info-box-text{color:var(--muted);font-size:10px;letter-spacing:.04em}.warehouse-page .info-box .info-box-number{color:#0f172a;font-size:20px;line-height:1.3}.warehouse-page .col-md-4:nth-child(3) .info-box-number{font-size:13px}.warehouse-page .table-heading{display:flex;align-items:flex-end;justify-content:space-between;padding:10px 0 13px;margin-top:5px}.warehouse-page .table-heading h3{margin:0 0 3px;font-size:16px;font-weight:700}.warehouse-page .table-heading p{margin:0;color:var(--muted);font-size:11px}.warehouse-page .table-heading>span{padding:5px 9px;border-radius:20px;color:#1d4ed8;background:#eff6ff;font-size:10px;font-weight:700}.warehouse-page .tabel-scroll{max-height:none;overflow:visible}.warehouse-page #tabel_baru thead th{padding:12px 10px;border-width:1px 0;border-color:var(--line);color:#475569;background:#f8fafc;font-size:10px;text-transform:uppercase}.warehouse-page #tabel_baru tbody td{padding:13px 10px;border-color:#f1f5f9;vertical-align:middle}.warehouse-page .stock-note{display:flex;align-items:flex-start;padding:13px 15px;margin-top:17px;border:1px solid #bfdbfe;border-radius:12px;color:#475569;background:#eff6ff}.warehouse-page .stock-note>i{margin:2px 10px 0 0;color:#2563eb}.warehouse-page .stock-note strong,.warehouse-page .stock-note span{display:block}.warehouse-page .stock-note strong{color:#1e3a8a;font-size:11px}.warehouse-page .stock-note span{font-size:10px}.warehouse-page .warehouse-card>.card-footer{padding:15px 21px;border-color:#f1f5f9;background:#fff}.warehouse-page .warehouse-card>.card-footer .btn{height:36px;padding:0 13px;border-radius:9px;font-size:11px;font-weight:700}
+    .warehouse-import-modal .modal-content{overflow:hidden;border:0;border-radius:18px;box-shadow:0 22px 55px rgba(15,23,42,.23)}.warehouse-import-modal .modal-header{padding:19px 21px;border:0;background:linear-gradient(120deg,#172554,#2563eb)!important}.warehouse-import-modal .modal-title{font-weight:700}.warehouse-import-modal .modal-body{padding:20px}.warehouse-import-modal .alert{border:0;border-radius:12px;font-size:11px}.warehouse-import-modal #uploadForm{padding:16px;border:1px dashed #93c5fd;border-radius:13px;background:#f8fbff}.warehouse-import-modal #excelFile{height:auto;padding:7px;border-color:#bfdbfe;border-radius:9px;background:#fff}.warehouse-import-modal .btn{border-radius:9px;font-weight:600}.warehouse-import-modal .table-responsive{border:1px solid var(--line);border-radius:12px}.warehouse-import-modal .modal-footer{padding:14px 20px;border-color:#f1f5f9}
+    @media(max-width:767.98px){.warehouse-page .warehouse-hero{padding:21px}.warehouse-page .warehouse-hero h2{font-size:21px}.warehouse-page .sync-badge{display:none}.warehouse-page .warehouse-card>.card-body{padding:14px}.warehouse-page .info-box{min-height:86px}.warehouse-page .table-heading{align-items:flex-start;flex-direction:column}.warehouse-page .table-heading>span{margin-top:7px}.warehouse-page .warehouse-card>.card-footer .btn{margin-bottom:5px}.warehouse-import-modal .modal-body{padding:14px}}
 </style>
-<div class="modal" id="importModel" role="dialog" aria-hidden="true" data-backdrop="false">
+<div class="modal warehouse-import-modal" id="importModel" role="dialog" aria-hidden="true" data-backdrop="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
@@ -193,7 +191,7 @@
                         <li>Pastikan file Excel berasal dari <strong>ABSI</strong> & Data khusus untuk PT. <?= $this->session->userdata('pt') ? $this->session->userdata('pt') : '' ?></li>
                         <li>Format file harus sesuai template: <strong>Kolom B (Kode), C (Nama Artikel), E (Stok)</strong></li>
                         <li>Data mulai dari <strong>baris ke-2</strong> sesuai format ABSI</li>
-                        <li>Maksimal <strong>10,000 baris</strong> dan ukuran file <strong>50MB</strong></li>
+                        <li>Maksimal <strong>10.000 baris</strong> dan ukuran file <strong>50 MB</strong></li>
                         <li>Periksa data preview sebelum menyimpan untuk memastikan keakuratan</li>
                     </ul>
                 </div>
@@ -207,7 +205,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <input type="file" class="form-control form-control-sm" id="excelFile" name="excel_file" accept=".xlsx,.xls" required>
-                                <small class="text-muted">Maks: 50MB</small>
+                                <small class="text-muted">Maksimal 50 MB</small>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -386,11 +384,11 @@
                 return;
             }
 
-            // Validate file size (max 10MB)
+            // Validate file size (max 50MB, sesuai batas server)
             var file = fileInput.files[0];
-            var maxSize = 10 * 1024 * 1024; // 10MB in bytes
+            var maxSize = 50 * 1024 * 1024;
             if (file.size > maxSize) {
-                Swal.fire('Error', 'Ukuran file terlalu besar. Maksimal 10MB', 'error');
+                Swal.fire('Error', 'Ukuran file terlalu besar. Maksimal 50 MB', 'error');
                 return;
             }
 

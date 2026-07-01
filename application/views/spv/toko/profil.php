@@ -1,30 +1,55 @@
-<!-- Main content -->
-<section class="content">
+<?php
+$jumlah_artikel = is_array($stok_produk) ? count($stok_produk) : 0;
+$total_stok_ringkas = 0;
+$artikel_pending = 0;
+if (!empty($stok_produk)) foreach ($stok_produk as $item) {
+  $total_stok_ringkas += (int) $item->qty;
+  if ((int) $item->status === 2) $artikel_pending++;
+}
+?>
+<style>
+  .store-profile-page{--primary:#2563eb;--muted:#64748b;--line:#e2e8f0;color:#0f172a}.store-profile-page .profile-hero{display:flex;align-items:center;justify-content:space-between;padding:25px 27px;margin-bottom:18px;border-radius:19px;color:#fff;background:linear-gradient(125deg,#172554,#1d4ed8 75%,#38bdf8 140%);box-shadow:0 13px 32px rgba(30,64,175,.17)}.store-profile-page .profile-hero h2{margin:0 0 6px;font-size:25px;font-weight:700}.store-profile-page .profile-hero p{margin:0;color:rgba(255,255,255,.78);font-size:12px}.store-profile-page .hero-actions{display:flex;align-items:center}.store-profile-page .store-status{padding:6px 11px;margin-right:10px;border-radius:20px;color:#047857;background:#ecfdf5;font-size:10px;font-weight:700}.store-profile-page .back-action{display:inline-flex;height:36px;align-items:center;padding:0 12px;border:1px solid rgba(255,255,255,.25);border-radius:10px;color:#fff;background:rgba(255,255,255,.1);font-size:11px;font-weight:700}.store-profile-page .back-action:hover{color:#fff;background:rgba(255,255,255,.2);text-decoration:none}
+  .store-profile-page .status-notice{display:flex;align-items:center;padding:13px 16px;margin-bottom:17px;border:1px solid #fde68a;border-radius:13px;color:#92400e;background:#fffbeb;font-size:12px;font-weight:600}.store-profile-page .status-notice i{margin-right:9px}.store-profile-page .overlay-wrapper .overlay{position:static;justify-content:flex-start;background:transparent}.store-profile-page .overlay-wrapper .fa-spin{display:none}
+  .store-profile-page .summary-card{display:flex;align-items:center;height:100%;min-height:84px;padding:15px 17px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 4px 16px rgba(15,23,42,.04)}.store-profile-page .summary-icon{display:flex;width:42px;height:42px;align-items:center;justify-content:center;margin-right:11px;border-radius:12px;color:#2563eb;background:#eff6ff}.store-profile-page .summary-icon.green{color:#059669;background:#ecfdf5}.store-profile-page .summary-icon.amber{color:#d97706;background:#fffbeb}.store-profile-page .summary-label{display:block;color:var(--muted);font-size:10px;font-weight:600}.store-profile-page .summary-value{font-size:19px;line-height:1.2}
+  .store-profile-page .profile-card{overflow:hidden;height:calc(100% - 16px);margin-bottom:16px;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 18px rgba(15,23,42,.05)}.store-profile-page .profile-card>.card-header{padding:17px 20px;border:0;border-bottom:1px solid #f1f5f9;color:#0f172a;background:#fff;font-size:14px;font-weight:700}.store-profile-page .profile-card>.card-body{padding:20px;background:#fff}.store-profile-page .store-cover{position:relative;isolation:isolate;width:100%;aspect-ratio:16/9;min-height:190px;max-height:270px;overflow:hidden;border-radius:16px;background:linear-gradient(145deg,#eff6ff,#e2e8f0);box-shadow:inset 0 0 0 1px rgba(148,163,184,.18),0 8px 24px rgba(15,23,42,.08)}.store-profile-page .store-photo{position:absolute;z-index:1;inset:0;width:100%;height:100%;border:0;border-radius:0;object-fit:cover;box-shadow:none;transition:transform .35s ease}.store-profile-page .store-cover:hover .store-photo{transform:scale(1.025)}.store-profile-page .photo-fallback{position:absolute;z-index:0;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#64748b}.store-profile-page .photo-fallback i{display:flex;width:68px;height:68px;align-items:center;justify-content:center;margin-bottom:10px;border-radius:20px;color:#2563eb;background:rgba(255,255,255,.75);font-size:27px;box-shadow:0 8px 20px rgba(30,64,175,.1)}.store-profile-page .photo-fallback span{font-size:11px;font-weight:600}.store-profile-page .cover-label{position:absolute;z-index:2;left:13px;bottom:13px;padding:6px 10px;border:1px solid rgba(255,255,255,.35);border-radius:20px;color:#fff;background:rgba(15,23,42,.62);backdrop-filter:blur(7px);font-size:10px;font-weight:700}.store-profile-page .profile-username{margin:15px 0 3px;font-size:20px}.store-profile-page .store-id{display:inline-block;padding:4px 9px;border-radius:20px;color:#475569;background:#f1f5f9;font-size:10px}.store-profile-page .detail-table{margin:15px 0 0}.store-profile-page .detail-table td{padding:9px 6px;border-color:#f1f5f9;font-size:11px;vertical-align:top}.store-profile-page .detail-table td:first-child{width:130px;color:#475569}.store-profile-page .detail-table td:last-child{color:#0f172a;font-weight:500}.store-profile-page .detail-table .badge{padding:5px 8px;border-radius:20px}
+  .store-profile-page .stock-card{overflow:hidden;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 18px rgba(15,23,42,.05)}.store-profile-page .stock-card>.card-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border:0;color:#0f172a;background:#fff}.store-profile-page .stock-card .card-title{font-size:16px;font-weight:700}.store-profile-page .stock-card .card-tools{color:var(--muted);font-size:10px}.store-profile-page .stock-card>.card-body{padding:0 20px 20px}.store-profile-page .stock-toolbar{display:flex;align-items:center;justify-content:space-between;padding:13px 0}.store-profile-page .stock-toolbar .btn{border-radius:9px;font-size:11px;font-weight:700}.store-profile-page .table thead th{padding:12px 10px;border-width:1px 0;border-color:var(--line);color:#475569;background:#f8fafc;font-size:10px;text-transform:uppercase}.store-profile-page .table tbody td{padding:13px 10px;border-color:#f1f5f9;vertical-align:middle}.store-profile-page .product-name{color:#0f172a;font-size:12px;font-weight:600}.store-profile-page .product-code{color:#1d4ed8;font-size:10px;font-weight:700}.store-profile-page .stock-card .badge{padding:5px 8px;border-radius:20px;font-size:9px}.store-profile-page .stock-card>.card-footer{border-color:#f1f5f9;color:var(--muted);background:#fff;font-size:10px}
+  .store-product-modal .modal-content{overflow:hidden;border:0;border-radius:17px;box-shadow:0 20px 50px rgba(15,23,42,.2)}.store-product-modal .modal-header{padding:18px 20px;border:0}.store-product-modal .modal-body{padding:20px}.store-product-modal .input-group-text,.store-product-modal .form-control{height:40px;border-color:#cbd5e1}.store-product-modal .form-control{font-size:12px}.store-product-modal .table thead th{position:sticky;top:0;background:#f8fafc;z-index:1}.store-product-modal .modal-footer{border-color:#f1f5f9}.store-product-modal .btn{border-radius:9px}
+  .store-profile-page .profile-card{height:auto}
+  @media(max-width:767.98px){.store-profile-page .profile-hero{align-items:flex-start;padding:21px}.store-profile-page .profile-hero h2{font-size:21px}.store-profile-page .store-status{display:none}.store-profile-page .summary-card{margin-bottom:12px;height:auto}.store-profile-page .stock-card>.card-header,.store-profile-page .stock-toolbar{align-items:flex-start;flex-direction:column}.store-profile-page .stock-card .card-tools,.store-profile-page .stock-toolbar .btn{margin-top:8px}.store-profile-page .stock-card>.card-body{padding:0 13px 15px}}
+</style>
+<section class="content store-profile-page">
+  <div class="profile-hero"><div><h2><?= html_escape($toko->nama_toko) ?></h2><p>Profil toko, pengguna sistem, dan informasi stok artikel.</p></div><div class="hero-actions"><span class="store-status"><i class="fas fa-circle mr-1"></i><?= (int) $cek_status->status === 1 ? 'Toko Aktif' : 'Status Toko' ?></span><a href="<?= base_url('spv/Toko') ?>" class="back-action"><i class="fas fa-arrow-left mr-1"></i>Kembali</a></div></div>
+  <div class="row mb-1">
+    <div class="col-6 col-lg-3 mb-3"><div class="summary-card"><div class="summary-icon"><i class="fas fa-boxes"></i></div><div><span class="summary-label">Total Artikel</span><strong class="summary-value"><?= number_format($jumlah_artikel, 0, ',', '.') ?></strong></div></div></div>
+    <div class="col-6 col-lg-3 mb-3"><div class="summary-card"><div class="summary-icon green"><i class="fas fa-cubes"></i></div><div><span class="summary-label">Total Stok</span><strong class="summary-value"><?= number_format($total_stok_ringkas, 0, ',', '.') ?></strong></div></div></div>
+    <div class="col-6 col-lg-3 mb-3"><div class="summary-card"><div class="summary-icon amber"><i class="fas fa-clock"></i></div><div><span class="summary-label">Menunggu Persetujuan</span><strong class="summary-value"><?= number_format($artikel_pending, 0, ',', '.') ?></strong></div></div></div>
+    <div class="col-6 col-lg-3 mb-3"><div class="summary-card"><div class="summary-icon"><i class="fas fa-users"></i></div><div><span class="summary-label">Pengguna Terkait</span><strong class="summary-value"><?= (empty($leader_toko) ? 0 : 1) + (empty($spg) ? 0 : 1) ?></strong></div></div></div>
+  </div>
   <div class="container-fluid">
     <?php if ($cek_status->status == 0) { ?>
 
-      <div class="overlay-wrapper">
+      <div class="overlay-wrapper status-notice">
         <div class="overlay">
           <i class="fas fa-3x fa-sync-alt fa-spin"></i>
           <div class="text-bold pt-2">TOKO NON-AKTIF !</div>
         </div>
       </div>
     <?php } else if ($cek_status->status == 2) { ?>
-      <div class="overlay-wrapper">
+      <div class="overlay-wrapper status-notice">
         <div class="overlay">
           <i class="fas fa-3x fa-sync-alt fa-spin"></i>
           <div class="text-bold pt-2">Data Toko Menunggu Approve Manager Marketing !</div>
         </div>
       </div>
     <?php } else if ($cek_status->status == 3) { ?>
-      <div class="overlay-wrapper">
+      <div class="overlay-wrapper status-notice">
         <div class="overlay">
           <i class="fas fa-3x fa-sync-alt fa-spin"></i>
           <div class="text-bold pt-2">Data Toko Menunggu Pemeriksaan Audit !</div>
         </div>
       </div>
     <?php } else if ($cek_status->status == 4) { ?>
-      <div class="overlay-wrapper">
+      <div class="overlay-wrapper status-notice">
         <div class="overlay">
           <i class="fas fa-3x fa-sync-alt fa-spin"></i>
           <div class="text-bold pt-2">Data Toko Menunggu Approve Direksi !</div>
@@ -35,46 +60,44 @@
   <div class="row">
     <div class="col-md-5">
       <!-- Profile Image -->
-      <div class="card card-info">
+      <div class="card profile-card">
         <div class="card-header">
           Toko
         </div>
         <div class="card-body">
-          <div class="text-center">
-            <?php if ($toko->foto_toko == "") {
-            ?>
-              <img style="width: 150px;" class="img-responsive img-rounded" src="<?php echo base_url() ?>assets/img/toko/hicoop.png" alt="User profile picture">
-            <?php
-            } else { ?>
-              <img style="width: 150px;" class=" img-responsive img-rounded" src="<?php echo base_url('assets/img/toko/' . $toko->foto_toko) ?>" alt="User profile picture">
-            <?php } ?>
+          <div class="store-cover">
+            <div class="photo-fallback" aria-hidden="true"><i class="fas fa-store"></i><span>Foto toko belum tersedia</span></div>
+            <?php if (!empty($toko->foto_toko)) : ?>
+              <img class="store-photo" src="<?= base_url('assets/img/toko/' . rawurlencode($toko->foto_toko)) ?>" alt="Foto <?= html_escape($toko->nama_toko) ?>" loading="lazy" onerror="this.style.display='none'">
+            <?php endif; ?>
+            <span class="cover-label"><i class="fas fa-camera mr-1"></i>Foto Toko</span>
           </div>
-          <h3 class="profile-username text-center"><strong><?= $toko->nama_toko ?></strong></h3>
-          <p class="text-muted text-center">[ ID : <?= $toko->id ?> ]</p>
-          <table class="table table-sm">
+          <h3 class="profile-username text-center"><strong><?= html_escape($toko->nama_toko) ?></strong></h3>
+          <p class="text-center"><span class="store-id">ID Toko: <?= (int) $toko->id ?></span></p>
+          <table class="table table-sm detail-table">
             <tbody>
               <tr>
                 <td><b>Provinsi</b></td>
                 <td>
-                  : <?= $toko->provinsi ?>
+                  <?= html_escape($toko->provinsi) ?>
                 </td>
               </tr>
               <tr>
                 <td><b>Kabupaten</b></td>
                 <td>
-                  : <?= $toko->kabupaten ?>
+                  <?= html_escape($toko->kabupaten) ?>
                 </td>
               </tr>
               <tr>
                 <td><b>Kecamatan</b></td>
                 <td>
-                  : <?= $toko->kecamatan ?>
+                  <?= html_escape($toko->kecamatan) ?>
                 </td>
               </tr>
               <tr>
                 <td><b>Alamat</b></td>
                 <td>
-                  : <?= $toko->alamat ?>
+                  <?= html_escape($toko->alamat) ?>
                 </td>
               </tr>
             </tbody>
@@ -87,12 +110,12 @@
     </div>
     <div class="col-md-7">
       <!-- Profile Image -->
-      <div class="card card-info">
+      <div class="card profile-card">
         <div class="card-header">
           Detail
         </div>
         <div class="card-body">
-          <table class="table table-sm">
+          <table class="table table-sm detail-table">
             <tbody>
               <tr>
                 <td><b>Jenis Toko</b></td>
@@ -103,7 +126,7 @@
               <tr>
                 <td><b>PIC & Telp</b></td>
                 <td>
-                  : <?= $toko->nama_pic ?> | <?= $toko->telp ?>
+                  <?= html_escape($toko->nama_pic) ?> | <?= html_escape($toko->telp) ?>
                 </td>
               </tr>
               <tr>
@@ -147,23 +170,23 @@
         </div>
         <!-- /.card-body -->
       </div>
-      <div class="card card-info">
+      <div class="card profile-card">
         <div class="card-header">
           Pengguna Sistem
         </div>
         <div class="card-body">
-          <table class="table table-sm">
+          <table class="table table-sm detail-table">
             <tbody>
               <tr>
                 <td><b>Team Leader</b></td>
                 <td>
-                  : <?= empty($leader_toko) ? "Belum di kaitkan " : $leader_toko->nama_user ?>
+                  <?= empty($leader_toko) ? "Belum dikaitkan" : html_escape($leader_toko->nama_user) ?>
                 </td>
               </tr>
               <tr>
                 <td><b>Spg</b></td>
                 <td>
-                  : <?= empty($spg) ? "Belum di kaitkan " : $spg->nama_user ?>
+                  <?= empty($spg) ? "Belum dikaitkan" : html_escape($spg->nama_user) ?>
                 </td>
               </tr>
 
@@ -174,7 +197,7 @@
       </div>
     </div>
   </div>
-  <div class="card card-warning">
+  <div class="card stock-card">
     <div class="card-header">
       <h3 class="card-title">
         <li class="fas fa-box"></li> Data Stok Artikel
@@ -186,11 +209,9 @@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-      <button type="button" class="btn btn-success btn-sm float-right mr-2 btn_tambah <?= ($cek_status->status == 2) ? 'd-none' : '' ?>" data-id_toko="<?= $toko->id ?>" data-toggle="modal" data-target="#modal-tambah-produk"><i class="fa fa-plus"></i> Tambah Produk</button>
-      <button type="button" class="btn btn-default btn-sm btn-sm">Toko ini berlaku untuk harga : <?= status_het($toko->het) ?></button>
-      <hr>
+      <div class="stock-toolbar"><span class="btn btn-light border btn-sm">Harga berlaku: <?= status_het($toko->het) ?></span><button type="button" class="btn btn-primary btn-sm btn_tambah <?= ($cek_status->status == 2) ? 'd-none' : '' ?>" data-id_toko="<?= (int) $toko->id ?>" data-toggle="modal" data-target="#modal-tambah-produk"><i class="fa fa-plus mr-1"></i>Tambah Produk</button></div>
       <div class="tab-content">
-        <table id="example1" class="table table-bordered table-striped">
+        <div class="table-responsive"><table id="example1" class="table">
           <thead>
             <tr class="text-center">
               <th>#</th>
@@ -213,10 +234,10 @@
                 <td><?= $no ?></td>
 
                 <td>
-                  <small><?= $stok->kode ?></small>
+                  <span class="product-code"><?= html_escape($stok->kode) ?></span>
                 </td>
                 <td>
-                  <small><?= $stok->nama_produk ?></small>
+                  <span class="product-name"><?= html_escape($stok->nama_produk) ?></span>
                 </td>
                 <td class="text-center">
                   <small><?= $stok->satuan ?></small>
@@ -277,13 +298,13 @@
             </tr>
 
           </tfoot>
-        </table>
+        </table></div>
       </div>
       <!-- /.tab-content -->
     </div>
     <!-- /.card-body -->
     <div class="card-footer">
-      <i class="fas fa-bullhorn"></i> Data ini merupakan jumlah stok yang dimiliki toko : <b><?= $toko->nama_toko ?></b> .
+      <i class="fas fa-info-circle mr-1"></i> Data ini merupakan jumlah stok yang dimiliki toko <b><?= html_escape($toko->nama_toko) ?></b>.
     </div>
   </div>
 
@@ -291,7 +312,7 @@
 </section>
 <!-- /.content -->
 <!-- Modal Tambah Produk -->
-<div class="modal fade" id="modal-tambah-produk" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade store-product-modal" id="modal-tambah-produk" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header bg-success">

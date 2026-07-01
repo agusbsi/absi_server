@@ -1,5 +1,9 @@
 <?php
-$is_administrator = (string) $this->session->userdata('role') === '1';
+$is_administrator = in_array(
+    (string) $this->session->userdata('role'),
+    ['1', '6', '15'],
+    true
+);
 $produk = is_array($list_data) ? $list_data : array();
 $total_produk = count($produk);
 $total_aktif = 0;

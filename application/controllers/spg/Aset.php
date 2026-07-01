@@ -255,6 +255,65 @@ class Aset extends CI_Controller
     redirect('spg/Aset');
   }
 
+  public function deleteFotoAset()
+  {
+    if (strtoupper($this->input->method()) !== 'POST') {
+      return $this->json_response(false, 'Metode permintaan tidak diizinkan.', [], 405);
+    }
+
+    $id_toko = (int) $this->session->userdata('id_toko');
+    $id_aset_toko = (int) $this->input->post('id_aset_toko');
+    if ($id_aset_toko <= 0) {
+      return $this->json_response(false, 'Data aset tidak valid.', [], 422);
+    }
+
+    $toko = $this->db->select('status_aset')->get_where('tb_toko', ['id' => $id_toko])->row();
+    if (!$toko || (int) $toko->status_aset === 1) {
+      return $this->json_response(false, 'Laporan aset sudah diselesaikan dan tidak dapat dihapus.', [], 409);
+    }
+
+    $periode_awal = date('Y-m-01 00:00:00');
+    $periode_akhir = date('Y-m-01 00:00:00', strtotime('+1 month'));
+    $laporan = $this->db->query(
+      "SELECT laporan.id, laporan.gambar
+      FROM tb_aset_spg laporan
+      JOIN tb_aset_toko aset ON aset.id = laporan.id_aset
+      WHERE laporan.id_aset = ?
+        AND laporan.id_toko = ?
+        AND aset.id_toko = ?
+        AND laporan.tanggal >= ?
+        AND laporan.tanggal < ?",
+      [$id_aset_toko, $id_toko, $id_toko, $periode_awal, $periode_akhir]
+    )->result();
+
+    if (empty($laporan)) {
+      return $this->json_response(false, 'Data upload aset tidak ditemukan.', [], 404);
+    }
+
+    $this->db->where('id_aset', $id_aset_toko)
+      ->where('id_toko', $id_toko)
+      ->where('tanggal >=', $periode_awal)
+      ->where('tanggal <', $periode_akhir)
+      ->delete('tb_aset_spg');
+
+    if ($this->db->affected_rows() < 1) {
+      return $this->json_response(false, 'Data upload gagal dihapus.', [], 500);
+    }
+
+    foreach ($laporan as $data_laporan) {
+      if (empty($data_laporan->gambar)) continue;
+
+      $masih_digunakan = $this->db->where('gambar', $data_laporan->gambar)
+        ->count_all_results('tb_aset_spg') > 0;
+      $foto = $this->upload_path . basename($data_laporan->gambar);
+      if (!$masih_digunakan && is_file($foto)) {
+        @unlink($foto);
+      }
+    }
+
+    return $this->json_response(true, 'Data upload aset berhasil dihapus.');
+  }
+
   private function compress_image($file_path)
   {
     if (@getimagesize($file_path) === false) {

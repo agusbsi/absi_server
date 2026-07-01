@@ -1,25 +1,32 @@
-<section class="content">
+<style>
+  .store-form-page{--primary:#2563eb;--muted:#64748b;--line:#e2e8f0;color:#0f172a}.store-form-page form{max-width:1400px;margin:0 auto}.store-form-page .main-form-card{overflow:hidden;border:0;border-radius:19px;background:#f8fafc;box-shadow:0 10px 35px rgba(15,23,42,.08)}.store-form-page .form-hero{display:flex;align-items:center;justify-content:space-between;padding:25px 19px 25px 27px;border:0;color:#fff;background:linear-gradient(125deg,#172554,#1d4ed8 75%,#38bdf8 140%)}.store-form-page .form-hero:after{display:none}.store-form-page .hero-title{display:flex;align-items:center;min-width:0}.store-form-page .hero-icon{display:flex;flex:0 0 50px;height:50px;align-items:center;justify-content:center;margin-right:14px;border-radius:14px;background:rgba(255,255,255,.14);font-size:21px}.store-form-page .form-hero h3{margin:0 0 4px;font-size:22px;font-weight:700}.store-form-page .form-hero p{margin:0;color:rgba(255,255,255,.78);font-size:12px}.store-form-page .close-form{display:inline-flex;flex-shrink:0;height:36px;align-items:center;padding:0 12px;margin-left:auto;border:1px solid rgba(255,255,255,.22);border-radius:10px;color:#fff;background:rgba(255,255,255,.1);font-size:11px;font-weight:700}.store-form-page .close-form:hover{color:#fff;background:rgba(255,255,255,.2);text-decoration:none}.store-form-page .close-form i{margin-right:6px}
+  .store-form-page .form-steps{display:flex;align-items:center;padding:15px 25px;border-bottom:1px solid var(--line);background:#fff}.store-form-page .form-step{display:flex;align-items:center;margin-right:28px;color:var(--muted);font-size:11px;font-weight:600}.store-form-page .step-number{display:flex;width:27px;height:27px;align-items:center;justify-content:center;margin-right:8px;border-radius:50%;color:#1d4ed8;background:#eff6ff;font-weight:800}.store-form-page .main-form-card>.card-body{padding:22px}.store-form-page .info-note{display:flex;padding:12px 14px;margin-bottom:17px;border:1px solid #bfdbfe;border-radius:12px;color:#475569;background:#eff6ff;font-size:11px}.store-form-page .info-note i{margin:2px 9px 0 0;color:#2563eb}.store-form-page .info-note strong{color:#1e3a8a}
+  .store-form-page .section-card{overflow:hidden;margin:0;border:1px solid var(--line)!important;border-radius:16px;box-shadow:0 4px 14px rgba(15,23,42,.04)}.store-form-page .section-card>.card-header{padding:17px 20px;border:0;border-bottom:1px solid #f1f5f9;background:#fff}.store-form-page .section-card .card-title{display:flex;align-items:center;margin:0;font-size:15px;font-weight:700}.store-form-page .section-icon{display:flex;width:36px;height:36px;align-items:center;justify-content:center;margin-right:10px;border-radius:11px;color:#d97706;background:#fffbeb}.store-form-page .section-card>.card-body{padding:18px 20px;background:#fff}.store-form-page .customer-picker{padding:15px 16px;margin-bottom:14px;border:1px solid #dbeafe;border-radius:13px;background:#f8fbff}.store-form-page .customer-picker label{display:block;margin-bottom:7px;color:#1e3a8a;font-size:12px}.store-form-page .form-table{margin:0}.store-form-page .form-table>tbody>tr>td{padding:14px 8px;border-top:1px solid #f1f5f9;vertical-align:top}.store-form-page .form-table>tbody>tr>td:first-child{width:190px;padding-top:20px;color:#334155;font-size:12px;font-weight:700}.store-form-page .form-group{margin-bottom:0}.store-form-page .form-group label,.store-form-page .form-group p,.store-form-page td>p{display:block;margin-bottom:6px!important;color:#475569;font-size:11px;font-weight:600}.store-form-page .form-control{height:39px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;font-size:12px}.store-form-page textarea.form-control{min-height:76px;resize:vertical}.store-form-page .form-control:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(37,99,235,.1)}.store-form-page small{color:var(--muted);font-size:10px}.store-form-page .input-group-text{border-color:#cbd5e1;border-radius:0 9px 9px 0;color:#64748b;background:#f8fafc;font-size:11px}.store-form-page .select2-container .select2-selection--single{height:39px!important;border-color:#cbd5e1!important;border-radius:9px!important}.store-form-page .select2-container--default .select2-selection--single .select2-selection__rendered{line-height:37px!important;font-size:12px}.store-form-page .select2-container--default .select2-selection--single .select2-selection__arrow{height:37px!important}
+  .store-form-page .support-title{display:flex;align-items:center;margin:18px 0 12px;color:#0f172a;font-size:13px;font-weight:700}.store-form-page .support-title i{margin-right:8px;color:#2563eb}.store-form-page .upload-field{height:100%;padding:14px;border:1px dashed #93c5fd;border-radius:12px;background:#f8fbff}.store-form-page .upload-field label{color:#1e3a8a;font-size:12px}.store-form-page .upload-field input{height:auto;min-height:39px;padding:6px;margin:7px 0;border-color:#dbeafe;background:#fff}.store-form-page .notes-box{padding:18px 20px;margin-top:20px;border:1px solid #fde68a;border-radius:14px;background:#fffbeb}.store-form-page .notes-box strong{display:block;margin-bottom:8px;color:#92400e;font-size:12px}.store-form-page .required-note{display:block;margin-top:12px;color:var(--muted);font-size:10px}.store-form-page .form-actions{display:flex;align-items:center;justify-content:flex-end;padding:17px 22px;border-top:1px solid var(--line);background:#fff}.store-form-page .submit-hint{margin-right:auto;color:var(--muted);font-size:11px}.store-form-page .action-buttons{display:flex}.store-form-page .form-actions .btn{display:inline-flex;min-width:145px;height:40px;align-items:center;justify-content:center;border-radius:9px;font-size:12px;font-weight:700}.store-form-page .back-btn{margin-right:10px;color:#475569;background:#fff}
+  @media(max-width:767.98px){.store-form-page .form-hero{padding:19px}.store-form-page .hero-icon{display:none}.store-form-page .form-hero h3{font-size:19px}.store-form-page .close-form{width:36px;padding:0;margin-left:10px}.store-form-page .close-form i{margin:0}.store-form-page .close-form span{display:none}.store-form-page .form-steps{overflow-x:auto;padding:13px 18px;white-space:nowrap}.store-form-page .main-form-card>.card-body{padding:14px}.store-form-page .section-card>.card-body{padding:14px}.store-form-page .form-table,.store-form-page .form-table tbody,.store-form-page .form-table tr,.store-form-page .form-table td{display:block;width:100%!important}.store-form-page .form-table>tbody>tr{padding:10px 0;border-bottom:1px solid #f1f5f9}.store-form-page .form-table>tbody>tr>td{padding:5px 0;border:0}.store-form-page .form-table>tbody>tr>td:first-child{padding:2px 0 8px}.store-form-page .form-group{margin-bottom:12px}.store-form-page .form-actions{align-items:stretch;flex-direction:column;padding:15px}.store-form-page .submit-hint{margin:0 0 11px}.store-form-page .action-buttons{width:100%}.store-form-page .form-actions .btn{min-width:0;flex:1}.store-form-page .back-btn{margin-right:8px}}
+</style>
+<section class="content store-form-page">
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
         <form action="<?= base_url('spv/Toko/add_toko') ?>" method="post" enctype="multipart/form-data" id="form_proses">
-          <div class="card card-info ">
-            <div class="card-header">
-              <h3 class="card-title"><i class="fas fa-store"></i> Data Pengajuan Toko </h3>
-              <div class="card-tools">
-                <a href="<?= base_url('spv/Toko/pengajuanToko') ?>"> <i class="fas fa-times-circle"></i></a>
-              </div>
+          <div class="card main-form-card">
+            <div class="card-header form-hero">
+              <div class="hero-title"><span class="hero-icon"><i class="fas fa-store"></i></span><div><h3>Pengajuan Toko Baru</h3><p>Tambahkan toko baru untuk customer yang sudah terdaftar.</p></div></div>
+              <a href="<?= base_url('spv/Toko/pengajuanToko') ?>" class="close-form" title="Tutup form"><i class="fas fa-times"></i><span>Tutup</span></a>
             </div>
+            <div class="form-steps"><div class="form-step"><span class="step-number">1</span>Pilih Customer</div><div class="form-step"><span class="step-number">2</span>Data Toko</div><div class="form-step"><span class="step-number">3</span>Periksa &amp; Kirim</div></div>
             <div class="card-body">
-              <div class="card card-warning card-outline">
+              <div class="info-note"><i class="fas fa-info-circle"></i><div><strong>Pastikan customer sudah terdaftar.</strong> Gunakan menu Customer &amp; Toko Baru jika customer belum tersedia.</div></div>
+              <div class="card section-card">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <i class="fas fa-store"></i>
+                    <span class="section-icon"><i class="fas fa-store"></i></span>
                     <strong>Data Toko</strong>
                   </h3>
                 </div>
                 <div class="card-body">
-                  <div class="form-group">
+                  <div class="form-group customer-picker">
                     <label for="">Pilih Customer *</label>
                     <select name="id_customer" class="form-control form-control-sm select2" id="customer" required>
                       <option value="">- Pilih customer -</option>
@@ -28,8 +35,7 @@
                       <?php endforeach ?>
                     </select>
                   </div>
-                  <hr>
-                  <table class="table">
+                  <table class="table form-table">
                     <tr>
                       <td><strong>Nama Toko *</strong></td>
                       <td>
@@ -254,19 +260,17 @@
                       </td>
                     </tr>
                   </table>
-                  <hr>
-                  <strong># Data Pendukung</strong>
-                  <hr>
+                  <div class="support-title"><i class="fas fa-images"></i>Foto Pendukung</div>
                   <div class="row">
-                    <div class="col-sm-5">
-                      <div class="form-group">
+                    <div class="col-md-6">
+                      <div class="form-group upload-field">
                         <label for=""> Foto Toko *</label>
                         <input type="file" class="form-control form-control-sm" name="foto_toko" accept="image/png, image/jpeg, image/jpg" required>
                         <small>Jenis foto : JPG,JPEG,PNG (Max size 5mb)</small>
                       </div>
                     </div>
-                    <div class="col-sm-5">
-                      <div class="form-group">
+                    <div class="col-md-6">
+                      <div class="form-group upload-field">
                         <label for=""> Foto PIC *</label>
                         <input type="file" class="form-control form-control-sm" name="foto_pic" accept="image/png, image/jpeg, image/jpg" required>
                         <small>Jenis foto : JPG,JPEG,PNG (Max size 5mb)</small>
@@ -275,16 +279,15 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group">
-                <strong> Catatan : *</strong>
+              <div class="form-group notes-box">
+                <strong><i class="fas fa-sticky-note mr-1"></i> Catatan Pengajuan *</strong>
                 <textarea name="catatan_spv" class="form-control form-control-sm" placeholder="...." required></textarea>
               </div>
-              <hr>
-              <small><strong>*) Harus Di lengkapi.</strong></small>
+              <span class="required-note">● Field bertanda (*) wajib dilengkapi.</span>
             </div>
-            <div class="card-footer">
-              <button type="submit" class="btn btn-success float-right btn-sm" id="btn-kirim"><i class="fa fa-paper-plane"></i> Kirim</button>
-              <a href="<?= base_url('spv/Toko/pengajuanToko') ?>" class="btn btn-danger float-right mr-3 btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+            <div class="card-footer form-actions">
+              <span class="submit-hint"><i class="fas fa-shield-alt mr-1"></i>Periksa kembali data sebelum mengirim.</span>
+              <div class="action-buttons"><a href="<?= base_url('spv/Toko/pengajuanToko') ?>" class="btn border back-btn"><i class="fas fa-arrow-left mr-1"></i>Kembali</a><button type="submit" class="btn btn-primary" id="btn-kirim"><i class="fa fa-paper-plane mr-1"></i>Kirim Pengajuan</button></div>
             </div>
           </div>
         </form>

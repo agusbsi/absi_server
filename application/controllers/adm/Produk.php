@@ -20,14 +20,16 @@ class Produk extends CI_Controller
     $this->load->model('M_admin');
   }
 
-  private function require_administrator()
-  {
-    if ((string) $this->session->userdata('role') !== '1') {
-      tampil_alert('error', 'AKSES DITOLAK', 'Fitur pengelolaan artikel hanya tersedia untuk Administrator.');
-      redirect(base_url('adm/produk'));
-      exit;
+ private function require_administrator()
+{
+    $role = (string) $this->session->userdata('role');
+
+    if (!in_array($role, ['1', '6', '15'], true)) {
+        tampil_alert('error', 'AKSES DITOLAK', 'Fitur pengelolaan artikel hanya tersedia untuk Administrator.');
+        redirect(base_url('adm/produk'));
+        exit;
     }
-  }
+}
 
   //   halaman utama
   public function index()
