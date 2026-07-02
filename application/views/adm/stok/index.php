@@ -252,13 +252,13 @@
                         </thead>
                         <tbody id="dataTableBody">
                         </tbody>
-                        <tfoot>
+                        <!-- <tfoot>
                             <tr class="bg-light font-weight-bold">
                                 <td colspan="3" class="text-right">Grand Total</td>
                                 <td class="text-center" id="grandTotalStok">0</td>
                                 <td colspan="2"></td>
                             </tr>
-                        </tfoot>
+                        </tfoot> -->
                     </table>
                 </div>
             </div>
