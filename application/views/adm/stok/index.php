@@ -389,7 +389,7 @@
                 totalstok += qty;
             }
         });
-        document.getElementById('grandTotalStok').textContent = totalstok.toLocaleString('id-ID');
+        // document.getElementById('grandTotalStok').textContent = totalstok.toLocaleString('id-ID');
     }
 
     function printDiv(divName) {
