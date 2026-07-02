@@ -478,6 +478,83 @@ class Stok extends CI_Controller
     $this->template->load('template/template', 'adm/stok/detail_artikel', $data);
   }
 
+  // Utilitas sementara; sengaja tidak ditambahkan ke sidebar.
+  public function perbaikan_stok()
+  {
+    $data['title'] = 'Perbaikan Stok';
+    $data['ringkasan'] = $this->ringkasan_perbaikan_stok();
+    $this->template->load('template/template', 'adm/stok/perbaikan_stok', $data);
+  }
+
+  public function cek_perbaikan_stok()
+  {
+    $this->jawaban_stok(['success' => true, 'data' => $this->ringkasan_perbaikan_stok()]);
+  }
+
+  public function backup_kartu_stok()
+  {
+    if (strtoupper($this->input->method()) !== 'POST') return $this->jawaban_stok(['success' => false, 'message' => 'Metode tidak diizinkan.'], 405);
+    $this->db->query('DROP TABLE IF EXISTS tb_kartu_stok_backup');
+    if (!$this->db->query('CREATE TABLE tb_kartu_stok_backup AS SELECT * FROM tb_kartu_stok')) {
+      return $this->jawaban_stok(['success' => false, 'message' => 'Backup gagal dibuat.'], 500);
+    }
+    $this->jawaban_stok(['success' => true, 'jumlah' => (int) $this->db->count_all('tb_kartu_stok_backup'), 'waktu' => date('d-m-Y H:i:s')]);
+  }
+
+  public function mulai_perbaikan_stok()
+  {
+    if (strtoupper($this->input->method()) !== 'POST') return $this->jawaban_stok(['success' => false, 'message' => 'Metode tidak diizinkan.'], 405);
+    $this->session->set_userdata('perbaikan_stok_berhenti', false);
+    $this->jawaban_stok(['success' => true, 'data' => $this->ringkasan_perbaikan_stok()]);
+  }
+
+  public function proses_perbaikan_stok()
+  {
+    if (strtoupper($this->input->method()) !== 'POST') return $this->jawaban_stok(['success' => false, 'message' => 'Metode tidak diizinkan.'], 405);
+    if ($this->session->userdata('perbaikan_stok_berhenti')) return $this->jawaban_stok(['success' => true, 'stopped' => true, 'data' => $this->ringkasan_perbaikan_stok()]);
+
+    $this->db->query("UPDATE tb_kartu_stok SET sisa = COALESCE(stok,0)+COALESCE(masuk,0)-COALESCE(keluar,0)
+      WHERE COALESCE(no_doc,'') <> 'import stok' AND COALESCE(no_doc,'') NOT LIKE 'AD-%'
+      AND COALESCE(keterangan,'') NOT LIKE '%BAP%'
+      AND COALESCE(sisa,0) <> COALESCE(stok,0)+COALESCE(masuk,0)-COALESCE(keluar,0)");
+    $sisa = (int) $this->db->affected_rows();
+
+    $this->db->query("UPDATE tb_kartu_stok k JOIN (
+      SELECT id, stok_seharusnya FROM (
+        SELECT id, stok, LAG(sisa) OVER (PARTITION BY id_produk,id_toko ORDER BY tanggal,id) stok_seharusnya FROM tb_kartu_stok
+      ) x WHERE stok_seharusnya IS NOT NULL AND COALESCE(stok,0) <> COALESCE(stok_seharusnya,0)
+    ) fix ON fix.id=k.id SET k.stok=fix.stok_seharusnya");
+    $stok = (int) $this->db->affected_rows();
+    $hasil = $this->ringkasan_perbaikan_stok();
+    $this->jawaban_stok(['success' => true, 'stopped' => false, 'selesai' => $hasil['total_masalah'] === 0,
+      'data' => $hasil, 'diperbaiki' => ['stok' => $stok, 'sisa' => $sisa]]);
+  }
+
+  public function berhenti_perbaikan_stok()
+  {
+    if (strtoupper($this->input->method()) !== 'POST') return $this->jawaban_stok(['success' => false, 'message' => 'Metode tidak diizinkan.'], 405);
+    $this->session->set_userdata('perbaikan_stok_berhenti', true);
+    $this->jawaban_stok(['success' => true]);
+  }
+
+  private function ringkasan_perbaikan_stok()
+  {
+    $stok = $this->db->query("SELECT COUNT(*) total FROM (
+      SELECT stok,LAG(sisa) OVER (PARTITION BY id_produk,id_toko ORDER BY tanggal,id) stok_seharusnya FROM tb_kartu_stok
+    ) x WHERE stok_seharusnya IS NOT NULL AND COALESCE(stok,0) <> COALESCE(stok_seharusnya,0)")->row();
+    $sisa = $this->db->query("SELECT COUNT(*) total FROM tb_kartu_stok
+      WHERE COALESCE(no_doc,'') <> 'import stok' AND COALESCE(no_doc,'') NOT LIKE 'AD-%'
+      AND COALESCE(keterangan,'') NOT LIKE '%BAP%'
+      AND COALESCE(sisa,0) <> COALESCE(stok,0)+COALESCE(masuk,0)-COALESCE(keluar,0)")->row();
+    $a = (int) $stok->total; $b = (int) $sisa->total;
+    return ['total_stok_tidak_sinkron' => $a, 'total_sisa_salah' => $b, 'total_masalah' => $a + $b];
+  }
+
+  private function jawaban_stok($data, $status = 200)
+  {
+    return $this->output->set_status_header($status)->set_content_type('application/json')->set_output(json_encode($data));
+  }
+
   // Kartu Stok
   public function kartu_stok()
   {

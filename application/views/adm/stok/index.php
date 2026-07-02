@@ -216,7 +216,7 @@
                 <div class="loader-icon">
                     <div class="circle"></div>
                     <div class="progress-circle">
-                        <div class="percentage" id="percentage">0%</div>
+                        <div class="percentage" id="percentage"><i class="fas fa-database"></i></div>
                     </div>
                 </div>
                 <div class="loading-text">
@@ -252,6 +252,13 @@
                         </thead>
                         <tbody id="dataTableBody">
                         </tbody>
+                        <tfoot>
+                            <tr class="bg-light font-weight-bold">
+                                <td colspan="3" class="text-right">Grand Total</td>
+                                <td class="text-center" id="grandTotalStok">0</td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -313,86 +320,39 @@
         XLSX.writeFile(wb, filename);
     }
 
-    document.getElementById('searchBtn').addEventListener('click', function() {
+    document.getElementById('searchBtn').addEventListener('click', async function() {
         var idartikel = document.getElementById('id_artikel').value;
         var tanggal = document.getElementById('tanggal').value;
         const url = '<?= base_url('adm/Stok') ?>';
         if (validateForm()) {
-            document.getElementById('loading').style.display = 'flex';
-            // Reset the percentage
-            var percentageElement = document.getElementById('percentage');
-            percentageElement.textContent = '0%';
-            var circle = document.querySelector('.circle');
-            // Simulate loading data with setInterval
-            var percentage = 0;
-            var intervalTime = 50; // update every 50ms
-            var interval = setInterval(() => {
-                if (percentage < 100) {
-                    percentage += 1;
-                    percentageElement.textContent = Math.round(percentage) + '%';
-                    var angle = percentage * 3.6;
-                    circle.style.background = `conic-gradient(
-                    #3498db 0deg,
-                    #3498db ${angle}deg,
-                    transparent ${angle}deg,
-                    transparent 360deg
-                )`;
-                } else {
-                    clearInterval(interval);
+            const loading = document.getElementById('loading');
+            const progressStage = document.getElementById('progressStage');
+            const loadingSubtext = document.getElementById('loadingSubtext');
+
+            loading.style.display = 'flex';
+            progressStage.textContent = 'Mengambil data stok...';
+            loadingSubtext.textContent = 'Server sedang menghitung stok terakhir dari seluruh toko aktif';
+
+            try {
+                const response = await fetch(`${url}/cari_stokartikel?id_artikel=${idartikel}&tanggal=${tanggal}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
-            }, intervalTime);
 
-            fetch(`${url}/cari_stokartikel?id_artikel=${idartikel}&tanggal=${tanggal}`)
-                .then(response => response.json())
-                .then(data => {
-                    var additionalDuration = 2000;
-                    var additionalIntervalTime = intervalTime;
-                    var additionalIntervals = additionalDuration / additionalIntervalTime;
-                    var remainingIntervals = 0;
+                progressStage.textContent = 'Menampilkan hasil...';
+                const data = await response.json();
 
-                    var additionalInterval = setInterval(() => {
-                        remainingIntervals++;
-                        percentage = Math.min(100, percentage + (1 / additionalIntervals) * 100);
-                        if (remainingIntervals <= additionalIntervals && percentage <= 100) {
-                            percentageElement.textContent = Math.round(percentage) + '%';
-                            var angle = percentage * 3.6;
-                            circle.style.background = `conic-gradient(
-                            #3498db 0deg,
-                            #3498db ${angle}deg,
-                            transparent ${angle}deg,
-                            transparent 360deg
-                        )`;
-                        } else {
-                            clearInterval(additionalInterval);
-                            percentageElement.textContent = '100%';
-                            circle.style.background = `conic-gradient(
-                            #3498db 0deg,
-                            #3498db 360deg,
-                            transparent 360deg,
-                            transparent 360deg
-                        )`;
-                            setTimeout(() => {
-                                // Hide the loading animation
-                                document.getElementById('loading').style.display = 'none';
-                                if (data.tabel_data != "") {
-                                    updateUI(data);
-                                } else {
-                                    Swal.fire(
-                                        'TIDAK ADA DATA',
-                                        'Data tidak ditemukan, silahkan cari kembali',
-                                        'info'
-                                    );
-                                }
-
-                            }, 500);
-                        }
-                    }, additionalIntervalTime);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    clearInterval(interval);
-                    document.getElementById('loading').style.display = 'none';
-                });
+                if (data.tabel_data && data.tabel_data.length > 0) {
+                    updateUI(data);
+                } else {
+                    Swal.fire('TIDAK ADA DATA', 'Data tidak ditemukan, silahkan cari kembali', 'info');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                Swal.fire('GAGAL MEMUAT DATA', 'Terjadi kesalahan saat mengambil data stok.', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
         } else {
             Swal.fire(
                 'BELUM LENGKAP',
@@ -429,6 +389,7 @@
                 totalstok += qty;
             }
         });
+        document.getElementById('grandTotalStok').textContent = totalstok.toLocaleString('id-ID');
     }
 
     function printDiv(divName) {
