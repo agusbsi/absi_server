@@ -1,3 +1,4 @@
+<?php $this->load->view('adm/stokopname/histori_aset_content'); return; ?>
      <!-- Main content -->
      <section class="content">
        <div class="container-fluid">
