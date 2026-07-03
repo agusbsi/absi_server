@@ -6,6 +6,9 @@ $periode_ranking = $nama_bulan[(int) date('n', strtotime('last month')) - 1] . '
 $total_toko = (int) ($t_toko->total ?? 0);
 $total_user = (int) ($t_user->total ?? 0);
 $total_stok = (int) ($t_stok->total ?? 0);
+$total_stok_gudang = (int) ($t_stok_gudang->total ?? 0);
+$total_customer = (int) ($t_customer->total ?? 0);
+$total_toko_tutup = (int) ($t_toko_tutup->total ?? 0);
 $total_minta = (int) ($t_minta->total ?? 0);
 $total_kirim = (int) ($t_kirim->total ?? 0);
 $total_jual = (int) ($t_jual->total ?? 0);
@@ -79,9 +82,12 @@ $total_aktivitas = $total_minta + $total_kirim + $total_jual + $total_retur;
     <div class="row">
       <?php
       $overviews = array(
+        array('label' => 'Total customer', 'value' => $total_customer, 'icon' => 'fas fa-building', 'url' => base_url('mng_mkt/Customer')),
         array('label' => 'Toko aktif', 'value' => $total_toko, 'icon' => 'fas fa-store', 'url' => base_url('mng_mkt/Toko')),
+        array('label' => 'Toko tutup', 'value' => $total_toko_tutup, 'icon' => 'fas fa-store-slash', 'url' => base_url('mng_mkt/Toko/toko_tutup')),
         array('label' => 'User aktif', 'value' => $total_user, 'icon' => 'fas fa-users', 'url' => base_url('mng_mkt/User')),
-        array('label' => 'Total stok seluruh toko', 'value' => $total_stok, 'icon' => 'fas fa-boxes', 'url' => '')
+        array('label' => 'Stok toko', 'value' => $total_stok, 'icon' => 'fas fa-boxes', 'url' => ''),
+        array('label' => 'Stok Gudang Prepedan', 'value' => $total_stok_gudang, 'icon' => 'fas fa-warehouse', 'url' => '')
       );
       foreach ($overviews as $overview) : ?>
         <div class="col-lg-4 col-md-6"><article class="overview-card"><span class="overview-icon"><i class="<?= $overview['icon'] ?>"></i></span><h3 class="overview-value"><?= number_format($overview['value']) ?></h3><p class="overview-label"><?= $overview['label'] ?></p><?php if ($overview['url']) : ?><a href="<?= $overview['url'] ?>" class="overview-link" aria-label="Lihat <?= $overview['label'] ?>" title="Lihat data"><i class="fas fa-arrow-right"></i></a><?php endif; ?></article></div>

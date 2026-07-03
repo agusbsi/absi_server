@@ -12,57 +12,21 @@ class Dashboard extends CI_Controller
       redirect(base_url(''));
     }
     $this->load->model('M_adm_gudang');
+    $this->load->model('M_dashboard');
   }
   public function index()
   {
     $data['title'] = 'Dashboard';
-    $data['box'] = $this->box();
-    $bln = date('m');
-    $thn = date('Y');
-    // total permintaan
-    $data['t_minta'] = $this->db->query("SELECT sum(tpd.qty_acc) as total FROM tb_permintaan_detail tpd
-    join tb_permintaan tp on tpd.id_permintaan = tp.id
-    where tp.status >= 2 AND tp.status != 5 AND tpd.status = 1 AND MONTH(tp.created_at) = $bln AND YEAR(tp.created_at) = $thn")->row();
-    // total Pengiriman
-    $data['t_kirim'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_pengiriman_detail tpd
-    join tb_pengiriman tp on tpd.id_pengiriman = tp.id
-    where MONTH(tp.created_at) = $bln AND YEAR(tp.created_at) = $thn")->row();
-    // Total Penjualan
-    $data['t_jual'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_penjualan_detail tpd
-      join tb_penjualan tp on tpd.id_penjualan = tp.id
-      where MONTH(tp.tanggal_penjualan) = $bln AND YEAR(tp.tanggal_penjualan) = $thn")->row();
-    // retur
-    $data['t_retur'] = $this->db->query("SELECT sum(tpd.qty) as total FROM tb_retur_detail tpd
-      join tb_retur tr on tpd.id_retur = tr.id
-      where tr.status >= 2 AND tr.status <= 4  AND MONTH(tr.created_at) = $bln AND YEAR(tr.created_at) = $thn")->row();
-
+    $data['box'] = $this->M_dashboard->summary_boxes('full');
+    foreach ($this->M_dashboard->monthly_activity() as $key => $total) {
+      $data['t_' . $key] = $this->M_dashboard->as_total($total);
+    }
     $this->template->load('template/template', 'manager_ops/dashboard', $data);
   }
   // fungsi box
   public function box()
   {
-    $queries = [
-      ['bg-primary', 'SELECT count(id) as total from tb_toko where status = 1', 'Toko Aktif', 'adm/Toko/', 'fas fa-store'],
-      ['bg-primary', 'SELECT count(id) as total from tb_toko where status = 0', 'Toko Tutup', 'adm/Toko/toko_tutup', 'fas fa-store-slash'],
-      ['bg-primary', 'SELECT count(id) as total from tb_customer', 'Customer', 'mng_ops/Dashboard', 'fas fa-building'],
-      ['bg-primary', 'SELECT count(id) as total from tb_produk where status != 0', 'Artikel', 'adm/Produk/', 'fas fa-cube'],
-      ['bg-primary', 'SELECT count(id) as total from tb_user where (role = 4 or role = 3) and status = 1', 'User', 'mng_ops/Dashboard/user', 'fas fa-users'],
-      ['bg-primary', 'SELECT count(id) as total from tb_aset_master', 'Jenis Aset', 'hrd/Aset/list_aset', 'fas fa-layer-group'],
-      ['bg-primary', 'SELECT sum(ts.qty) as total FROM tb_stok ts JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1', 'Stok Semua Toko', 'adm/Stok', 'fas fa-chart-pie'],
-      ['bg-primary', 'SELECT SUM(stok) as total FROM tb_produk where status = 1', 'Stok Gudang Prepedan', 'adm/Stok/stok_gudang', 'fas fa-cubes'],
-    ];
-
-    $box = array_map(function ($query) {
-      return [
-        'box'   => $query[0],
-        'total' => $this->db->query($query[1])->row()->total,
-        'title' => $query[2],
-        'link'  => $query[3],
-        'icon'  => $query[4]
-      ];
-    }, $queries);
-
-    return json_decode(json_encode($box), FALSE);
+    return $this->M_dashboard->summary_boxes('full');
   }
   // list artikel
   public function artikel()

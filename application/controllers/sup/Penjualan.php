@@ -123,16 +123,45 @@ class Penjualan extends CI_Controller
   public function hapus_data($id)
   {
     $username = $this->session->userdata('username');
-    // Ambil data detail penjualan
-    $toko = $this->db->query("SELECT id_toko from tb_penjualan where id = '$id'")->row()->id_toko;
-    $detail = $this->db->query("SELECT id_produk, qty from tb_penjualan_detail where id_penjualan = '$id'")->result();
-
     $this->db->trans_start();
+
+    // Kunci penjualan agar pembatalan yang sama tidak diproses bersamaan.
+    $penjualan = $this->db->query(
+      "SELECT id_toko FROM tb_penjualan WHERE id = ? FOR UPDATE",
+      array($id)
+    )->row();
+
+    if (!$penjualan) {
+      $this->db->trans_rollback();
+      tampil_alert('error', 'GAGAL', 'Data penjualan ' . $id . ' tidak ditemukan.');
+      redirect(base_url('sup/penjualan'));
+      return;
+    }
+
+    $toko = $penjualan->id_toko;
+    $detail = $this->db->query(
+      "SELECT id_produk, qty FROM tb_penjualan_detail WHERE id_penjualan = ?",
+      array($id)
+    )->result();
+
     foreach ($detail as $d) {
-      // Ambil stok saat ini
-      $currentStock = $this->db->select('qty')->where(['id_produk' => $d->id_produk, 'id_toko' => $toko])->get('tb_stok')->row()->qty;
+      // Kunci stok agar nilai awal, nilai akhir, dan kartu stok tetap konsisten.
+      $stok_data = $this->db->query(
+        "SELECT qty FROM tb_stok WHERE id_produk = ? AND id_toko = ? FOR UPDATE",
+        array($d->id_produk, $toko)
+      )->row();
+
+      if (!$stok_data) {
+        $this->db->trans_rollback();
+        tampil_alert('error', 'GAGAL', 'Data stok produk tidak ditemukan.');
+        redirect(base_url('sup/penjualan'));
+        return;
+      }
+
+      $currentStock = (float)$stok_data->qty;
       // Hitung stok yang baru
-      $newStock = $currentStock + $d->qty;
+      $qty_batal = (float)$d->qty;
+      $newStock = $currentStock + $qty_batal;
       // Update stok
       $this->db->where(['id_produk' => $d->id_produk, 'id_toko' => $toko])->update('tb_stok', ['qty' => $newStock]);
       // Insert into tb_kartu_stok
@@ -140,9 +169,9 @@ class Penjualan extends CI_Controller
         'no_doc' => $id,
         'id_produk' => $d->id_produk,
         'id_toko' => $toko,
-        'masuk' => $d->qty,
+        'masuk' => $qty_batal,
         'stok' => $currentStock,
-        'sisa' => $currentStock + $d->qty,
+        'sisa' => $newStock,
         'keterangan' => 'Cancel Penjualan',
         'pembuat' => $username
       );

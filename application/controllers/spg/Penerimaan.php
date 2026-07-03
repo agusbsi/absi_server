@@ -104,8 +104,14 @@ class Penerimaan extends CI_Controller
       $data_detail = array(
         'qty_diterima' =>  $d_qty_diterima,
       );
-      $stok_data = $this->db->get_where('tb_stok', array('id_produk' => $d_id_produk, 'id_toko' => $id_toko))->row();
+      // Kunci baris stok sampai transaksi selesai agar penerimaan bersamaan
+      // tidak saling menimpa dan kartu stok tetap konsisten.
+      $stok_data = $this->db->query(
+        "SELECT qty FROM tb_stok WHERE id_produk = ? AND id_toko = ? FOR UPDATE",
+        array($d_id_produk, $id_toko)
+      )->row();
       $stok = ($stok_data && isset($stok_data->qty)) ? $stok_data->qty : 0;
+      $stok_akhir = $stok + $d_qty_diterima;
       $this->db->where('id', $d_id_detail);
       $this->db->update('tb_pengiriman_detail', $data_detail);
       if ($d_qty != $d_qty_diterima) {
@@ -113,7 +119,7 @@ class Penerimaan extends CI_Controller
       }
       // Update tb_stok
       $this->db->set('updated_at', 'NOW()', FALSE);
-      $this->db->set('qty', $stok + $d_qty_diterima, FALSE);
+      $this->db->set('qty', $stok_akhir);
       $this->db->where('id_produk', $d_id_produk);
       $this->db->where('id_toko', $id_toko);
       $this->db->update('tb_stok');
@@ -125,7 +131,7 @@ class Penerimaan extends CI_Controller
         'id_toko' => $id_toko,
         'masuk' => $d_qty_diterima,
         'stok' => $stok,
-        'sisa' => $stok + $d_qty_diterima,
+        'sisa' => $stok_akhir,
         'keterangan' => 'Terima Barang',
         'pembuat' => $username
       );

@@ -1,87 +1,47 @@
-<section class="content">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card card-info ">
-          <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-store"></i> List Toko yang anda kelola</b> </h3>
-          </div>
-            <div class="card-body">
-              <form action="<?= base_url('spg/Aset/simpan'); ?>" method ="post">
-              <table id="table_toko" class="table table-bordered table-striped">
-                <thead>
-                <tr class="text-center">
-                  <th style="width:4%">No</th>
-                  <th style="width:22%">Nama Toko</th>
-                  <th >Alamat</th>
-                  <th >spg</th>
-                  <th>Status</th>
-                  <th style="width:17%">Menu</th>
-                </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  $no = 0;
-                    foreach($toko as $t):
-                      $no++
-                  ?>
-                  <tr>
-                    <td><?= $no ?></td>
-                    <td>
-                        <?= $t->nama_toko ?>
-                        <span class="right badge badge-danger <?= $t->status != 1 && $t->status != 0  ? '' : 'd-none' ?>">New</span>
-                        </td>
-                    <td><?= $t->alamat ?></td>
-                    <td class="text-center">
-                    <?php
-                        if ($t->nama_user == ""){
-                          echo "<span class='badge badge-warning'> Belum dikaitkan</span>";
-                        }else{
-                          echo $t->nama_user ;
-                        }
-                      ?>
-                     
-                    </td>
-                    <td class="text-center">
-                    <?= status_toko($t->status) ?>
-                    </td>
-                    <td>
-                      <a href ="<?= base_url('mng_mkt/Toko/profil/'.$t->id) ?>" class="btn btn-<?= ($t->status == "2") ? 'success' : 'info'; ?> btn-sm"> <i class="fas <?= ($t->status == "2") ? 'fa-cog' : 'fa-eye'; ?>"></i> <?= ($t->status == "2") ? 'Proses' : 'Detail'; ?></a>
-                      <?php if ($t->status != 3) { ?>
-                        <a href="<?= base_url('mng_mkt/Toko/update/'.$t->id) ?>"  class="btn btn-warning btn-sm "><i class="fas fa-edit"></i> </a>
-                      <?php } ?>
-                      <a href="<?= base_url('mng_mkt/Toko/unduh_pdf/'.$t->id) ?>" target = "_blank" class="btn btn-outline-danger btn-sm "><i class="fas fa-file-pdf"></i> </a>
-                    </td>
-                  </tr>
-                  <?php endforeach ?>
-                </tbody>
-              </table>
-            </div>
-            <div class="card-footer text-center ">
-          
-            </div>
-            </form>
-          </div>
-        </div>
-     
-      </div>
-    </div>
+<?php
+$total_toko = count($toko);
+$terhubung = $belum_terhubung = $perlu_proses = 0;
+foreach ($toko as $item) {
+  trim((string) $item->nama_user) === '' ? $belum_terhubung++ : $terhubung++;
+  if ((int) $item->status === 2) $perlu_proses++;
+}
+?>
+<style>
+  .active-store{--primary:#0f766e;--soft:#ecfdf5;--ink:#172033;--muted:#718096;--line:#e7edf3;padding-bottom:28px;color:var(--ink)}
+  .active-store .store-hero{position:relative;overflow:hidden;margin-bottom:20px;padding:27px 30px;color:#fff;background:linear-gradient(120deg,#115e59 0%,#0f766e 55%,#14b8a6 125%);border-radius:18px;box-shadow:0 14px 34px rgba(15,118,110,.18)}
+  .active-store .store-hero:after{position:absolute;top:-105px;right:-50px;width:260px;height:260px;content:'';border:1px solid rgba(255,255,255,.15);border-radius:50%}.active-store .hero-content{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between}.active-store .hero-eyebrow{display:block;margin-bottom:7px;color:rgba(255,255,255,.78);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}.active-store .store-hero h1{margin:0 0 7px;font-size:26px;font-weight:700}.active-store .store-hero p{margin:0;color:rgba(255,255,255,.82);font-size:13px}.active-store .hero-icon{display:flex;width:60px;height:60px;align-items:center;justify-content:center;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:17px;font-size:23px}
+  .active-store .summary-card{display:flex;min-height:94px;align-items:center;gap:14px;margin-bottom:18px;padding:17px;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 5px 18px rgba(34,45,70,.04)}.active-store .summary-icon{display:flex;width:43px;height:43px;flex:0 0 43px;align-items:center;justify-content:center;color:var(--color);background:var(--bg);border-radius:12px}.active-store .summary-value{margin:0 0 4px;color:#111827;font-size:23px;font-weight:700;line-height:1}.active-store .summary-label{margin:0;color:var(--muted);font-size:12px}
+  .active-store .modern-card{overflow:hidden;border:1px solid var(--line);border-radius:17px;box-shadow:0 6px 20px rgba(34,45,70,.045)}.active-store .modern-card .card-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 21px;background:#fff;border-bottom:1px solid var(--line)}.active-store .modern-card .card-title{margin:0;color:var(--ink);font-size:16px;font-weight:700}.active-store .header-subtitle{display:block;margin-top:4px;color:var(--muted);font-size:11px;font-weight:400}.active-store .search-box{position:relative;width:300px;margin:0}.active-store .search-box i{position:absolute;top:50%;left:13px;color:#94a3b8;transform:translateY(-50%)}.active-store .search-box input{width:100%;height:39px;padding:8px 12px 8px 37px;background:#f8fafc;border:1px solid #dfe6ee;border-radius:10px;outline:none;font-size:12px}.active-store .search-box input:focus{background:#fff;border-color:#5eead4;box-shadow:0 0 0 3px rgba(20,184,166,.1)}
+  .active-store table{width:100%!important;margin:0}.active-store table thead th{padding:13px 10px;color:#64748b;background:#fbfcfe;border-top:0;border-bottom:1px solid var(--line);font-size:10px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}.active-store table tbody td{padding:14px 10px;vertical-align:middle;border-color:#eef2f6;font-size:12px}.active-store table tbody tr:hover{background:#fbfefd}.active-store .store-name{display:flex;align-items:center;gap:10px}.active-store .store-avatar{display:flex;width:35px;height:35px;flex:0 0 35px;align-items:center;justify-content:center;color:var(--primary);background:var(--soft);border-radius:10px}.active-store .store-name strong{display:block;color:#253047}.active-store .attention{display:inline-block;margin-top:3px;padding:2px 6px;color:#b45309;background:#fff7ed;border-radius:999px;font-size:9px;font-weight:700}.active-store .address{display:-webkit-box;max-width:390px;overflow:hidden;color:var(--muted);line-height:1.5;-webkit-box-orient:vertical;-webkit-line-clamp:2}.active-store .unassigned{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;color:#b45309;background:#fff7ed;border-radius:999px;font-size:10px;font-weight:700}
+  .active-store .actions{display:flex;justify-content:center;gap:6px;white-space:nowrap}.active-store .actions .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border:0;border-radius:9px;font-size:10px;font-weight:700}.active-store .btn-main{color:#fff;background:var(--primary)}.active-store .btn-edit{color:#9a6700;background:#fff7dd}.active-store .btn-pdf{color:#dc2626;background:#fef2f2}.active-store .empty-state{padding:45px 20px!important;color:var(--muted);text-align:center}.active-store .empty-state i{display:block;margin-bottom:10px;color:#cbd5e1;font-size:30px}.active-store .dataTables_filter,.active-store .dataTables_length{display:none}.active-store .dataTables_info,.active-store .dataTables_paginate{padding-top:16px!important;color:var(--muted);font-size:11px}
+  @media(max-width:767.98px){.active-store .store-hero{padding:22px 20px;border-radius:15px}.active-store .store-hero h1{font-size:22px}.active-store .hero-icon{display:none}.active-store .modern-card .card-header{align-items:flex-start;flex-direction:column}.active-store .search-box{width:100%}.active-store .modern-card .card-body{padding:12px}.active-store .actions{justify-content:flex-start}}
+</style>
+<section class="content active-store"><div class="container-fluid">
+  <div class="store-hero"><div class="hero-content"><div><span class="hero-eyebrow"><i class="fas fa-map-marked-alt mr-1"></i> Manajemen Toko</span><h1>Toko Aktif</h1><p>Kelola profil, penanggung jawab, dan dokumen seluruh toko dalam satu tempat.</p></div><span class="hero-icon"><i class="fas fa-store"></i></span></div></div>
+  <div class="row">
+    <?php $summaries = array(array('Total toko',$total_toko,'fa-store','#0f766e','#ecfdf5'),array('Terhubung dengan SPG',$terhubung,'fa-user-check','#2563eb','#eff6ff'),array('Belum terhubung',$belum_terhubung,'fa-user-clock','#d97706','#fff7ed'),array('Perlu diproses',$perlu_proses,'fa-tasks','#7c3aed','#f5f3ff')); foreach ($summaries as $summary) : ?>
+      <div class="col-xl-3 col-sm-6"><article class="summary-card" style="--color:<?= $summary[3] ?>;--bg:<?= $summary[4] ?>"><span class="summary-icon"><i class="fas <?= $summary[2] ?>"></i></span><div><h2 class="summary-value"><?= number_format($summary[1]) ?></h2><p class="summary-label"><?= $summary[0] ?></p></div></article></div>
+    <?php endforeach; ?>
   </div>
-</section>
-  <!-- jQuery -->
-  <script src="<?php echo base_url()?>/assets/plugins/jquery/jquery.min.js"></script>
-  <script>
-    $(document).ready(function(){
-    
-      $('#table_toko').DataTable({
-          order: [[0, 'asc']],
-          responsive: true,
-          lengthChange: false,
-          autoWidth: false,
-      });
-
-    
-    })
-  </script>
-
-
+  <div class="card modern-card"><div class="card-header"><h3 class="card-title">Daftar toko<span class="header-subtitle">Klik detail untuk melihat informasi lengkap dan aktivitas toko.</span></h3><label class="search-box" for="store-search"><i class="fas fa-search"></i><input type="search" id="store-search" placeholder="Cari toko, alamat, atau SPG..." autocomplete="off"></label></div>
+    <div class="card-body"><div class="table-responsive"><table id="table_toko" class="table"><thead><tr><th class="text-center">No</th><th>Nama Toko</th><th>Alamat</th><th>SPG</th><th class="text-center">Status</th><th class="text-center">Aksi</th></tr></thead><tbody>
+      <?php if (empty($toko)) : ?><tr><td colspan="6" class="empty-state"><i class="fas fa-store-slash"></i>Belum ada toko yang dapat ditampilkan.</td></tr>
+      <?php else : foreach ($toko as $index => $item) : ?><tr>
+        <td class="text-center text-muted"><?= $index + 1 ?></td>
+        <td><div class="store-name"><span class="store-avatar"><i class="fas fa-store"></i></span><div><strong><?= html_escape($item->nama_toko) ?></strong><?php if ((int)$item->status !== 0 && (int)$item->status !== 1) : ?><span class="attention">PERLU PERHATIAN</span><?php endif; ?></div></div></td>
+        <td><span class="address" title="<?= html_escape($item->alamat) ?>"><i class="fas fa-map-marker-alt mr-1"></i><?= html_escape($item->alamat) ?></span></td>
+        <td><?php if (trim((string)$item->nama_user) === '') : ?><span class="unassigned"><i class="fas fa-exclamation-circle"></i> Belum dikaitkan</span><?php else : ?><i class="fas fa-user mr-1 text-muted"></i><strong><?= html_escape($item->nama_user) ?></strong><?php endif; ?></td>
+        <td class="text-center"><?= status_toko($item->status) ?></td>
+        <td><div class="actions"><a href="<?= base_url('mng_mkt/Toko/profil/'.$item->id) ?>" class="btn btn-main"><i class="fas <?= (int)$item->status === 2 ? 'fa-cog' : 'fa-eye' ?>"></i> <?= (int)$item->status === 2 ? 'Proses' : 'Detail' ?></a><?php if ((int)$item->status !== 3) : ?><a href="<?= base_url('mng_mkt/Toko/update/'.$item->id) ?>" class="btn btn-edit" title="Ubah data"><i class="fas fa-edit"></i> Ubah</a><?php endif; ?><a href="<?= base_url('mng_mkt/Toko/unduh_pdf/'.$item->id) ?>" target="_blank" rel="noopener" class="btn btn-pdf" title="Unduh PDF"><i class="fas fa-file-pdf"></i> PDF</a></div></td>
+      </tr><?php endforeach; endif; ?>
+    </tbody></table></div></div>
+  </div>
+</div></section>
+<script src="<?= base_url('assets/plugins/jquery/jquery.min.js') ?>"></script>
+<script>
+$(function(){
+  if (!$.fn.DataTable || $('#table_toko .empty-state').length) return;
+  var table = $('#table_toko').DataTable({order:[[0,'asc']],responsive:true,lengthChange:false,autoWidth:false,pageLength:10,language:{info:'Menampilkan _START_–_END_ dari _TOTAL_ toko',infoEmpty:'Tidak ada toko',zeroRecords:'Toko yang dicari tidak ditemukan',paginate:{previous:'<i class="fas fa-chevron-left"></i>',next:'<i class="fas fa-chevron-right"></i>'}}});
+  $('#store-search').on('input',function(){table.search(this.value).draw()});
+});
+</script>

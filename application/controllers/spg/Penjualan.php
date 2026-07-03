@@ -93,9 +93,15 @@ class Penjualan extends CI_Controller
     $tgl_jual = $this->input->post('tgl_jual');
     $unique_id = $this->input->post('unique_id');
     $id_produk = $this->input->post('idProduk');
-    $stok = $this->input->post('stokProduk');
     $qty = $this->input->post('qtyProduk');
     $id_penjualan = $this->M_spg->kode_penjualan();
+
+    if (!is_array($id_produk) || !is_array($qty) || count($id_produk) === 0 || count($id_produk) !== count($qty)) {
+      tampil_alert('error', 'Gagal', 'Data produk penjualan tidak lengkap.');
+      redirect(base_url('spg/Penjualan/tambah_penjualan'));
+      return;
+    }
+
     $jml = count($id_produk);
 
     if ($this->db->get_where('tb_penjualan', array('id_unik' => $unique_id))->num_rows() > 0) {
@@ -116,8 +122,40 @@ class Penjualan extends CI_Controller
     $kategori = $query1->het;
     $diskon_toko = $query1->diskon;
     for ($i = 0; $i < $jml; $i++) {
-      $id_produk_real = $id_produk[$i];
+      $id_produk_real = (int)$id_produk[$i];
+      $qty_real = (int)$qty[$i];
+
+      if ($id_produk_real <= 0 || $qty_real <= 0) {
+        $this->db->trans_rollback();
+        tampil_alert('error', 'Gagal', 'Produk atau jumlah penjualan tidak valid.');
+        redirect(base_url('spg/Penjualan/tambah_penjualan'));
+        return;
+      }
+
+      // Stok harus dibaca dari database, bukan dari nilai yang dikirim browser.
+      // FOR UPDATE menjaga nilai stok dan kartu stok tetap konsisten selama transaksi.
+      $stok_data = $this->db->query(
+        "SELECT qty FROM tb_stok WHERE id_toko = ? AND id_produk = ? FOR UPDATE",
+        array($id_toko, $id_produk_real)
+      )->row();
+
+      if (!$stok_data) {
+        $this->db->trans_rollback();
+        tampil_alert('error', 'Gagal', 'Data stok produk tidak ditemukan.');
+        redirect(base_url('spg/Penjualan/tambah_penjualan'));
+        return;
+      }
+
+      $stok_real = (float)$stok_data->qty;
       $query2 = $this->db->get_where('tb_produk', array('id' => $id_produk_real))->row();
+
+      if (!$query2) {
+        $this->db->trans_rollback();
+        tampil_alert('error', 'Gagal', 'Data produk tidak ditemukan.');
+        redirect(base_url('spg/Penjualan/tambah_penjualan'));
+        return;
+      }
+
       switch ($kategori) {
         case 1:
           $harga = $query2->harga_jawa;
@@ -132,8 +170,6 @@ class Penjualan extends CI_Controller
           $harga = 0;
           break;
       }
-      $stok_real = $stok[$i];
-      $qty_real = $qty[$i];
       $data_detail = array(
         'id_penjualan' => $id_penjualan,
         'id_produk' => $id_produk_real,
@@ -155,7 +191,7 @@ class Penjualan extends CI_Controller
       $this->db->insert('tb_kartu_stok', $kartu);
 
       // Update stock
-      $this->db->set('qty', 'qty - ' . (int)$qty_real, FALSE);
+      $this->db->set('qty', 'qty - ' . $qty_real, FALSE);
       $this->db->set('updated_at', 'NOW()', FALSE);
       $this->db->where('id_toko', $id_toko);
       $this->db->where('id_produk', $id_produk_real);
