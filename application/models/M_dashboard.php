@@ -110,7 +110,7 @@ class M_dashboard extends CI_Model
             JOIN tb_toko t ON t.id=s.id_toko
             JOIN tb_user u ON u.id=t.id_spv
             JOIN tb_produk p ON p.id=s.id_produk
-            WHERE s.status=1 AND t.status=1 AND p.status=1
+            WHERE s.status=1 AND t.status !=0 AND p.status=1
             GROUP BY u.id,u.nama_user ORDER BY total_stok DESC")->result_array();
     }
 
