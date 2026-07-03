@@ -23,9 +23,9 @@ class Stok extends CI_Controller
   public function index()
   {
     $data['title'] = 'Stok Artikel';
-    $data['artikel'] = $this->db->query("SELECT * from tb_produk ")->result();
+    $data['artikel'] = $this->db->query("SELECT * FROM tb_produk WHERE status = 1 ORDER BY kode ASC")->result();
     $data['stok'] = $this->db->query("SELECT sum(ts.qty) as total FROM tb_stok ts
-    JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status = 1 ")->row();
+    JOIN tb_toko tt on ts.id_toko = tt.id where ts.status = 1 AND tt.status != 0 ")->row();
     $this->template->load('template/template', 'adm/stok/index', $data);
   }
   public function detail($id_artikel, $tanggal)
@@ -37,7 +37,7 @@ class Stok extends CI_Controller
         FROM tb_kartu_stok ks
         JOIN tb_toko tt ON ks.id_toko = tt.id
         WHERE ks.id_produk = ?
-          AND tt.status = 1
+          AND tt.status != 0
           AND ks.tanggal = (
               SELECT MAX(tanggal)
               FROM tb_kartu_stok
@@ -65,7 +65,7 @@ class Stok extends CI_Controller
           JOIN tb_toko tt ON ts.id_toko = tt.id
           JOIN tb_customer tc ON tt.id_customer = tc.id
           join tb_produk tp on ts.id_produk = tp.id
-          where ts.id_produk = '$id' AND ts.status = 1 AND tt.status = 1
+          where ts.id_produk = '$id' AND ts.status = 1 AND tt.status != 0
           GROUP BY tc.id
           ORDER BY SUM(ts.qty) DESC";
 
@@ -110,7 +110,7 @@ class Stok extends CI_Controller
           AND so.created_at < ?
           AND so.status_kunci = 1
         LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
-        WHERE tt.status = 1
+        WHERE tt.status != 0
         GROUP BY tt.id_customer
       ) sc ON tc.id = sc.id_customer
       ORDER BY tc.nama_cust ASC";
@@ -172,7 +172,7 @@ class Stok extends CI_Controller
           AND so.status_kunci = 1
         GROUP BY so.id_toko
       ) so_data ON tt.id = so_data.id_toko
-      WHERE tt.id_customer = ? AND tt.status = 1
+      WHERE tt.id_customer = ? AND tt.status != 0
       ORDER BY tt.nama_toko ASC";
 
     $data['list_data'] = $this->db->query($query, [$start_so, $end_so, $id_cust])->result();
@@ -193,14 +193,19 @@ class Stok extends CI_Controller
     // tampil_alert('info', 'Maintenance', 'Fitur laporan Stok per toko sedang di perbarui, silahkan coba lagi nanti.');
     // redirect(base_url('adm/Dashboard'));
     $data['title'] = 'Stok per Toko';
-    $data['toko'] = $this->db->query("SELECT * from tb_toko order by id desc")->result();
+    $data['toko'] = $this->db->query("SELECT * FROM tb_toko WHERE status = 1 ORDER BY nama_toko ASC")->result();
     $this->template->load('template/template', 'adm/stok/stok_toko', $data);
   }
   function list_ajax_artikel($toko)
   {
-    $hasil = $this->db->query("SELECT tp.* from tb_stok ts
-    join tb_produk tp on ts.id_produk = tp.id
-    where ts.id_toko = ?", $toko)->result();
+    $hasil = $this->db->query("SELECT DISTINCT tp.* FROM tb_stok ts
+    JOIN tb_produk tp ON ts.id_produk = tp.id
+    JOIN tb_toko tt ON ts.id_toko = tt.id
+    WHERE ts.id_toko = ?
+      AND ts.status = 1
+      AND tp.status = 1
+      AND tt.status = 1
+    ORDER BY tp.kode ASC", $toko)->result();
     header('Content-Type: application/json');
     echo json_encode($hasil);
   }
@@ -210,7 +215,9 @@ class Stok extends CI_Controller
     $tanggal = $this->input->get('tanggal');
     $artikel = "Semua Artikel";
     $where_artikel = "";
-    $params = [$tanggal . ' 23:59:59'];
+    // Gunakan batas eksklusif hari berikutnya agar seluruh transaksi pada
+    // tanggal yang dipilih masuk, termasuk yang memiliki pecahan detik.
+    $params = [$tanggal];
 
     if ($id_artikel !== "all") {
       $where_artikel = "AND tp.id = ?";
@@ -225,26 +232,28 @@ class Stok extends CI_Controller
     }
 
     $query = "
-        SELECT 
+        SELECT
             tp.id,
             tp.kode,
             tp.nama_produk as deskripsi,
             COALESCE(SUM(ks.sisa), 0) AS stok
-        FROM tb_produk tp
+        FROM tb_stok ts
+        JOIN tb_toko tt ON tt.id = ts.id_toko
+        JOIN tb_produk tp ON tp.id = ts.id_produk
         LEFT JOIN (
-            SELECT ks1.*
+            SELECT ks1.id_produk, ks1.id_toko, ks1.sisa
             FROM tb_kartu_stok ks1
-            INNER JOIN (
-                SELECT id_produk, id_toko, MAX(tanggal) AS max_tanggal
+            JOIN (
+                SELECT id_produk, id_toko, MAX(id) AS last_id
                 FROM tb_kartu_stok
-                WHERE tanggal <= ?
+                WHERE tanggal < DATE_ADD(?, INTERVAL 1 DAY)
                 GROUP BY id_produk, id_toko
-            ) ks2 ON ks1.id_produk = ks2.id_produk
-                 AND ks1.id_toko = ks2.id_toko
-                 AND ks1.tanggal = ks2.max_tanggal
-        ) ks ON tp.id = ks.id_produk
-         JOIN tb_toko tt ON tt.id = ks.id_toko
-        WHERE 1=1 AND tt.status = 1
+            ) last_ks ON last_ks.last_id = ks1.id
+        ) ks ON ks.id_produk = ts.id_produk
+            AND ks.id_toko = ts.id_toko
+        WHERE ts.status = 1
+          AND tt.status != 0
+          AND tp.status = 1
           $where_artikel
         GROUP BY tp.id, tp.kode, tp.nama_produk
         ORDER BY tp.kode ASC
@@ -273,70 +282,65 @@ class Stok extends CI_Controller
   {
     $id_toko = $this->input->get('id_toko');
     $id_artikel = $this->input->get('id_artikel');
-    $tanggal = $this->input->get('tanggal') . ' 23:59:59';
+    $tanggal = $this->input->get('tanggal');
+    $semua_artikel = ($id_artikel === 'all' || empty($id_artikel));
+    $where_artikel_subquery = '';
+    $where_artikel_utama = '';
+    $params = [$id_toko, $tanggal];
 
-    // Cek apakah user memilih semua artikel atau artikel tertentu
-    if ($id_artikel == 'all' || empty($id_artikel)) {
-      // Ambil semua produk - Query dioptimasi dengan JOIN untuk performa lebih baik
+    if ($semua_artikel) {
       $artikel = '( Semua Artikel )';
-      $query = "
-          SELECT tt.nama_toko, tpp.nama_produk, tpp.kode, tpp.satuan, ks.sisa as stok 
-          FROM tb_kartu_stok ks
-          JOIN (
-              SELECT t.id_produk, MAX(t.id) AS id_max
-              FROM tb_kartu_stok t
-              JOIN (
-                  SELECT id_produk, MAX(tanggal) AS max_tanggal
-                  FROM tb_kartu_stok
-                  WHERE id_toko = ?
-                    AND tanggal <= ?
-                  GROUP BY id_produk
-              ) m ON t.id_produk = m.id_produk AND t.tanggal = m.max_tanggal
-              WHERE t.id_toko = ?
-              GROUP BY t.id_produk
-          ) pick ON ks.id = pick.id_max
-          LEFT JOIN tb_produk tpp ON ks.id_produk = tpp.id
-          JOIN tb_toko tt ON ks.id_toko = tt.id
-          WHERE ks.id_toko = ?
-            AND tt.status = 1
-          ORDER BY tpp.kode ASC";
-      $params = [$id_toko, $tanggal, $id_toko, $id_toko];
     } else {
-      // Ambil 1 produk tertentu
+      $where_artikel_subquery = 'AND id_produk = ?';
+      $where_artikel_utama = 'AND ts.id_produk = ?';
+      $params[] = $id_artikel;
+
       $summary = $this->db->get_where('tb_produk', ['id' => $id_artikel])->row();
-      $artikel = '<strong>' . $summary->kode . '</strong></br>' . $summary->nama_produk;
-      $query = "
-          SELECT tt.nama_toko, tpp.nama_produk, tpp.kode, tpp.satuan, ks.sisa as stok 
-          FROM tb_kartu_stok ks
-          JOIN (
-              SELECT t.id_produk, MAX(t.id) AS id_max
-              FROM tb_kartu_stok t
-              JOIN (
-                  SELECT id_produk, MAX(tanggal) AS max_tanggal
-                  FROM tb_kartu_stok
-                  WHERE id_toko = ?
-                    AND id_produk = ?
-                    AND tanggal <= ?
-                  GROUP BY id_produk
-              ) m ON t.id_produk = m.id_produk AND t.tanggal = m.max_tanggal
-              WHERE t.id_toko = ?
-                AND t.id_produk = ?
-              GROUP BY t.id_produk
-          ) pick ON ks.id = pick.id_max
-          JOIN tb_produk tpp ON ks.id_produk = tpp.id
-          JOIN tb_toko tt ON ks.id_toko = tt.id
-          WHERE ks.id_toko = ?
-            AND ks.id_produk = ?
-            AND tt.status = 1
-          ORDER BY tpp.kode ASC";
-      $params = [$id_toko, $id_artikel, $tanggal, $id_toko, $id_artikel, $id_toko, $id_artikel];
+      $artikel = $summary
+        ? '<strong>' . htmlspecialchars($summary->kode) . '</strong></br>' . htmlspecialchars($summary->nama_produk)
+        : 'Artikel tidak ditemukan';
     }
+
+    $params[] = $id_toko;
+    if (!$semua_artikel) {
+      $params[] = $id_artikel;
+    }
+
+    $query = "
+        SELECT
+            tt.nama_toko,
+            tp.nama_produk,
+            tp.kode,
+            tp.satuan,
+            COALESCE(ks.sisa, 0) AS stok
+        FROM tb_stok ts
+        JOIN tb_toko tt ON tt.id = ts.id_toko
+        JOIN tb_produk tp ON tp.id = ts.id_produk
+        LEFT JOIN (
+            SELECT ks1.id_produk, ks1.id_toko, ks1.sisa
+            FROM tb_kartu_stok ks1
+            JOIN (
+                SELECT id_produk, id_toko, MAX(id) AS last_id
+                FROM tb_kartu_stok
+                WHERE id_toko = ?
+                  AND tanggal < DATE_ADD(?, INTERVAL 1 DAY)
+                  $where_artikel_subquery
+                GROUP BY id_produk, id_toko
+            ) last_ks ON last_ks.last_id = ks1.id
+        ) ks ON ks.id_produk = ts.id_produk
+            AND ks.id_toko = ts.id_toko
+        WHERE ts.id_toko = ?
+          AND ts.status = 1
+          AND tt.status != 0
+          AND tp.status = 1
+          $where_artikel_utama
+        ORDER BY tp.kode ASC";
 
     $hasil_data = $this->db->query($query, $params)->result();
     $toko = $this->db->get_where('tb_toko', ['id' => $id_toko])->row();
 
     $data = [
-      'toko' => $toko->nama_toko,
+      'toko' => $toko ? $toko->nama_toko : 'Toko tidak ditemukan',
       'artikel' => $artikel,
       'tanggal' => date('d M Y', strtotime($tanggal)),
       'tabel_data' => $hasil_data
@@ -377,7 +381,7 @@ class Stok extends CI_Controller
       LEFT JOIN 
           tb_stok ts ON tt.id = ts.id_toko AND ts.status = 1
       WHERE 
-          tc.id = '$id' AND tt.status = 1 
+          tc.id = '$id' AND tt.status != 0 
       GROUP BY 
           tt.id 
       ORDER BY 
@@ -400,7 +404,7 @@ class Stok extends CI_Controller
       LEFT JOIN 
           tb_stok ts ON tt.id = ts.id_toko AND ts.status = 1
       WHERE 
-          tt.id_customer = '$id' AND tt.status = 1
+          tt.id_customer = '$id' AND tt.status != 0
       ";
 
     $data['summary'] = $this->db->query($summary_query)->row();
@@ -429,7 +433,7 @@ class Stok extends CI_Controller
           COALESCE(SUM(ts.qty), 0) AS t_stok,
           (SELECT COALESCE(SUM(ts.qty_awal), 0) FROM tb_stok ts 
            JOIN tb_toko tt ON ts.id_toko = tt.id 
-           WHERE ts.id_produk = tp.id AND tt.id_customer = tc.id AND ts.status = 1 AND tt.status = 1) AS t_akhir,
+           WHERE ts.id_produk = tp.id AND tt.id_customer = tc.id AND ts.status = 1 AND tt.status != 0) AS t_akhir,
           (SELECT COALESCE(SUM(tpd.qty), 0) FROM tb_penjualan_detail tpd
            JOIN tb_penjualan tpj ON tpd.id_penjualan = tpj.id
            JOIN tb_toko tt ON tpj.id_toko = tt.id
@@ -443,7 +447,7 @@ class Stok extends CI_Controller
       JOIN 
           tb_produk tp ON ts.id_produk = tp.id
       WHERE 
-          tc.id = '$id' AND tt.status = 1 AND tp.status = 1
+          tc.id = '$id' AND tt.status != 0 AND tp.status = 1
       GROUP BY 
           tp.id 
       ORDER BY 
@@ -469,7 +473,7 @@ class Stok extends CI_Controller
       LEFT JOIN
           tb_produk tp ON ts.id_produk = tp.id
       WHERE 
-          tt.id_customer = '$id' AND tt.status = 1 AND tp.status = 1
+          tt.id_customer = '$id' AND tt.status != 0 AND tp.status = 1
       ";
 
     $data['summary'] = $this->db->query($summary_query)->row();
@@ -1379,7 +1383,7 @@ class Stok extends CI_Controller
       FROM tb_toko tt
       LEFT JOIN tb_so so ON tt.id = so.id_toko AND YEAR(so.created_at) = ? AND MONTH(so.created_at) = ?
       LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
-      WHERE tt.id_customer = ? AND tt.status = 1
+      WHERE tt.id_customer = ? AND tt.status != 0
       GROUP BY tt.id, tt.nama_toko
       ORDER BY tt.nama_toko ASC";
     
@@ -1422,7 +1426,7 @@ class Stok extends CI_Controller
       FROM tb_toko tt
       LEFT JOIN tb_so so ON tt.id = so.id_toko AND YEAR(so.created_at) = ? AND MONTH(so.created_at) = ?
       LEFT JOIN tb_so_detail sod ON so.id = sod.id_so
-      WHERE tt.id_customer = ? AND tt.status = 1
+      WHERE tt.id_customer = ? AND tt.status != 0
       GROUP BY tt.id, tt.nama_toko
       ORDER BY tt.nama_toko ASC";
     

@@ -120,13 +120,14 @@ class Dashboard extends CI_Controller
         (SELECT COUNT(*) FROM tb_toko WHERE status = 1) AS toko_aktif,
         (SELECT COUNT(*) FROM tb_toko WHERE status = 0) AS toko_tutup,
         (SELECT COUNT(*) FROM tb_customer) AS customer,
-        (SELECT COUNT(*) FROM tb_produk WHERE status != 0) AS artikel,
-        (SELECT COUNT(*) FROM tb_user WHERE status != 0) AS pengguna,
+        (SELECT COUNT(*) FROM tb_produk WHERE status = 1 ) AS artikel,
+        (SELECT COUNT(*) FROM tb_user WHERE status = 1) AS pengguna,
         (SELECT COUNT(*) FROM tb_aset_master) AS jenis_aset,
         (SELECT COALESCE(SUM(ts.qty), 0)
            FROM tb_stok ts
            JOIN tb_toko tt ON tt.id = ts.id_toko
-          WHERE ts.status = 1 AND tt.status = 1) AS stok_toko,
+           JOIN tb_produk tp ON tp.id = ts.id_produk
+          WHERE ts.status = 1 AND tt.status != 0 AND tp.status = 1) AS stok_toko,
         (SELECT COALESCE(SUM(stok), 0) FROM tb_produk WHERE status = 1) AS stok_gudang
     ")->row();
 
@@ -134,8 +135,8 @@ class Dashboard extends CI_Controller
       array('toko_aktif', 'Toko Aktif', 'adm/Toko/', 'fas fa-store'),
       array('toko_tutup', 'Toko Tutup', 'adm/Toko/toko_tutup', 'fas fa-store-slash'),
       array('customer', 'Customer', 'adm/Customer', 'fas fa-building'),
-      array('artikel', 'Artikel', 'adm/Produk/', 'fas fa-cube'),
-      array('pengguna', 'User', 'adm/User/', 'fas fa-users'),
+      array('artikel', 'Artikel Aktif', 'adm/Produk/', 'fas fa-cube'),
+      array('pengguna', 'User Aktif', 'adm/User/', 'fas fa-users'),
       array('jenis_aset', 'Jenis Aset', 'hrd/Aset', 'fas fa-layer-group'),
       array('stok_toko', 'Stok Semua Toko', 'adm/Stok', 'fas fa-chart-pie'),
       array('stok_gudang', 'Stok Gudang Prepedan', 'adm/Stok/stok_gudang', 'fas fa-cubes')
