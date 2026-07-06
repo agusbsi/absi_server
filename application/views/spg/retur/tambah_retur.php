@@ -117,6 +117,12 @@
         foreach ($this->cart->contents() as $d) {
           $no++;
           $total_jumlah += $d['qty']; // Tambahkan jumlah item ke total
+          if (isset($d['options']) && is_array($d['options'])) {
+            $kode_produk = isset($d['options']['kode']) ? $d['options']['kode'] : '-';
+          } else {
+            // Tetap dapat membaca session cart lama yang menyimpan string.
+            $kode_produk = isset($d['options']) ? $d['options'] : '-';
+          }
         ?>
           <div class="box">
             <div class="box-header">
@@ -125,7 +131,7 @@
             </div>
             <div class="box-body">
               <div class="detail">
-                <h5><?= $d['options'] ?></h5>
+                <h5><?= html_escape($kode_produk) ?></h5>
                 <small class="mb-2"><?= $d['keterangan']['artikel']; ?></small>
                 <small><strong>Jumlah :</strong> <?= $d['qty'] ?></small>
                 <small><strong>Keterangan :</strong> <?= $d['keterangan']['status'] ?></small>

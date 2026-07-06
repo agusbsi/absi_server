@@ -569,11 +569,6 @@
     .account-menu .logout-item { color: #dc2626; border-top: 1px solid #edf1f6; }
     .account-menu .logout-item i { color: #ef4444; }
 
-    .content-header.app-breadcrumb { padding-top: 19px; padding-bottom: 4px; }
-    .app-breadcrumb .breadcrumb { padding: 5px 10px; background: transparent; font-size: 11px; }
-    .app-breadcrumb .breadcrumb-item a { color: #64748b; }
-    .app-breadcrumb .breadcrumb-item.active { color: #2563eb; font-weight: 600; }
-
     @media (max-width: 991.98px) {
       .app-header { padding: 0 12px; }
       .company-chip, .header-action-fullscreen, .header-divider { display: none !important; }
@@ -613,7 +608,222 @@
       .account-toggle > .fas { display: none; }
       .connection-status { width: 34px; height: 34px; flex-basis: 34px; justify-content: center; margin-right: 7px; padding: 0; }
       .account-menu { position: fixed !important; top: 59px !important; right: 10px !important; left: auto !important; width: calc(100vw - 20px); transform: none !important; }
-      .content-header.app-breadcrumb { padding-top: 17px; }
+    }
+
+    /* Premium workspace layer — keeps AdminLTE behavior, replaces its visual skin */
+    :root {
+      --app-bg: #f3f6fb;
+      --app-surface: rgba(255, 255, 255, .92);
+      --app-ink: #182230;
+      --app-muted: #667085;
+      --app-line: #e6eaf0;
+      --app-brand: #0f9f92;
+      --app-brand-soft: #e8f8f5;
+      --app-radius: 10px;
+      --app-shadow: 0 12px 36px rgba(16, 24, 40, .07);
+    }
+
+    html { background: var(--app-bg); }
+
+    body {
+      color: var(--app-ink);
+      background: var(--app-bg);
+      font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .content-wrapper {
+      position: relative;
+      min-height: 100vh;
+      padding-top: 80px;
+      background:
+        radial-gradient(circle at 84% 4%, rgba(45, 212, 191, .075), transparent 24rem),
+        radial-gradient(circle at 18% 28%, rgba(59, 130, 246, .045), transparent 28rem),
+        var(--app-bg);
+    }
+
+    .content-wrapper::before {
+      position: fixed;
+      z-index: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 250px;
+      content: "";
+      opacity: .28;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(100, 116, 139, .18) .55px, transparent .55px);
+      background-size: 18px 18px;
+      -webkit-mask-image: linear-gradient(to bottom, #000, transparent 38%);
+      mask-image: linear-gradient(to bottom, #000, transparent 38%);
+    }
+
+    /* Jangan membuat stacking context di area konten: modal Bootstrap harus
+       dapat berada di atas backdrop yang ditempel langsung ke body. */
+    .content-wrapper > * { position: relative; }
+
+    .app-header {
+      top: 8px;
+      right: 10px;
+      min-height: 62px;
+      margin-left: 264px !important;
+      padding: 0 14px;
+      background: rgba(255, 255, 255, .82) !important;
+      border: 1px solid rgba(255, 255, 255, .88);
+      border-radius: 10px;
+      box-shadow: 0 10px 34px rgba(16, 24, 40, .09), inset 0 1px 0 rgba(255, 255, 255, .88);
+      backdrop-filter: blur(18px) saturate(145%);
+      -webkit-backdrop-filter: blur(18px) saturate(145%);
+    }
+
+    .app-header .sidebar-trigger,
+    .app-header .header-action {
+      color: #475467 !important;
+      background: rgba(248, 250, 252, .88);
+      border-color: #e4e7ec;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(16, 24, 40, .035);
+    }
+
+    .app-header .sidebar-trigger:hover,
+    .app-header .header-action:hover {
+      color: #087f75 !important;
+      background: var(--app-brand-soft);
+      border-color: #b9e8df;
+      box-shadow: 0 5px 14px rgba(15, 159, 146, .12);
+    }
+
+    .header-page-info { border-color: #e4e7ec; }
+    .header-page-title { color: #101828; font-size: 13px; font-weight: 750; letter-spacing: -.01em; }
+    .header-page-meta { color: #98a2b3; }
+
+    .company-chip {
+      color: #087f75;
+      background: rgba(232, 248, 245, .9);
+      border-color: #c8ede6;
+      border-radius: 999px;
+    }
+
+    .account-toggle:hover,
+    .show > .account-toggle { background: #f2f4f7; }
+    .account-name { color: #1d2939; }
+
+    .content { padding: 0 10px 20px !important; }
+    .content > .container-fluid {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .card {
+      overflow: hidden;
+      background: var(--app-surface);
+      border: 1px solid rgba(230, 234, 240, .92);
+      border-radius: var(--app-radius);
+      box-shadow: var(--app-shadow);
+      backdrop-filter: blur(8px);
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .card:hover { border-color: #d7dde6; box-shadow: 0 16px 42px rgba(16, 24, 40, .09); }
+    .card-header { min-height: 54px; padding: 14px 18px; background: rgba(255, 255, 255, .68); border-bottom: 1px solid var(--app-line); }
+    .card-title { color: #1d2939; font-size: 14px; font-weight: 750; letter-spacing: -.01em; }
+    .card-body { padding: 18px; }
+    .card-footer { padding: 13px 18px; background: #fcfcfd; border-top: 1px solid var(--app-line); }
+
+    .btn {
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(16, 24, 40, .05);
+      transition: transform .16s ease, box-shadow .16s ease, background-color .16s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(16, 24, 40, .10); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: linear-gradient(135deg, #12a89a, #087f75); border-color: #087f75; }
+    .btn-primary:hover { background: linear-gradient(135deg, #0f978b, #066b63); border-color: #066b63; }
+    .btn-default, .btn-light { color: #475467; background: #fff; border-color: #dfe3e8; }
+
+    .form-control,
+    .custom-select,
+    .select2-container--bootstrap4 .select2-selection {
+      min-height: 40px;
+      color: #344054;
+      background-color: rgba(255, 255, 255, .92);
+      border-color: #dfe3e8;
+      border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, .025);
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .form-control:focus,
+    .custom-select:focus,
+    .select2-container--bootstrap4.select2-container--focus .select2-selection {
+      border-color: #67d4c8;
+      box-shadow: 0 0 0 3px rgba(15, 159, 146, .11);
+    }
+    label { color: #475467; font-size: 12px; font-weight: 650; }
+
+    .table { color: #344054; }
+    .table thead th { padding: 12px; color: #667085; background: #f8fafc; border-top: 0; border-bottom: 1px solid #e4e7ec; font-size: 11px; font-weight: 750; letter-spacing: .035em; text-transform: uppercase; }
+    .table td { padding: 12px; border-color: #edf0f3; vertical-align: middle; }
+    .table-hover tbody tr { transition: background-color .15s ease; }
+    .table-hover tbody tr:hover { color: #1d2939; background: #f7fbfa; }
+
+    .modal-content,
+    .dropdown-menu {
+      border: 1px solid rgba(230, 234, 240, .95);
+      border-radius: 15px;
+      box-shadow: 0 22px 54px rgba(16, 24, 40, .16);
+    }
+    .modal-header { border-bottom-color: var(--app-line); }
+    .modal-footer { border-top-color: var(--app-line); }
+    .modal { z-index: 1060; }
+    .modal-backdrop { z-index: 1050; }
+    body.modal-open .app-header,
+    body.modal-open .main-sidebar { z-index: 1030; }
+    .badge { border-radius: 999px; font-weight: 700; }
+
+    .pagination .page-link { margin: 0 2px; color: #475467; border-color: #e4e7ec; border-radius: 8px !important; }
+    .pagination .page-item.active .page-link { background: var(--app-brand); border-color: var(--app-brand); }
+
+    @media (min-width: 992px) {
+      .layout-fixed .main-sidebar {
+        top: 8px !important;
+        bottom: 5px !important;
+        left: 8px;
+        width: 250px;
+        height: calc(100vh - 10px) !important;
+        min-height: 0 !important;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 12px;
+        box-shadow: 0 20px 55px rgba(15, 23, 42, .22) !important;
+      }
+      .main-sidebar .brand-link { width: 250px; }
+      .content-wrapper, .main-footer { margin-left: 258px !important; }
+      .sidebar-collapse .content-wrapper,
+      .sidebar-collapse .main-footer { margin-left: 4.6rem !important; }
+      .app-header { margin-left: 268px !important; }
+      .sidebar-collapse .app-header { margin-left: calc(4.6rem + 10px) !important; }
+      .content-wrapper::before { left: 258px; }
+      .sidebar-collapse .content-wrapper::before { left: 4.6rem; }
+
+      .sidebar-collapse .main-sidebar:not(:hover) {
+        left: 7px;
+        width: 60px;
+        border-radius: 10px;
+      }
+      .sidebar-collapse .main-sidebar:not(:hover) .brand-link { width: 60px; }
+    }
+
+    @media (max-width: 991.98px) {
+      .app-header { top: 7px; right: 14px; left: 14px; margin-left: 0 !important; border-radius: 10px; }
+      .content-wrapper { padding-top: 82px; }
+      .content { padding: 0 14px 28px !important; }
+      .content-wrapper::before { left: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .btn, .form-control, .custom-select { transition: none !important; }
     }
   </style>
 </head>
@@ -705,35 +915,225 @@
       </ul>
     </nav>
     <aside class="main-sidebar sidebar-dark-primary elevation-4 no-print">
-      <a href="<?= base_url('') ?>" class="brand-link">
-        <img src="<?= base_url() ?>assets/img/app/logo_a.png" alt="ABSI" class="brand-image">
-        <span class="brand-text font-weight-light"><img src="<?= base_url() ?>assets/img/app/logo_b.png" class="brand-logo" style="width:40%;" alt="ABSI"></span>
+      <a href="<?= base_url('') ?>" class="brand-link adm-brand" aria-label="Kembali ke halaman utama ABSI">
+        <span class="adm-brand-monogram" aria-hidden="true">
+          <svg viewBox="0 0 48 48" focusable="false">
+            <path class="adm-logo-box" d="M12 15.5 24 9l12 6.5-12 6.6z" />
+            <path class="adm-logo-side" d="M12 15.5v13L24 35V22.1z" />
+            <path class="adm-logo-face" d="M36 15.5v13L24 35V22.1z" />
+            <path class="adm-logo-pulse" d="M8 35h7l2.7-5.2 4.1 10.1 3.6-7.2 2 3.1H40" />
+          </svg>
+        </span>
+        <span class="brand-text adm-brand-copy">
+          <strong><span class="adm-brand-name">ABSI</span><span class="adm-brand-tag">Ver 1.2.0</span></strong>
+          <small><i></i> Consignment Monitor</small>
+        </span>
+        <span class="adm-brand-shine" aria-hidden="true"></span>
       </a>
       <?php $this->load->view($sidebar) ?>
+      <style id="absi-shared-sidebar-skin">
+        /* Shared visual skin: applies to every role sidebar without changing its menu. */
+        .main-sidebar {
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          background: linear-gradient(180deg, #0e1723 0%, #101927 52%, #0b141f 100%) !important;
+        }
+
+        .main-sidebar .adm-brand {
+          position: relative;
+          display: flex !important;
+          height: 70px;
+          width: 100% !important;
+          flex: 0 0 70px;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          gap: 10px;
+          padding: 12px 14px;
+          overflow: hidden;
+          background: rgba(14, 23, 35, .97) !important;
+          border-bottom: 1px solid rgba(148, 163, 184, .10) !important;
+          box-shadow: none !important;
+        }
+
+        .main-sidebar .adm-brand-monogram {
+          position: relative;
+          display: grid;
+          width: 46px;
+          height: 46px;
+          flex: 0 0 46px;
+          overflow: hidden;
+          place-items: center;
+          border: 1px solid rgba(94, 234, 212, .30);
+          border-radius: 12px;
+          background: linear-gradient(145deg, #153642, #0c202a 72%);
+          box-shadow: 0 8px 20px rgba(2, 6, 23, .30), inset 0 1px 0 rgba(255, 255, 255, .10);
+        }
+
+        .main-sidebar .adm-brand-monogram svg { position: relative; z-index: 1; width: 36px; height: 36px; }
+        .main-sidebar .adm-logo-box { fill: #99f6e4; }
+        .main-sidebar .adm-logo-side { fill: #2dd4bf; }
+        .main-sidebar .adm-logo-face { fill: #0f9f92; }
+        .main-sidebar .adm-logo-pulse { fill: none; stroke: #e6fffb; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .main-sidebar .adm-brand-copy { display: flex !important; min-width: 0; flex-direction: column !important; align-items: flex-start !important; line-height: 1; }
+        .main-sidebar .adm-brand-copy strong { display: flex; align-items: center; gap: 7px; }
+        .main-sidebar .adm-brand-name { color: #f8fafc; font-size: 22px; font-weight: 850; letter-spacing: .08em; }
+        .main-sidebar .adm-brand-tag { padding: 3px 5px 2px; color: #5eead4; background: rgba(45, 212, 191, .10); border: 1px solid rgba(94, 234, 212, .16); border-radius: 4px; font-size: 7px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+        .main-sidebar .adm-brand-copy small { display: flex; align-items: center; gap: 5px; margin-top: 4px; color: #8291a5; font-size: 8px; font-weight: 650; letter-spacing: .10em; text-transform: uppercase; }
+        .main-sidebar .adm-brand-copy small i { width: 5px; height: 5px; border-radius: 50%; background: #2dd4bf; box-shadow: 0 0 0 3px rgba(45, 212, 191, .10); }
+
+        .main-sidebar > .adm-sidebar-intro {
+          position: relative;
+          z-index: 20;
+          flex: 0 0 auto;
+          padding: 1px 12px 11px;
+          background: #0e1723;
+        }
+        .main-sidebar .adm-status-row { display: flex; min-height: 28px; align-items: center; padding: 4px 3px; color: #94a3b8; font-size: 10px; }
+        .main-sidebar .adm-status-row strong { margin-right: 3px; color: #fbbf24; font-size: 11px; }
+        .main-sidebar .adm-menu-search { display: flex; min-height: 40px; align-items: center; gap: 9px; margin: 0; padding: 0 10px; color: #64748b; background: rgba(4, 10, 18, .34); border: 1px solid rgba(148, 163, 184, .12); border-radius: 10px; box-shadow: inset 0 1px 3px rgba(2, 6, 23, .15); }
+        .main-sidebar .adm-menu-search:focus-within { color: #5eead4; background: rgba(15, 23, 42, .86); border-color: rgba(45, 212, 191, .48); box-shadow: 0 0 0 3px rgba(20, 184, 166, .10); }
+        .main-sidebar .adm-menu-search input { min-width: 0; flex: 1; padding: 0; color: #e2e8f0; background: transparent; border: 0; outline: 0; font-size: 12px; }
+        .main-sidebar .adm-menu-search input::placeholder { color: #64748b; }
+        .main-sidebar .adm-menu-search kbd { padding: 1px 6px; color: #94a3b8; background: rgba(148, 163, 184, .10); border: 1px solid rgba(148, 163, 184, .15); border-radius: 5px; font: 10px/16px inherit; }
+        .main-sidebar .adm-search-empty { display: none; margin: 12px 4px 2px; color: #94a3b8; font-size: 11px; text-align: center; }
+
+        .main-sidebar > .sidebar {
+          height: auto !important;
+          min-height: 0;
+          flex: 1 1 auto;
+          padding: 8px 7px 18px !important;
+          overflow-y: auto;
+          background: transparent !important;
+          scrollbar-width: thin;
+          scrollbar-color: rgba(148, 163, 184, .28) transparent;
+        }
+
+        .main-sidebar .nav-sidebar { gap: 3px; padding: 0 2px; }
+        .main-sidebar .nav-sidebar > .nav-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 17px 9px 7px;
+          padding: 0;
+          color: #64748b !important;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: .14em;
+          text-transform: uppercase;
+        }
+        .main-sidebar .nav-sidebar > .nav-header::after { height: 1px; flex: 1; content: ""; background: linear-gradient(90deg, rgba(148, 163, 184, .17), transparent); }
+        .main-sidebar .nav-sidebar .nav-item { margin: 0; }
+        .main-sidebar .nav-sidebar .nav-link {
+          display: flex;
+          min-height: 46px;
+          align-items: center;
+          margin: 2px 0 !important;
+          padding: 7px 9px !important;
+          color: #aebaca !important;
+          background: transparent !important;
+          border: 1px solid transparent !important;
+          border-radius: 10px !important;
+          box-shadow: none !important;
+          transition: color .18s ease, background .18s ease, transform .18s ease;
+        }
+        .main-sidebar .nav-sidebar .nav-link:hover { color: #f8fafc !important; background: rgba(255, 255, 255, .055) !important; transform: translateX(2px); }
+        .main-sidebar .nav-sidebar .nav-link .nav-icon {
+          display: inline-grid;
+          width: 32px !important;
+          height: 32px;
+          flex: 0 0 32px;
+          margin: 0 10px 0 0 !important;
+          place-items: center;
+          color: #8291a5 !important;
+          background: rgba(255, 255, 255, .045) !important;
+          border: 1px solid rgba(255, 255, 255, .055);
+          border-radius: 9px;
+          font-size: 13px !important;
+        }
+        .main-sidebar .nav-sidebar .nav-link.active,
+        .main-sidebar .nav-sidebar .menu-open > .nav-link { color: #ecfdfb !important; background: linear-gradient(105deg, rgba(15, 159, 146, .25), rgba(15, 159, 146, .10)) !important; border-color: rgba(94, 234, 212, .15) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 7px 18px rgba(2, 6, 23, .13) !important; }
+        .main-sidebar .nav-sidebar .nav-link.active .nav-icon,
+        .main-sidebar .nav-sidebar .menu-open > .nav-link .nav-icon { color: #062b29 !important; background: linear-gradient(145deg, #76eadc, #2dd4bf) !important; border-color: rgba(153, 246, 228, .55); box-shadow: 0 5px 13px rgba(20, 184, 166, .22); }
+        .main-sidebar .nav-sidebar .nav-link p { margin: 0; font-size: 13px; font-weight: 550; }
+        .main-sidebar .nav-treeview { margin: 3px 0 7px 21px !important; padding: 5px 5px 5px 14px !important; background: rgba(2, 6, 23, .17) !important; border-radius: 0 0 10px 10px !important; }
+        .main-sidebar .nav-treeview .nav-link { min-height: 36px; padding: 6px 9px !important; border-radius: 8px !important; }
+
+        @media (min-width: 992px) {
+          .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .adm-brand-copy,
+          .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .adm-brand-shine { display: none; }
+          .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .adm-brand { justify-content: center; padding: 8px; }
+          .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .adm-brand-monogram { width: 38px; height: 38px; flex-basis: 38px; }
+          .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-link { justify-content: center; padding-right: 6px !important; padding-left: 6px !important; }
+          .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-icon { margin-right: 0 !important; }
+        }
+      </style>
+      <script>
+        (function() {
+          var aside = document.currentScript.closest('.main-sidebar');
+          if (!aside || aside.querySelector(':scope > .adm-sidebar-intro')) return;
+
+          var sidebar = aside.querySelector(':scope > .sidebar');
+          var nav = sidebar ? sidebar.querySelector('.nav-sidebar') : null;
+          if (!sidebar || !nav) return;
+
+          var reviewCount = 0;
+          nav.querySelectorAll('.badge').forEach(function(badge) {
+            var value = parseInt((badge.textContent || '').replace(/[^0-9]/g, ''), 10);
+            if (!isNaN(value)) reviewCount += value;
+          });
+
+          var tools = document.createElement('div');
+          tools.className = 'adm-sidebar-intro';
+          tools.innerHTML = '<div class="adm-status-row" aria-label="Ringkasan pekerjaan"><span><strong>' + reviewCount + '</strong> perlu ditinjau</span></div>' +
+            '<label class="adm-menu-search"><i class="fas fa-search" aria-hidden="true"></i><input type="search" placeholder="Cari menu..." autocomplete="off" aria-label="Cari menu sidebar"><kbd>/</kbd></label>' +
+            '<p class="adm-search-empty" role="status">Menu tidak ditemukan</p>';
+          aside.insertBefore(tools, sidebar);
+
+          var input = tools.querySelector('input');
+          var empty = tools.querySelector('.adm-search-empty');
+          var items = Array.prototype.filter.call(nav.children, function(child) { return child.classList.contains('nav-item'); });
+
+          function filterMenu() {
+            var keyword = input.value.toLocaleLowerCase('id-ID').trim();
+            items.forEach(function(item) {
+              var label = (item.textContent || '').replace(/\s+/g, ' ').toLocaleLowerCase('id-ID');
+              item.style.display = keyword && label.indexOf(keyword) === -1 ? 'none' : '';
+            });
+            var hasResult = items.some(function(item) { return item.style.display !== 'none'; });
+            empty.style.display = keyword && !hasResult ? 'block' : 'none';
+          }
+
+          input.addEventListener('input', filterMenu);
+          input.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') { input.value = ''; filterMenu(); input.blur(); }
+          });
+          document.addEventListener('keydown', function(event) {
+            var target = event.target;
+            var typing = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+            if (event.key === '/' && !typing) { event.preventDefault(); input.focus(); }
+          });
+        })();
+      </script>
     </aside>
     <div class="content-wrapper">
-      <section class="content-header mt-5 no-print app-breadcrumb">
-        <div class="container-fluid">
-          <div class="row mb-2">
-            <div class="col-sm-6">
-            </div>
-            <div class="col-sm-6">
-              <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="<?= base_url() . $this->uri->segment('1') . "/" . $this->uri->segment('2') ?>"><?= ucwords(str_replace("_", " ", $this->uri->segment('2'))); ?></a></li>
-                <?php if ($this->uri->segment('3')) { ?>
-                  <li class="breadcrumb-item active"><?= ucwords(str_replace("_", " ", $this->uri->segment('3'))); ?></li>
-                <?php } ?>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </section>
       <?= $contents ?>
     </div>
   </div>
   <script src="<?= base_url() ?>assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="<?= base_url() ?>assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
   <script src="<?= base_url() ?>assets/dist/js/adminlte.min.js"></script>
+  <script>
+    // Modal pada beberapa halaman berada di dalam card/content yang memiliki
+    // overflow atau backdrop-filter. Pindahkan ke body agar posisi fixed,
+    // backdrop, fokus, dan perhitungan ukuran Bootstrap tetap normal.
+    $(document).on('show.bs.modal', '.modal', function() {
+      if (this.parentNode !== document.body) {
+        document.body.appendChild(this);
+      }
+    });
+  </script>
   <script>
     (function() {
       var connectionCheckUrl = <?= json_encode(base_url()) ?>;

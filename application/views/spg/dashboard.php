@@ -186,6 +186,15 @@ $total_tindakan = $total_terima + $total_mutasi + $total_bap;
     .spg-welcome { align-items: flex-start; flex-direction: column; }
     .spg-date { display: none; }
     .spg-store-card { min-height: 180px; padding: 22px 19px; border-radius: 20px; }
+    .spg-store-info { flex: 1; }
+    .spg-store-info strong {
+      overflow: visible;
+      font-size: clamp(13px, 4vw, 17px);
+      line-height: 1.2;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
     .spg-store-actions { justify-content: flex-start; }
     .spg-quick-card { padding: 22px 12px 20px; }
     .spg-quick-grid { gap: 21px 4px; }
@@ -193,11 +202,40 @@ $total_tindakan = $total_terima + $total_mutasi + $total_bap;
   }
 
   @media (max-width: 575.98px) {
-    .spg-summary-grid { grid-template-columns: 1fr; gap: 8px; }
+    .spg-summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .spg-summary-item {
+      min-height: 58px;
+      gap: 6px;
+      padding: 7px 6px;
+      border-radius: 10px;
+    }
+    .spg-summary-item > div { min-width: 0; }
+    .spg-summary-icon {
+      width: 28px;
+      height: 28px;
+      flex-basis: 28px;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+    .spg-summary-value { font-size: 14px; }
+    .spg-summary-label {
+      display: block;
+      font-size: 8px;
+      line-height: 1.15;
+    }
     .spg-quick-label { font-size: 10.5px; }
   }
 
   @media (max-width: 359.98px) {
+    .spg-summary-grid { gap: 3px; }
+    .spg-summary-item { gap: 4px; padding: 6px 4px; }
+    .spg-summary-icon { width: 24px; height: 24px; flex-basis: 24px; font-size: 10px; }
+    .spg-summary-value { font-size: 12px; }
+    .spg-summary-label { font-size: 7px; }
     .spg-quick-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 </style>

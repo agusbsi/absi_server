@@ -99,7 +99,9 @@ class Permintaan extends CI_Controller
       'qty'     => $qty,
       'price'   => "",
       'name'    => $produk->id,
-      'options' => $produk->kode,
+      // Cart CI mengharuskan options berupa array. Gunakan sintaks array()
+      // agar tetap kompatibel dengan PHP 5 maupun PHP 8.
+      'options' => array('kode' => $produk->kode),
       'satuan'  => $keterangan
     );
     $this->cart->insert($data);

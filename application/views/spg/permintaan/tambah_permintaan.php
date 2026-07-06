@@ -57,11 +57,18 @@ $sisa_po = $maks_po - $po->total;
           </tr>
           <?php
           $total = 0;
-          foreach ($data_cart as $d) { ?>
+          foreach ($data_cart as $d) {
+            // Mendukung format baru (array) dan session cart lama (string).
+            if (isset($d['options']) && is_array($d['options'])) {
+              $kode_produk = isset($d['options']['kode']) ? $d['options']['kode'] : '-';
+            } else {
+              $kode_produk = isset($d['options']) ? $d['options'] : '-';
+            }
+          ?>
             <tr>
               <td>
                 <small>
-                  <strong><?= $d['options'] ?></strong> <br>
+                  <strong><?= html_escape($kode_produk) ?></strong> <br>
                   Ket : <?= $d['satuan'] ?>
                 </small>
               </td>

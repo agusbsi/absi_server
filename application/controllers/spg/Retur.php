@@ -19,6 +19,63 @@ class Retur extends CI_Controller
     $this->load->model('M_admin');
   }
 
+  /**
+   * Resize gambar jika dukungan GD untuk format file tersedia.
+   * File asli tetap digunakan jika server tidak mendukung proses resize.
+   * Menggunakan sintaks yang kompatibel dengan PHP 5 dan PHP 8.
+   */
+  private function resize_image_if_supported($relative_path)
+  {
+    $full_path = FCPATH . ltrim($relative_path, '/\\');
+
+    if (!is_file($full_path) || !extension_loaded('gd')) {
+      log_message('error', 'Resize dilewati: ekstensi GD tidak tersedia atau file tidak ditemukan: ' . $relative_path);
+      return false;
+    }
+
+    $image_info = @getimagesize($full_path);
+    if ($image_info === false) {
+      log_message('error', 'Resize dilewati: file bukan gambar yang valid: ' . $relative_path);
+      return false;
+    }
+
+    $required_function = '';
+    if ($image_info[2] === IMAGETYPE_PNG) {
+      $required_function = 'imagecreatefrompng';
+    } elseif ($image_info[2] === IMAGETYPE_JPEG) {
+      $required_function = 'imagecreatefromjpeg';
+    } elseif ($image_info[2] === IMAGETYPE_GIF) {
+      $required_function = 'imagecreatefromgif';
+    }
+
+    if ($required_function === '' || !function_exists($required_function)) {
+      log_message('error', 'Resize dilewati: GD tidak mendukung format gambar: ' . $relative_path);
+      return false;
+    }
+
+    $resize_config = array(
+      'image_library' => 'gd2',
+      'source_image' => $full_path,
+      'create_thumb' => false,
+      'maintain_ratio' => true,
+      'width' => 800,
+      'height' => 800,
+      'quality' => '80%'
+    );
+
+    $this->load->library('image_lib');
+    $this->image_lib->clear();
+    $this->image_lib->initialize($resize_config);
+    $resized = $this->image_lib->resize();
+
+    if (!$resized) {
+      log_message('error', 'Resize gambar gagal: ' . strip_tags($this->image_lib->display_errors('', '')));
+    }
+
+    $this->image_lib->clear();
+    return $resized;
+  }
+
   // tampil data retur
   public function index()
   {
@@ -102,21 +159,8 @@ class Retur extends CI_Controller
         $gbr = $this->upload->data();
         $foto_retur = $gbr['file_name'];
 
-        // Kompres gambar
-        $config_resize['image_library'] = 'gd2';
-        $config_resize['source_image'] = 'assets/img/retur/' . $foto_retur;
-        $config_resize['create_thumb'] = false;
-        $config_resize['maintain_ratio'] = true;
-        $config_resize['width'] = 800; // Lebar maksimum
-        $config_resize['height'] = 800; // Tinggi maksimum
-        $config_resize['quality'] = '80%'; // Kualitas kompresi
-
-        $this->load->library('image_lib');
-        $this->image_lib->initialize($config_resize); // Inisialisasi ulang konfigurasi resize
-        if (!$this->image_lib->resize()) {
-          echo 'Resize Error: ' . $this->image_lib->display_errors();
-        }
-        $this->image_lib->clear();
+        // Resize hanya jika GD mendukung format gambar. Jika tidak, gunakan file asli.
+        $this->resize_image_if_supported('assets/img/retur/' . $foto_retur);
       } else {
         // Jika upload gagal
         echo 'Upload Error: ' . $this->upload->display_errors();
@@ -132,7 +176,8 @@ class Retur extends CI_Controller
       'qty' => $qty,
       'price' => "",
       'name' => $produk->id,
-      'options' => $produk->kode,
+      // Cart CI mensyaratkan options berupa array pada PHP 8.
+      'options' => array('kode' => $produk->kode),
       'sj' => $kirim,
       'keterangan' => array(
         'status' => $keterangan,
@@ -228,19 +273,7 @@ class Retur extends CI_Controller
       $upload_data_lampiran = $this->upload->data();
       $lampiran = $upload_data_lampiran['file_name'];
 
-      // Kompres gambar lampiran
-      $config_resize['image_library'] = 'gd2';
-      $config_resize['source_image'] = 'assets/img/retur/lampiran/' . $lampiran;
-      $config_resize['maintain_ratio'] = true;
-      $config_resize['width'] = 800;
-      $config_resize['height'] = 800;
-      $config_resize['quality'] = '80%';
-
-      $this->image_lib->initialize($config_resize);
-      if (!$this->image_lib->resize()) {
-        echo 'Resize Error (Lampiran): ' . $this->image_lib->display_errors();
-      }
-      $this->image_lib->clear();
+      $this->resize_image_if_supported('assets/img/retur/lampiran/' . $lampiran);
     } else {
       $error = $this->upload->display_errors();
     }
@@ -252,13 +285,7 @@ class Retur extends CI_Controller
       $upload_data_foto_packing = $this->upload->data();
       $packing = $upload_data_foto_packing['file_name'];
 
-      // Kompres gambar foto_packing
-      $config_resize['source_image'] = 'assets/img/retur/lampiran/' . $packing;
-      $this->image_lib->initialize($config_resize);
-      if (!$this->image_lib->resize()) {
-        echo 'Resize Error (Foto Packing): ' . $this->image_lib->display_errors();
-      }
-      $this->image_lib->clear();
+      $this->resize_image_if_supported('assets/img/retur/lampiran/' . $packing);
     } else {
       $error = $this->upload->display_errors();
     }
