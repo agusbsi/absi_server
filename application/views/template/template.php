@@ -1294,10 +1294,31 @@
         "autoWidth": false,
         "buttons": ["pdf", "print", "excel"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-      $('.select2').select2()
-      $('.select2bs4').select2({
-        theme: 'bootstrap4'
-      })
+      // Select2 biasa tetap memakai body. Select2 di dalam modal harus memakai
+      // modalnya sebagai dropdownParent agar tidak tertutup backdrop/footer.
+      $('.select2').each(function() {
+        var $select = $(this);
+        var $modal = $select.closest('.modal');
+        var options = {};
+
+        if ($modal.length) {
+          options.dropdownParent = $modal;
+        }
+
+        $select.select2(options);
+      });
+
+      $('.select2bs4').each(function() {
+        var $select = $(this);
+        var $modal = $select.closest('.modal');
+        var options = { theme: 'bootstrap4' };
+
+        if ($modal.length) {
+          options.dropdownParent = $modal;
+        }
+
+        $select.select2(options);
+      });
       $('#reservation').daterangepicker({
         format: 'L'
       })

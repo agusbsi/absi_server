@@ -41,117 +41,149 @@
 
   }
 
-  .judul_toko {
-    grid-column: span 2;
-    background-color: #FFFFFF;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 8px;
-    position: relative;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-  }
-
-  .judul_toko h5 {
-    margin: 0;
-    font-weight: bold;
-  }
+  .store-profile { --profile-primary: #635bff; --profile-ink: #111827; --profile-muted: #7c879b; padding-bottom: 32px; }
+  .store-profile::before { content: ''; position: fixed; inset: 0 0 auto; height: 420px; background: radial-gradient(circle at 75% 0%, rgba(99,91,255,.09), transparent 35%), radial-gradient(circle at 20% 5%, rgba(14,165,233,.08), transparent 30%); pointer-events: none; }
+  .store-hero { background: linear-gradient(120deg, #4338ca 0%, #4f46e5 42%, #2563eb 72%, #0891b2 100%); color: #fff; border-radius: 24px; padding: 30px 32px; margin-bottom: 16px; box-shadow: 0 18px 45px rgba(67,56,202,.22); position: relative; overflow: hidden; isolation: isolate; }
+  .store-hero::before { content: ''; position: absolute; width: 420px; height: 420px; left: -190px; bottom: -330px; border-radius: 50%; border: 70px solid rgba(255,255,255,.07); z-index: -1; }
+  .store-hero::after { content: ''; position: absolute; width: 360px; height: 360px; right: -150px; top: -250px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.24) 0%, rgba(255,255,255,.06) 48%, transparent 70%); z-index: -1; }
+  .store-hero__content { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .store-hero__eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; opacity: .75; margin-bottom: 5px; }
+  .store-hero h1 { font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -.6px; margin: 0 0 12px; }
+  .store-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+  .store-meta span { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(8px); padding: 6px 11px; border-radius: 20px; font-size: 12px; }
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+  .status-pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 4px rgba(74,222,128,.18); }
+  .status-pill.is-inactive::before { background: #fca5a5; box-shadow: 0 0 0 4px rgba(252,165,165,.18); }
 
   .btn_edit {
-    background-color: #FFC107;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    color: black;
-    border-radius: 5px;
-    padding: 0 5px;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #2563eb;
+    border-radius: 8px;
+    padding: 6px 10px;
     cursor: pointer;
     position: absolute;
-    right: 10px;
-    bottom: 5px;
+    right: 14px;
+    top: 13px;
+    bottom: auto;
     font-size: 12px;
     font-weight: 500;
-    overflow: hidden;
-    transition: color 0.4s ease;
+    transition: all .2s ease;
     z-index: 1;
   }
 
-  .btn_edit::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background-color: #3498db;
-    transition: left 0.4s ease;
-    z-index: 0;
-  }
-
-  .btn_edit:hover::before {
-    left: 0;
-  }
-
-  .btn_edit:hover {
-    color: white;
-  }
-
-  .btn_edit i,
-  .btn_edit span {
-    position: relative;
-    z-index: 1;
-  }
-
-
+  .btn_edit:hover { color: #fff; background: #2563eb; border-color: #2563eb; transform: translateY(-1px); }
+  .store-hero .btn_edit { position: relative; right: auto; top: auto; flex: 0 0 auto; background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); color: #fff; padding: 10px 15px; backdrop-filter: blur(8px); }
+  .store-hero .btn_edit:hover { background: #fff; color: #111827; }
+  .hero-main { display: flex; align-items: center; gap: 18px; }
+  .hero-mark { width: 58px; height: 58px; flex: 0 0 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: linear-gradient(145deg, rgba(255,255,255,.2), rgba(255,255,255,.06)); border: 1px solid rgba(255,255,255,.15); box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
+  .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+  .summary-item { min-height: 102px; background: rgba(255,255,255,.92); border: 1px solid rgba(226,232,240,.9); border-radius: 18px; padding: 17px; display: flex; align-items: center; gap: 13px; box-shadow: 0 8px 28px rgba(15,23,42,.045); backdrop-filter: blur(12px); transition: transform .2s ease, box-shadow .2s ease; }
+  .summary-item:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(15,23,42,.08); }
+  .summary-icon { width: 43px; height: 43px; flex: 0 0 43px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #635bff; background: #f0efff; font-size: 16px; }
+  .summary-item:nth-child(2) .summary-icon { color: #0891b2; background: #ecfeff; }
+  .summary-item:nth-child(3) .summary-icon { color: #059669; background: #ecfdf5; }
+  .summary-item:nth-child(4) .summary-icon { color: #ea580c; background: #fff7ed; }
+  .summary-label { display: block; color: var(--profile-muted); font-size: 10px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; margin-bottom: 4px; }
+  .summary-value { display: block; color: var(--profile-ink); font-size: 14px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
   .image-section {
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 20px;
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: 285px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, .09);
+    border: 4px solid #fff;
   }
 
   .image-section img {
     width: 100%;
-    border-radius: 8px;
+    height: 100%;
+    object-fit: cover;
   }
 
-  .detail-title {
-    font-size: 14px;
-    font-weight: bold;
-    margin: 0;
-    display: block;
-  }
-
-  .detail-description {
-    display: block;
-    font-size: 12px;
-    color: #666666;
-    margin-bottom: 2px;
-  }
+  .image-section::after { content: ''; position: absolute; inset: auto 0 0; height: 70px; background: linear-gradient(transparent, rgba(15,23,42,.35)); pointer-events: none; }
+  .image-section .btn_edit { top: auto; bottom: 14px; z-index: 2; background: #fff; border-color: #fff; }
+  .profile-card { border: 1px solid #e7eaf0; border-radius: 20px; box-shadow: 0 8px 30px rgba(15,23,42,.04); overflow: hidden; margin-bottom: 16px; background: rgba(255,255,255,.95); transition: box-shadow .2s ease, transform .2s ease; }
+  .profile-card:hover { box-shadow: 0 15px 35px rgba(15,23,42,.075); transform: translateY(-1px); }
+  .profile-card .card-header { background: transparent; border-bottom: 0; padding: 18px 19px 5px; min-height: 55px; display: flex; align-items: center; }
+  .profile-card .card-header strong { color: var(--profile-ink); font-size: 15px; }
+  .profile-card .card-header i { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; background: #f0efff; color: var(--profile-primary); border-radius: 11px; margin-right: 10px; }
+  .profile-card .card-body { position: relative; padding: 17px 19px 54px; }
+  .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px 18px; }
+  .detail-grid .detail-item--wide { grid-column: 1 / -1; }
+  .detail-title { color: var(--profile-muted); font-size: 9px; font-weight: 700; letter-spacing: .75px; text-transform: uppercase; margin: 0 0 4px; }
+  .detail-description { color: var(--profile-ink); font-size: 13px; font-weight: 600; line-height: 1.5; margin: 0; overflow-wrap: anywhere; }
+  .detail-description small { color: var(--profile-muted); font-weight: 400; }
+  .stock-card { border: 1px solid #e7eaf0; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 35px rgba(15,23,42,.055); }
+  .stock-card .card-header { padding: 21px 22px; background: #fff; color: var(--profile-ink); border-bottom: 1px solid #eef0f4; }
+  .stock-card .card-body { padding: 20px 22px 24px; }
+  .stock-card .card-title { font-weight: 700; }
+  .stock-card .card-title i { color: var(--profile-primary); margin-right: 8px; }
+  .stock-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 17px; }
+  .stock-toolbar .btn { border-radius: 8px; padding: 7px 12px; font-weight: 600; }
+  .stock-table-wrap { overflow-x: auto; }
+  #example1 { min-width: 760px; }
+  #example1 { border-collapse: separate; border-spacing: 0; border: 1px solid #eef0f4; border-radius: 14px; overflow: hidden; }
+  #example1 thead th { background: #f8f9fc; color: #667085; border: 0; border-bottom: 1px solid #e8edf5; font-size: 10px; padding: 13px 10px; letter-spacing: .55px; text-transform: uppercase; }
+  #example1 tbody td { vertical-align: middle; border-color: #f0f2f5; padding: 12px 10px; }
+  #example1 tbody tr:hover { background: #fafaff; }
+  .suspend-alert { border: 0; border-left: 4px solid #dc3545; border-radius: 10px; box-shadow: 0 5px 15px rgba(220,53,69,.08); }
+  #btnHistori { border-radius: 10px; padding: 9px; font-weight: 600; margin-bottom: 16px; }
+  @media (max-width: 991.98px) { .summary-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 767.98px) { .store-hero { padding: 22px; border-radius: 20px; } .store-hero__content { align-items: flex-start; flex-direction: column; } .hero-main { align-items: flex-start; } .hero-mark { width: 48px; height: 48px; flex-basis: 48px; border-radius: 15px; } .store-hero h1 { font-size: 21px; } .summary-grid { grid-template-columns: 1fr 1fr; } .summary-item { min-height: 92px; padding: 13px; align-items: flex-start; flex-direction: column; gap: 8px; } .image-section { height: 230px; } .detail-grid { grid-template-columns: 1fr; } .detail-grid .detail-item--wide { grid-column: auto; } }
 </style>
 <section class="content">
-  <div class="container-fluid">
+  <div class="container-fluid store-profile">
     <?php if ($cek_status->status == 0) { ?>
-      <div class="alert alert-danger alert-dismissible">
+      <div class="alert alert-danger alert-dismissible suspend-alert">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         <i class="icon fas fa-exclamation-triangle"></i>
         <small><strong>Perhatian:</strong> Toko ini telah <u>disuspend</u> dan saat ini <u>tidak aktif</u>. Seluruh stok barang telah dinonaktifkan dan tidak dapat diproses lebih lanjut.</small>
       </div>
     <?php } ?>
 
-    <div class="judul_toko">
-      <h5><i class="fas fa-store"></i> <?= $toko->nama_toko ?></h5>
-      <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
-        <button class="btn_edit" data-toggle="modal" data-target="#modal_toko" data-id="<?= $toko->id; ?>" data-toko="<?= $toko->nama_toko; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
-      <?php } ?>
+    <div class="store-hero">
+      <div class="store-hero__content">
+        <div class="hero-main">
+          <div class="hero-mark"><i class="fas fa-store"></i></div>
+          <div>
+            <div class="store-hero__eyebrow">Store overview</div>
+            <h1><?= $toko->nama_toko ?></h1>
+            <div class="store-meta">
+              <span class="status-pill <?= $cek_status->status == 1 ? '' : 'is-inactive' ?>"><?= $cek_status->status == 1 ? 'Toko Aktif' : 'Toko Nonaktif' ?></span>
+              <span><i class="fas fa-tag mr-1"></i><?= jenis_toko($toko->jenis_toko) ?></span>
+              <span><i class="fas fa-map-marker-alt mr-1"></i><?= $toko->kabupaten ? $toko->kabupaten : 'Lokasi belum diatur' ?></span>
+            </div>
+          </div>
+        </div>
+        <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
+          <button class="btn_edit" data-toggle="modal" data-target="#modal_toko" data-id="<?= $toko->id; ?>" data-toko="<?= $toko->nama_toko; ?>"><i class="fas fa-edit"></i> <span>Ubah Nama</span></button>
+        <?php } ?>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="summary-icon"><i class="fas fa-cubes"></i></div>
+        <div><span class="summary-label">Total Artikel</span><span class="summary-value"><?= count($stok_produk) ?> produk</span></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-icon"><i class="fas fa-bullseye"></i></div>
+        <div><span class="summary-label">Target Toko</span><span class="summary-value">Rp <?= number_format($toko->target, 0, ',', '.') ?></span></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-icon"><i class="fas fa-percentage"></i></div>
+        <div><span class="summary-label">Margin</span><span class="summary-value"><?= $toko->diskon ?>%</span></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-icon"><i class="fas fa-user-tie"></i></div>
+        <div><span class="summary-label">PIC Toko</span><span class="summary-value"><?= $toko->nama_pic ? $toko->nama_pic : 'Belum diatur' ?></span></div>
+      </div>
     </div>
     <div class="row">
-      <div class="col-md-5">
+      <div class="col-lg-5">
         <div class="image-section">
           <?php if ($toko->foto_toko == null) { ?>
             <img src="<?php echo base_url() ?>assets/img/toko/hicoop.png" alt="Foto toko">
@@ -162,27 +194,28 @@
             <button class="btn_edit" data-toggle="modal" data-target="#modal_foto" data-id="<?= $toko->id; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
           <?php } ?>
         </div>
-        <div class="card card-outline card-info">
+        <div class="card profile-card">
           <div class="card-header">
-            <strong>Detail</strong>
+            <strong><i class="fas fa-address-card"></i>Informasi Toko</strong>
           </div>
           <div class="card-body">
-            <p class="detail-title">Customer</p>
+            <div class="detail-grid">
+            <div><p class="detail-title">Customer</p>
             <p class="detail-description"><?= $toko->nama_cust ?></p>
-            <p class="detail-title">Jenis Toko</p>
-            <p class="detail-description"><?= jenis_toko($toko->jenis_toko) ?></p>
+            </div><div><p class="detail-title">Jenis Toko</p>
+            <p class="detail-description"><?= jenis_toko($toko->jenis_toko) ?></p></div>
+            <div class="detail-item--wide">
             <p class="detail-title">PIC & Telp</p>
-            <p class="detail-description"><?= $toko->nama_pic ?> | <?= $toko->telp ?></p>
-            <p class="detail-title">Provinsi</p>
-            <p class="detail-description"><?= $toko->provinsi ?></p>
-            <p class="detail-title">Kabupaten</p>
-            <p class="detail-description"><?= $toko->kabupaten ?></p>
-            <p class="detail-title">Kecamatan</p>
-            <p class="detail-description"><?= $toko->kecamatan ?></p>
+            <p class="detail-description"><i class="fas fa-user mr-1 text-primary"></i><?= $toko->nama_pic ?> &nbsp; <i class="fas fa-phone-alt mr-1 text-primary"></i><?= $toko->telp ?></p></div>
+            <div><p class="detail-title">Provinsi</p><p class="detail-description"><?= $toko->provinsi ?></p></div>
+            <div><p class="detail-title">Kabupaten</p><p class="detail-description"><?= $toko->kabupaten ?></p></div>
+            <div><p class="detail-title">Kecamatan</p><p class="detail-description"><?= $toko->kecamatan ?></p></div>
+            <div><p class="detail-title">Dibuat</p><p class="detail-description"><?= date('d M Y H:i', strtotime($toko->created_at)) ?></p></div>
+            <div class="detail-item--wide">
             <p class="detail-title">Alamat</p>
-            <p class="detail-description"><?= $toko->alamat ?></p>
-            <p class="detail-title">Di buat</p>
-            <p class="detail-description"><?= date('d M Y H:i:s', strtotime($toko->created_at)) ?></p>
+            <p class="detail-description"><?= $toko->alamat ?></p></div>
+            </div>
+            <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
             <button class="btn_edit" data-toggle="modal" data-target="#modal_detail"
               data-id="<?= $toko->id; ?>"
               data-id_cust="<?= $toko->id_customer; ?>"
@@ -192,31 +225,26 @@
               data-provinsi="<?= $toko->id_provinsi; ?>"
               data-kabupaten="<?= $toko->id_kab; ?>"
               data-kecamatan="<?= $toko->id_kec; ?>"
-              data-alamat="<?= $toko->alamat; ?>">
-              <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
-                <i class="fas fa-edit"></i> <span>Ubah</span></button>
-          <?php } ?>
+              data-alamat="<?= $toko->alamat; ?>"><i class="fas fa-edit"></i> <span>Ubah</span></button>
+            <?php } ?>
           </div>
         </div>
       </div>
-      <div class="col-md-7">
+      <div class="col-lg-7">
         <div class="row">
           <div class="col-md-6">
-            <div class="card card-outline card-info">
+            <div class="card profile-card">
               <div class="card-header">
-                <strong>Pengaturan</strong>
+                <strong><i class="fas fa-sliders-h"></i>Pengaturan</strong>
               </div>
               <div class="card-body">
-                <p class="detail-title">Gudang Easy</p>
-                <p class="detail-description"><?= $toko->gudang ? $toko->gudang : 'kosong' ?></p>
-                <p class="detail-title">Max Tgl SO</p>
-                <p class="detail-description"><?= $toko->tgl_so ?> / Bulan</p>
-                <p class="detail-title">Margin</p>
-                <p class="detail-description"><?= $toko->diskon ?> %</p>
-                <p class="detail-title">Target Toko</p>
-                <p class="detail-description">Rp <?= number_format($toko->target) ?></p>
-                <p class="detail-title">Tipe Harga</p>
-                <p class="detail-description"><?= $toko->het == 1 ? 'HET JAWA' : 'HET INDOBARAT' ?></p>
+                <div class="detail-grid">
+                  <div><p class="detail-title">Gudang Easy</p><p class="detail-description"><?= $toko->gudang ? $toko->gudang : 'Kosong' ?></p></div>
+                  <div><p class="detail-title">Maks. Tgl SO</p><p class="detail-description"><?= $toko->tgl_so ?> / bulan</p></div>
+                  <div><p class="detail-title">Margin</p><p class="detail-description"><?= $toko->diskon ?>%</p></div>
+                  <div><p class="detail-title">Tipe Harga</p><p class="detail-description"><?= $toko->het == 1 ? 'HET JAWA' : 'HET INDOBARAT' ?></p></div>
+                  <div class="detail-item--wide"><p class="detail-title">Target Toko</p><p class="detail-description text-success">Rp <?= number_format($toko->target, 0, ',', '.') ?></p></div>
+                </div>
                 <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
                   <button class="btn_edit" data-toggle="modal" data-target="#modal_pengaturan"
                     data-id_toko_pengaturan="<?= $toko->id; ?>"
@@ -230,24 +258,19 @@
             </div>
           </div>
           <div class="col-md-6">
-            <div class="card card-outline card-info">
+            <div class="card profile-card">
               <div class="card-header">
-                <strong>Purchase Order ( PO )</strong>
+                <strong><i class="fas fa-file-invoice"></i>Purchase Order</strong>
               </div>
               <div class="card-body">
-                <p class="detail-title">Tipe Pengajuan</p>
-                <p class="detail-description">MANUAL</p>
-                <hr>
-                <p class="detail-title">Batas PO</p>
-                <p class="detail-description"><?= $toko->status_ssr == 1 ? 'AKTIF' : 'NON-AKTIF' ?></p>
-                <p class="detail-title">SSR Toko</p>
-                <p class="detail-description"><?= $toko->ssr ?> X <small>( Dari Total barang keluar bulan kemarin )</small></p>
-                <p class="detail-title">Max PO</p>
-                <p class="detail-description"><?= $toko->max_po ?> % <small>( Dari Total barang keluar bulan kemarin )</small></p>
-                <p class="detail-title">Min Pengiriman</p>
-                <p class="detail-description">Rp -</p>
-                <p class="detail-title">Periode</p>
-                <p class="detail-description">-</p>
+                <div class="detail-grid">
+                  <div><p class="detail-title">Tipe Pengajuan</p><p class="detail-description">Manual</p></div>
+                  <div><p class="detail-title">Batas PO</p><p class="detail-description <?= $toko->status_ssr == 1 ? 'text-success' : 'text-danger' ?>"><?= $toko->status_ssr == 1 ? 'Aktif' : 'Nonaktif' ?></p></div>
+                  <div><p class="detail-title">SSR Toko</p><p class="detail-description"><?= $toko->ssr ?>x <small>dari barang keluar</small></p></div>
+                  <div><p class="detail-title">Maks. PO</p><p class="detail-description"><?= $toko->max_po ?>% <small>dari barang keluar</small></p></div>
+                  <div><p class="detail-title">Min. Pengiriman</p><p class="detail-description">Rp -</p></div>
+                  <div><p class="detail-title">Periode</p><p class="detail-description">-</p></div>
+                </div>
                 <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
                   <button class="btn_edit" data-toggle="modal" data-target="#modal_po"
                     data-id_toko_po="<?= $toko->id; ?>"
@@ -258,18 +281,17 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="card card-outline card-info">
+          <div class="col-md-12">
+            <div class="card profile-card">
               <div class="card-header">
-                <strong> Tim Marketing</strong>
+                <strong><i class="fas fa-users"></i>Tim Marketing</strong>
               </div>
               <div class="card-body">
-                <p class="detail-title">Supervisor</p>
-                <p class="detail-description"><?= $toko->id_spv == 0 ? "Belum di kaitkan " : $toko->nama_spv ?></p>
-                <p class="detail-title">Team Leader</p>
-                <p class="detail-description"><?= $toko->id_leader == 0 ? "Belum di kaitkan " : $toko->leader ?></p>
-                <p class="detail-title">SPG / SPB</p>
-                <p class="detail-description"><?= $toko->id_spg == 0 ? "Belum di kaitkan " : $toko->spg ?></p>
+                <div class="detail-grid">
+                  <div class="detail-item--wide"><p class="detail-title">Supervisor</p><p class="detail-description"><?= $toko->id_spv == 0 ? "Belum dikaitkan" : $toko->nama_spv ?></p></div>
+                  <div><p class="detail-title">Team Leader</p><p class="detail-description"><?= $toko->id_leader == 0 ? "Belum dikaitkan" : $toko->leader ?></p></div>
+                  <div><p class="detail-title">SPG / SPB</p><p class="detail-description"><?= $toko->id_spg == 0 ? "Belum dikaitkan" : $toko->spg ?></p></div>
+                </div>
                 <?php if (in_array($this->session->userdata('role'), [1, 6, 9])) { ?>
                   <button class="btn_edit" data-toggle="modal" data-target="#modal_marketing"
                     data-id_toko_marketing="<?= $toko->id; ?>"
@@ -284,10 +306,10 @@
         </div>
       </div>
     </div>
-    <div class="card card-primary mt-3">
+    <div class="card stock-card mt-3">
       <div class="card-header">
         <h3 class="card-title">
-          <li class="fas fa-box"></li> Data Stok Artikel
+          <i class="fas fa-box"></i> Data Stok Artikel
         </h3>
       </div>
       <!-- /.card-header -->
@@ -299,11 +321,13 @@
             </div>
           </div>
         </div>
+        <div class="stock-toolbar">
         <button type="button" class="btn btn-success btn-sm btn_tambah <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-id_toko="<?= $toko->id ?>" data-toggle="modal" data-target="#modal-tambah-produk"><i class="fa fa-plus"></i> Tambah Produk</button>
         <a href="<?= base_url('adm/Toko/templateStok/' . $toko->id) ?>" class="btn btn-warning btn-sm <?= ($cek_status->status != 1) ? 'd-none' : '' ?>"><i class="fa fa-download"></i> Unduh Template</a>
         <button type="button" class="btn btn-primary btn-sm btn_tambah <?= ($this->session->userdata('role') != 1) ? 'd-none' : '' ?>" data-id_toko="<?= $toko->id ?>" data-toggle="modal" data-target="#modal-tambah"><i class="fa fa-upload"></i> Import Stok</button>
-        <div class="tab-content">
-          <table id="example1" class="table table-bordered table-striped">
+        </div>
+        <div class="tab-content stock-table-wrap">
+          <table id="example1" class="table table-bordered table-hover">
             <thead>
               <tr class="text-center">
                 <th>#</th>
@@ -403,7 +427,7 @@
 
           <div class="form-group">
             <label>Nama Artikel</label>
-            <select name="id_produk" class="form-control select2bs4" required>
+            <select name="id_produk" id="tambah_produk_select" class="form-control select2bs4" required>
               <option value="">- Pilih Artikel -</option>
               <?php foreach ($list_produk as $pr) { ?>
                 <option value="<?= $pr->id ?>"><?= $pr->kode . " | " . $pr->nama_produk ?></option>
