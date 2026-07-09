@@ -172,7 +172,63 @@
     .warehouse-page{--primary:#2563eb;--muted:#64748b;--line:#e2e8f0;color:#0f172a}.warehouse-page .warehouse-card{overflow:hidden;border:0;border-radius:19px;background:#fff;box-shadow:0 10px 35px rgba(15,23,42,.08)}.warehouse-page .warehouse-hero{display:flex;align-items:center;justify-content:space-between;padding:25px 27px;border:0;color:#fff;background:linear-gradient(125deg,#172554,#1d4ed8 75%,#38bdf8 140%)}.warehouse-page .warehouse-hero:after{display:none}.warehouse-page .warehouse-hero h2{margin:0 0 5px;font-size:24px;font-weight:700}.warehouse-page .warehouse-hero p{margin:0;color:rgba(255,255,255,.78);font-size:12px}.warehouse-page .sync-badge{padding:7px 11px;border:1px solid rgba(255,255,255,.25);border-radius:20px;background:rgba(255,255,255,.1);font-size:10px;font-weight:700}.warehouse-page .warehouse-card>.card-body{padding:21px}
     .warehouse-page .info-box{min-height:100px;padding:14px;border:1px solid var(--line);border-radius:15px;box-shadow:0 4px 16px rgba(15,23,42,.04)}.warehouse-page .info-box .info-box-icon{width:50px;height:50px;border-radius:13px;color:#2563eb!important;background:#eff6ff!important;font-size:19px}.warehouse-page .col-md-4:nth-child(2) .info-box-icon{color:#059669!important;background:#ecfdf5!important}.warehouse-page .col-md-4:nth-child(3) .info-box-icon{color:#d97706!important;background:#fffbeb!important}.warehouse-page .info-box .info-box-text{color:var(--muted);font-size:10px;letter-spacing:.04em}.warehouse-page .info-box .info-box-number{color:#0f172a;font-size:20px;line-height:1.3}.warehouse-page .col-md-4:nth-child(3) .info-box-number{font-size:13px}.warehouse-page .table-heading{display:flex;align-items:flex-end;justify-content:space-between;padding:10px 0 13px;margin-top:5px}.warehouse-page .table-heading h3{margin:0 0 3px;font-size:16px;font-weight:700}.warehouse-page .table-heading p{margin:0;color:var(--muted);font-size:11px}.warehouse-page .table-heading>span{padding:5px 9px;border-radius:20px;color:#1d4ed8;background:#eff6ff;font-size:10px;font-weight:700}.warehouse-page .tabel-scroll{max-height:none;overflow:visible}.warehouse-page #tabel_baru thead th{padding:12px 10px;border-width:1px 0;border-color:var(--line);color:#475569;background:#f8fafc;font-size:10px;text-transform:uppercase}.warehouse-page #tabel_baru tbody td{padding:13px 10px;border-color:#f1f5f9;vertical-align:middle}.warehouse-page .stock-note{display:flex;align-items:flex-start;padding:13px 15px;margin-top:17px;border:1px solid #bfdbfe;border-radius:12px;color:#475569;background:#eff6ff}.warehouse-page .stock-note>i{margin:2px 10px 0 0;color:#2563eb}.warehouse-page .stock-note strong,.warehouse-page .stock-note span{display:block}.warehouse-page .stock-note strong{color:#1e3a8a;font-size:11px}.warehouse-page .stock-note span{font-size:10px}.warehouse-page .warehouse-card>.card-footer{padding:15px 21px;border-color:#f1f5f9;background:#fff}.warehouse-page .warehouse-card>.card-footer .btn{height:36px;padding:0 13px;border-radius:9px;font-size:11px;font-weight:700}
     .warehouse-import-modal .modal-content{overflow:hidden;border:0;border-radius:18px;box-shadow:0 22px 55px rgba(15,23,42,.23)}.warehouse-import-modal .modal-header{padding:19px 21px;border:0;background:linear-gradient(120deg,#172554,#2563eb)!important}.warehouse-import-modal .modal-title{font-weight:700}.warehouse-import-modal .modal-body{padding:20px}.warehouse-import-modal .alert{border:0;border-radius:12px;font-size:11px}.warehouse-import-modal #uploadForm{padding:16px;border:1px dashed #93c5fd;border-radius:13px;background:#f8fbff}.warehouse-import-modal #excelFile{height:auto;padding:7px;border-color:#bfdbfe;border-radius:9px;background:#fff}.warehouse-import-modal .btn{border-radius:9px;font-weight:600}.warehouse-import-modal .table-responsive{border:1px solid var(--line);border-radius:12px}.warehouse-import-modal .modal-footer{padding:14px 20px;border-color:#f1f5f9}
-    @media(max-width:767.98px){.warehouse-page .warehouse-hero{padding:21px}.warehouse-page .warehouse-hero h2{font-size:21px}.warehouse-page .sync-badge{display:none}.warehouse-page .warehouse-card>.card-body{padding:14px}.warehouse-page .info-box{min-height:86px}.warehouse-page .table-heading{align-items:flex-start;flex-direction:column}.warehouse-page .table-heading>span{margin-top:7px}.warehouse-page .warehouse-card>.card-footer .btn{margin-bottom:5px}.warehouse-import-modal .modal-body{padding:14px}}
+    @media(max-width:767.98px){
+        .warehouse-page{padding:8px 0}
+        .warehouse-page .container-fluid{padding-right:10px;padding-left:10px}
+        .warehouse-page .warehouse-card{border-radius:14px}
+        .warehouse-page .warehouse-hero{align-items:flex-start;padding:18px 16px}
+        .warehouse-page .warehouse-hero h2{font-size:19px;line-height:1.25}
+        .warehouse-page .warehouse-hero p{font-size:11px;line-height:1.45}
+        .warehouse-page .sync-badge{display:none}
+        .warehouse-page .warehouse-card>.card-body{padding:13px}
+        .warehouse-page .info-box{min-height:78px;padding:11px;border-radius:12px}
+        .warehouse-page .info-box .info-box-icon{width:43px;height:43px;flex:0 0 43px;font-size:16px}
+        .warehouse-page .info-box .info-box-content{min-width:0;margin-left:7px;padding:0}
+        .warehouse-page .info-box .info-box-text{white-space:normal;font-size:9px;line-height:1.35}
+        .warehouse-page .info-box .info-box-number{overflow-wrap:anywhere;font-size:17px}
+        .warehouse-page .col-md-4:nth-child(3) .info-box-number{font-size:12px}
+        .warehouse-page .table-heading{align-items:flex-start;flex-direction:column;padding-top:4px}
+        .warehouse-page .table-heading h3{font-size:15px}
+        .warehouse-page .table-heading p{line-height:1.45}
+        .warehouse-page .table-heading>span{margin-top:8px}
+        .warehouse-page .tabel-scroll{overflow:visible}
+        .warehouse-page #tabel_baru{display:block;width:100%!important;margin:0!important;border-collapse:separate;border-spacing:0 8px}
+        .warehouse-page #tabel_baru thead{display:none}
+        .warehouse-page #tabel_baru tbody{display:block}
+        .warehouse-page #tabel_baru tbody tr{display:grid;grid-template-columns:1fr auto;gap:5px 12px;margin-bottom:8px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,.05)}
+        .warehouse-page #tabel_baru tbody td{display:block;padding:0;border:0;color:#0f172a;font-size:12px;text-align:left}
+        .warehouse-page #tabel_baru tbody td:before{display:none}
+        .warehouse-page #tabel_baru tbody td:nth-child(1){grid-column:2;grid-row:1;color:#94a3b8;font-size:10px;text-align:right}
+        .warehouse-page #tabel_baru tbody td:nth-child(2){grid-column:1;grid-row:1;color:#1d4ed8;font-size:12px;line-height:1.25}
+        .warehouse-page #tabel_baru tbody td:nth-child(3){grid-column:1 / -1;grid-row:2;color:#334155;line-height:1.4}
+        .warehouse-page #tabel_baru tbody td:nth-child(4){grid-column:1;grid-row:3;color:#64748b;font-size:11px}
+        .warehouse-page #tabel_baru tbody td:nth-child(5){grid-column:2;grid-row:3;color:#0f172a;font-weight:700;text-align:right}
+        .warehouse-page #tabel_baru tbody td:nth-child(4):before{display:inline;content:"Sat: ";color:#94a3b8;font-weight:700}
+        .warehouse-page #tabel_baru tbody td:nth-child(5):before{display:inline;content:"Stok: ";color:#94a3b8;font-weight:700}
+        .warehouse-page #tabel_baru tbody td:nth-child(3) small{display:block;line-height:1.4}
+        .warehouse-page #tabel_baru tbody td .text-center{text-align:right!important}
+        .warehouse-page .dataTables_wrapper>.row:first-child{display:flex;align-items:flex-end;gap:8px;margin:0 0 10px}
+        .warehouse-page .dataTables_wrapper>.row:first-child>[class*="col-"]{width:auto;max-width:none;flex:0 0 auto;padding-right:0;padding-left:0}
+        .warehouse-page .dataTables_wrapper>.row:first-child>[class*="col-"]:last-child{flex:1 1 auto;min-width:0}
+        .warehouse-page .dataTables_length,
+        .warehouse-page .dataTables_filter{text-align:left!important;font-size:10px}
+        .warehouse-page .dataTables_filter label,
+        .warehouse-page .dataTables_length label{display:block;width:100%;margin-bottom:0;color:var(--muted);line-height:1.2}
+        .warehouse-page .dataTables_filter input,
+        .warehouse-page .dataTables_length select{height:32px;margin:4px 0 0;border:1px solid #dbe3ec;border-radius:8px;font-size:12px}
+        .warehouse-page .dataTables_length select{width:58px!important;padding:4px 6px}
+        .warehouse-page .dataTables_filter input{width:100%!important;max-width:180px;padding:4px 8px}
+        .warehouse-page .dataTables_wrapper>.row:last-child{gap:8px;margin:4px 0 0}
+        .warehouse-page .dataTables_wrapper>.row:last-child>[class*="col-"]{padding-right:0;padding-left:0}
+        .warehouse-page .dataTables_info{padding-top:4px!important;color:var(--muted);font-size:10px;text-align:center}
+        .warehouse-page .dataTables_paginate .pagination{flex-wrap:wrap;justify-content:center;margin:0}
+        .warehouse-page .pagination .page-link{padding:5px 8px;font-size:11px}
+        .warehouse-page .stock-note{padding:12px;margin-top:12px}
+        .warehouse-page .stock-note span{line-height:1.45}
+        .warehouse-page .warehouse-card>.card-footer{display:flex;flex-direction:column;gap:8px;padding:13px;text-align:initial!important}
+        .warehouse-page .warehouse-card>.card-footer .btn{display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:0}
+        .warehouse-import-modal .modal-body{padding:14px}
+    }
 </style>
 <div class="modal warehouse-import-modal" id="importModel" role="dialog" aria-hidden="true" data-backdrop="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
@@ -371,6 +427,12 @@
                     }
                 }
             ],
+            "createdRow": function(row) {
+                var labels = ['No', 'Kode', 'Nama Artikel', 'Satuan', 'Stok'];
+                $('td', row).each(function(index) {
+                    $(this).attr('data-label', labels[index]);
+                });
+            },
             "order": []
         });
 
