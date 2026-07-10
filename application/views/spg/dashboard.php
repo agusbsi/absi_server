@@ -353,3 +353,18 @@ $total_tindakan = $total_terima + $total_mutasi + $total_bap;
     </div>
   </div>
 </section>
+<script>
+  (function() {
+    if (!window.localStorage) {
+      return;
+    }
+
+    try {
+      Object.keys(localStorage).forEach(function(key) {
+        if (key.indexOf('absi_so_draft_') === 0) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (error) {}
+  })();
+</script>
